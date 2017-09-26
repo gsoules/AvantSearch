@@ -1,0 +1,1052 @@
+/* === Advanced Search Form ===
+--------------------------------------------------------- */
+
+/* Add a little space between a radio button or checkbox and its label */
+input[type="radio"] {
+  margin-right: 6px;
+}
+
+input[type="checkbox"] {
+  margin-left: 6px;
+}
+
+#search-filter-form {
+	margin-left: 0;
+	width: 100%;
+}
+
+#search-filter-form #primary {
+    float:left;
+    width: 60%;
+}
+
+#search-filter-form #secondary {
+    border-left: none;
+    float: right;
+    margin-top: 12px;
+    padding: 0 0 1.5em 1.5em;
+    width: 37%;
+    word-wrap: break-word;
+}
+
+#search-filter-form .left {
+	width: 60%;
+}
+
+#search-filter-form input {
+    display: inline-block;
+}
+
+.search-form-section .two.columns {
+	width: 100px;
+}
+
+.search-form-section .five.columns {
+	margin-left: 0;
+	width: 380px;
+}
+
+.search-form-section.four.columns .panel {
+	margin-bottom: 20px;
+}
+
+.search-form-section .inputs {
+	line-height: 28px;
+	min-height: 3em;
+}
+
+/* Format the boxed section containing one set of search criteria */
+.search-form-section {
+	-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	-moz-box-shadow:    0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+	border-top: 1px solid #eee;
+	float: left;
+	font-family: "Lato", sans-serif;
+	line-height: 28px;
+	margin: 12px 0 12px 0;
+	padding: 24px 16px 12px;
+	width: 100%;
+}
+
+.search-entry:first-of-type .advanced-search-joiner {
+  display: none;
+}
+
+.advanced-search-joiner {
+  width: 15%;
+}
+
+.search-entry:first-of-type select {
+  width:48%;
+}
+
+/* Make the width of the select boxes that appear after the joiner dropdown narrower */
+.search-entry:not(:first-of-type) select:not(:first-of-type) {
+  width: 40%;
+}
+
+/* Date fields */
+#search-filter-form #date-start,
+#search-filter-form #date-end {
+	margin-right: 1px;
+	width: 15%
+}
+
+/* Search Results Options - Right Panel */
+
+.search-form-section.right {
+	box-shadow: none;
+	border-top: none;
+	float: left;
+	margin-left: 30px;
+	margin-top: 0;
+	width: 34%;
+}
+
+#search-button {
+	margin-bottom:  30px;
+}
+
+/* Make the search button appear at the top of the secondary column. */
+#search-button input {
+	margin-top: 0;
+}
+
+.search-radio-buttons,
+.search-form-view-selector {
+	margin-top: 8px;
+}
+
+.search-view-option {
+	height: 36px;
+}
+
+.search-view-options {
+	border-left: 1px solid #ddd;
+	clear: both;
+	padding-top:8px;
+	padding-left: 6px;
+}
+
+.search-view-options input {
+	height: 28px;
+}
+
+.search-view-options label {
+	height: 28px;
+	line-height: 28px;
+	margin-bottom: 0;
+	padding-top: 0;
+}
+
+.search-view-options select {
+	height: 28px;
+	line-height: 28px;
+	margin: 0 0 0 6px;
+}
+
+/* Display 'Clear all search filters' graphic before link */
+.search-form-reset-button::before {
+	content: "\f12d";
+	font-family: "FontAwesome";
+	font-size: 20px;
+}
+
+/* Next four styles are for 'Clear all search filters' link and 'Go to Advanced Search' link */
+.search-form-reset-button a:link,
+.search-form-reset-button a:visited {
+	color: #c76941;
+	text-decoration: none;
+}
+
+.search-form-reset-button a:hover {
+	color: #e57f52;
+}
+
+.search-form-reset-button {
+	clear: both;
+	margin-top: 12px;
+}
+
+
+/* === Search Results - Common to all Views ===
+--------------------------------------------------------- */
+.search-result {
+	padding-left:4px;
+}
+
+.search-relationship-table {
+	table-layout: fixed;
+	width: 100%;
+}
+
+.search-relationship-type {
+	width: 110px;
+	text-align: right;
+	padding-right: 8px !important;
+}
+
+.search-relationship-item {
+	width:325px;
+}
+
+.search-col-relationship {
+	width: 55%;
+}
+
+.search-title-aka,
+.search-relationship,
+.search-related-item {
+	margin-top: 2px;
+}
+
+.search-title-aka {
+	color: #777;
+}
+
+.search-titles-only {
+	color: #DD0000;
+	font-weight: bold;
+}
+
+.search-results-buttons {
+	float: right;
+	width: 35%;
+}
+
+/* The text that appears at the start of the list of filters */
+#search-results-filter-message {
+	background-color: #a1b566;
+	color: white;
+	display: inline-block;
+	font-size: 14px;
+	margin: 0;
+	margin-right: 5px;
+	padding: 4px 6px 2px 6px;
+}
+
+/* Item filters display */
+#search-filter-bar {
+	clear: both;
+	padding-top: 8px;
+	padding-bottom: 1em;
+}
+
+#search-filter-bar div:first-of-type {
+	font-size:20px;
+	margin-bottom: 20px;
+}
+
+#search-filter-bar div:first-of-type::before {
+	color: #29536b;
+    content: "\f002";
+    font-family: "FontAwesome";
+	font-size: 22px;
+    line-height: 24px;
+    padding: 0 8px 0 0;
+}
+
+.browse ul.pagination li a:hover:not(.active) {
+	background-color: #D6CFB2;
+}
+/* End item filter display */
+
+
+/* Position Modify Search button */
+.modify-search-button {
+	float: right;
+	margin-top: 10px !important;
+	text-align: center;
+}
+
+#no-results {
+	clear: both;
+}
+
+#no-results p {
+	margin-top: 0px;
+}
+
+/* Green toggle button on search results view */
+.search-results-toggle  {
+	float:left;
+	margin-top: 10px;
+	margin-left: 16px;
+}
+
+.search-results-toggle button {
+	width: 150px;
+}
+
+/* Change Layout button */
+.search-results-layout-options {
+	-webkit-box-shadow: 2px 2px 2px 0 #aaa;
+	-moz-box-shadow: 2px 2px 2px 0 #aaa;
+	box-shadow: 2px 2px 2px 0 #aaa;
+	position: absolute;
+	z-index: 250;
+}
+
+.search-results-layout-options ul {
+	list-style-type: none;
+	margin: 2px 0 0 0;
+	padding: 0;
+}
+
+.search-results-layout-options li {
+	border-bottom: 1px solid #666;
+	position: relative;
+}
+
+.search-results-layout-options li:last-of-type {
+	border-bottom: none;
+}
+
+.search-results-layout-options li a {
+	-moz-appearance: none;
+	-webkit-appearance: none;
+	border: 0;
+	-moz-border-radius: 0;
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	cursor: pointer;
+	display: inline-block;
+	font-family: "Lato", sans-serif;
+	font-size: 14px;
+	line-height: 21px;
+	margin: 0;
+	padding: 2px 8px;
+	width: 150px;
+}
+
+.search-results-layout-options li a.layout-selected {
+	background-color: #a1b566;
+}
+
+.search-results-layout-options li a.layout-normal {
+	background-color: #eee;
+	color: #333;
+}
+
+.search-results-layout-options li a:hover {
+	background-color: #a1b566;
+}
+
+.search-results-layout-options-button {
+	width: 150px;
+}
+
+/* === Pagination controls for Table View ===
+--------------------------------------------------------- */
+.search-pagination-nav {
+	float: none;
+	clear: both;
+	position: relative;
+}
+
+.search-pagination-nav ul {
+  	background-color: #fff;
+	clear: both;
+	display: inline-block;
+  	height: 2.25em;
+  	margin: 0 0 .5em 0;
+	padding-left: 0;
+	vertical-align: top;
+}
+
+.search-pagination-nav:not(:first-of-type) {
+	margin-top: .5em;
+}
+
+.search-pagination-next a:hover::after,
+.search-pagination-previous a:hover::after {
+	color: #e57f52;
+}
+
+.search-pagination li {
+	color: #666666;
+	float: left;
+	font-family: "Roboto Condensed", sans-serif;
+	height: 25px;
+	line-height: 22px;
+	list-style-type: none;
+	min-width: 25px;
+	text-align: center;
+}
+
+.search-pagination li:last-child {
+  	margin-right: 0;
+}
+
+.search-pagination li a {
+	background: #f8f8f8;
+	background: -webkit-linear-gradient(top, #f8f8f8, #e2e2e2);
+	background: -moz-linear-gradient(top, #f8f8f8, #e2e2e2);
+	background: -o-linear-gradient(top, #f8f8f8, #e2e2e2);
+	background: linear-gradient(to bottom, #f8f8f8, #e2e2e2);
+	border: 1px solid #D8D8D8;
+	-webkit-box-shadow: 1px 1px 2px rgba(0,0,0,.1), 0 -1px 0 0 rgba(0,0,0,.07) inset;
+	-moz-box-shadow: 1px 1px 2px rgba(0,0,0,.1), 0 -1px 0 0 rgba(0,0,0,.07) inset;
+	box-shadow: 1px 1px 2px rgba(0,0,0,.1), 0 -1px 0 0 rgba(0,0,0,.07) inset;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: block;
+	height: 100%;
+}
+
+.search-pagination-next {
+	margin: 0 0 0 8px;
+}
+
+.search-pagination-next a,
+.search-pagination-previous a {
+	font-weight: bold;
+	height: 24px;
+	padding: 0 10px;
+	position: relative;
+	text-indent: -9999px;
+	width: 24px;
+}
+
+.search-pagination-next a:after {
+	content: "\f105";
+	text-indent: 0;
+}
+
+.search-pagination-next a:after,
+.search-pagination-previous a:after {
+	color: #c76941;
+	font-family: "FontAwesome";
+	height: 24px;
+	left: 0;
+	position: absolute;
+	text-align: center;
+	top: 0;
+	width: 24px;
+}
+
+.search-pagination-previous {
+	margin: 0 8px 0 0;
+}
+
+.search-pagination-previous a:after {
+	content: "\f104";
+	text-indent: -3px;
+}
+
+.search-pagination .search-page-input input[type=text] {
+	border: .07143em solid #ddd;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: inline-block;
+	font-family: "Lato", sans-serif;
+	font-size: 14px;
+	height: 24px;
+	line-height: 18px;
+	margin: 0 5px 0 0;
+	max-width: 100%;
+	min-height: 1.9em;
+	padding: 0;
+	text-align: center;
+	width: 40px;
+}
+
+/* === Search Results - Table View ===
+--------------------------------------------------------- */
+#search-table-view tr {
+	width: 100%;
+}
+
+#search-table-view .search-col-image{
+	width: 18%;
+}
+
+#search-table-view td, #search-table-view th {
+    vertical-align: top;
+}
+
+/* To stripe the search results table rows */
+#search-table-view tbody tr:nth-child(odd) {
+  	background: #f6f6f6;
+}
+
+#search-table-view td {
+	font-size:90%;
+}
+
+#search-table-view a:link,
+#search-table-view a:visited {
+    color: #c76941;
+}
+
+#search-table-view a:hover {
+	color: #e57f52;
+}
+
+/* Set the Item number column width in search results to the same width for all layouts.
+   The Item number column always has class L2 so we can use this to set a standard width.
+   If we add a layout that displays the Item number in a different column or that doesn't
+   use class L2 this will have to be changed. */
+#search-table-view .L2:first-of-type {
+	width: 6%;
+}
+
+.search-col-image img {
+	margin: 2px 12px 4px 4px;
+	width: 140px;
+	border: 1px solid #ccc;
+	padding: 3px;
+	background-color: #fff;
+}
+
+.search-col-image .item-preview-header {
+	padding-left: 8px;
+	width: 140px;
+}
+
+.search-col-title-expanded {
+	margin-top: 4px;
+	padding-left: 4px;
+}
+
+.search-col-title {
+	width: 350px;
+}
+
+.search-result-title {
+	border-bottom: 1px dotted #ccc;
+	font-size: 120%;
+	margin-top: 4px;
+	margin-bottom: 10px;
+	padding-bottom: 6px;
+}
+
+.search-col-address, .search-col-location {
+	width: 220px;
+}
+
+.search-col-creator, .search-col-publisher {
+	width: 220px;
+}
+
+.search-col-subject, .search-col-type {
+	width: 220px;
+}
+
+.search-col-accessdb {
+	width: 100px;
+}
+
+.search-col-archivenum, .search-col-archivevol {
+	width: 120px;
+}
+
+.search-col-item {
+	text-align: right;
+	padding-right: 4px;
+	width: 55px;
+}
+
+.search-col-date {
+	padding-right: 4px;
+}
+
+.search-results-detail-table {
+	margin: 0 0 8px 0;
+}
+
+.search-results-detail-table tr td {
+	border: none;
+}
+
+.search-results-detail-col1,
+.search-results-detail-col2 {
+	width: 30%;
+}
+
+.search-results-detail-col3 {
+	width: 40%;
+}
+
+.search-results-detail-col2,
+.search-results-detail-col3 {
+	padding-left: 6px;
+}
+
+.search-results-detail-col3 {
+	padding-right: 6px;
+}
+
+.search-results-detail-row {
+	background-color: transparent !important;
+}
+
+.search-results-detail-row td
+{
+	font-size: 85% !important;
+	font-family: "Lato", sans-serif;
+	padding-bottom: 0px !important;
+	padding-top: 0px  !important;
+}
+
+.search-results-detail-element {
+	color: #777;
+	font-variant: small-caps;
+}
+
+.search-results-detail-text {
+	color: #000;
+	padding-left: 4px;
+}
+
+.search-more-text {
+	display: none;
+}
+
+.search-show-more {
+	color: #c76941;
+	cursor: pointer;
+}
+
+
+/* === Search Results - Index View ===
+--------------------------------------------------------- */
+/* The whole index view */
+#search-index-view-headings {
+	clear: both;
+	padding: 16px 0;
+}
+
+/* Index letter heading */
+.search-index-view-heading {
+	background: #f8f8f8; /* default for browsers w/o gradients */
+	background: -webkit-linear-gradient(to right, #e2e2e2, #f8f8f8, #ffffff);
+	background: -moz-linear-gradient(to right, #e2e2e2, #f8f8f8, #ffffff);
+	background: -o-linear-gradient(to right, #e2e2e2, #f8f8f8, #ffffff);
+	background: linear-gradient(to right, #e2e2e2, #f8f8f8, #ffffff);
+	border-radius: 3px;
+	color: #777;
+	margin-top:16px;
+	margin-bottom: 8px;
+	padding: 4px 0 4px 8px;
+}
+
+.search-index-view-heading:first-of-type {
+	margin-top: 0;
+}
+
+/* An individual item in the index */
+.search-index-view-record {
+	font-size: 95%;
+	margin-top:0px;
+	margin-bottom: 6px;
+	margin-left: 12px;
+}
+
+.search-index-view-record a:hover {
+	color: #e57f52;
+}
+
+.search-index-view-record a:visited {
+	color: #c76941;
+}
+
+/* count */
+.search-index-view-count {
+	color: #777;
+}
+
+/* Search List Index - letters across the top and bottom */
+.search-index-view-index {
+    float: none;
+    margin-bottom: 16px;
+    height: 25px;
+}
+
+.search-index-view-index li {
+	color: #666666;
+	float: left;
+	font-family: "Roboto Condensed", sans-serif;
+	height: 25px;
+	line-height: 22px;
+	list-style-type: none;
+	min-width: 25px;
+	padding-right: 2px;
+	text-align: center;
+}
+
+.search-index-view-index li:last-child {
+  	margin-right: 0;
+}
+
+.search-index-view-index li a {
+	background: #f8f8f8;
+	background: -webkit-linear-gradient(top, #f8f8f8, #e2e2e2);
+	background: -moz-linear-gradient(top, #f8f8f8, #e2e2e2);
+	background: -o-linear-gradient(top, #f8f8f8, #e2e2e2);
+	background: linear-gradient(to bottom, #f8f8f8, #e2e2e2);
+	border: 1px solid #D8D8D8;
+	border-radius: 3px;
+	-webkit-box-shadow: 1px 1px 2px rgba(0,0,0,.1), 0 -1px 0 0 rgba(0,0,0,.07) inset;
+	-moz-box-shadow: 1px 1px 2px rgba(0,0,0,.1), 0 -1px 0 0 rgba(0,0,0,.07) inset;
+	box-shadow: 1px 1px 2px rgba(0,0,0,.1), 0 -1px 0 0 rgba(0,0,0,.07) inset;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	display: block;
+	height: 100%;
+	padding: 0 7px;
+}
+
+.search-index-view-index li a:hover {
+    background-color: #c2c2c2;
+	background: -webkit-linear-gradient(top, #f8f8f8, #c2c2c2);
+	background: -moz-linear-gradient(top, #f8f8f8, #c2c2c2);
+	background: -o-linear-gradient(top, #f8f8f8, #c2c2c2);
+	background: linear-gradient(to bottom, #f8f8f8, #c2c2c2);
+}
+
+.search-index-view-index li a:visited {
+	color: #c76941;
+}
+
+.search-index-view-index li span {
+    border: 1px solid transparent;
+}
+
+#search-index-view-index-top ul,
+#search-index-view-index-bottom ul {
+	margin: 0;
+	padding-left: 0;
+}
+
+
+/* === Search Results - Tree View ===
+--------------------------------------------------------- */
+/* The whole index view */
+.search-tree-headings {
+	margin-left: 24px;
+}
+
+.search-tree-headings ul {
+	border-left: 1px dotted #aaa;
+	cursor: default;
+	list-style-type: none;
+	margin: 0 0 0 16px;
+	padding: 0;
+	position: relative;
+}
+
+.search-tree li {
+  	margin: 0 0 0 10px;
+  	position: relative;
+  	padding: 3px 0 3px 2px;
+}
+
+/* For hiding sub-tree */
+.search-tree ul {
+  	display: none;
+}
+
+/* extend a line to the list item */
+.search-tree li:before {
+  	border-left: none;
+  	border-top: 1px dotted #aaa;
+  	content: ' ';
+  	height: 1px;
+  	left: -9px;
+  	position: absolute;
+  	top: 12px;
+  	width: 10px;
+}
+
+/* erase all lines for last item */
+.search-tree li:last-child:after {
+  	background-color: white;
+  	bottom: 0;
+ 	 content: ' ';
+  	left: -13px;
+  	position: absolute;
+  	top: 17px;
+  	width: 7px;
+}
+
+.search-tree a:hover {
+	color: #e57f52;
+}
+
+.search-tree a:visited {
+	color: #c76941;
+}
+
+/* count and empty entries in tree */
+.search-tree span,
+.search-tree-empty {
+	color: #777;
+}
+
+/* add expander widget */
+.search-tree .expander {
+  	background: #fff url(../images/tree-expander.png) no-repeat scroll;
+  	background-position: -64px -4px; /* Position to the plus symbol in the image png */
+  	cursor: pointer;
+  	height: 9px; width: 9px;
+  	left: -15px;
+ 	position: absolute;
+  	top: 8px;
+}
+
+.search-tree .expander:hover {
+	background-color: #ccc;
+}
+
+.search-tree .expander.expanded {
+	background-position: -78px -4px; /* Position to the minus symbol in the image png */
+}
+
+.search-tree ul.expanded {
+	display: block;
+}
+
+/* Search results header row */
+
+#search-table-view th {
+	color: #29536b;
+	font-size: 18px;
+	font-variant: small-caps;
+	font-weight: normal;
+	padding: 0 0 2px 4px;
+	text-align: left;
+}
+
+#search-table-view th a:after {
+	width: 10px;
+	height: 10px;
+	display: inline-block;
+	line-height: 10px;
+	margin: 0 0 0 5px;
+	content: url('../images/placeholder.png');
+}
+
+#search-table-view th.desc a:after {
+	content: url('../images/sorted-desc.png');
+}
+
+#search-table-view th.asc a:after {
+	content: url('../images/sorted-asc.png');
+}
+
+#search-table-view th a:hover:after {
+	content: url('../images/asc.png');
+}
+
+#search-table-view th.asc a:hover:after {
+	content: url('../images/desc.png');
+}
+
+#search-table-view th.desc a:hover:after {
+	content: url('../images/asc.png');
+}
+
+#search-table-view th a:link,
+#search-table-view th a:visited {
+	color: #29536b;
+}
+
+#search-table-view th {
+}
+
+.search-header-date {
+	padding-right: 4px;
+	min-width: 50px;
+}
+
+.search-header-item {
+	padding-right: 4px;
+	min-width: 50px;
+}
+
+#search-results {
+	margin:12px 0;
+}
+
+#search-metadata {
+	margin-bottom: 0;
+	margin-top: 0;
+}
+
+#search-metadata .search-item-row {
+	border: 0 none;
+	padding-top: 0;
+}
+
+
+/* Relationships View */
+
+.relationships-table-view .search-col-item {
+	padding-right: 8px;
+}
+
+.relationships-table-view .search-col-title {
+	width: 30%;
+}
+
+.relationships-table-view .search-col-title .item-preview-header a {
+	padding-right: 106px;
+}
+
+.relationships-table-view .search-col-title .item-preview-header span {
+	visibility: hidden;
+}
+
+.relationships-table-view .search-col-title .item-img,
+.relationships-table-view .search-col-title .element-text {
+	width: 180px;
+}
+
+.relationships-table-view .search-col-title .item-img,
+.relationships-table-view .search-col-title .item-img img {
+	max-height: none;
+}
+
+.relationships-table-view .search-col-relationship {
+	padding-left: 20px;
+	width: 64%;
+}
+
+#search-table-view .relationships-table-view .lightbox {
+	padding-left: 0;
+}
+
+
+
+/* === CSS for Width less than 844px ===
+--------------------------------------------------------- */
+@media screen and (max-width: 844px) {
+	.add_search {
+		clear: both;
+		float: left;
+	}
+
+	/* use .search-results-toggle instead */
+	.search-index-view-column-toggle,
+	.search-results-layout-options-panel {
+		clear: both;
+		margin-left: 0;
+	}
+
+	#search-results-layout {
+		clear: left;
+		float: left;
+		margin-top: 8px;
+	}
+
+    #search-filter-bar {
+        display: block;
+    }
+
+    #search-entry .advanced-search-joiner {
+	    width: 30%;
+	}
+
+}
+
+/* === CSS for Width between 844 and 768px (Tablet Portrait) ===
+--------------------------------------------------------- */
+@media screen and (max-width: 768px) {
+	.search-form-section .five.columns {
+		margin-left: 0;
+		width: 100%;
+	}
+
+	.search-form-section.four.columns label {
+		width: 92%;
+	}
+
+	.search-results-buttons {
+		float: left;
+		margin-bottom: 6px;
+	}
+
+	.search-results-toggle {
+		margin-left: 0;
+	}
+}
+
+/* === CSS for Width < 600px ===
+--------------------------------------------------------- */
+@media screen and (max-width: 600px) {
+  .search-col-image img {
+  	width: 100px;
+  }
+
+  .search-col-title {
+  	width: 100px;
+  }
+
+  #search-entry .advanced-search-joiner {
+    width: 30%;
+  }
+
+  #search-filter-form #primary,
+  #search-filter-form #secondary {
+  	width: 100%;
+  }
+
+  #search-filter-form #search-form-section {
+  	width: 100%;
+
+  }
+
+  .search-view-option {
+  	width: 100%;
+  }
+
+}
+
+/* === CSS for Width < 480px ===
+--------------------------------------------------------- */
+@media screen and (max-width: 480px) {
+
+	.search-entry {
+		margin-bottom: 1.5em;
+	}
+
+	.search-entry select,
+	.search-entry input[type=text] {
+		display: block;
+		width: 100%;
+	}
+
+	.search-entry:first-of-type select {
+	  width:100%;
+	}
+
+	.search-entry:not(:first-of-type) select:not(:first-of-type) {
+		width:100%;
+	}
+
+/* Attempt to get table cells to display correctly in portrait mode
+   on phone. Removed because styling affects all layouts
+   #search-table-view td {
+		display: inline-block;
+	}
+
+	.search-results-detail-table {
+		word-wrap: break-word;
+	}
+
+	.search-results-detail-col1,
+	.search-results-detail-col2 {
+		width: 45%;
+	}
+
+	.search-results-detail-col3 {
+		display: none;
+	}
+*/
+}
+
