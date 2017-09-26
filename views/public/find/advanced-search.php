@@ -367,7 +367,7 @@ echo "<h1>$pageTitle</h1>";
             // The user changed results per page. Save the selection in a cookie.
             var resultsSelection = jQuery(limitSelector, 'option:selected').val();
             jQuery('#simple-results').text(resultsSelection);
-            Cookies.set('SWHPL-LIMIT', resultsSelection, {expires: 7});
+            Cookies.set('SEARCH-LIMIT', resultsSelection, {expires: 7});
         });
 
         jQuery('#search-filter-form').submit(function()

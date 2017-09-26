@@ -6,7 +6,7 @@
     }
 
     jQuery(document).ready(function() {
-        var oneColumn = Cookies.get('SWHPL-COLUMNS') === '1';
+        var oneColumn = Cookies.get('SEARCH-COLUMNS') === '1';
         var results = <?php echo($resultsCount); ?>;
         if (results < 12)
             oneColumn = true;
@@ -16,7 +16,7 @@
         {
             e.preventDefault();
             oneColumn = !oneColumn;
-            Cookies.set('SWHPL-COLUMNS', oneColumn ? '1' : '2');
+            Cookies.set('SEARCH-COLUMNS', oneColumn ? '1' : '2');
             setColumns(oneColumn);
         });
     });

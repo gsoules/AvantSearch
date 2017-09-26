@@ -301,7 +301,7 @@ class SearchResultsView
             return $this->limit;
 
         // First check for a cookie value.
-        $this->limit = isset($_COOKIE['SWHPL-LIMIT']) ? intval($_COOKIE['SWHPL-LIMIT']) : 0;
+        $this->limit = isset($_COOKIE['SEARCH-LIMIT']) ? intval($_COOKIE['SEARCH-LIMIT']) : 0;
         if ($this->limit > 0 && $this->limit <= self::MAX_LIMIT)
             return $this->limit;
 
