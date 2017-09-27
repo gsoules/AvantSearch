@@ -8,6 +8,9 @@ This plugin was developed for the [Southwest Harbor Public Library](http://www.s
 
 Inspiration for the [Index View](http://swhplibrary.net/searching/search-results-index-view/) and [Tree View](http://swhplibrary.net/searching/search-results-tree-view/) search results came from the alphabetized index and hierarchical list features in the [Daniel-KM / Reference](https://github.com/Daniel-KM/Reference) plugin.
 
+## Dependencies
+Use of this plugin requires a modification to the MySQL database by setting FULLTEXT as the Index Type for the search_text table’s *title* column. This change is required to support the "Titles only" option on the [Advanced Search Filters](http://swhplibrary.net/searching/advanced-search/) page.
+
 ##  License
 
 This plugin is published under [GNU/GPL].
@@ -26,8 +29,7 @@ You should have received a copy of the GNU General Public License along with
 this program; if not, write to the Free Software Foundation, Inc.,
 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
-Copyright
----------
+## Copyright
 
 * Created by [gsoules](https://github.com/gsoules) for the Southwest Harbor Public Library's [Digital Archive](http://swhplibrary.net/archive)
 * Copyright George Soules, 2016-2017.
