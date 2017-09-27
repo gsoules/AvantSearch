@@ -6,6 +6,7 @@ The AvantSearch plugin provides extended search results capabilities for the pub
 
 This plugin was developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Southwest Harbor, Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
 
+Inspiration for the [Index View](http://swhplibrary.net/searching/search-results-index-view/) and [Tree View](http://swhplibrary.net/searching/search-results-tree-view/) search results came from the alphabetized index and hierarchical list features in the [Daniel-KM / Reference](https://github.com/Daniel-KM/Reference) plugin.
 
 ##  License
 
