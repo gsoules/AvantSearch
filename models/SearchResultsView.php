@@ -207,7 +207,7 @@ class SearchResultsView
         $elementTable = $db->getTable('Element');
         $parts = explode(',', $elementSetAndName);
         $element = $elementTable->findByElementSetNameAndElementName($parts[0], $parts[1]);
-        return $element->id;
+        return empty($element) ? 0 : $element->id;
     }
 
     protected function getElementNameFromId($elementId)
