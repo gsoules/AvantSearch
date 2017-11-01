@@ -9,7 +9,9 @@ This plugin was developed for the [Southwest Harbor Public Library](http://www.s
 Inspiration for the [Index View](http://swhplibrary.net/searching/search-results-index-view/) and [Tree View](http://swhplibrary.net/searching/search-results-tree-view/) search results came from the alphabetized index and hierarchical list features in the [Daniel-KM / Reference](https://github.com/Daniel-KM/Reference) plugin.
 
 ## Dependencies
-Use of this plugin requires a modification to the MySQL database by setting FULLTEXT as the Index Type for the search_text table’s *title* column. This change is required to support the "Titles only" option on the [Advanced Search Filters](http://swhplibrary.net/searching/advanced-search/) page.
+* This plugin uses the [MariaDB REGEXP_REPLACE](https://mariadb.com/kb/en/library/regexp_replace/) function for certain kinds of search results. The function is not available in MySQL and therefore this plugin is currently dependent on MariaDB. 
+
+* Use of this plugin requires a modification to the MySQL database by setting FULLTEXT as the Index Type for the search_text table’s *title* column. This change is required to support the "Titles only" option on the [Advanced Search Filters](http://swhplibrary.net/searching/advanced-search/) page.
 
 ##  License
 
