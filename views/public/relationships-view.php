@@ -33,7 +33,7 @@ echo "<h1>$pageTitle</h1>";
         foreach ($results as $item)
         {
             set_current_record('Item', $item);
-            $itemIdentifier = metadata($item, array('Dublin Core', 'Identifier'), array('no_filter' => true));
+            $itemIdentifier = ItemView::getItemIdentifier($item);
             $itemView = new ItemView($item);
             $itemThumbnailHtml = $itemView->emitItemPreview(false);
             $typeText = metadata($item, array('Dublin Core', 'Type'), array('no_filter' => true));

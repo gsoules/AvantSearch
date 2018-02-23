@@ -136,9 +136,11 @@ class SearchResultsTableViewRowData
 
     protected function generateTitles($item)
     {
+        $titleParts = ItemView::getPartsForTitleElement();
+
         // Create a link for the Title followed by a list of AKA (Also Known As) titles.
-        $this->titleLink = link_to_item(metadata($item, array('Dublin Core', 'Title'), array('no_filter' => true, 'class' => 'permalink')));
-        $titles = $item->getElementTexts('Dublin Core', 'Title');
+        $this->titleLink = link_to_item(ItemView::getItemTitle($item));
+        $titles = $item->getElementTexts($titleParts[0], $titleParts[1]);
 
         $this->titleExpanded = $this->titleLink;
         foreach ($titles as $key => $title)
@@ -178,20 +180,35 @@ class SearchResultsTableViewRowData
     protected function readMetadata($item)
     {
         // Get text values for columns that can have only one element.
-        $this->addressText = metadata($item, array('Item Type Metadata', 'Address'), array('no_filter' => true));
-        $this->dateText = metadata($item, array('Dublin Core', 'Date'), array('no_filter' => true));
-        $this->dateStartText = metadata($item, array('Item Type Metadata', 'Date Start'), array('no_filter' => true));
-        $this->dateEndText = metadata($item, array('Item Type Metadata', 'Date End'), array('no_filter' => true));
+//        $this->addressText = metadata($item, array('Item Type Metadata', 'Address'), array('no_filter' => true));
+//        $this->dateText = metadata($item, array('Dublin Core', 'Date'), array('no_filter' => true));
+//        $this->dateStartText = metadata($item, array('Item Type Metadata', 'Date Start'), array('no_filter' => true));
+//        $this->dateEndText = metadata($item, array('Item Type Metadata', 'Date End'), array('no_filter' => true));
+//        $this->descriptionText = metadata($item, array('Dublin Core', 'Description'), array('no_filter' => true));
+//        $this->locationText = metadata($item, array('Item Type Metadata', 'Location'), array('no_filter' => true));
+//        $this->publisherText = metadata($item, array('Dublin Core', 'Publisher'), array('no_filter' => true));
+//        $this->restrictionsText = metadata($item, array('Item Type Metadata', 'Restrictions'), array('no_filter' => true));
+//        $this->rightsText = metadata($item, array('Dublin Core', 'Rights'), array('no_filter' => true));
+//        $this->sourceText = metadata($item, array('Dublin Core', 'Source'), array('no_filter' => true));
+//        $this->stateText = metadata($item, array('Item Type Metadata', 'State'), array('no_filter' => true));
+//        $this->typeText = metadata($item, array('Dublin Core', 'Type'), array('no_filter' => true));
+//        $this->tagsText = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+
+        $this->addressText = "addressText";
+        $this->dateText = "dateText";
+        $this->dateStartText = "dateStartText";
+        $this->dateEndText = "dateEndText";
         $this->descriptionText = metadata($item, array('Dublin Core', 'Description'), array('no_filter' => true));
-        $this->identifierText = metadata($item, array('Dublin Core', 'Identifier'), array('no_filter' => true));
+        $this->identifierText = ItemView::getItemIdentifier($item);
         $this->locationText = metadata($item, array('Item Type Metadata', 'Location'), array('no_filter' => true));
         $this->publisherText = metadata($item, array('Dublin Core', 'Publisher'), array('no_filter' => true));
-        $this->restrictionsText = metadata($item, array('Item Type Metadata', 'Restrictions'), array('no_filter' => true));
-        $this->rightsText = metadata($item, array('Dublin Core', 'Rights'), array('no_filter' => true));
-        $this->sourceText = metadata($item, array('Dublin Core', 'Source'), array('no_filter' => true));
-        $this->stateText = metadata($item, array('Item Type Metadata', 'State'), array('no_filter' => true));
-        $this->typeText = metadata($item, array('Dublin Core', 'Type'), array('no_filter' => true));
-        $this->tagsText = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+        $this->restrictionsText = "restrictionsText";
+        $this->rightsText = "rightsText";
+        $this->sourceText = "sourceText";
+        $this->stateText = "stateText";
+        $this->typeText = "typeText";
+        $this->tagsText = "tagsText";
+
 
         if ($item->public == 0)
             $this->identifierText .= '*';
@@ -202,10 +219,17 @@ class SearchResultsTableViewRowData
     protected function readMetadataForAdmin($item)
     {
         $this->isAdmin = is_allowed('Users', 'edit');
-        $this->accessDbText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Access DB')) : '';
-        $this->archiveNumberText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Archive Number')) : '';
-        $this->archiveVolumeText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Archive Volume')) : '';
-        $this->instructionsText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Instructions')) : '';
-        $this->statusText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Status')) : '';
+//        $this->accessDbText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Access DB')) : '';
+//        $this->archiveNumberText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Archive Number')) : '';
+//        $this->archiveVolumeText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Archive Volume')) : '';
+//        $this->instructionsText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Instructions')) : '';
+//        $this->statusText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Status')) : '';
+
+        $this->accessDbText = 'accessDbText';
+        $this->archiveNumberText = 'archiveNumberText';
+        $this->archiveVolumeText = 'archiveVolumeText';
+        $this->instructionsText = 'instructionsText';
+        $this->statusText = 'statusText';
+
     }
 }
