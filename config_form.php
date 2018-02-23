@@ -21,6 +21,17 @@
 </div>
 
 <div class="field">
+    <div class="two columns">
+        <label for="search_filters_smart_sorting"><?php echo __('Enable Smart Sorting'); ?></label>
+    </div>
+    <div class="inputs five columns">
+        <p class="explanation"><?php echo __('Smart Sorting improves sorting of street addresses by sorting first by the street name and then by the street number. However, it requires MariaDB. If your server is running MySQL, do NOT select this option or you will get an Omeka error that prevents the site from working.'); ?></p>
+        <?php echo $view->formCheckbox('search_filters_smart_sorting', true, array('checked' => (boolean)get_option('search_filters_smart_sorting'))); ?>
+    </div>
+</div>
+
+
+<div class="field">
     <div class="two columns alpha">
         <label for="search_private_elements"><?php echo __('Private Elements'); ?></label>
     </div>

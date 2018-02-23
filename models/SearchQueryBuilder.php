@@ -6,6 +6,7 @@ class SearchQueryBuilder
 
     protected $db;
     protected $select;
+    protected $smartSortingEnabled;
 
     function __construct()
     {
@@ -15,6 +16,7 @@ class SearchQueryBuilder
     public function buildAdvancedSearchQuery($args)
     {
         $this->select = $args['select'];
+        $this->smartSortingEnabled = get_option('search_filters_smart_sorting') == true;
 
         /* @var $searchResults SearchResultsView */
         $searchResults = $args['params']['results'];
@@ -132,7 +134,7 @@ class SearchQueryBuilder
         $this->select->joinLeft(array('_primary_column' => $elementTextTable),
             "_primary_column.record_id = items.id AND _primary_column.record_type = 'item' AND _primary_column.element_id = $primaryField");
 
-        // Everything in in place. Reconstruct the advanced joins, if any, for field queries.
+        // Everything is in place. Reconstruct the advanced joins, if any, for field queries.
         foreach ($from as $alias => $table)
         {
             if (strpos($alias, '_advanced') === false)
@@ -230,7 +232,7 @@ class SearchQueryBuilder
         {
             // Sort the title on a virtual column that does not have leading double quote as the first
             // character. We do this so titles like "Fox Dens" don't sort above titles starting with 'A'.
-            $primaryColumnName .= '_regex';
+            $primaryColumnName .= '_exp';
             $this->select->columns($this->columnValueForTitleSort("_primary_column.text", $primaryColumnName));
         }
         elseif ($sortByAddress)
@@ -242,16 +244,14 @@ class SearchQueryBuilder
             // of the second group (the street name) The use of '\\\\2' escapes backslashes in the string which results
             // in '\\2' which in turn escapes the backslash in the SQL so that the regular expression processor sees '\2'
             // which refers to the match on the second group.
-            $primaryColumnName .= '_regex';
-            //$this->select->columns("REGEXP_REPLACE(_primary_column.text, '([^a-zA-Z]+)([A-Za-z ]+)', '\\\\2') AS $primaryColumnName");
+            $primaryColumnName .= '_exp';
             $this->select->columns($this->columnValueForStreetNameSort("_primary_column.text", $primaryColumnName));
         }
         elseif ($sortByLocation)
         {
             // Sort by location using a virtual column that does not ever start with "MDI, ". We do this so that
             // MDI locations like Bar Harbor sort above Boston instead of sorting with the M's.
-            $primaryColumnName .= '_regex';
-            //$this->select->columns("REGEXP_REPLACE(_primary_column.text, '^MDI, ', '') AS $primaryColumnName");
+            $primaryColumnName .= '_exp';
             $this->select->columns($this->columnValueForLocationSort("_primary_column.text", $primaryColumnName));
         }
         else
@@ -261,7 +261,7 @@ class SearchQueryBuilder
 
         if ($performSecondarySort)
         {
-            $secondaryColumnName = "_secondary_column_regex";
+            $secondaryColumnName = "_secondary_column_exp";
 
             if ($sortByAddress)
             {
@@ -270,19 +270,19 @@ class SearchQueryBuilder
                 // same street unsorted. The regular expression for the secondary sort isolates the street number
                 // and casts it to an integer so that rows for the same street get sorted numerically by street number.
                 // Note that the regex operates on _primary_column.text to create the secondary street number column.
-                $regex = $this->columnValueForStreetNumberSort("_primary_column.text", $secondaryColumnName);
+                $exp = $this->columnValueForStreetNumberSort("_primary_column.text", $secondaryColumnName);
                 $secondaryColumnSortOrder = $sortOrder;
             }
             else
             {
                 // Use the title column for the secondary sort and always sort ascending.
-                $regex = $this->columnValueForTitleSort("$secondaryColumnName.text", $secondaryColumnName);
+                $exp = $this->columnValueForTitleSort("$secondaryColumnName.text", $secondaryColumnName);
                 $secondaryColumnSortOrder = 'ASC';
             }
 
             $this->select->joinLeft(array($secondaryColumnName => $this->db->ElementText),
                 "$secondaryColumnName.record_id = items.id AND $secondaryColumnName.record_type = 'Item' AND $secondaryColumnName.element_id = $titleFieldElementId", array());
-            $this->select->columns($regex);
+            $this->select->columns($exp);
         }
 
         // Change the order to sort first by the user-chosen sort field and second by the Title field.
@@ -316,52 +316,81 @@ class SearchQueryBuilder
 
     protected function columnValueForLocationSort($columnName, $alias)
     {
-        // Replaces 'MDI, ' at the beginning of a location with an empty string.
-        return "REGEXP_REPLACE($columnName, '^MDI, ', '') AS $alias";
+        if ($this->smartSortingEnabled)
+        {
+            // Replaces 'MDI, ' at the beginning of a location with an empty string.
+            return "REGEXP_REPLACE($columnName, '^MDI, ', '') AS $alias";
+        }
+        else
+        {
+            return "$columnName AS $alias";
+        }
     }
 
     protected function columnValueForStreetNameSort($columnName, $alias)
     {
-        // Replace an address with just the street name portion of the address. Assume that
-        // a street name starts with an alphabetic character and consider anything before the
-        // street name to be the street number. Examples of valid street numbers are:
-        //    123
-        //    123 - 124
-        //    123, 124
-        // Group 1:
-        //   ([^a-zA-Z]+) matche a group of one or more characters that are not a-z or A-Z.
-        //   ? at the end of group 1 means match zero or one of the group (the street number).
-        // Group 2: (.*)
-        //   (.*) matche a group of zero or more of any character (the street name).
-        // Substitution:
-        //    \2 means replace the original string with the match on group 2 (the street name)
-        //    In SQL, the regular expression syntax for \2 must be written with the backslash escaped as \\2
-        //    To get \\2 in a PHP string in double quotes, both slashes must be escaped as \\\\2
-        return "REGEXP_REPLACE($columnName, '([^a-zA-Z]+)?(.*)', '\\\\2') AS  $alias";
+        if ($this->smartSortingEnabled)
+        {
+            // Replace an address with just the street name portion of the address. Assume that
+            // a street name starts with an alphabetic character and consider anything before the
+            // street name to be the street number. Examples of valid street numbers are:
+            //    123
+            //    123 - 124
+            //    123, 124
+            // Group 1:
+            //   ([^a-zA-Z]+) matche a group of one or more characters that are not a-z or A-Z.
+            //   ? at the end of group 1 means match zero or one of the group (the street number).
+            // Group 2: (.*)
+            //   (.*) matche a group of zero or more of any character (the street name).
+            // Substitution:
+            //    \2 means replace the original string with the match on group 2 (the street name)
+            //    In SQL, the regular expression syntax for \2 must be written with the backslash escaped as \\2
+            //    To get \\2 in a PHP string in double quotes, both slashes must be escaped as \\\\2
+            return "REGEXP_REPLACE($columnName, '([^a-zA-Z]+)?(.*)', '\\\\2') AS  $alias";
+        }
+        else
+        {
+            return "$columnName AS $alias";
+        }
     }
 
     protected function columnValueForStreetNumberSort($columnName, $alias)
     {
-        // Replace an address with the first integer in the street number. Cast that number to an
-        // integer so that the street address will sort numerically. Without the cast, 123 sorts before 45.
-        // If the address has no street number, the empty street number will cast to 0 and sort highest so
-        // that the address "Clark Point" will sort above "50 Clark Point".
-        // Group 1:
-        //   ((^[\\\\d]+) matche a group of one or more digits.
-        //   ? at the end of group 1 means match zero or one of the group (the first integer of the street number).
-        // Group 2: (.*)
-        //   (.*) matche a group of zero or more of any character (the rest of the address after the first integer).
-        // Substitution:
-        //    \1 means replace the original string with the match on group 1 (the first integer of the street number)/
-        //    In SQL, the regular expression syntax for \2 must be written with the backslash escaped as \\2
-        //    To get \\2 in a PHP string in double quotes, both slashes must be escaped as \\\\2
-        return "CAST(REGEXP_REPLACE($columnName, '(^[\\\\d]+)?(.*)', '\\\\1') AS SIGNED INTEGER) AS $alias";
+        if ($this->smartSortingEnabled)
+        {
+            // Replace an address with the first integer in the street number. Cast that number to an
+            // integer so that the street address will sort numerically. Without the cast, 123 sorts before 45.
+            // If the address has no street number, the empty street number will cast to 0 and sort highest so
+            // that the address "Clark Point" will sort above "50 Clark Point".
+            // Group 1:
+            //   ((^[\\\\d]+) matche a group of one or more digits.
+            //   ? at the end of group 1 means match zero or one of the group (the first integer of the street number).
+            // Group 2: (.*)
+            //   (.*) matche a group of zero or more of any character (the rest of the address after the first integer).
+            // Substitution:
+            //    \1 means replace the original string with the match on group 1 (the first integer of the street number)/
+            //    In SQL, the regular expression syntax for \2 must be written with the backslash escaped as \\2
+            //    To get \\2 in a PHP string in double quotes, both slashes must be escaped as \\\\2
+            return "CAST(REGEXP_REPLACE($columnName, '(^[\\\\d]+)?(.*)', '\\\\1') AS SIGNED INTEGER) AS $alias";
+        }
+        else
+        {
+            return "$columnName AS $alias";
+        }
     }
 
     protected function columnValueForTitleSort($columnName, $alias)
     {
-        // Replace double quote at the beginning of a title with an empty string.
-        return "REGEXP_REPLACE($columnName, '^\"', '') AS $alias";
+        if ($this->smartSortingEnabled)
+        {
+            // Replace double quote at the beginning of a title with an empty string.
+            return "REGEXP_REPLACE($columnName, '^\"', '') AS $alias";
+        }
+        else
+        {
+            // Replace any double quote in the title with an empty string.
+            return "REPLACE($columnName, '\"', '') AS $alias";
+        }
     }
 
     public static function isStopWord($word)

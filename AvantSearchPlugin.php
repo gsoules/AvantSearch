@@ -113,6 +113,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     {
         set_option('search_filters_page_title', $_POST['search_filters_page_title']);
         set_option('search_filters_enable_relationships', $_POST['search_filters_enable_relationships']);
+        set_option('search_filters_smart_sorting', $_POST['search_filters_smart_sorting']);
         set_option('search_private_elements', $_POST['search_private_elements']);
     }
 
