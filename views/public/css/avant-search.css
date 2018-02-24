@@ -1,3 +1,9 @@
+:root {
+	--link-color: #3d5a98;
+	--link-hover-color: #7596b9;
+}
+
+
 /* === Advanced Search Form ===
 --------------------------------------------------------- */
 
@@ -156,12 +162,12 @@ input[type="checkbox"] {
 /* Next four styles are for 'Clear all search filters' link and 'Go to Advanced Search' link */
 .search-form-reset-button a:link,
 .search-form-reset-button a:visited {
-	color: #c76941;
+	color: var(--link-color);
 	text-decoration: none;
 }
 
 .search-form-reset-button a:hover {
-	color: #e57f52;
+	color: var(--link-hover-color);
 }
 
 .search-form-reset-button {
@@ -361,7 +367,7 @@ input[type="checkbox"] {
 
 .search-pagination-next a:hover::after,
 .search-pagination-previous a:hover::after {
-	color: #e57f52;
+	color: var(--link-hover-color);
 }
 
 .search-pagination li {
@@ -417,7 +423,7 @@ input[type="checkbox"] {
 
 .search-pagination-next a:after,
 .search-pagination-previous a:after {
-	color: #c76941;
+	color: var(--link-color);
 	font-family: "FontAwesome";
 	height: 24px;
 	left: 0;
@@ -479,11 +485,11 @@ input[type="checkbox"] {
 
 #search-table-view a:link,
 #search-table-view a:visited {
-    color: #c76941;
+    color: var(--link-color);
 }
 
 #search-table-view a:hover {
-	color: #e57f52;
+	color: var(--link-hover-color);
 }
 
 /* Set the Item number column width in search results to the same width for all layouts.
@@ -607,7 +613,7 @@ input[type="checkbox"] {
 }
 
 .search-show-more {
-	color: #c76941;
+	color: var(--link-color);
 	cursor: pointer;
 }
 
@@ -647,11 +653,11 @@ input[type="checkbox"] {
 }
 
 .search-index-view-record a:hover {
-	color: #e57f52;
+	color: var(--link-hover-color);
 }
 
 .search-index-view-record a:visited {
-	color: #c76941;
+	color: var(--link-color);
 }
 
 /* count */
@@ -710,7 +716,7 @@ input[type="checkbox"] {
 }
 
 .search-index-view-index li a:visited {
-	color: #c76941;
+	color: var(--link-color);
 }
 
 .search-index-view-index li span {
@@ -775,11 +781,11 @@ input[type="checkbox"] {
 }
 
 .search-tree a:hover {
-	color: #e57f52;
+	color: var(--link-hover-color);
 }
 
 .search-tree a:visited {
-	color: #c76941;
+	color: var(--link-color);
 }
 
 /* count and empty entries in tree */
