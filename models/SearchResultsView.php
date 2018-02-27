@@ -2,6 +2,7 @@
 class SearchResultsView
 {
     const DEFAULT_KEYWORDS_CONDITION = 1;
+    const DEFAULT_SEARCH_FILES = 0;
     const DEFAULT_SEARCH_TITLES = 0;
     const DEFAULT_SORT_FIELD = 'Dublin Core,Title';
     const DEFAULT_VIEW = '1';
@@ -15,6 +16,7 @@ class SearchResultsView
 
     protected $condition;
     protected $conditionName;
+    protected $files;
     protected $isAdmin;
     protected $keywords;
     protected $results;
@@ -76,7 +78,7 @@ class SearchResultsView
             if ($columnName)
             {
                 $columnElementId = SearchResultsView::getElementId($columnName);
-                $columnTitle = $columnElementId ? $key : '';
+                $columnTitle = $columnElementId ? $key : $columnName;
                 $params = $_GET;
                 $params['sort'] = $columnElementId;
                 $sortDirection = 'a';
@@ -222,6 +224,14 @@ class SearchResultsView
         return SearchResultsView::getElementId($field);
     }
 
+    public function getFilesOnlyOptions()
+    {
+        return array(
+            '0' => __('All items'),
+            '1' => __('Only items with images or files')
+        );
+    }
+
     public function getKeywords()
     {
         if (isset($this->keywords))
@@ -319,6 +329,15 @@ class SearchResultsView
         $this->limit = self::DEFAULT_LIMIT;
 
         return $this->limit;
+    }
+
+    public function getSearchFiles()
+    {
+        if (isset($this->files))
+            return $this->files;
+
+        $this->files = isset($_GET['files']) ? intval($_GET['files'] == 1) : self::DEFAULT_SEARCH_FILES ;
+        return $this->files;
     }
 
     public static function getSearchResultsMessage($count)

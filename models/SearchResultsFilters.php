@@ -127,6 +127,11 @@ class SearchResultsFilters
             $layoutMessage .= __('Sorted by %s', $this->searchResults->getSortFieldName());
         }
 
+        if ($this->searchResults->getSearchFiles())
+        {
+            $layoutMessage .= ' ' .  ' <span class="search-files-only">' . __('(only showing items with images or files)') . '</span>';
+        }
+
         foreach ($displayArray as $name => $query)
         {
             if ($name == __('Keywords') && $this->searchResults->getSearchTitles())

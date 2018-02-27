@@ -14,6 +14,7 @@ $selectedLayoutId = $searchResultsTable->getLayoutId();
 $resultsPerPage = $searchResultsTable->getResultsLimit();
 $keywords = $searchResults->getKeywords();
 $searchTitlesOnly = $searchResultsTable->getSearchTitles();
+$searchFilesOnly = $searchResultsTable->getSearchFiles();
 $condition = $searchResults->getKeywordsCondition();
 
 $pageTitle = $searchResults->advancedSearchPageTitle();
@@ -219,6 +220,11 @@ echo "<h1>$pageTitle</h1>";
             </div>
         </div>
 
+        <?php echo $this->formLabel('view-label', __('Search:')); ?>
+        <div class="search-radio-buttons">
+            <?php echo $this->formRadio('files', $searchFilesOnly, null, $searchResults->getFilesOnlyOptions()); ?>
+        </div>
+
         <div class="search-form-reset-button">
             <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Reset all search options</a>'; ?>
         </div>
@@ -394,6 +400,7 @@ echo "<h1>$pageTitle</h1>";
             disableEmptyField('#date-start');
             disableEmptyField('#date-end');
 
+            disableDefaultRadioButton('files', '<?php echo SearchResultsView::DEFAULT_SEARCH_FILES; ?>');
             disableDefaultRadioButton('titles', '<?php echo SearchResultsView::DEFAULT_SEARCH_TITLES; ?>');
             disableDefaultRadioButton('condition', '<?php echo SearchResultsView::DEFAULT_KEYWORDS_CONDITION; ?>');
             disableDefaultRadioButton('view', '<?php echo SearchResultsView::DEFAULT_VIEW; ?>');

@@ -121,7 +121,7 @@ input[type="checkbox"] {
 
 .search-radio-buttons,
 .search-form-view-selector {
-	margin-top: 8px;
+	margin-top: 2px;
 }
 
 .search-view-option {
@@ -129,10 +129,9 @@ input[type="checkbox"] {
 }
 
 .search-view-options {
-	border-left: 1px solid #ddd;
 	clear: both;
 	padding-top:8px;
-	padding-left: 6px;
+	padding-bottom:12px;
 }
 
 .search-view-options input {
@@ -172,7 +171,7 @@ input[type="checkbox"] {
 
 .search-form-reset-button {
 	clear: both;
-	margin-top: 12px;
+	padding-top: 18px;
 }
 
 
@@ -211,7 +210,9 @@ input[type="checkbox"] {
 	color: #777;
 }
 
-.search-titles-only {
+.search-titles-only,
+.search-files-only
+{
 	color: #DD0000;
 	font-weight: bold;
 }

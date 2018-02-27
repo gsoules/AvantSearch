@@ -28,6 +28,7 @@ class SearchQueryBuilder
         $isKeywordQuery = !empty($keywords);
         $titleOnly = $searchResults->getSearchTitles();
         $isIndexQuery = $viewId == SearchResultsViewFactory::INDEX_VIEW_ID || $viewId == SearchResultsViewFactory::TREE_VIEW_ID;
+        $isFilesOnlyQuery = $searchResults->getSearchFiles();
 
         if ($isIndexQuery)
         {
@@ -42,7 +43,7 @@ class SearchQueryBuilder
         }
 
         // Construct the query.
-        $this->buildQuery($primaryField, $isKeywordQuery, $isIndexQuery);
+        $this->buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery);
 
         if ($isKeywordQuery)
             $this->buildKeywordWhere($keywords, $condition, $titleOnly);
@@ -101,7 +102,7 @@ class SearchQueryBuilder
         return $count >= 1;
     }
 
-    protected function buildQuery($primaryField, $isKeywordQuery, $isIndexQuery)
+    protected function buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery)
     {
         // This method join the search_texts table which is used for keyword searches
         // with the items and elements tables which are used for field searches.
@@ -109,6 +110,7 @@ class SearchQueryBuilder
         // Get the names of the tables we'll be working with.
         $searchTextTable = $this->db->SearchText;
         $itemsTable = $this->db->Items;
+        $filesTable = $this->db->Files;
         $elementTextTable = $this->db->ElementText;
 
         // To make this work we first have to delete the From and Column parts of the query and then put the
@@ -128,6 +130,12 @@ class SearchQueryBuilder
 
         // Join the items table to allow field queries.
         $this->select->joinInner(array('items' => $itemsTable), 'items.id = search_texts.record_id');
+
+        if ($isFilesOnlyQuery)
+        {
+            // Join the files table to limit results to those having a file attachement.
+            $this->select->joinInner(array('files' => $filesTable), 'items.id = files.item_id');
+        }
 
         // Join the element-text table to bring in the value of the primary field. For Table View, the
         // primary field is the sort field. For Index View and Tree View, it's the field being viewed.
