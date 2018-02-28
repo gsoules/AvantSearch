@@ -112,8 +112,11 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookConfig()
     {
         set_option('search_filters_page_title', $_POST['search_filters_page_title']);
+        set_option('search_filters_show_date_range_option', $_POST['search_filters_show_date_range_option']);
+        set_option('search_filters_show_titles_option', $_POST['search_filters_show_titles_option']);
         set_option('search_filters_enable_relationships', $_POST['search_filters_enable_relationships']);
         set_option('search_filters_smart_sorting', $_POST['search_filters_smart_sorting']);
+        set_option('search_layouts', $_POST['search_layouts']);
         set_option('search_private_elements', $_POST['search_private_elements']);
     }
 

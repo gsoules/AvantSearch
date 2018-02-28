@@ -17,6 +17,9 @@ $searchTitlesOnly = $searchResultsTable->getSearchTitles();
 $searchFilesOnly = $searchResultsTable->getSearchFiles();
 $condition = $searchResults->getKeywordsCondition();
 
+$showTitlesOption = get_option('search_filters_show_titles_option') == true;
+$showDateRangeOption = get_option('search_filters_show_date_range_option') == true;;
+
 $pageTitle = $searchResults->advancedSearchPageTitle();
 
 queue_js_file('js.cookie');
@@ -37,6 +40,7 @@ echo "<h1>$pageTitle</h1>";
 					<?php echo $this->formText('keywords', $keywords, array('id' => 'keywords')); ?>
 				</div>
 			</div>
+            <?php if ($showTitlesOption): ?>
             <div class="search-field">
                 <div class="two columns">
                     <?php echo $this->formLabel('title-only', __('Search in')); ?><br>
@@ -47,6 +51,7 @@ echo "<h1>$pageTitle</h1>";
 					</div>
                 </div>
             </div>
+            <?php endif; ?>
             <div class="search-field">
 				<div class="two columns">
 					<?php echo $this->formLabel('keyword-conditions', __('Condition')); ?><br>
@@ -150,7 +155,8 @@ echo "<h1>$pageTitle</h1>";
             </div>
         </div>
 
-		<div class="search-form-section">
+        <?php if ($showDateRangeOption): ?>
+        <div class="search-form-section">
 			<div>
 				<div class="two columns">
 					<?php echo $this->formLabel('date-start', __('Date Start')); ?>
@@ -169,7 +175,7 @@ echo "<h1>$pageTitle</h1>";
 				</div>
 			</div>
 		</div>
-
+        <?php endif; ?>
 	</div>
 
 	<!-- Right Panel -->
