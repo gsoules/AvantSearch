@@ -290,16 +290,6 @@ class SearchResultsView
         );
     }
 
-    public function getRelationshipsLayoutEnabled($relationshipsAreEnabled)
-    {
-        if (!$relationshipsAreEnabled)
-            return false;
-
-        // Check the query string to determine if Relationships layout is allowed.
-        $enabled = empty(@$_REQUEST['relationships']) ? false : intval(@$_REQUEST['relationships']) == 1;
-        return $enabled;
-    }
-
     public function getResults()
     {
         return $this->results;
