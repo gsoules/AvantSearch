@@ -1,10 +1,12 @@
 <script>
     var currentLayoutId = 0;
+    var firstLayoutId = <?php echo SearchResultsTableView::getLayoutIdFirst(); ?>;
+    var lastLayoutId = <?php echo SearchResultsTableView::getLayoutIdLast(); ?>;
 
     function deselectLayoutButtons()
     {
         // Set all the layout selector buttons to their unselected color.
-        for (var layoutId = <?php echo SearchResultsTableView::FIRST_LAYOUT; ?>; layoutId <= <?php echo SearchResultsTableView::LAST_LAYOUT; ?>; layoutId++)
+        for (var layoutId = firstLayoutId; layoutId <= lastLayoutId; layoutId++)
         {
             layouts = jQuery('#L' + layoutId);
             layouts.removeClass('layout-selected');
@@ -20,11 +22,11 @@
 
     function setSelectedLayout(layoutId) {
         // Hide everything.
-        for (var id = <?php echo SearchResultsTableView::FIRST_LAYOUT; ?>; id <= <?php echo SearchResultsTableView::LAST_LAYOUT; ?>; id++) {
+        for (var id = firstLayoutId; id <= lastLayoutId; id++)
+        {
             jQuery('.L' + id).hide();
         }
 
-        // Show the selected layout.
         jQuery('.L' + layoutId).show();
 
         // Highlight the selector button for the selected layout.

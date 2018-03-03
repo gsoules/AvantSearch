@@ -193,7 +193,7 @@ echo "<h1>$pageTitle</h1>";
             <div class="table-view-layout-option search-view-option">
                 <?php
                 echo $this->formLabel('layout', __('Table Layout'));
-                $layoutOptions = $searchResultsTable->getLayoutOptions();
+                $layoutOptions = $searchResultsTable->getLayoutDefinitions();
                 echo $this->formSelect('layout', $selectedLayoutId, array(), $layoutOptions);
                 ?>
             </div>

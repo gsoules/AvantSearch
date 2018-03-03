@@ -2,16 +2,7 @@
 class SearchResultsTableView extends SearchResultsView
 {
     const DEFAULT_LAYOUT = 1;
-    const FIRST_LAYOUT = 1;
-    const SUMMARY_LAYOUT = 1;
-    const ADDRESS_LAYOUT = 2;
-    const SUBJECT_LAYOUT = 3;
-    const CREATOR_LAYOUT = 4;
-    const COMPACT_LAYOUT = 5;
     const RELATIONSHIPS_LAYOUT = 6;
-    const ADMIN_LAYOUT_1 = 7;
-    const ADMIN_LAYOUT_2 = 8;
-    const LAST_LAYOUT = 8;
 
     protected $layoutId;
     protected $limit;
@@ -29,36 +20,113 @@ class SearchResultsTableView extends SearchResultsView
         if (isset($this->layoutId))
             return $this->layoutId;
 
-        $id = isset($_GET['layout']) ? intval($_GET['layout']) : self::DEFAULT_LAYOUT;
+        $firstLayoutId = self::getLayoutIdFirst();
+        $lastLayoutId = self::getLayoutIdLast();
 
-        // Make sure that the layout Id is value.
-        if ($id < self::FIRST_LAYOUT || $id > self::LAST_LAYOUT)
-            $id = self::DEFAULT_LAYOUT;
+        $id = isset($_GET['layout']) ? intval($_GET['layout']) : $firstLayoutId;
+
+        // Make sure that the layout Id is valid.
+        if ($id < $firstLayoutId || $id > $lastLayoutId)
+            $id = $firstLayoutId;
 
         // See if the query requests that Table View show relationships. If not, make sure Relationships layout is not selected.
         if (!$this->showRelationships && $id == self::RELATIONSHIPS_LAYOUT)
-            $id = self::DEFAULT_LAYOUT;
-
-        if (($id == self::ADMIN_LAYOUT_1 || $id == self::ADMIN_LAYOUT_2) && !$this->isAdmin)
-            $id = self::DEFAULT_LAYOUT;
+            $id = $firstLayoutId;
 
         $this->layoutId = $id;
         return $this->layoutId;
     }
 
-    public function getLayoutOptions()
+    public static function getLayoutElementDefinitions()
     {
-        $options = array(
-            self::SUMMARY_LAYOUT => __('Summary'),
-            self::SUBJECT_LAYOUT => __('Subject / Type'),
-            self::CREATOR_LAYOUT => __('Creator / Publisher'),
-            self::ADDRESS_LAYOUT => __('Address / Location'),
-            self::COMPACT_LAYOUT => __('Compact'));
+        $definitions = explode(';', get_option('search_elements'));
+        $definitions = array_map('trim', $definitions);
 
-        if ($this->isAdmin)
+        $elementDefinitions = array();
+
+        foreach ($definitions as $definition)
         {
-            $options[self::ADMIN_LAYOUT_1] = __('Admin 1');
-            $options[self::ADMIN_LAYOUT_2] = __('Admin 2');
+            $parts = explode(',', $definition);
+            $parts = array_map('trim', $parts);
+
+            // Make sure the definition has the right number of parts.
+            $partsCount = count($parts);
+            if ($partsCount < 3)
+                continue;
+
+            $layouts = array();
+
+            foreach ($parts as $key => $part)
+            {
+                if ($key < 2)
+                    continue;
+                $layoutParts = explode('-', $part);
+                $partsCount = count($layoutParts);
+                if ($partsCount < 2 || $partsCount > 3)
+                    continue;
+                $id = $layoutParts[0];
+                $column = intval($layoutParts[1]);
+                $row = $partsCount == 3 ? intval($layoutParts[2]) : 1;
+                if ($column == 0 || $row == 0)
+                    continue;
+                $layouts[$id] = array('column' => $column, 'row' => $row);
+            }
+
+            $elementDefinitions[$parts[0]] = array('label' => $parts[1], 'layouts' => $layouts);
+        }
+
+        return $elementDefinitions;
+    }
+
+    public static function getLayoutIdFirst()
+    {
+        $keys = array_keys(self::getLayoutDefinitions());
+        return $keys[0];
+    }
+
+    public static function getLayoutIdLast()
+    {
+        $keys = array_keys(self::getLayoutDefinitions());
+        return max($keys);
+    }
+
+    public static function getLayoutDefinitions()
+    {
+        $layoutOptions = explode(';', get_option('search_layouts'));
+        $layoutOptions = array_map('trim', $layoutOptions);
+
+        $options = array();
+        foreach ($layoutOptions as $layoutOption)
+        {
+            $parts = explode(',', $layoutOption);
+            $parts = array_map('trim', $parts);
+
+            // Make sure the layout has just the right number of parts.
+            $partsCount = count($parts);
+            if ($partsCount < 2 || $partsCount > 3)
+                continue;
+
+            // If there's an admin part, make sure it's specified correctly and that the user has admin rights.
+            if ($partsCount == 3)
+            {
+                if (strtolower($parts[2]) != 'admin')
+                    continue;
+                $isAdmin = is_allowed('Users', 'edit');
+                if (!$isAdmin)
+                    continue;
+            }
+
+            $id = $parts[0];
+
+            // Make sure the ID starts with 'L' followed by a number > 0.
+            if (substr($id, 0, 1) != 'L')
+                continue;
+            $idNumber = intval(substr($id, 1));
+            if ($idNumber <= 0)
+                continue;
+
+            // The layout specification is good.
+            $options[$idNumber] = $parts[1];
         }
 
         return $options;

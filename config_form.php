@@ -62,6 +62,16 @@
 
 <div class="field">
     <div class="two columns alpha">
+        <label for="search_elements"><?php echo __('Search Results Elements'); ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __("Provide a semicolon-separated list of element definitions (see documentation)."); ?></p>
+        <?php echo $view->formTextarea('search_elements', get_option('search_elements'), array('rows'=>'8','cols'=>'40')); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
         <label for="search_private_elements"><?php echo __('Private Elements'); ?></label>
     </div>
     <div class="inputs five columns omega">

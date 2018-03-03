@@ -65,20 +65,19 @@ class SearchResultsView
         return $text ? "<span class=\"search-results-detail-element\">$elementName</span>:<span class=\"search-results-detail-text\">$text</span>" : '';
     }
 
-    public function emitHeaderRow($columnHeaders)
+    public function emitHeaderRow($headerColumns)
     {
         $sortField = $this->getSortField();
         $sortOrder = $this->getSortOrder();
 
         $headerRow = '';
 
-        foreach ($columnHeaders as $key => $column) {
-            $columnName = $column['column'];
-
+        foreach ($headerColumns as $columnName => $headerColumn)
+        {
             if ($columnName)
             {
-                $columnElementId = SearchResultsView::getElementId($columnName);
-                $columnTitle = $columnElementId ? $key : $columnName;
+                $columnElementId = ElementFinder::getElementIdForElementName($columnName);
+                $columnLabel = $headerColumn['label'];
                 $params = $_GET;
                 $params['sort'] = $columnElementId;
                 $sortDirection = 'a';
@@ -106,13 +105,13 @@ class SearchResultsView
 
                 $params['order'] = $sortDirection;
                 $url = html_escape(url(array(), null, $params));
-                $classAttribute = self::emitClassAttribute($sortClass,  $column['class']);
-                $headerRow .= "<th scope=\"col\" $classAttribute><a href=\"$url\" class=\"search-link\">$columnTitle</a></th>" . PHP_EOL;
+                $classAttribute = self::emitClassAttribute($sortClass,  $headerColumn['classes']);
+                $headerRow .= "<th scope=\"col\" $classAttribute><a href=\"$url\" class=\"search-link\">$columnLabel</a></th>" . PHP_EOL;
             }
             else
             {
-                $classAttribute = $this->emitClassAttribute($column['class']);
-                $headerRow .= "<th scope=\"col\" $classAttribute>$key</th>" . PHP_EOL;
+                $classAttribute = $this->emitClassAttribute($headerColumn['classes']);
+                $headerRow .= "<th scope=\"col\" $classAttribute>$columnLabel</th>" . PHP_EOL;
             }
         }
         return $headerRow;

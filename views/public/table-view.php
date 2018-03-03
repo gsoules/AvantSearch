@@ -6,6 +6,7 @@ $totalResults = $searchResults->getTotalResults();
 $layoutId = $searchResults->getLayoutId();
 $showRelationships = $searchResults->getShowRelationships();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
+$layoutOptions = $searchResults->getLayoutDefinitions();
 
 echo head(array('title' => $pageTitle));
 echo "<h1>$pageTitle</h1>";
@@ -17,15 +18,14 @@ echo "<h1>$pageTitle</h1>";
 			<button class="search-results-layout-options-button"><?php echo __('Change Layout') ?></button>
 			<div class="search-results-layout-options">
 				<ul>
-					<li><a id="L1" class="small blue button show-layout-button"><?php echo __('Summary') ?></a></li>
-					<li><a id="L3" class="small blue button show-layout-button"><?php echo __('Subject / Type') ?></a></li>
-					<li><a id="L4" class="small blue button show-layout-button"><?php echo __('Creator / Publisher') ?></a></li>
-					<li><a id="L2" class="small blue button show-layout-button"><?php echo __('Address / Location') ?></a></li>
-					<li><a id="L5" class="small blue button show-layout-button"><?php echo __('Compact') ?></a></li>
-					<?php if (is_allowed('Users', 'edit')): ?>
-					<li><a id="L7" class="small blue button show-layout-button"><?php echo __('Admin 1') ?></a></li>
-					<li><a id="L8" class="small blue button show-layout-button"><?php echo __('Admin 2') ?></a></li>
-					<?php endif; ?>
+                    <?php
+                    $class = 'small blue button show-layout-button';
+                    foreach ($layoutOptions as $key => $layoutOption)
+                    {
+                        $id = "L$key";
+                        echo "<li><a id='$id' class='$class'>$layoutOption</a></li>";
+                    }
+                    ?>
 				</ul>
 			</div>
 		</div>
