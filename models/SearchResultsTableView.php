@@ -37,47 +37,6 @@ class SearchResultsTableView extends SearchResultsView
         return $this->layoutId;
     }
 
-    public static function getLayoutElementDefinitions()
-    {
-        $definitions = explode(';', get_option('search_elements'));
-        $definitions = array_map('trim', $definitions);
-
-        $elementDefinitions = array();
-
-        foreach ($definitions as $definition)
-        {
-            $parts = explode(',', $definition);
-            $parts = array_map('trim', $parts);
-
-            // Make sure the definition has the right number of parts.
-            $partsCount = count($parts);
-            if ($partsCount < 3)
-                continue;
-
-            $layouts = array();
-
-            foreach ($parts as $key => $part)
-            {
-                if ($key < 2)
-                    continue;
-                $layoutParts = explode('-', $part);
-                $partsCount = count($layoutParts);
-                if ($partsCount < 2 || $partsCount > 3)
-                    continue;
-                $id = $layoutParts[0];
-                $column = intval($layoutParts[1]);
-                $row = $partsCount == 3 ? intval($layoutParts[2]) : 1;
-                if ($column == 0 || $row == 0)
-                    continue;
-                $layouts[$id] = array('column' => $column, 'row' => $row);
-            }
-
-            $elementDefinitions[$parts[0]] = array('label' => $parts[1], 'layouts' => $layouts);
-        }
-
-        return $elementDefinitions;
-    }
-
     public static function getLayoutIdFirst()
     {
         $keys = array_keys(self::getLayoutDefinitions());
@@ -90,46 +49,106 @@ class SearchResultsTableView extends SearchResultsView
         return max($keys);
     }
 
-    public static function getLayoutDefinitions()
+    public static function getLayoutDefinitions($getAll = false)
     {
         $layoutOptions = explode(';', get_option('search_layouts'));
         $layoutOptions = array_map('trim', $layoutOptions);
 
-        $options = array();
+        $layoutDefinitions = array();
+
         foreach ($layoutOptions as $layoutOption)
         {
-            $parts = explode(',', $layoutOption);
-            $parts = array_map('trim', $parts);
-
-            // Make sure the layout has just the right number of parts.
+            if (empty(trim($layoutOption)))
+                continue;
+            $parts = explode(':', $layoutOption);
             $partsCount = count($parts);
             if ($partsCount < 2 || $partsCount > 3)
                 continue;
+            $parts = array_map('trim', $parts);
 
-            // If there's an admin part, make sure it's specified correctly and that the user has admin rights.
-            if ($partsCount == 3)
-            {
-                if (strtolower($parts[2]) != 'admin')
-                    continue;
-                $isAdmin = is_allowed('Users', 'edit');
-                if (!$isAdmin)
-                    continue;
-            }
-
-            $id = $parts[0];
-
-            // Make sure the ID starts with 'L' followed by a number > 0.
-            if (substr($id, 0, 1) != 'L')
-                continue;
-            $idNumber = intval(substr($id, 1));
-            if ($idNumber <= 0)
-                continue;
-
-            // The layout specification is good.
-            $options[$idNumber] = $parts[1];
+            $layoutDefinitions[] = array('id' => '', 'types' => $parts[0], 'elements' => $parts[1], 'valid' => true);
         }
 
-        return $options;
+        $layoutNames = array();
+        foreach ($layoutDefinitions as $key => $layoutDefinition)
+        {
+            $parts = explode(',', $layoutDefinition['types']);
+            $parts = array_map('trim', $parts);
+
+            // Make sure the layout has exactly 3 parts.
+            $partsCount = count($parts);
+            if ($partsCount != 3)
+            {
+                $layoutDefinitions[$key]['valid'] = false;
+                continue;
+            }
+
+            // Validate that the rights value is either 'admin' or 'public'. If admin, make sure the user has
+            // admin rights and if not, skip this layout so that a non-admin user won't be able to choose it.
+            $rights = strtolower($parts[1]);
+            if ($rights == 'admin' && !is_allowed('Users', 'edit'))
+            {
+                $layoutDefinitions[$key]['valid'] = false;
+                continue;
+            }
+            if (!$rights = 'public')
+            {
+                $layoutDefinitions[$key]['valid'] = false;
+                continue;
+            }
+
+            // Make sure the ID starts with 'L' followed by a number > 0.
+            $id = $parts[0];
+            if (substr($id, 0, 1) != 'L')
+            {
+                $layoutDefinitions[$key]['valid'] = false;
+                continue;
+            }
+            $idNumber = intval(substr($id, 1));
+            if ($idNumber <= 0)
+            {
+                $layoutDefinitions[$key]['valid'] = false;
+                continue;
+            }
+
+            $layoutDefinitions[$key]['id'] = 'L' . $idNumber;
+            $layoutNames[$idNumber] = $parts[2];
+        }
+
+        if (!$getAll)
+            return $layoutNames;
+
+        $columns = array();
+        foreach ($layoutDefinitions as $key => $layoutDefinition)
+        {
+            if ($layoutDefinition['valid'] == false)
+                continue;
+
+            $elementNames = explode(',', $layoutDefinition['elements']);
+            $elementNames = array_map('trim', $elementNames);
+            $columns[$layoutDefinition['id']] = $elementNames;
+        }
+
+        // Create a table that maps element names to their labels.
+        $elementDefinitions = explode(';', get_option('search_elements'));
+        $elementDefinitions = array_map('trim', $elementDefinitions);
+        $elements = array();
+        foreach ($elementDefinitions as $elementDefinition)
+        {
+            if (empty($elementDefinition))
+                continue;
+            $parts = explode(',', $elementDefinition);
+            $partsCount = count($parts);
+            if ($partsCount > 2)
+                continue;
+            $elements[$parts[0]] = $partsCount == 2 ? $parts[1] : $parts[0];
+        }
+
+        $definitions = array();
+        $definitions['layouts'] = $layoutNames;
+        $definitions['columns'] = $columns;
+        $definitions['elements'] = $elements;
+        return $definitions;
     }
 
     public static function getLimitOptions()

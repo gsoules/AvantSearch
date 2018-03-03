@@ -74,6 +74,13 @@ class SearchResultsView
 
         foreach ($headerColumns as $columnName => $headerColumn)
         {
+            $classes = $headerColumn['classes'];
+            if (empty($classes))
+            {
+                // The layout specifies the element name incorrectly or is using the alias instead of the name.
+                continue;
+            }
+
             if ($columnName)
             {
                 $columnElementId = ElementFinder::getElementIdForElementName($columnName);
@@ -105,12 +112,12 @@ class SearchResultsView
 
                 $params['order'] = $sortDirection;
                 $url = html_escape(url(array(), null, $params));
-                $classAttribute = self::emitClassAttribute($sortClass,  $headerColumn['classes']);
+                $classAttribute = self::emitClassAttribute($sortClass, $classes);
                 $headerRow .= "<th scope=\"col\" $classAttribute><a href=\"$url\" class=\"search-link\">$columnLabel</a></th>" . PHP_EOL;
             }
             else
             {
-                $classAttribute = $this->emitClassAttribute($headerColumn['classes']);
+                $classAttribute = $this->emitClassAttribute($classes);
                 $headerRow .= "<th scope=\"col\" $classAttribute>$columnLabel</th>" . PHP_EOL;
             }
         }
