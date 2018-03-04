@@ -86,12 +86,7 @@ class SearchResultsTableView extends SearchResultsView
             // Validate that the rights value is either 'admin' or 'public'. If admin, make sure the user has
             // admin rights and if not, skip this layout so that a non-admin user won't be able to choose it.
             $rights = strtolower($parts[1]);
-            if ($rights == 'admin' && !is_allowed('Users', 'edit'))
-            {
-                $layoutDefinitions[$key]['valid'] = false;
-                continue;
-            }
-            if (!$rights = 'public')
+            if (!($rights == 'public' || ($rights == 'admin' && is_allowed('Users', 'edit'))))
             {
                 $layoutDefinitions[$key]['valid'] = false;
                 continue;
