@@ -15,6 +15,91 @@ class SearchResultsTableView extends SearchResultsView
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
     }
 
+    protected static function getLayoutDefinitionColumns($layoutDefinitions)
+    {
+        $columns = array();
+        foreach ($layoutDefinitions as $key => $layoutDefinition)
+        {
+            if ($layoutDefinition['valid'] == false)
+            {
+                continue;
+            }
+
+            $elementNames = explode(',', $layoutDefinition['elements']);
+            $elementNames = array_map('trim', $elementNames);
+            $columns[$layoutDefinition['id']] = $elementNames;
+        }
+        return $columns;
+    }
+
+    protected static function getLayoutDefinitionElementNames()
+    {
+        $elementDefinitions = explode(';', get_option('search_elements'));
+        $elementDefinitions = array_map('trim', $elementDefinitions);
+        $elements = array();
+        foreach ($elementDefinitions as $elementDefinition)
+        {
+            if (empty($elementDefinition))
+            {
+                continue;
+            }
+            $parts = explode(',', $elementDefinition);
+            $partsCount = count($parts);
+            if ($partsCount > 2)
+            {
+                continue;
+            }
+            $elements[$parts[0]] = $partsCount == 2 ? $parts[1] : $parts[0];
+        }
+        return $elements;
+    }
+
+    public static function getLayoutDefinitionNames()
+    {
+        return self::parseLayoutDefinitions()['names'];
+    }
+
+    public static function getLayoutDefinitions()
+    {
+        $layouts = self::parseLayoutDefinitions();
+        $layoutDefinitions = $layouts['definitions'];
+        $layoutNames = $layouts['names'];
+
+        $definitions = array();
+        $definitions['layouts'] = $layoutNames;
+        $definitions['columns'] =  self::getLayoutDefinitionColumns($layoutDefinitions);
+        $definitions['elements'] = self::getLayoutDefinitionElementNames();
+
+        return $definitions;
+    }
+
+    protected static function getLayoutDefinitionsFromOptions()
+    {
+        $layoutOptions = explode(';', get_option('search_layouts'));
+        $layoutOptions = array_map('trim', $layoutOptions);
+
+        $layoutDefinitions = array();
+
+        foreach ($layoutOptions as $layoutOption)
+        {
+            if (empty(trim($layoutOption)))
+            {
+                continue;
+            }
+
+            $parts = explode(':', $layoutOption);
+            $partsCount = count($parts);
+            if ($partsCount < 2 || $partsCount > 3)
+            {
+                continue;
+            }
+
+            $parts = array_map('trim', $parts);
+            $layoutDefinitions[] = array('id' => '', 'types' => $parts[0], 'elements' => $parts[1], 'valid' => false);
+        }
+        return $layoutDefinitions;
+    }
+
     public function getLayoutId()
     {
         if (isset($this->layoutId))
@@ -39,111 +124,42 @@ class SearchResultsTableView extends SearchResultsView
 
     public static function getLayoutIdFirst()
     {
-        $keys = array_keys(self::getLayoutDefinitions());
-        return $keys[0];
+        $keys = array_keys(self::getLayoutDefinitionNames());
+        return min($keys);
     }
 
     public static function getLayoutIdLast()
     {
-        $keys = array_keys(self::getLayoutDefinitions());
+        $keys = array_keys(self::getLayoutDefinitionNames());
         return max($keys);
     }
 
-    public static function getLayoutDefinitions($getAll = false)
+    protected static function getLayoutInfo($layoutDefinition)
     {
-        $layoutOptions = explode(';', get_option('search_layouts'));
-        $layoutOptions = array_map('trim', $layoutOptions);
+        $parts = explode(',', $layoutDefinition['types']);
+        $parts = array_map('trim', $parts);
 
-        $layoutDefinitions = array();
+        // Make sure the layout has exactly 3 parts.
+        $partsCount = count($parts);
+        if ($partsCount != 3)
+            return null;
 
-        foreach ($layoutOptions as $layoutOption)
-        {
-            if (empty(trim($layoutOption)))
-                continue;
-            $parts = explode(':', $layoutOption);
-            $partsCount = count($parts);
-            if ($partsCount < 2 || $partsCount > 3)
-                continue;
-            $parts = array_map('trim', $parts);
+        // Validate that the rights value is either 'admin' or 'public'. If admin, make sure the user has
+        // admin rights and if not, skip this layout so that a non-admin user won't be able to choose it.
+        $rights = strtolower($parts[1]);
+        if (!($rights == 'public' || ($rights == 'admin' && is_allowed('Users', 'edit'))))
+            return null;
 
-            $layoutDefinitions[] = array('id' => '', 'types' => $parts[0], 'elements' => $parts[1], 'valid' => true);
-        }
+        // Make sure the ID starts with 'L' followed by a single digit > 0.
+        $id = $parts[0];
+        if (strtoupper(substr($id, 0, 1)) != 'L')
+            return null;
 
-        $layoutNames = array();
-        foreach ($layoutDefinitions as $key => $layoutDefinition)
-        {
-            $parts = explode(',', $layoutDefinition['types']);
-            $parts = array_map('trim', $parts);
+        $idNumber = intval(substr($id, 1));
+        if ($idNumber <= 0)
+            return null;
 
-            // Make sure the layout has exactly 3 parts.
-            $partsCount = count($parts);
-            if ($partsCount != 3)
-            {
-                $layoutDefinitions[$key]['valid'] = false;
-                continue;
-            }
-
-            // Validate that the rights value is either 'admin' or 'public'. If admin, make sure the user has
-            // admin rights and if not, skip this layout so that a non-admin user won't be able to choose it.
-            $rights = strtolower($parts[1]);
-            if (!($rights == 'public' || ($rights == 'admin' && is_allowed('Users', 'edit'))))
-            {
-                $layoutDefinitions[$key]['valid'] = false;
-                continue;
-            }
-
-            // Make sure the ID starts with 'L' followed by a number > 0.
-            $id = $parts[0];
-            if (substr($id, 0, 1) != 'L')
-            {
-                $layoutDefinitions[$key]['valid'] = false;
-                continue;
-            }
-            $idNumber = intval(substr($id, 1));
-            if ($idNumber <= 0)
-            {
-                $layoutDefinitions[$key]['valid'] = false;
-                continue;
-            }
-
-            $layoutDefinitions[$key]['id'] = 'L' . $idNumber;
-            $layoutNames[$idNumber] = $parts[2];
-        }
-
-        if (!$getAll)
-            return $layoutNames;
-
-        $columns = array();
-        foreach ($layoutDefinitions as $key => $layoutDefinition)
-        {
-            if ($layoutDefinition['valid'] == false)
-                continue;
-
-            $elementNames = explode(',', $layoutDefinition['elements']);
-            $elementNames = array_map('trim', $elementNames);
-            $columns[$layoutDefinition['id']] = $elementNames;
-        }
-
-        // Create a table that maps element names to their labels.
-        $elementDefinitions = explode(';', get_option('search_elements'));
-        $elementDefinitions = array_map('trim', $elementDefinitions);
-        $elements = array();
-        foreach ($elementDefinitions as $elementDefinition)
-        {
-            if (empty($elementDefinition))
-                continue;
-            $parts = explode(',', $elementDefinition);
-            $partsCount = count($parts);
-            if ($partsCount > 2)
-                continue;
-            $elements[$parts[0]] = $partsCount == 2 ? $parts[1] : $parts[0];
-        }
-
-        $definitions = array();
-        $definitions['layouts'] = $layoutNames;
-        $definitions['columns'] = $columns;
-        $definitions['elements'] = $elements;
-        return $definitions;
+        return array('id' => $idNumber, 'name' => $parts[2]);
     }
 
     public static function getLimitOptions()
@@ -159,5 +175,32 @@ class SearchResultsTableView extends SearchResultsView
     public function getShowRelationships()
     {
         return $this->showRelationships;
+    }
+
+    protected static function parseLayoutDefinitions()
+    {
+        $layoutDefinitions = self::getLayoutDefinitionsFromOptions();
+        $layoutNames = array();
+
+        foreach ($layoutDefinitions as $key => $layoutDefinition)
+        {
+            $layoutInfo = self::getLayoutInfo($layoutDefinition);
+            if ($layoutInfo)
+            {
+                $id = $layoutInfo['id'];
+                $name = $layoutInfo['name'];
+                $layoutDefinitions[$key]['valid'] = true;
+                $layoutDefinitions[$key]['id'] = 'L' . $id;
+                $layoutNames[$id] = $name;
+            }
+        }
+
+        // Ideally this information would get written to the database so that this function
+        // does not need to get called over an over. The data cannot be saved as a class variable
+        // because this function and its callers must be static. Also note that if this data
+        // were written to the database, it would need to be updated whenever layout configuration
+        // options were saved, and there would have to be one set of data for admin users and
+        // another for non-admin users.
+        return array('definitions' => $layoutDefinitions, 'names' => $layoutNames);
     }
 }

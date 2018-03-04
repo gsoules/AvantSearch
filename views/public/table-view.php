@@ -6,7 +6,7 @@ $totalResults = $searchResults->getTotalResults();
 $layoutId = $searchResults->getLayoutId();
 $showRelationships = $searchResults->getShowRelationships();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
-$layoutOptions = $searchResults->getLayoutDefinitions();
+$layoutOptions = $searchResults->getLayoutDefinitionNames();
 
 echo head(array('title' => $pageTitle));
 echo "<h1>$pageTitle</h1>";

@@ -1,8 +1,8 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
-$elementDefinitions = $searchResults::getLayoutDefinitions(true);
-$layouts = $elementDefinitions['columns'];
+$elementDefinitions = $searchResults::getLayoutDefinitions();
+$layoutColumns = $elementDefinitions['columns'];
 
 $headerColumns = array();
 
@@ -14,18 +14,18 @@ foreach ($elementNames as $key => $alias)
     $headerColumns[$key]['classes'] = '';
 }
 
-foreach ($layouts as $layoutId => $layout)
+foreach ($layoutColumns as $layoutId => $columns)
 {
-    foreach ($layout as $elementName)
+    foreach ($columns as $columnName)
     {
-        if (!isset($headerColumns[$elementName]))
+        if (!isset($headerColumns[$columnName]))
         {
-            // The layout specifies the element name incorrectly or is using the alias instead of the name.
+            // The layout specified the column name incorrectly.
             continue;
         }
-        $classes = $headerColumns[$elementName]['classes'] . ' ';
+        $classes = $headerColumns[$columnName]['classes'] . ' ';
         $classes .= $layoutId;
-        $headerColumns[$elementName]['classes'] = $classes;
+        $headerColumns[$columnName]['classes'] = $classes;
     }
 }
 
