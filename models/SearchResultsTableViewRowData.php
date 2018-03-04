@@ -13,7 +13,6 @@ class SearchResultsTableViewRowData
     public $dateText;
     public $descriptionDetail;
     public $instructionsText;
-    public $isAdmin;
     public $identifierText;
     public $itemThumbnailHtml;
     public $locationDetail;
@@ -34,6 +33,8 @@ class SearchResultsTableViewRowData
     public $typeDetail;
     public $typeText;
 
+    public $data;
+
     protected $descriptionText;
     protected $dateEndText;
     protected $dateStartText;
@@ -42,9 +43,9 @@ class SearchResultsTableViewRowData
     protected $tagsText;
     protected $titleLink;
 
-    public function __construct($item, $searchResults)
+    public function __construct($item, $searchResults, $layoutElements)
     {
-        $this->initializeData($item, $searchResults);
+        $this->initializeData($item, $searchResults, $layoutElements);
     }
 
     protected function generateDescriptionText()
@@ -164,9 +165,25 @@ class SearchResultsTableViewRowData
         }
     }
 
-    protected function initializeData($item, $searchResults)
+
+    protected static function getMetadata($item, $elementName)
     {
-        $this->readMetadata($item);
+        try
+        {
+            $metadata = metadata($item, array('Dublin Core', $elementName), array('no_filter' => true));
+        }
+        catch (Omeka_Record_Exception $e)
+        {
+            $metadata = metadata($item, array('Item Type Metadata', $elementName), array('no_filter' => true));;
+        }
+        return $metadata;
+    }
+
+    protected function initializeData($item, $searchResults, $layoutElements)
+    {
+        $this->data = array();
+
+        $this->readMetadata($item, $layoutElements);
         $this->generateDescriptionText();
         $this->generateLocationText();
         $this->generateCreatorText($item);
@@ -177,59 +194,29 @@ class SearchResultsTableViewRowData
         $this->generateThumbnailHtml($item);
     }
 
-    protected function readMetadata($item)
+    protected function readMetadata($item, $layoutElements)
     {
-        // Get text values for columns that can have only one element.
-//        $this->addressText = metadata($item, array('Item Type Metadata', 'Address'), array('no_filter' => true));
-//        $this->dateText = metadata($item, array('Dublin Core', 'Date'), array('no_filter' => true));
-//        $this->dateStartText = metadata($item, array('Item Type Metadata', 'Date Start'), array('no_filter' => true));
-//        $this->dateEndText = metadata($item, array('Item Type Metadata', 'Date End'), array('no_filter' => true));
+        foreach ($layoutElements as $elementName => $layoutElement)
+        {
+            $this->data[$elementName]['text'] = $this->getMetadata($item, $elementName);
+        }
+
+//        $this->addressText = "addressText";
+//        $this->dateText = "dateText";
+//        $this->dateStartText = "dateStartText";
+//        $this->dateEndText = "dateEndText";
 //        $this->descriptionText = metadata($item, array('Dublin Core', 'Description'), array('no_filter' => true));
+//        $this->identifierText = ItemView::getItemIdentifier($item);
 //        $this->locationText = metadata($item, array('Item Type Metadata', 'Location'), array('no_filter' => true));
 //        $this->publisherText = metadata($item, array('Dublin Core', 'Publisher'), array('no_filter' => true));
-//        $this->restrictionsText = metadata($item, array('Item Type Metadata', 'Restrictions'), array('no_filter' => true));
-//        $this->rightsText = metadata($item, array('Dublin Core', 'Rights'), array('no_filter' => true));
-//        $this->sourceText = metadata($item, array('Dublin Core', 'Source'), array('no_filter' => true));
-//        $this->stateText = metadata($item, array('Item Type Metadata', 'State'), array('no_filter' => true));
-//        $this->typeText = metadata($item, array('Dublin Core', 'Type'), array('no_filter' => true));
-//        $this->tagsText = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
-
-        $this->addressText = "addressText";
-        $this->dateText = "dateText";
-        $this->dateStartText = "dateStartText";
-        $this->dateEndText = "dateEndText";
-        $this->descriptionText = metadata($item, array('Dublin Core', 'Description'), array('no_filter' => true));
-        $this->identifierText = ItemView::getItemIdentifier($item);
-        $this->locationText = metadata($item, array('Item Type Metadata', 'Location'), array('no_filter' => true));
-        $this->publisherText = metadata($item, array('Dublin Core', 'Publisher'), array('no_filter' => true));
-        $this->restrictionsText = "restrictionsText";
-        $this->rightsText = "rightsText";
-        $this->sourceText = "sourceText";
-        $this->stateText = "stateText";
-        $this->typeText = "typeText";
-        $this->tagsText = "tagsText";
-
+//        $this->restrictionsText = "restrictionsText";
+//        $this->rightsText = "rightsText";
+//        $this->sourceText = "sourceText";
+//        $this->stateText = "stateText";
+//        $this->typeText = "typeText";
+//        $this->tagsText = "tagsText";
 
         if ($item->public == 0)
             $this->identifierText .= '*';
-
-        $this->readMetadataForAdmin($item);
-    }
-
-    protected function readMetadataForAdmin($item)
-    {
-        $this->isAdmin = is_allowed('Users', 'edit');
-//        $this->accessDbText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Access DB')) : '';
-//        $this->archiveNumberText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Archive Number')) : '';
-//        $this->archiveVolumeText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Archive Volume')) : '';
-//        $this->instructionsText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Instructions')) : '';
-//        $this->statusText = $this->isAdmin ? metadata($item, array('Item Type Metadata', 'Status')) : '';
-
-        $this->accessDbText = 'accessDbText';
-        $this->archiveNumberText = 'archiveNumberText';
-        $this->archiveVolumeText = 'archiveVolumeText';
-        $this->instructionsText = 'instructionsText';
-        $this->statusText = 'statusText';
-
     }
 }

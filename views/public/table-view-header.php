@@ -1,32 +1,19 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
-$elementDefinitions = $searchResults::getLayoutDefinitions();
-$layoutColumns = $elementDefinitions['columns'];
+$layoutDefinitions = $searchResults::getLayoutDefinitions();
+$layoutColumns = $layoutDefinitions['columns'];
+$elementNames = $layoutDefinitions['elements'];
+$elementClasses = $layoutDefinitions['classes'];
 
 $headerColumns = array();
 
-$elementNames = $elementDefinitions['elements'];
+// Create a header column for each element that is configured to appear in any of the layouts.
 foreach ($elementNames as $key => $alias)
 {
     $label = empty($alias) ? $key : $alias;
     $headerColumns[$key]['label'] = $label;
-    $headerColumns[$key]['classes'] = '';
-}
-
-foreach ($layoutColumns as $layoutId => $columns)
-{
-    foreach ($columns as $columnName)
-    {
-        if (!isset($headerColumns[$columnName]))
-        {
-            // The layout specified the column name incorrectly.
-            continue;
-        }
-        $classes = $headerColumns[$columnName]['classes'] . ' ';
-        $classes .= $layoutId;
-        $headerColumns[$columnName]['classes'] = $classes;
-    }
+    $headerColumns[$key]['classes'] = $elementClasses[$key];
 }
 
 echo $searchResults->emitHeaderRow($headerColumns);

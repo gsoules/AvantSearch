@@ -44,12 +44,22 @@ class SearchResultsTableView extends SearchResultsView
                 continue;
             }
             $parts = explode(',', $elementDefinition);
+            $parts = array_map('trim', $parts);
             $partsCount = count($parts);
             if ($partsCount > 2)
             {
                 continue;
             }
-            $elements[$parts[0]] = $partsCount == 2 ? $parts[1] : $parts[0];
+            $elementName = $parts[0];
+
+            $elementId = ElementFinder::getElementIdForElementName($elementName);
+            if ($elementId == 0)
+            {
+                // The admin specified the name of an element that does not exist.
+                continue;
+            }
+
+            $elements[$elementName] = $partsCount == 2 ? $parts[1] : $elementName;
         }
         return $elements;
     }
@@ -62,15 +72,18 @@ class SearchResultsTableView extends SearchResultsView
     public static function getLayoutDefinitions()
     {
         $layouts = self::parseLayoutDefinitions();
-        $layoutDefinitions = $layouts['definitions'];
-        $layoutNames = $layouts['names'];
+        $definitions = $layouts['definitions'];
 
-        $definitions = array();
-        $definitions['layouts'] = $layoutNames;
-        $definitions['columns'] =  self::getLayoutDefinitionColumns($layoutDefinitions);
-        $definitions['elements'] = self::getLayoutDefinitionElementNames();
+        $layoutColumns = self::getLayoutDefinitionColumns($definitions);
+        $layoutElements = self::getLayoutDefinitionElementNames();
 
-        return $definitions;
+        $layoutDefinitions = array();
+        $layoutDefinitions['layouts'] = $layouts['names'];
+        $layoutDefinitions['columns'] = $layoutColumns;
+        $layoutDefinitions['elements'] = $layoutElements;
+        $layoutDefinitions['classes'] = self::getLayoutElementClasses($layoutElements, $layoutColumns);
+
+        return $layoutDefinitions;
     }
 
     protected static function getLayoutDefinitionsFromOptions()
@@ -98,6 +111,29 @@ class SearchResultsTableView extends SearchResultsView
             $layoutDefinitions[] = array('id' => '', 'types' => $parts[0], 'elements' => $parts[1], 'valid' => false);
         }
         return $layoutDefinitions;
+    }
+
+    protected static function getLayoutElementClasses($layoutElements, $layoutColumns)
+    {
+        $elementClasses = array();
+
+        // Find which columns appear in which layouts and set the header column's clases to be a list of layout Ids for that column.
+        foreach ($layoutColumns as $layoutId => $columns)
+        {
+            foreach ($columns as $columnName)
+            {
+                if (!array_key_exists($columnName, $layoutElements))
+                {
+                    // The layout specified the column name incorrectly.
+                    continue;
+                }
+
+                $classes = isset($elementClasses[$columnName]) ? $elementClasses[$columnName] . ' ' : '';
+                $classes .= $layoutId;
+                $elementClasses[$columnName] = $classes;
+            }
+        }
+        return $elementClasses;
     }
 
     public function getLayoutId()

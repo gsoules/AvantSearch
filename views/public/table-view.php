@@ -6,7 +6,7 @@ $totalResults = $searchResults->getTotalResults();
 $layoutId = $searchResults->getLayoutId();
 $showRelationships = $searchResults->getShowRelationships();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
-$layoutOptions = $searchResults->getLayoutDefinitionNames();
+$layoutDefinitions = $searchResults::getLayoutDefinitions();
 
 echo head(array('title' => $pageTitle));
 echo "<h1>$pageTitle</h1>";
@@ -20,10 +20,11 @@ echo "<h1>$pageTitle</h1>";
 				<ul>
                     <?php
                     $class = 'small blue button show-layout-button';
-                    foreach ($layoutOptions as $key => $layoutOption)
+                    $layoutNames = $layoutDefinitions['layouts'];
+                    foreach ($layoutNames as $key => $layoutName)
                     {
                         $id = "L$key";
-                        echo "<li><a id='$id' class='$class'>$layoutOption</a></li>";
+                        echo "<li><a id='$id' class='$class'>$layoutName</a></li>";
                     }
                     ?>
 				</ul>
@@ -51,7 +52,7 @@ echo "<h1>$pageTitle</h1>";
         foreach ($results as $result)
         {
             set_current_record('Item', $result);
-            echo $this->partial('/table-view-row.php', array('item' => $result, 'searchResults' => $searchResults));
+            echo $this->partial('/table-view-row.php', array('item' => $result, 'searchResults' => $searchResults, 'layoutDefinitions' => $layoutDefinitions));
         }
         ?>
         </tbody>

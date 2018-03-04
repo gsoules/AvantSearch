@@ -1,5 +1,23 @@
 <?php
-$data = new SearchResultsTableViewRowData($item, $searchResults);
+$layoutClasses = $layoutDefinitions['classes'];
+$layoutElements = $layoutDefinitions['elements'];
+$data = new SearchResultsTableViewRowData($item, $searchResults, $layoutElements);
+
+echo '<tr>';
+
+foreach ($layoutElements as $key => $layoutElement)
+{
+    $columnName = str_replace(' ', '-', strtolower($key));
+    $columnName = str_replace('<', '', $columnName);
+    $columnName = str_replace('>', '', $columnName);
+    $d = $data->data;
+    $value = $d[$key]['text'];
+    $columnHtml = "<td class=\"search-result search-col-$columnName $layoutClasses[$key]\">$value</td>";
+    echo $columnHtml;
+}
+
+echo '</tr>';
+return;
 ?>
 
 <tr>
