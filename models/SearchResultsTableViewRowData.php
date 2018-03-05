@@ -2,28 +2,17 @@
 
 class SearchResultsTableViewRowData
 {
-    public $accessDbText;
     public $addressDetail;
-    public $addressText;
-    public $archiveNumberText;
-    public $archiveVolumeText;
     public $creatorDetail;
-    public $creatorText;
     public $dateDetail;
     public $dateText;
     public $descriptionDetail;
-    public $instructionsText;
     public $identifierText;
     public $itemThumbnailHtml;
     public $locationDetail;
     public $locationText;
     public $publisherDetail;
-    public $publisherText;
     public $relatedItemsListHtml;
-    public $restrictionsText;
-    public $rightsText;
-    public $sourceText;
-    public $statusText;
     public $subjectDetail;
     public $subjectText;
     public $tagsDetail;
@@ -31,16 +20,13 @@ class SearchResultsTableViewRowData
     public $titleExpanded;
     public $titleRelationships;
     public $typeDetail;
-    public $typeText;
 
-    public $data;
+    public $elementsData;
 
-    protected $descriptionText;
     protected $dateEndText;
     protected $dateStartText;
     protected $identifierDetail;
     protected $stateText;
-    protected $tagsText;
     protected $titleLink;
 
     public function __construct($item, $searchResults, $layoutElements)
@@ -51,16 +37,47 @@ class SearchResultsTableViewRowData
     protected function generateDescriptionText()
     {
         // Shorten the description text if it's too long.
-        $length = 250;
-        $this->descriptionText = str_replace('<br />', '', $this->descriptionText);
-        if (strlen($this->descriptionText) > $length)
+        $maxLength = 250;
+        $descriptionText = $this->elementsData['Description']['text'];
+        $this->elementsData['Description']['text'] = str_replace('<br />', '', $descriptionText);
+        $descriptionText = $this->elementsData['Description']['text'];
+        if (strlen($descriptionText) > $maxLength)
         {
             // Truncate the description at whitespace and add an elipsis at the end.
-            $shortText = preg_replace("/^(.{1,$length})(\\s.*|$)/s", '\\1', $this->descriptionText);
+            $shortText = preg_replace("/^(.{1,$maxLength})(\\s.*|$)/s", '\\1', $descriptionText);
             $shortTextLength = strlen($shortText);
-            $remainingText = '<span class="search-more-text">' . substr($this->descriptionText, $shortTextLength) . '</span>';
+            $remainingText = '<span class="search-more-text">' . substr($descriptionText, $shortTextLength) . '</span>';
             $remainingText .= '<span class="search-show-more"> ['. __('show more') . ']</span>';
-            $this->descriptionText = $shortText . $remainingText;
+            $this->elementsData['Description']['text'] = $shortText . $remainingText;
+        }
+    }
+
+    protected function generateDateText()
+    {
+        // Show the full date if there is one, other wise show date start/end if they exist.
+        if (empty($this->dateText) && $this->dateStartText)
+        {
+            $this->dateText = "$this->dateStartText - $this->dateEndText";
+        }
+    }
+
+    protected function generateItemDetails($searchResults, $layoutElements)
+    {
+        foreach ($layoutElements as $elementName => $layoutElement)
+        {
+            $this->elementsData[$elementName]['detail'] = $searchResults->emitFieldDetail($layoutElement,  $this->elementsData[$elementName]['text']);
+        }
+
+        if ($this->locationDetail && $this->stateText)
+            $this->locationDetail .= ", $this->stateText";
+    }
+
+    protected function generateLocationText()
+    {
+        // Special case the Location by stripping off leading "MDI, "
+        if (strpos($this->locationText, 'MDI, ') === 0)
+        {
+            $this->locationText = substr($this->locationText, 5);
         }
     }
 
@@ -75,42 +92,6 @@ class SearchResultsTableViewRowData
                 $this->creatorText .= '<br/>';
             }
             $this->creatorText .= $creator;
-        }
-    }
-
-    protected function generateDateText()
-    {
-        // Show the full date if there is one, other wise show date start/end if they exist.
-        if (empty($this->dateText) && $this->dateStartText)
-        {
-            $this->dateText = "$this->dateStartText - $this->dateEndText";
-        }
-    }
-
-    protected function generateItemDetails($searchResults)
-    {
-        // Form the details that appear in Image view.
-        $this->addressDetail = $searchResults->emitFieldDetail('Address', $this->addressText);
-        $this->creatorDetail = $searchResults->emitFieldDetail('Creator', $this->creatorText);
-        $this->dateDetail = $searchResults->emitFieldDetail('Date', $this->dateText);
-        $this->descriptionDetail = $searchResults->emitFieldDetail('Description', $this->descriptionText);
-        $this->identifierDetail = $searchResults->emitFieldDetail('Item', $this->identifierText);
-        $this->locationDetail = $searchResults->emitFieldDetail('Location', $this->locationText);
-        $this->publisherDetail = $searchResults->emitFieldDetail('Publisher', $this->publisherText);
-        $this->subjectDetail = $searchResults->emitFieldDetail('Subject', $this->subjectText);
-        $this->tagsDetail = $searchResults->emitFieldDetail('Tags', $this->tagsText);
-        $this->typeDetail = $searchResults->emitFieldDetail('Type', $this->typeText);
-
-        if ($this->locationDetail && $this->stateText)
-            $this->locationDetail .= ", $this->stateText";
-    }
-
-    protected function generateLocationText()
-    {
-        // Special case the Location by stripping off leading "MDI, "
-        if (strpos($this->locationText, 'MDI, ') === 0)
-        {
-            $this->locationText = substr($this->locationText, 5);
         }
     }
 
@@ -181,7 +162,7 @@ class SearchResultsTableViewRowData
 
     protected function initializeData($item, $searchResults, $layoutElements)
     {
-        $this->data = array();
+        $this->elementsData = array();
 
         $this->readMetadata($item, $layoutElements);
         $this->generateDescriptionText();
@@ -189,7 +170,7 @@ class SearchResultsTableViewRowData
         $this->generateCreatorText($item);
         $this->generateSubjectText($item);
         $this->generateDateText();
-        $this->generateItemDetails($searchResults);
+        $this->generateItemDetails($searchResults, $layoutElements);
         $this->generateTitles($item);
         $this->generateThumbnailHtml($item);
     }
@@ -198,23 +179,16 @@ class SearchResultsTableViewRowData
     {
         foreach ($layoutElements as $elementName => $layoutElement)
         {
-            $this->data[$elementName]['text'] = $this->getMetadata($item, $elementName);
+            if ($elementName == '<tags>')
+            {
+                $text = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+            }
+            else
+            {
+                $text = $this->getMetadata($item, $elementName);
+            }
+            $this->elementsData[$elementName]['text'] = $text;
         }
-
-//        $this->addressText = "addressText";
-//        $this->dateText = "dateText";
-//        $this->dateStartText = "dateStartText";
-//        $this->dateEndText = "dateEndText";
-//        $this->descriptionText = metadata($item, array('Dublin Core', 'Description'), array('no_filter' => true));
-//        $this->identifierText = ItemView::getItemIdentifier($item);
-//        $this->locationText = metadata($item, array('Item Type Metadata', 'Location'), array('no_filter' => true));
-//        $this->publisherText = metadata($item, array('Dublin Core', 'Publisher'), array('no_filter' => true));
-//        $this->restrictionsText = "restrictionsText";
-//        $this->rightsText = "rightsText";
-//        $this->sourceText = "sourceText";
-//        $this->stateText = "stateText";
-//        $this->typeText = "typeText";
-//        $this->tagsText = "tagsText";
 
         if ($item->public == 0)
             $this->identifierText .= '*';

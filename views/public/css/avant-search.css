@@ -497,8 +497,12 @@ input[type="checkbox"] {
    The Item number column always has class L2 so we can use this to set a standard width.
    If we add a layout that displays the Item number in a different column or that doesn't
    use class L2 this will have to be changed. */
-#search-table-view .L2:first-of-type {
-	width: 6%;
+/*#search-table-view .L2:first-of-type {*/
+	/*width: 6%;*/
+/*}*/
+
+.search-col-object-id {
+    width: 100px;
 }
 
 .search-col-image img {

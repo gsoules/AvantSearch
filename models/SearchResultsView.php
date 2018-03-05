@@ -74,6 +74,7 @@ class SearchResultsView
 
         foreach ($headerColumns as $columnName => $headerColumn)
         {
+            $columnLabel = $headerColumn['label'];
             $classes = $headerColumn['classes'];
             if (empty($classes))
             {
@@ -81,10 +82,9 @@ class SearchResultsView
                 continue;
             }
 
-            if ($columnName)
+            if ($headerColumn['sortable'])
             {
                 $columnElementId = ElementFinder::getElementIdForElementName($columnName);
-                $columnLabel = $headerColumn['label'];
                 $params = $_GET;
                 $params['sort'] = $columnElementId;
                 $sortDirection = 'a';

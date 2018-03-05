@@ -52,11 +52,14 @@ class SearchResultsTableView extends SearchResultsView
             }
             $elementName = $parts[0];
 
-            $elementId = ElementFinder::getElementIdForElementName($elementName);
-            if ($elementId == 0)
+            if ($elementName != '<tags>')
             {
-                // The admin specified the name of an element that does not exist.
-                continue;
+                $elementId = ElementFinder::getElementIdForElementName($elementName);
+                if ($elementId == 0)
+                {
+                    // The admin specified the name of an element that does not exist.
+                    continue;
+                }
             }
 
             $elements[$elementName] = $partsCount == 2 ? $parts[1] : $elementName;
@@ -76,12 +79,13 @@ class SearchResultsTableView extends SearchResultsView
 
         $layoutColumns = self::getLayoutDefinitionColumns($definitions);
         $layoutElements = self::getLayoutDefinitionElementNames();
+        $layoutClasses = self::getLayoutElementClasses($layoutElements, $layoutColumns);
 
         $layoutDefinitions = array();
         $layoutDefinitions['layouts'] = $layouts['names'];
         $layoutDefinitions['columns'] = $layoutColumns;
         $layoutDefinitions['elements'] = $layoutElements;
-        $layoutDefinitions['classes'] = self::getLayoutElementClasses($layoutElements, $layoutColumns);
+        $layoutDefinitions['classes'] = $layoutClasses;
 
         return $layoutDefinitions;
     }
@@ -120,19 +124,33 @@ class SearchResultsTableView extends SearchResultsView
         // Find which columns appear in which layouts and set the header column's clases to be a list of layout Ids for that column.
         foreach ($layoutColumns as $layoutId => $columns)
         {
-            foreach ($columns as $columnName)
+            foreach ($columns as $elementName)
             {
-                if (!array_key_exists($columnName, $layoutElements))
+                if (!array_key_exists($elementName, $layoutElements))
                 {
                     // The layout specified the column name incorrectly.
                     continue;
                 }
 
-                $classes = isset($elementClasses[$columnName]) ? $elementClasses[$columnName] . ' ' : '';
+                $classes = isset($elementClasses[$elementName]) ? $elementClasses[$elementName] . ' ' : '';
+
+                if ($layoutId == 'L1')
+                {
+                    // Do not append the special L1 class which is only used for the summary layout.
+                    continue;
+                }
+
                 $classes .= $layoutId;
-                $elementClasses[$columnName] = $classes;
+                $elementClasses[$elementName] = $classes;
             }
         }
+
+        if (isset($elementClasses[__('Title')]))
+        {
+            // Set the L1 class for Title so that the summary layout rows can be sorted by Title.
+            $elementClasses[__('Title')] = 'L1 ' . $elementClasses[__('Title')];
+        }
+
         return $elementClasses;
     }
 
