@@ -12,7 +12,6 @@ class SearchResultsTableViewRowData
     public $locationText;
     public $relatedItemsListHtml;
     public $subjectText;
-    public $titleExpanded;
 
     protected $dateEndText;
     protected $dateStartText;
@@ -113,10 +112,9 @@ class SearchResultsTableViewRowData
 
         // Create a link for the Title followed by a list of AKA (Also Known As) titles.
         $titleLink = link_to_item(ItemView::getItemTitle($item));
-        $this->elementsData['Title']['link'] = $titleLink;
-        $titles = $item->getElementTexts($titleParts[0], $titleParts[1]);
+        $this->elementsData['Title']['text'] = $titleLink;
 
-        $this->titleExpanded = $this->titleLink;
+        $titles = $item->getElementTexts($titleParts[0], $titleParts[1]);
         foreach ($titles as $key => $title)
         {
             if ($key == 0)
@@ -124,16 +122,6 @@ class SearchResultsTableViewRowData
                 continue;
             }
             $this->elementsData['Title']['text'] .= '<div class="search-title-aka">' . $title . '</div>';
-        }
-
-        foreach ($titles as $key => $title)
-        {
-            if ($key == 0)
-            {
-                continue;
-            }
-            $separator = ' &bull; ';
-            $this->elementsData['Title']['text'] .= $separator . $title;
         }
     }
 

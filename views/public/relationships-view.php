@@ -1,11 +1,24 @@
 <?php
+/* @var $searchResults SearchResultsTableView */
+
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 
-$columnHeaders['Item'] = array('column' => 'Dublin Core,Identifier', 'class' => 'search-header-item');
-$columnHeaders['Title'] = array('column' => 'Dublin Core,Title', 'class' => '');
-$columnHeaders['Related Items'] = array('column' => '', 'class' => 'search-header-relationship');
+// Get the name of the element that this installation uses for the item identifier and title.
+// Normally these are Dublin Core Identifier and Title, but the admin can use other elements.
+$identifierParts = ItemView::getPartsForIdentifierElement();
+$identifierName = $identifierParts[1];
+$titleParts = ItemView::getPartsForTitleElement();
+$titleName = $titleParts[1];
+
+// Get the label that the admin configured to show for the identifier element.
+$layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
+$identifierNameLabel = $layoutDefinitions['elements'][$identifierName];
+
+$headerColumns[$identifierName] = array('label' => $identifierNameLabel, 'classes' => 'search-header-item', 'sortable' => true);
+$headerColumns[$titleName] = array('label' => $titleName, 'classes' => '', 'sortable' => true);
+$headerColumns[__('<related-items>')] = array('label' => __('Related Items'), 'classes' => 'search-header-relationship', 'sortable' => false);
 
 echo head(array('title' => $pageTitle));
 echo "<h1>$pageTitle</h1>";
@@ -25,7 +38,7 @@ echo "<h1>$pageTitle</h1>";
     <table id="search-table-view" class="relationships-table-view">
         <thead>
         <tr>
-            <?php echo $searchResults->emitHeaderRow($columnHeaders); ?>
+            <?php echo $searchResults->emitHeaderRow($headerColumns); ?>
         </tr>
         </thead>
         <tbody>

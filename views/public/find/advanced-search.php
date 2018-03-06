@@ -226,9 +226,11 @@ echo "<h1>$pageTitle</h1>";
             </div>
         </div>
 
-        <?php echo $this->formLabel('view-label', __('Search:')); ?>
-        <div class="search-radio-buttons">
-            <?php echo $this->formRadio('files', $searchFilesOnly, null, $searchResults->getFilesOnlyOptions()); ?>
+        <div class="search-images-only-option">
+            <?php echo $this->formLabel('view-label', __('Search:')); ?>
+            <div class="search-radio-buttons">
+                <?php echo $this->formRadio('files', $searchFilesOnly, null, $searchResults->getFilesOnlyOptions()); ?>
+            </div>
         </div>
 
         <div class="search-form-reset-button">

@@ -68,11 +68,6 @@ class SearchResultsView
         {
             $columnLabel = $headerColumn['label'];
             $classes = $headerColumn['classes'];
-            if (empty($classes))
-            {
-                // The layout specifies the element name incorrectly or is using the alias instead of the name.
-                continue;
-            }
 
             if ($headerColumn['sortable'])
             {
@@ -105,12 +100,12 @@ class SearchResultsView
                 $params['order'] = $sortDirection;
                 $url = html_escape(url(array(), null, $params));
                 $classAttribute = self::emitClassAttribute($sortClass, $classes);
-                $headerRow .= "<th scope=\"col\" $classAttribute><a href=\"$url\" class=\"search-link\">$columnLabel</a></th>" . PHP_EOL;
+                $headerRow .= "<th $classAttribute><a href=\"$url\" class=\"search-link\">$columnLabel</a></th>" . PHP_EOL;
             }
             else
             {
                 $classAttribute = $this->emitClassAttribute($classes);
-                $headerRow .= "<th scope=\"col\" $classAttribute>$columnLabel</th>" . PHP_EOL;
+                $headerRow .= "<th $classAttribute>$columnLabel</th>" . PHP_EOL;
             }
         }
         return $headerRow;
