@@ -2,26 +2,17 @@
 
 class SearchResultsTableViewRowData
 {
-    public $addressDetail;
-    public $creatorDetail;
+    public $elementsData;
+
     public $dateDetail;
     public $dateText;
-    public $descriptionDetail;
     public $identifierText;
     public $itemThumbnailHtml;
     public $locationDetail;
     public $locationText;
-    public $publisherDetail;
     public $relatedItemsListHtml;
-    public $subjectDetail;
     public $subjectText;
-    public $tagsDetail;
-    public $titleCompact;
     public $titleExpanded;
-    public $titleRelationships;
-    public $typeDetail;
-
-    public $elementsData;
 
     protected $dateEndText;
     protected $dateStartText;
@@ -121,7 +112,8 @@ class SearchResultsTableViewRowData
         $titleParts = ItemView::getPartsForTitleElement();
 
         // Create a link for the Title followed by a list of AKA (Also Known As) titles.
-        $this->titleLink = link_to_item(ItemView::getItemTitle($item));
+        $titleLink = link_to_item(ItemView::getItemTitle($item));
+        $this->elementsData['Title']['link'] = $titleLink;
         $titles = $item->getElementTexts($titleParts[0], $titleParts[1]);
 
         $this->titleExpanded = $this->titleLink;
@@ -131,10 +123,9 @@ class SearchResultsTableViewRowData
             {
                 continue;
             }
-            $this->titleExpanded .= '<div class="search-title-aka">' . $title . '</div>';
+            $this->elementsData['Title']['text'] .= '<div class="search-title-aka">' . $title . '</div>';
         }
 
-        $this->titleCompact = $this->titleLink;
         foreach ($titles as $key => $title)
         {
             if ($key == 0)
@@ -142,10 +133,19 @@ class SearchResultsTableViewRowData
                 continue;
             }
             $separator = ' &bull; ';
-            $this->titleCompact .= $separator . $title;
+            $this->elementsData['Title']['text'] .= $separator . $title;
         }
     }
 
+    public static function getElementValue($data, $elementName)
+    {
+        if (!isset($data->elementsData[$elementName]))
+        {
+            // The element name is not configured in the elements list.
+            return '';
+        }
+        return $data->elementsData[$elementName]['detail'];
+    }
 
     protected static function getMetadata($item, $elementName)
     {
@@ -182,6 +182,10 @@ class SearchResultsTableViewRowData
             if ($elementName == '<tags>')
             {
                 $text = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+            }
+            else if ($elementName == '<image>')
+            {
+                $text = '';
             }
             else
             {

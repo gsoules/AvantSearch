@@ -8,22 +8,31 @@ $elementClasses = $layoutDefinitions['classes'];
 
 $headerColumns = array();
 
-$headerColumns[__('Image')] = array('label' => __('Image'), 'classes' => 'L1', 'sortable' => false);
+// Set the Image column which only appears in the L1 Detail layout.
+$imageLabel = isset($elementNames['<image>']) ? $elementNames['<image>'] : __('Image');
+$headerColumns['<image>'] = array('label' => $imageLabel, 'classes' => 'L1', 'sortable' => false);
 
-// Create a header column for each element that is configured to appear in any of the layouts.
+// Create a header column for each element that is configured to appear in the other layouts (except for L1).
 foreach ($elementNames as $key => $alias)
 {
     $label = empty($alias) ? $key : $alias;
 
     $classes = isset($elementClasses[$key]) ? $elementClasses[$key] : '';
+
+    if ($key == 'Title')
+    {
+        // Add the L1 class to the Title so it will get a column in the Detail layout.
+        $classes = 'L1 ' . $classes;
+    }
+    $class = trim($classes);
+
     if (empty($classes))
     {
-        // This element is not used in a table column, but might be used in the L1 summary layout.
+        // An element that has no classes is not used in any layout except for L1.
         continue;
     }
 
     $headerColumns[$key] = array('label' => $label, 'classes' => $classes, 'sortable' => true);
-
 }
 
 echo $searchResults->emitHeaderRow($headerColumns);

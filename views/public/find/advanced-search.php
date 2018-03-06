@@ -20,7 +20,7 @@ $condition = $searchResults->getKeywordsCondition();
 $showTitlesOption = get_option('search_filters_show_titles_option') == true;
 $showDateRangeOption = get_option('search_filters_show_date_range_option') == true;;
 
-$pageTitle = $searchResults->advancedSearchPageTitle();
+$pageTitle = __('Advanced Search');
 
 queue_js_file('js.cookie');
 echo head(array('title' => $pageTitle, 'bodyclass' => 'advanced-search'));

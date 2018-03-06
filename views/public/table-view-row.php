@@ -1,56 +1,55 @@
 <?php
+
 $layoutClasses = $layoutDefinitions['classes'];
 $layoutElements = $layoutDefinitions['elements'];
 $data = new SearchResultsTableViewRowData($item, $searchResults, $layoutElements);
 
 echo '<tr>';
 
+// Emit the columns for this row's data.
 foreach ($layoutElements as $key => $layoutElement)
 {
-    $columnClassSuffix = str_replace(' ', '-', strtolower($key));
-    $columnClassSuffix = str_replace('<', '', $columnClassSuffix);
-    $columnClassSuffix = str_replace('>', '', $columnClassSuffix);
-    $value = $data->elementsData[$key]['text'];
+    // Form the special class name e.g. 'search-col-title' that is unique to this column.
+    $columnClass = str_replace(' ', '-', strtolower($key));
+    $columnClass = str_replace('<', '', $columnClass);
+    $columnClass = str_replace('>', '', $columnClass);
+    $columnClass = "search-col-$columnClass";
 
-    // Get the classes for this element name. If there are none, the element
-    // is not used in a layout column but may be used in the L1 summary layout.
+    // Get this row's column text.
+    $text = $data->elementsData[$key]['text'];
+    if ($key == 'Title')
+    {
+        $text = $data->elementsData['Title']['link'] . $text;
+    }
+
+    // Get the layout classes for this element name e.g. 'L2 L7'. If there are none, the
+    // element is not used for a column but may be used in the L1 Detail layout.
     $classes = isset($layoutClasses[$key]) ? $layoutClasses[$key] : '';
 
-    // Remove L1 from any rows since it's only used in the summary layout.
+    // Remove the L1 class so that an L1 column does not get emitted here. This logic is
+    // for every layout except L1. The logic to emit the L1 Detail layout follows below.
     $classes = trim(str_replace('L1', '', $classes));
 
     if (!empty(($classes)))
     {
-        $columnHtml = "<td class=\"search-result search-col-$columnClassSuffix $classes\">$value</td>";
+        $columnHtml = "<td class=\"search-result $columnClass $classes\">$text</td>";
         echo $columnHtml;
     }
 }
 
 if (!isset($layoutDefinitions['columns']['L1']))
 {
+    // The admin did not configure an L1 layout.
     echo '</tr>';
     return;
 }
 
-$summaryColumns = $layoutDefinitions['columns']['L1'];
-$column1 = array();
-$column2 = array();
-$col = 1;
+// Get the names of the elements that the admin configured to appear in columns 1 and 2
+// of the Detail layout. The Description element value always appears in column 3.
+$column1 =  $layoutDefinitions['details']['column1'];
+$column2 =  $layoutDefinitions['details']['column2'];
 
-foreach ($summaryColumns as $key => $summaryColumn)
-{
-    if ($summaryColumn == '|')
-    {
-        $col = 2;
-        continue;
-    }
-
-    if ($col == 1)
-        $column1[] = $summaryColumn;
-    else
-        $column2[] = $summaryColumn;
-}
-
+// The code that follows emits the L1 Detail layout which is a table a column of the overall layout table.
 ?>
 
 <td class="search-col-image L1">
@@ -59,7 +58,7 @@ foreach ($summaryColumns as $key => $summaryColumn)
 
 <td data-th="Title" class="search-col-title-expanded L1">
     <div class="search-result-title">
-        <?php echo $data->titleExpanded; ?>
+        <?php echo $data->elementsData['Title']['link']; ?>
     </div>
     <table class="search-results-detail-table">
         <tr class="search-results-detail-row">
@@ -67,8 +66,8 @@ foreach ($summaryColumns as $key => $summaryColumn)
                 <?php
                 foreach ($column1 as $elementName)
                 {
-                    $value = $data->elementsData[$elementName]['detail'];
-                    echo "<div>$value</div>";
+                    $text = SearchResultsTableViewRowData::getElementValue($data, $elementName);
+                    echo "<div>$text</div>";
                 }
                 ?>
             </td>
@@ -76,14 +75,14 @@ foreach ($summaryColumns as $key => $summaryColumn)
                 <?php
                 foreach ($column2 as $elementName)
                 {
-                    $value = $data->elementsData[$elementName]['detail'];
-                    echo "<div>$value</div>";
+                    $text = SearchResultsTableViewRowData::getElementValue($data, $elementName);
+                    echo "<div>$text</div>";
                 }
                 ?>
             </td>
             <td class="search-results-detail-col3">
                 <div>
-                    <?php echo $value = $data->elementsData['Description']['detail'];; ?>
+                    <?php echo $text = $data->elementsData['Description']['detail'];; ?>
                 </div>
             </td>
         </tr>

@@ -43,7 +43,7 @@ class SearchResultsTableView extends SearchResultsView
             {
                 continue;
             }
-            $parts = explode(',', $elementDefinition);
+            $parts = explode(':', $elementDefinition);
             $parts = array_map('trim', $parts);
             $partsCount = count($parts);
             if ($partsCount > 2)
@@ -52,7 +52,7 @@ class SearchResultsTableView extends SearchResultsView
             }
             $elementName = $parts[0];
 
-            if ($elementName != '<tags>')
+            if ($elementName != '<image>' && $elementName != '<tags>')
             {
                 $elementId = ElementFinder::getElementIdForElementName($elementName);
                 if ($elementId == 0)
@@ -65,6 +65,23 @@ class SearchResultsTableView extends SearchResultsView
             $elements[$elementName] = $partsCount == 2 ? $parts[1] : $elementName;
         }
         return $elements;
+    }
+
+    protected static function getLayoutDetailElements($layoutElements)
+    {
+        $detailsDefinitions = explode(';', get_option('search_detail_layout'));
+        $detailsDefinitions = array_map('trim', $detailsDefinitions);
+
+        $details = array();
+        if (count($detailsDefinitions) < 2)
+            return $details;
+
+        $column1elementNames = explode(',', $detailsDefinitions[0]);
+        $details['column1'] = array_map('trim', $column1elementNames);
+        $column2elementNames = explode(',', $detailsDefinitions[1]);
+        $details['column2'] = array_map('trim', $column2elementNames);
+
+        return $details;
     }
 
     public static function getLayoutDefinitionNames()
@@ -80,12 +97,14 @@ class SearchResultsTableView extends SearchResultsView
         $layoutColumns = self::getLayoutDefinitionColumns($definitions);
         $layoutElements = self::getLayoutDefinitionElementNames();
         $layoutClasses = self::getLayoutElementClasses($layoutElements, $layoutColumns);
+        $layoutDetails = self::getLayoutDetailElements($layoutElements);
 
         $layoutDefinitions = array();
         $layoutDefinitions['layouts'] = $layouts['names'];
         $layoutDefinitions['columns'] = $layoutColumns;
         $layoutDefinitions['elements'] = $layoutElements;
         $layoutDefinitions['classes'] = $layoutClasses;
+        $layoutDefinitions['details'] = $layoutDetails;
 
         return $layoutDefinitions;
     }
@@ -106,13 +125,15 @@ class SearchResultsTableView extends SearchResultsView
 
             $parts = explode(':', $layoutOption);
             $partsCount = count($parts);
-            if ($partsCount < 2 || $partsCount > 3)
+            if ($partsCount < 1 || $partsCount > 2)
             {
                 continue;
             }
 
             $parts = array_map('trim', $parts);
-            $layoutDefinitions[] = array('id' => '', 'types' => $parts[0], 'elements' => $parts[1], 'valid' => false);
+            $types = $parts[0];
+            $elements = $partsCount == 2 ? $parts[1] : '';
+            $layoutDefinitions[] = array('id' => '', 'types' => $types, 'elements' => $elements, 'valid' => false);
         }
         return $layoutDefinitions;
     }
@@ -133,22 +154,9 @@ class SearchResultsTableView extends SearchResultsView
                 }
 
                 $classes = isset($elementClasses[$elementName]) ? $elementClasses[$elementName] . ' ' : '';
-
-                if ($layoutId == 'L1')
-                {
-                    // Do not append the special L1 class which is only used for the summary layout.
-                    continue;
-                }
-
                 $classes .= $layoutId;
                 $elementClasses[$elementName] = $classes;
             }
-        }
-
-        if (isset($elementClasses[__('Title')]))
-        {
-            // Set the L1 class for Title so that the summary layout rows can be sorted by Title.
-            $elementClasses[__('Title')] = 'L1 ' . $elementClasses[__('Title')];
         }
 
         return $elementClasses;

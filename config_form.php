@@ -2,16 +2,6 @@
 
 <div class="field">
     <div class="two columns">
-        <label for="search_filters_page_title"><?php echo __('Filters Page Title'); ?></label>
-    </div>
-    <div class="inputs five columns">
-        <p class="explanation"><?php echo __("Title that appears on the Advanced Search options page"); ?></p>
-        <?php echo $view->formText('search_filters_page_title', get_option('search_filters_page_title')); ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns">
         <label for="search_filters_show_titles_option"><?php echo __('Enable Titles Option'); ?></label>
     </div>
     <div class="inputs five columns">
@@ -52,6 +42,16 @@
 
 <div class="field">
     <div class="two columns alpha">
+        <label for="search_elements"><?php echo __('Search Results Elements'); ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __("Provide a semicolon-separated list of element definitions (see documentation)."); ?></p>
+        <?php echo $view->formTextarea('search_elements', get_option('search_elements'), array('rows'=>'16','cols'=>'40')); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
         <label for="search_layouts"><?php echo __('Search Results Layouts'); ?></label>
     </div>
     <div class="inputs five columns omega">
@@ -62,11 +62,11 @@
 
 <div class="field">
     <div class="two columns alpha">
-        <label for="search_elements"><?php echo __('Search Results Elements'); ?></label>
+        <label for="search_detail_layout"><?php echo __('Detail Layout'); ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __("Provide a semicolon-separated list of element definitions (see documentation)."); ?></p>
-        <?php echo $view->formTextarea('search_elements', get_option('search_elements'), array('rows'=>'8','cols'=>'40')); ?>
+        <p class="explanation"><?php echo __("Provide a semicolon-separated list of detail layout elements (see documentation)."); ?></p>
+        <?php echo $view->formTextarea('search_detail_layout', get_option('search_detail_layout'), array('rows'=>'3','cols'=>'40')); ?>
     </div>
 </div>
 

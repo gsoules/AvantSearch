@@ -36,14 +36,6 @@ class SearchResultsView
         $this->isAdmin = is_allowed('Users', 'edit');
     }
 
-    public function advancedSearchPageTitle()
-    {
-        $title = get_option('search_filters_page_title');
-        if (empty($title))
-            $title = __('Advanced Search');
-        return $title;
-    }
-
     public function emitClassAttribute($className1, $className2 = '')
     {
         $classAttribute = $className1;
