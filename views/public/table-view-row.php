@@ -54,7 +54,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
 
 <td data-th="Title" class="search-col-title-expanded L1">
     <div class="search-result-title">
-        <?php echo $data->elementsData['Title']['text']; ?>
+        <?php echo $data->elementsData['<title>']['text']; ?>
     </div>
     <table class="search-results-detail-table">
         <tr class="search-results-detail-row">
@@ -62,7 +62,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
                 <?php
                 foreach ($column1 as $elementName)
                 {
-                    $text = SearchResultsTableViewRowData::getElementValue($data, $elementName);
+                    $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
                     echo "<div>$text</div>";
                 }
                 ?>
@@ -71,7 +71,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
                 <?php
                 foreach ($column2 as $elementName)
                 {
-                    $text = SearchResultsTableViewRowData::getElementValue($data, $elementName);
+                    $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
                     echo "<div>$text</div>";
                 }
                 ?>

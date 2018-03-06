@@ -7,17 +7,15 @@ $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 
 // Get the name of the element that this installation uses for the item identifier and title.
 // Normally these are Dublin Core Identifier and Title, but the admin can use other elements.
-$identifierParts = ItemView::getPartsForIdentifierElement();
-$identifierName = $identifierParts[1];
-$titleParts = ItemView::getPartsForTitleElement();
-$titleName = $titleParts[1];
+$identifierElementName = ItemView::getIdentifierElementName();
+$titleElementName = ItemView::getTitleElementName();
 
 // Get the label that the admin configured to show for the identifier element.
 $layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
-$identifierNameLabel = $layoutDefinitions['elements'][$identifierName];
+$identifierNameLabel = $layoutDefinitions['elements']['<identifier>'];
 
-$headerColumns[$identifierName] = array('label' => $identifierNameLabel, 'classes' => 'search-header-item', 'sortable' => true);
-$headerColumns[$titleName] = array('label' => $titleName, 'classes' => '', 'sortable' => true);
+$headerColumns[$identifierElementName] = array('label' => $identifierNameLabel, 'classes' => 'search-header-item', 'sortable' => true);
+$headerColumns[$titleElementName] = array('label' => $titleElementName, 'classes' => '', 'sortable' => true);
 $headerColumns[__('<related-items>')] = array('label' => __('Related Items'), 'classes' => 'search-header-relationship', 'sortable' => false);
 
 echo head(array('title' => $pageTitle));

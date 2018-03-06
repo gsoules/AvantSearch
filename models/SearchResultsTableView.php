@@ -51,8 +51,9 @@ class SearchResultsTableView extends SearchResultsView
                 continue;
             }
             $elementName = $parts[0];
+            $label = $partsCount == 2 ? $parts[1] : $elementName;
 
-            if ($elementName != '<image>' && $elementName != '<tags>')
+            if ($elementName != '<identifier>' && $elementName != '<title>' && $elementName != '<image>' && $elementName != '<tags>')
             {
                 $elementId = ElementFinder::getElementIdForElementName($elementName);
                 if ($elementId == 0)
@@ -62,7 +63,7 @@ class SearchResultsTableView extends SearchResultsView
                 }
             }
 
-            $elements[$elementName] = $partsCount == 2 ? $parts[1] : $elementName;
+            $elements[$elementName] = $label;
         }
         return $elements;
     }

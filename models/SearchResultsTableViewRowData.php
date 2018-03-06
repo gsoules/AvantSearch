@@ -3,21 +3,13 @@
 class SearchResultsTableViewRowData
 {
     public $elementsData;
-
-    public $dateDetail;
-    public $dateText;
-    public $identifierText;
     public $itemThumbnailHtml;
+
     public $locationDetail;
     public $locationText;
-    public $relatedItemsListHtml;
     public $subjectText;
 
-    protected $dateEndText;
-    protected $dateStartText;
-    protected $identifierDetail;
     protected $stateText;
-    protected $titleLink;
 
     public function __construct($item, $searchResults, $layoutElements)
     {
@@ -44,10 +36,20 @@ class SearchResultsTableViewRowData
 
     protected function generateDateText()
     {
-        // Show the full date if there is one, other wise show date start/end if they exist.
-        if (empty($this->dateText) && $this->dateStartText)
+        if (!(isset($this->elementsData['Date']) && isset($this->elementsData['Date Start']) && isset($this->elementsData['Date End'])))
         {
-            $this->dateText = "$this->dateStartText - $this->dateEndText";
+            // This feature is only support for installations that have all three date elements.
+            return;
+        }
+
+        $date = $this->elementsData['Date']['text'];
+        $dateStart = $this->elementsData['Date Start']['text'];
+        $dateEnd = $this->elementsData['Date End']['text'];
+
+        if (empty($date) && !empty($dateStart))
+        {
+            // The date is empty so show the date start/end range.
+            $this->elementsData['Date']['text'] = "$dateStart - $dateEnd";
         }
     }
 
@@ -79,9 +81,9 @@ class SearchResultsTableViewRowData
         {
             if ($key != 0)
             {
-                $this->creatorText .= '<br/>';
+                $this->elementsData['Creator']['text'] = '<br/>';
             }
-            $this->creatorText .= $creator;
+            $this->elementsData['Creator']['text'] .= $creator;
         }
     }
 
@@ -112,7 +114,7 @@ class SearchResultsTableViewRowData
 
         // Create a link for the Title followed by a list of AKA (Also Known As) titles.
         $titleLink = link_to_item(ItemView::getItemTitle($item));
-        $this->elementsData['Title']['text'] = $titleLink;
+        $this->elementsData['<title>']['text'] = $titleLink;
 
         $titles = $item->getElementTexts($titleParts[0], $titleParts[1]);
         foreach ($titles as $key => $title)
@@ -121,11 +123,11 @@ class SearchResultsTableViewRowData
             {
                 continue;
             }
-            $this->elementsData['Title']['text'] .= '<div class="search-title-aka">' . $title . '</div>';
+            $this->elementsData['<title>']['text'] .= '<div class="search-title-aka">' . $title . '</div>';
         }
     }
 
-    public static function getElementValue($data, $elementName)
+    public static function getElementDetail($data, $elementName)
     {
         if (!isset($data->elementsData[$elementName]))
         {
@@ -167,22 +169,28 @@ class SearchResultsTableViewRowData
     {
         foreach ($layoutElements as $elementName => $layoutElement)
         {
-            if ($elementName == '<tags>')
+            switch ($elementName)
             {
-                $text = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+                case '<identifier>';
+                    $text = ItemView::getItemIdentifier($item);
+                    if ($item->public == 0)
+                        $text .= '*';
+                    break;
+                case '<title>';
+                    $text = ItemView::getItemTitle($item);
+                    break;
+                case '<tags>';
+                    $text = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+                    break;
+                    break;
+                case '<image>';
+                    $text = '';
+                    break;
+                default:
+                    $text = $this->getMetadata($item, $elementName);
             }
-            else if ($elementName == '<image>')
-            {
-                $text = '';
-            }
-            else
-            {
-                $text = $this->getMetadata($item, $elementName);
-            }
+
             $this->elementsData[$elementName]['text'] = $text;
         }
-
-        if ($item->public == 0)
-            $this->identifierText .= '*';
     }
 }
