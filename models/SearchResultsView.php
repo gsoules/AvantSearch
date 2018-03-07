@@ -66,6 +66,11 @@ class SearchResultsView
 
         foreach ($headerColumns as $columnName => $headerColumn)
         {
+            if ($columnName == '<identifier>')
+                $columnName = ItemView::getIdentifierElementName();
+            else if ($columnName == '<title>')
+                $columnName = ItemView::getTitleElementName();
+
             $columnLabel = $headerColumn['label'];
             $classes = $headerColumn['classes'];
 

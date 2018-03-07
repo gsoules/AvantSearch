@@ -519,6 +519,10 @@ input[type="checkbox"] {
 	width: 350px;
 }
 
+.search-col-date {
+    width: 80px;
+}
+
 .search-result-title {
 	border-bottom: 1px dotted #ccc;
 	font-size: 120%;
