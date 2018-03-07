@@ -10,24 +10,6 @@ class SearchResultsTableViewRowData
         $this->initializeData($item, $searchResults, $layoutElements);
     }
 
-    protected function generateDescription()
-    {
-        // Shorten the description text if it's too long.
-        $maxLength = 250;
-        $descriptionText = $this->elementValue['Description']['text'];
-        $this->elementValue['Description']['text'] = str_replace('<br />', '', $descriptionText);
-        $descriptionText = $this->elementValue['Description']['text'];
-        if (strlen($descriptionText) > $maxLength)
-        {
-            // Truncate the description at whitespace and add an elipsis at the end.
-            $shortText = preg_replace("/^(.{1,$maxLength})(\\s.*|$)/s", '\\1', $descriptionText);
-            $shortTextLength = strlen($shortText);
-            $remainingText = '<span class="search-more-text">' . substr($descriptionText, $shortTextLength) . '</span>';
-            $remainingText .= '<span class="search-show-more"> ['. __('show more') . ']</span>';
-            $this->elementValue['Description']['text'] = $shortText . $remainingText;
-        }
-    }
-
     protected function generateDateRange()
     {
         if (!(isset($this->elementValue['Date']) && isset($this->elementValue['Date Start']) && isset($this->elementValue['Date End'])))
@@ -44,6 +26,24 @@ class SearchResultsTableViewRowData
         {
             // The date is empty so show the date start/end range.
             $this->elementValue['Date']['text'] = "$dateStart - $dateEnd";
+        }
+    }
+
+    protected function generateDescription()
+    {
+        // Shorten the description text if it's too long.
+        $maxLength = 250;
+        $descriptionText = $this->elementValue['Description']['text'];
+        $this->elementValue['Description']['text'] = str_replace('<br />', '', $descriptionText);
+        $descriptionText = $this->elementValue['Description']['text'];
+        if (strlen($descriptionText) > $maxLength)
+        {
+            // Truncate the description at whitespace and add an elipsis at the end.
+            $shortText = preg_replace("/^(.{1,$maxLength})(\\s.*|$)/s", '\\1', $descriptionText);
+            $shortTextLength = strlen($shortText);
+            $remainingText = '<span class="search-more-text">' . substr($descriptionText, $shortTextLength) . '</span>';
+            $remainingText .= '<span class="search-show-more"> ['. __('show more') . ']</span>';
+            $this->elementValue['Description']['text'] = $shortText . $remainingText;
         }
     }
 
