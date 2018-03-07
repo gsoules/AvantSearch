@@ -200,7 +200,7 @@ input[type="checkbox"] {
 	width:325px;
 }
 
-.search-col-relationship {
+.search-td-relationship {
 	width: 55%;
 }
 
@@ -471,7 +471,7 @@ input[type="checkbox"] {
 	width: 100%;
 }
 
-#search-table-view .search-col-image{
+#search-table-view .search-td-image{
 	width: 18%;
 }
 
@@ -497,7 +497,7 @@ input[type="checkbox"] {
 	color: var(--link-hover-color);
 }
 
-.search-col-image img {
+.search-td-image img {
 	margin: 2px 12px 4px 4px;
 	width: 140px;
 	border: 1px solid #ccc;
@@ -505,21 +505,21 @@ input[type="checkbox"] {
 	background-color: #fff;
 }
 
-.search-col-image .item-preview-header {
+.search-td-image .item-preview-header {
 	padding-left: 8px;
 	width: 140px;
 }
 
-.search-col-title-expanded {
+.search-td-title-detail {
 	margin-top: 4px;
 	padding-left: 4px;
 }
 
-.search-col-title {
+.search-td-title {
 	width: 350px;
 }
 
-.search-col-date {
+.search-td-date {
     width: 80px;
 }
 
@@ -531,33 +531,13 @@ input[type="checkbox"] {
 	padding-bottom: 6px;
 }
 
-.search-col-address, .search-col-location {
-	width: 220px;
-}
-
-.search-col-creator, .search-col-publisher {
-	width: 220px;
-}
-
-.search-col-subject, .search-col-type {
-	width: 220px;
-}
-
-.search-col-accessdb {
-	width: 100px;
-}
-
-.search-col-archivenum, .search-col-archivevol {
-	width: 120px;
-}
-
-.search-col-identifier {
+.search-td-identifier {
 	text-align: right;
 	padding-right: 4px;
 	width: 100px;
 }
 
-.search-col-date {
+.search-td-date {
 	padding-right: 4px;
 }
 
@@ -866,12 +846,12 @@ input[type="checkbox"] {
 #search-table-view th {
 }
 
-.search-header-date {
+.search-th-date {
 	padding-right: 4px;
 	min-width: 50px;
 }
 
-.search-header-identifier {
+.search-th-identifier {
 	padding-right: 4px;
 	min-width: 100px;
 }
@@ -893,33 +873,33 @@ input[type="checkbox"] {
 
 /* Relationships View */
 
-.relationships-table-view .search-col-identifier {
+.relationships-table-view .search-td-identifier {
 	padding-right: 8px;
 }
 
-.relationships-table-view .search-col-title {
+.relationships-table-view .search-td-title {
 	width: 30%;
 }
 
-.relationships-table-view .search-col-title .item-preview-header a {
+.relationships-table-view .search-td-title .item-preview-header a {
 	padding-right: 106px;
 }
 
-.relationships-table-view .search-col-title .item-preview-header span {
+.relationships-table-view .search-td-title .item-preview-header span {
 	visibility: hidden;
 }
 
-.relationships-table-view .search-col-title .item-img,
-.relationships-table-view .search-col-title .element-text {
+.relationships-table-view .search-td-title .item-img,
+.relationships-table-view .search-td-title .element-text {
 	width: 180px;
 }
 
-.relationships-table-view .search-col-title .item-img,
-.relationships-table-view .search-col-title .item-img img {
+.relationships-table-view .search-td-title .item-img,
+.relationships-table-view .search-td-title .item-img img {
 	max-height: none;
 }
 
-.relationships-table-view .search-col-relationship {
+.relationships-table-view .search-td-relationship {
 	padding-left: 20px;
 	width: 64%;
 }
@@ -986,11 +966,11 @@ input[type="checkbox"] {
 /* === CSS for Width < 600px ===
 --------------------------------------------------------- */
 @media screen and (max-width: 600px) {
-  .search-col-image img {
+  .search-td-image img {
   	width: 100px;
   }
 
-  .search-col-title {
+  .search-td-title {
   	width: 100px;
   }
 

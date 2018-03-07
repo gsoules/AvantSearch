@@ -36,6 +36,15 @@ class SearchResultsView
         $this->isAdmin = is_allowed('Users', 'edit');
     }
 
+    public static function createColumnClass($key, $tag)
+    {
+        $columnClass = str_replace(' ', '-', strtolower($key));
+        $columnClass = str_replace('<', '', $columnClass);
+        $columnClass = str_replace('>', '', $columnClass);
+        $columnClass = "search-$tag-$columnClass";
+        return $columnClass;
+    }
+
     public function emitClassAttribute($className1, $className2 = '')
     {
         $classAttribute = $className1;

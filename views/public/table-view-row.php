@@ -9,11 +9,8 @@ echo '<tr>';
 // Emit the columns for this row's data.
 foreach ($layoutElements as $key => $layoutElement)
 {
-    // Form the special class name e.g. 'search-col-title' that is unique to this column.
-    $columnClass = str_replace(' ', '-', strtolower($key));
-    $columnClass = str_replace('<', '', $columnClass);
-    $columnClass = str_replace('>', '', $columnClass);
-    $columnClass = "search-col-$columnClass";
+    // Form the special class name e.g. 'search-td-title' that is unique to this row column.
+    $columnClass = SearchResultsView::createColumnClass($key, 'td');
 
     // Get this row's column text.
     $text = $data->elementValue[$key]['text'];
@@ -48,11 +45,11 @@ $column2 =  $layoutDefinitions['details']['column2'];
 // The code that follows emits the L1 Detail layout which is a table a column of the overall layout table.
 ?>
 
-<td class="search-col-image L1">
+<td class="search-td-image L1">
     <?php echo $data->itemThumbnailHtml; ?>
 </td>
 
-<td data-th="Title" class="search-col-title-expanded L1">
+<td class="search-td-title-detail L1">
     <div class="search-result-title">
         <?php echo $data->elementValue['<title>']['text']; ?>
     </div>
