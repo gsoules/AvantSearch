@@ -1,9 +1,6 @@
 <?php
 class SearchResultsTableView extends SearchResultsView
 {
-    const DEFAULT_LAYOUT = 1;
-    const RELATIONSHIPS_LAYOUT = 6;
-
     protected $layoutId;
     protected $limit;
     protected $showRelationships;
@@ -175,10 +172,6 @@ class SearchResultsTableView extends SearchResultsView
 
         // Make sure that the layout Id is valid.
         if ($id < $firstLayoutId || $id > $lastLayoutId)
-            $id = $firstLayoutId;
-
-        // See if the query requests that Table View show relationships. If not, make sure Relationships layout is not selected.
-        if (!$this->showRelationships && $id == self::RELATIONSHIPS_LAYOUT)
             $id = $firstLayoutId;
 
         $this->layoutId = $id;

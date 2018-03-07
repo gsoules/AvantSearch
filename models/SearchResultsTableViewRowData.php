@@ -2,27 +2,21 @@
 
 class SearchResultsTableViewRowData
 {
-    public $elementsData;
+    public $elementValue;
     public $itemThumbnailHtml;
-
-    public $locationDetail;
-    public $locationText;
-    public $subjectText;
-
-    protected $stateText;
 
     public function __construct($item, $searchResults, $layoutElements)
     {
         $this->initializeData($item, $searchResults, $layoutElements);
     }
 
-    protected function generateDescriptionText()
+    protected function generateDescription()
     {
         // Shorten the description text if it's too long.
         $maxLength = 250;
-        $descriptionText = $this->elementsData['Description']['text'];
-        $this->elementsData['Description']['text'] = str_replace('<br />', '', $descriptionText);
-        $descriptionText = $this->elementsData['Description']['text'];
+        $descriptionText = $this->elementValue['Description']['text'];
+        $this->elementValue['Description']['text'] = str_replace('<br />', '', $descriptionText);
+        $descriptionText = $this->elementValue['Description']['text'];
         if (strlen($descriptionText) > $maxLength)
         {
             // Truncate the description at whitespace and add an elipsis at the end.
@@ -30,26 +24,26 @@ class SearchResultsTableViewRowData
             $shortTextLength = strlen($shortText);
             $remainingText = '<span class="search-more-text">' . substr($descriptionText, $shortTextLength) . '</span>';
             $remainingText .= '<span class="search-show-more"> ['. __('show more') . ']</span>';
-            $this->elementsData['Description']['text'] = $shortText . $remainingText;
+            $this->elementValue['Description']['text'] = $shortText . $remainingText;
         }
     }
 
-    protected function generateDateText()
+    protected function generateDateRange()
     {
-        if (!(isset($this->elementsData['Date']) && isset($this->elementsData['Date Start']) && isset($this->elementsData['Date End'])))
+        if (!(isset($this->elementValue['Date']) && isset($this->elementValue['Date Start']) && isset($this->elementValue['Date End'])))
         {
             // This feature is only support for installations that have all three date elements.
             return;
         }
 
-        $date = $this->elementsData['Date']['text'];
-        $dateStart = $this->elementsData['Date Start']['text'];
-        $dateEnd = $this->elementsData['Date End']['text'];
+        $date = $this->elementValue['Date']['text'];
+        $dateStart = $this->elementValue['Date Start']['text'];
+        $dateEnd = $this->elementValue['Date End']['text'];
 
         if (empty($date) && !empty($dateStart))
         {
             // The date is empty so show the date start/end range.
-            $this->elementsData['Date']['text'] = "$dateStart - $dateEnd";
+            $this->elementValue['Date']['text'] = "$dateStart - $dateEnd";
         }
     }
 
@@ -57,47 +51,16 @@ class SearchResultsTableViewRowData
     {
         foreach ($layoutElements as $elementName => $layoutElement)
         {
-            $this->elementsData[$elementName]['detail'] = $searchResults->emitFieldDetail($layoutElement,  $this->elementsData[$elementName]['text']);
+            $this->elementValue[$elementName]['detail'] = $searchResults->emitFieldDetail($layoutElement,  $this->elementValue[$elementName]['text']);
         }
-
-        if ($this->locationDetail && $this->stateText)
-            $this->locationDetail .= ", $this->stateText";
     }
 
     protected function generateLocationText()
     {
         // Special case the Location by stripping off leading "MDI, "
-        if (strpos($this->locationText, 'MDI, ') === 0)
+        if (strpos($this->elementValue['Location']['text'], 'MDI, ') === 0)
         {
-            $this->locationText = substr($this->locationText, 5);
-        }
-    }
-
-    protected function generateCreatorText($item)
-    {
-        $this->creatorText = '';
-        $creators = $item->getElementTexts('Dublin Core', 'Creator');
-        foreach ($creators as $key => $creator)
-        {
-            if ($key != 0)
-            {
-                $this->elementsData['Creator']['text'] = '<br/>';
-            }
-            $this->elementsData['Creator']['text'] .= $creator;
-        }
-    }
-
-    protected function generateSubjectText($item)
-    {
-        $this->subjectText = '';
-        $subjects = $item->getElementTexts('Dublin Core', 'Subject');
-        foreach ($subjects as $key => $subject)
-        {
-            if ($key != 0)
-            {
-                $this->subjectText .= '<br/>';
-            }
-            $this->subjectText .= $subject;
+            $this->locationText = substr($this->$this->elementValue['Location']['text'], 5);
         }
     }
 
@@ -114,7 +77,7 @@ class SearchResultsTableViewRowData
 
         // Create a link for the Title followed by a list of AKA (Also Known As) titles.
         $titleLink = link_to_item(ItemView::getItemTitle($item));
-        $this->elementsData['<title>']['text'] = $titleLink;
+        $this->elementValue['<title>']['text'] = $titleLink;
 
         $titles = $item->getElementTexts($titleParts[0], $titleParts[1]);
         foreach ($titles as $key => $title)
@@ -123,43 +86,52 @@ class SearchResultsTableViewRowData
             {
                 continue;
             }
-            $this->elementsData['<title>']['text'] .= '<div class="search-title-aka">' . $title . '</div>';
+            $this->elementValue['<title>']['text'] .= '<div class="search-title-aka">' . html_escape($title) . '</div>';
         }
     }
 
     public static function getElementDetail($data, $elementName)
     {
-        if (!isset($data->elementsData[$elementName]))
+        if (!isset($data->elementValue[$elementName]))
         {
             // The element name is not configured in the elements list.
             return '';
         }
-        return $data->elementsData[$elementName]['detail'];
+        return $data->elementValue[$elementName]['detail'];
     }
 
-    protected static function getMetadata($item, $elementName)
+    protected static function getElementTextsAsHtml($item, $elementName)
     {
         try
         {
-            $metadata = metadata($item, array('Dublin Core', $elementName), array('no_filter' => true));
+            $values = $item->getElementTexts('Dublin Core', $elementName);
         }
         catch (Omeka_Record_Exception $e)
         {
-            $metadata = metadata($item, array('Item Type Metadata', $elementName), array('no_filter' => true));;
+            $values = $item->getElementTexts('Item Type Metadata', $elementName);
         }
-        return $metadata;
+
+        $texts = '';
+        foreach ($values as $key => $value)
+        {
+            if ($key != 0)
+            {
+                $texts .= '<br/>';
+            }
+            $texts .= html_escape($value);
+        }
+
+        return $texts;
     }
 
     protected function initializeData($item, $searchResults, $layoutElements)
     {
-        $this->elementsData = array();
+        $this->elementValue = array();
 
         $this->readMetadata($item, $layoutElements);
-        $this->generateDescriptionText();
+        $this->generateDescription();
         $this->generateLocationText();
-        $this->generateCreatorText($item);
-        $this->generateSubjectText($item);
-        $this->generateDateText();
+        $this->generateDateRange();
         $this->generateItemDetails($searchResults, $layoutElements);
         $this->generateTitles($item);
         $this->generateThumbnailHtml($item);
@@ -177,7 +149,7 @@ class SearchResultsTableViewRowData
                         $text .= '*';
                     break;
                 case '<title>';
-                    $text = ItemView::getItemTitle($item);
+                    // Do nothing here because titles get special handling to include a link to the item.
                     break;
                 case '<tags>';
                     $text = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
@@ -187,10 +159,10 @@ class SearchResultsTableViewRowData
                     $text = '';
                     break;
                 default:
-                    $text = $this->getMetadata($item, $elementName);
+                    $text = $this->getElementTextsAsHtml($item, $elementName);
             }
 
-            $this->elementsData[$elementName]['text'] = $text;
+            $this->elementValue[$elementName]['text'] = $text;
         }
     }
 }

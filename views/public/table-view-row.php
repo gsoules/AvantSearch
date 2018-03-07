@@ -16,7 +16,7 @@ foreach ($layoutElements as $key => $layoutElement)
     $columnClass = "search-col-$columnClass";
 
     // Get this row's column text.
-    $text = $data->elementsData[$key]['text'];
+    $text = $data->elementValue[$key]['text'];
 
     // Get the layout classes for this element name e.g. 'L2 L7'. If there are none, the
     // element is not used for a column but may be used in the L1 Detail layout.
@@ -54,7 +54,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
 
 <td data-th="Title" class="search-col-title-expanded L1">
     <div class="search-result-title">
-        <?php echo $data->elementsData['<title>']['text']; ?>
+        <?php echo $data->elementValue['<title>']['text']; ?>
     </div>
     <table class="search-results-detail-table">
         <tr class="search-results-detail-row">
@@ -78,7 +78,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
             </td>
             <td class="search-results-detail-col3">
                 <div>
-                    <?php echo $text = $data->elementsData['Description']['detail'];; ?>
+                    <?php echo $text = $data->elementValue['Description']['detail'];; ?>
                 </div>
             </td>
         </tr>
