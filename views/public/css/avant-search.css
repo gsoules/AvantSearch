@@ -497,18 +497,6 @@ input[type="checkbox"] {
 	color: var(--link-hover-color);
 }
 
-/* Set the Item number column width in search results to the same width for all layouts.
-   The Item number column always has class L2 so we can use this to set a standard width.
-   If we add a layout that displays the Item number in a different column or that doesn't
-   use class L2 this will have to be changed. */
-/*#search-table-view .L2:first-of-type {*/
-	/*width: 6%;*/
-/*}*/
-
-.search-col-object-id {
-    width: 100px;
-}
-
 .search-col-image img {
 	margin: 2px 12px 4px 4px;
 	width: 140px;
@@ -559,10 +547,10 @@ input[type="checkbox"] {
 	width: 120px;
 }
 
-.search-col-item {
+.search-col-identifier {
 	text-align: right;
 	padding-right: 4px;
-	width: 55px;
+	width: 100px;
 }
 
 .search-col-date {
@@ -879,9 +867,9 @@ input[type="checkbox"] {
 	min-width: 50px;
 }
 
-.search-header-item {
+.search-header-identifier {
 	padding-right: 4px;
-	min-width: 50px;
+	min-width: 100px;
 }
 
 #search-results {
@@ -901,7 +889,7 @@ input[type="checkbox"] {
 
 /* Relationships View */
 
-.relationships-table-view .search-col-item {
+.relationships-table-view .search-col-identifier {
 	padding-right: 8px;
 }
 

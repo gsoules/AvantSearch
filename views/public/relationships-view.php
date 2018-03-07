@@ -14,7 +14,7 @@ $titleElementName = ItemView::getTitleElementName();
 $layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
 $identifierNameLabel = $layoutDefinitions['elements']['<identifier>'];
 
-$headerColumns[$identifierElementName] = array('label' => $identifierNameLabel, 'classes' => 'search-header-item', 'sortable' => true);
+$headerColumns[$identifierElementName] = array('label' => $identifierNameLabel, 'classes' => 'search-header-identifier', 'sortable' => true);
 $headerColumns[$titleElementName] = array('label' => $titleElementName, 'classes' => '', 'sortable' => true);
 $headerColumns[__('<related-items>')] = array('label' => __('Related Items'), 'classes' => 'search-header-relationship', 'sortable' => false);
 
@@ -53,14 +53,14 @@ echo "<h1>$pageTitle</h1>";
             $relatedItemsListHtml = empty($relatedItemsModel) ? '' : $relatedItemsModel->emitRelatedItemsListView();
             ?>
             <tr>
-                <td data-th="Id" class="search-result search-col-item">
+                <td class="search-result search-col-identifier">
                     <?php echo $itemIdentifier; ?>
                 </td>
-                <td data-th="Title" class="search-result item-preview search-col-title">
+                <td class="search-result item-preview search-col-title">
                     <?php echo $itemThumbnailHtml; ?>
                     <?php echo $typeDetail; ?>
                 </td>
-                <td data-th="Relationship" class="search-result search-col-relationship">
+                <td class="search-result search-col-relationship">
                     <?php echo $relatedItemsListHtml; ?>
                 </td>
             </tr>

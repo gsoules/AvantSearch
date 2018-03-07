@@ -1,6 +1,9 @@
 <?php
 class SearchResultsTableView extends SearchResultsView
 {
+    const DEFAULT_LAYOUT = 1;
+    const RELATIONSHIPS_LAYOUT = 6;
+
     protected $layoutId;
     protected $limit;
     protected $showRelationships;
