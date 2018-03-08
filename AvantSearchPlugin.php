@@ -10,7 +10,8 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         'initialize',
         'install',
         'items_browse_sql',
-        'public_head'
+        'public_head',
+        'uninstall'
     );
 
     protected $_filters = array(
@@ -41,7 +42,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         if (is_admin_theme())
             return $params;
 
-        $params[0] = SearchResultsView::getElementId('Dublin Core,Title');
+        $params[0] = ItemView::getTitleElementId();
         $params[1] = 'a';
         return $params;
     }
@@ -142,6 +143,17 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         set_option('search_private_elements', $_POST['search_private_elements']);
     }
 
+    public function hookInstall()
+    {
+
+        return;
+    }
+
+    public function hookUninstall()
+    {
+        return;
+    }
+
     public function hookConfigForm()
     {
         require dirname(__FILE__) . '/config_form.php';
@@ -151,10 +163,6 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     {
         $args['router']->addConfig(new Zend_Config_Ini(
             dirname(__FILE__) . DIRECTORY_SEPARATOR . 'routes.ini', 'routes'));
-    }
-
-    public function hookInstall() {
-        return;
     }
 
     public function hookInitialize()

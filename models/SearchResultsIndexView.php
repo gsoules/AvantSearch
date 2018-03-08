@@ -2,8 +2,6 @@
 
 class SearchResultsIndexView extends SearchResultsView
 {
-    const DEFAULT_INDEX_VIEW_FIELD = 'Dublin Core,Title';
-
     protected $indexFieldElementId;
 
     function __construct()
@@ -18,8 +16,12 @@ class SearchResultsIndexView extends SearchResultsView
 
         $this->indexFieldElementId = isset($_GET['index']) ? intval($_GET['index']) : 0;
 
-        if (!array_key_exists($this->indexFieldElementId, $this->getIndexFieldOptions()))
-            $this->indexFieldElementId = $this->getFieldElementId(self::DEFAULT_INDEX_VIEW_FIELD);
+        $options = $this->getIndexFieldOptions();
+        if (!array_key_exists($this->indexFieldElementId, $options))
+        {
+            // The Id is invalid. Use the first option as a default.
+            $this->indexFieldElementId = key($options);
+        }
 
         return $this->indexFieldElementId;
     }

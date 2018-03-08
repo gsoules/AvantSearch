@@ -2,11 +2,6 @@
 
 class SearchResultsTreeView extends SearchResultsView
 {
-    const DEFAULT_TREE_VIEW_FIELD = 'Dublin Core,Subject';
-    const SUBJECT_TREE_VIEW_FIELD = 'Dublin Core,Subject';
-    const TYPE_TREE_VIEW_FIELD = 'Dublin Core,Type';
-    const LOCATION_TREE_VIEW_FIELD = 'Item Type Metadata,Location';
-
     protected $db;
     protected $singleEntryId;
     protected $treeFieldElementId;
@@ -71,12 +66,12 @@ class SearchResultsTreeView extends SearchResultsView
 
     public function generateTree()
     {
-        if ($this->treeFieldElementId == SearchResultsView::getElementId(self::LOCATION_TREE_VIEW_FIELD))
+        if ($this->treeFieldElementId == ItemView::getElementIdForElementName('Location'))
         {
             $tree = $this->generateLocationsTree();
             $this->treeFieldName = __('Location');
         }
-        elseif ($this->treeFieldElementId == SearchResultsView::getElementId(self::TYPE_TREE_VIEW_FIELD))
+        elseif ($this->treeFieldElementId == ItemView::getElementIdForElementName('Type'))
         {
             $tree = $this->generateTreeFromSimpleVocabHierarchy();
             $this->treeFieldName = __('Type');
@@ -189,8 +184,12 @@ class SearchResultsTreeView extends SearchResultsView
 
         $this->treeFieldElementId = isset($_GET['tree']) ? intval($_GET['tree']) : 0;
 
-        if (!array_key_exists($this->treeFieldElementId, $this->getTreeFieldOptions()))
-            $this->treeFieldElementId = $this->getFieldElementId(self::DEFAULT_TREE_VIEW_FIELD);
+        $options = $this->getTreeFieldOptions();
+        if (!array_key_exists($this->treeFieldElementId, $options))
+        {
+            // The Id is invalid. Use the first option as a default.
+            $this->treeFieldElementId = key($options);
+        }
 
         return $this->treeFieldElementId;
     }

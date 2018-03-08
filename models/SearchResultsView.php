@@ -4,7 +4,6 @@ class SearchResultsView
     const DEFAULT_KEYWORDS_CONDITION = 1;
     const DEFAULT_SEARCH_FILES = 0;
     const DEFAULT_SEARCH_TITLES = 0;
-    const DEFAULT_SORT_FIELD = 'Dublin Core,Title';
     const DEFAULT_VIEW = '1';
 
     const KEYWORD_CONDITION_ALL_WORDS = 1;
@@ -171,7 +170,7 @@ class SearchResultsView
         foreach ($privateFieldNames as $name)
         {
             $name = trim($name);
-            $elementId = SearchResultsView::getElementId('Item Type Metadata,' . $name);
+            $elementId = ItemView::getElementIdForElementName($name);
             $privateFields[$elementId] = $name;
         }
 
@@ -208,27 +207,6 @@ class SearchResultsView
         }
 
         return $options;
-    }
-
-    public static function getElementId($elementSetAndName)
-    {
-        $db = get_db();
-        $elementTable = $db->getTable('Element');
-        $parts = explode(',', $elementSetAndName);
-        $element = $elementTable->findByElementSetNameAndElementName($parts[0], $parts[1]);
-        return empty($element) ? 0 : $element->id;
-    }
-
-    protected function getElementNameFromId($elementId)
-    {
-        $db = get_db();
-        $element = $db->getTable('Element')->find($elementId);
-        return isset($element) ? $element->name : '';
-    }
-
-    public function getFieldElementId($field)
-    {
-        return SearchResultsView::getElementId($field);
     }
 
     public function getFilesOnlyOptions()
@@ -394,11 +372,12 @@ class SearchResultsView
         $this->sortField = isset($_GET['sort']) ? intval($_GET['sort']) : 0;
 
         // Validate the sort field Id by attempting to get the field's name.
-        $this->sortFieldName = $this->getElementNameFromId($this->sortField);
+        $this->sortFieldName = ItemView::getElementNameFromId($this->sortField);
         if (empty($this->sortFieldName))
         {
-            $this->sortField = $this->getFieldElementId(self::DEFAULT_SORT_FIELD);
-            $this->sortFieldName = $this->getElementNameFromId($this->sortField);
+            // The Id is not valid. Use the Title as a default.
+            $this->sortField = ItemView::getTitleElementId();
+            $this->sortFieldName = ItemView::getTitleElementName();
         }
         return $this->sortField;
     }
