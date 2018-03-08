@@ -19,6 +19,23 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         'search_element_texts'
     );
 
+    public static function emitSearchForm()
+    {
+        $url = url('find');
+
+        $form =
+            '<form id="search-form" name="search-form" action="' . $url. '" method="get">
+            <input type="text" name="query" id="query" value="" title="Search">
+            <button id="submit_search" type="submit" value="Search">Search</button></form>';
+
+        if (get_option('search_enable_subject_search') == true)
+            $form .= '<a class="simple-search-subject-link" href="' . WEB_ROOT . '/find/subject">Subject Search</a>';
+
+        $form .= '<a class="simple-search-advanced-link" href="' . WEB_ROOT . '/find/advanced">Advanced Search</a>';
+
+        echo $form;
+    }
+
     public function filterItemsBrowseDefaultSort($params)
     {
         if (is_admin_theme())
@@ -114,6 +131,8 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         set_option('search_filters_show_date_range_option', $_POST['search_filters_show_date_range_option']);
         set_option('search_filters_show_titles_option', $_POST['search_filters_show_titles_option']);
         set_option('search_filters_enable_relationships', $_POST['search_filters_enable_relationships']);
+        set_option('search_enable_subject_search', $_POST['search_enable_subject_search']);
+        set_option('search_subject_search', $_POST['search_subject_search']);
         set_option('search_filters_smart_sorting', $_POST['search_filters_smart_sorting']);
         set_option('search_detail_layout', $_POST['search_detail_layout']);
         set_option('search_layouts', $_POST['search_layouts']);

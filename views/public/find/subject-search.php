@@ -19,9 +19,29 @@ $subjectElementId = SearchResultsView::getElementId('Dublin Core,Subject');
 $typeElementId = SearchResultsView::getElementId('Dublin Core,Type');
 $titleElementId = SearchResultsView::getElementId('Dublin Core,Title');
 
+$subjectSearchOptions = explode(';', get_option('search_subject_search'));
+$subjectSearchOptions = array_map('trim', $subjectSearchOptions);
+$subjectOptions = explode(',', $subjectSearchOptions[0]);
+$typeOptions = array();
+if (count($subjectSearchOptions) >= 2)
+    $typeOptions = explode(',', $subjectSearchOptions[1]);
+
+$subjectList = array();
+foreach ($subjectOptions as $subjectOption)
+{
+    $subjectList[$subjectOption] = $subjectOption;
+}
+
+$typeList = array();
+$typeList['*'] = __('Any Type');
+foreach ($typeOptions as $typeOption)
+{
+    $typeList[$typeOption] = $typeOption;
+}
+
 $search = empty($_GET['advanced']) ? array() : $_GET['advanced'];
-$subjectValue = __('People');
-$typeValue = '*';
+$subjectValue = reset($subjectList);
+$typeValue = reset($typeList);
 
 foreach ($search as $field)
 {
@@ -72,18 +92,7 @@ echo head(array('title' => $pageTitle, 'bodyclass' => 'subject-search'));
                         <?php
                         echo $this->formHidden('advanced[0][element_id]', $subjectElementId, array('id' => 'subject-id'));
                         echo $this->formHidden('advanced[0][type]', 'starts with', array('id' => 'subject-choice'));
-                        $subjectOptions = array(
-                            'Businesses' => __('Businesses'),
-                            'Events' => __('Events'),
-                            'Organizations' => __('Organizations'),
-                            'Other' => __('Other'),
-                            'People' => __('People'),
-                            'Places' => __('Places'),
-                            'Structures' => __('Structures'),
-                            'Transporation' => __('Transporation'),
-                            'Vessels' => __('Vessels'),
-                        );
-                        echo $this->formSelect('advanced[0][terms]', $subjectValue, array(), $subjectOptions);
+                        echo $this->formSelect('advanced[0][terms]', $subjectValue, array(), $subjectList);
                         ?>
                     </div>
                 </div>
@@ -97,16 +106,7 @@ echo head(array('title' => $pageTitle, 'bodyclass' => 'subject-search'));
                         <?php
                         echo $this->formHidden('advanced[1][element_id]', $typeElementId, array('id' => 'type-id'));
                         echo $this->formHidden('advanced[1][type]', 'starts with', array('id' => 'type-choice'));
-                        $typeOptions = array(
-                            '*' => __('Any Type'),
-                            'Article' => __('Article'),
-                            'Document' => __('Document'),
-                            'Gallery' => __('Gallery'),
-                            'Image' => __('Image'),
-                            'Map' => __('Map'),
-                            'Publication' => __('Publication')
-                        );
-                        echo $this->formSelect('advanced[1][terms]', $typeValue, array(), $typeOptions);
+                        echo $this->formSelect('advanced[1][terms]', $typeValue, array(), $typeList);
                         ?>
                     </div>
                 </div>

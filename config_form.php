@@ -91,6 +91,26 @@
 </div>
 
 <div class="field">
+    <div class="two columns">
+        <label for="search_enable_subject_search"><?php echo __('Enable Subject Search'); ?></label>
+    </div>
+    <div class="inputs five columns">
+        <p class="explanation"><?php echo __('Allow use of Subject Search in addition to Advanced Search'); ?></p>
+        <?php echo $view->formCheckbox('search_enable_subject_search', true, array('checked' => (boolean)get_option('search_enable_subject_search'))); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
+        <label for="search_subject_search"><?php echo __('Subject Search'); ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __("Provide a semicolon-separated list of Subject Search subjects and item types."); ?></p>
+        <?php echo $view->formTextarea('search_subject_search', get_option('search_subject_search'), array('rows'=>'8','cols'=>'40')); ?>
+    </div>
+</div>
+
+<div class="field">
     <div class="two columns alpha">
         <label for="search_private_elements"><?php echo __('Private Elements'); ?></label>
     </div>
