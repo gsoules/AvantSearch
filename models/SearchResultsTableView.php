@@ -55,7 +55,7 @@ class SearchResultsTableView extends SearchResultsView
 
             if ($elementName != '<identifier>' && $elementName != '<title>' && $elementName != '<image>' && $elementName != '<tags>')
             {
-                $elementId = ElementFinder::getElementIdForElementName($elementName);
+                $elementId = ItemView::getElementIdForElementName($elementName);
                 if ($elementId == 0)
                 {
                     // The admin specified the name of an element that does not exist.

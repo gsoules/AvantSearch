@@ -85,7 +85,7 @@ class SearchResultsView
 
             if ($headerColumn['sortable'])
             {
-                $columnElementId = ElementFinder::getElementIdForElementName($columnName);
+                $columnElementId = ItemView::getElementIdForElementName($columnName);
                 $params = $_GET;
                 $params['sort'] = $columnElementId;
                 $sortDirection = 'a';
@@ -266,7 +266,7 @@ class SearchResultsView
             if ($elementName == '<title>')
                 $elementName = ItemView::getTitleElementName();
 
-            $elementId = ElementFinder::getElementIdForElementName($elementName);
+            $elementId = ItemView::getElementIdForElementName($elementName);
             $options[$elementId] = $label;
         }
 
