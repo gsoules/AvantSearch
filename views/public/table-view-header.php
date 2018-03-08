@@ -1,7 +1,7 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
-$layoutDefinitions = $searchResults::getLayoutDefinitions();
+$layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
 $layoutColumns = $layoutDefinitions['columns'];
 $elementNames = $layoutDefinitions['elements'];
 $elementClasses = $layoutDefinitions['classes'];

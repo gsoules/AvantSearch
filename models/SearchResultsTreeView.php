@@ -91,13 +91,21 @@ class SearchResultsTreeView extends SearchResultsView
 
     protected function generateTreeFromHierarchy($hierarchy)
     {
-        $hierarchy = $this->insertPseudoAncestors($hierarchy);
+        if (empty($hierarchy))
+        {
+            $levels = array();
+            $html = '';
+        }
+        else
+        {
+            $hierarchy = $this->insertPseudoAncestors($hierarchy);
 
-        $tree = $this->convertHierarchyToTree($hierarchy);
-        $nodes = $tree['nodes'];
-        $levels = $tree['levels'];
+            $tree = $this->convertHierarchyToTree($hierarchy);
+            $nodes = $tree['nodes'];
+            $levels = $tree['levels'];
 
-        $html = $this->generateTreeNodeHtml($hierarchy, $nodes);
+            $html = $this->generateTreeNodeHtml($hierarchy, $nodes);
+        }
 
         return array('levels' => $levels, 'html' => $html);
     }
@@ -194,10 +202,7 @@ class SearchResultsTreeView extends SearchResultsView
 
     public function getTreeFieldOptions()
     {
-        return array(
-            SearchResultsView::getElementId('Dublin Core,Subject') => __('Subject'),
-            SearchResultsView::getElementId('Item Type Metadata,Location') => __('Location'),
-            SearchResultsView::getElementId('Dublin Core,Type') => __('Type'));
+        return self::getIndexViewOptions('search_tree_view_elements');
     }
 
     protected function insertPseudoAncestors($hierarchy)
@@ -283,15 +288,24 @@ class SearchResultsTreeView extends SearchResultsView
     protected function simpleVocabHierarchy()
     {
         // Get hierarchy information from the Simple Vocab's plugin's table.
-        $simpleVocabTerm = $this->db->getTable('SimpleVocabTerm')->findByElementId($this->treeFieldElementId);
-        if ($simpleVocabTerm)
+        if (plugin_is_active('SimpleVocab'))
         {
-            $hierarchy = $simpleVocabTerm->terms;
+            $simpleVocabTable = $this->db->getTable('SimpleVocabTerm');
+            $simpleVocabTerm = $simpleVocabTable->findByElementId($this->treeFieldElementId);
+
+            if ($simpleVocabTerm)
+            {
+                $hierarchy = $simpleVocabTerm->terms;
+            }
+            else
+            {
+                $elementId = $this->treeFieldElementId;
+                $hierarchy = "Simple Vocab for element Id $elementId is empty";
+            }
         }
         else
         {
-            $elementId = $this->treeFieldElementId;
-            $hierarchy = "Simple Vocab for element Id $elementId is empty";
+            $hierarchy = "Simple Vocab plugin is not activated";
         }
 
         $tree = explode("\n", $hierarchy);

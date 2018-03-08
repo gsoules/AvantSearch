@@ -72,6 +72,26 @@
 
 <div class="field">
     <div class="two columns alpha">
+        <label for="search_index_view_elements"><?php echo __('Index View Elements'); ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __("Provide a semicolon-separated list of element name/label pairs (see documentation)."); ?></p>
+        <?php echo $view->formTextarea('search_index_view_elements', get_option('search_index_view_elements'), array('rows' => '5', 'cols' => '40')); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
+        <label for="search_tree_view_elements"><?php echo __('Tree View Elements'); ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __("Provide a semicolon-separated list of element name/label pairs (see documentation)."); ?></p>
+        <?php echo $view->formTextarea('search_tree_view_elements', get_option('search_tree_view_elements'), array('rows' => '5', 'cols' => '40')); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
         <label for="search_private_elements"><?php echo __('Private Elements'); ?></label>
     </div>
     <div class="inputs five columns omega">

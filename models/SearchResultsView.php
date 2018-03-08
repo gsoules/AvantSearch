@@ -239,6 +239,40 @@ class SearchResultsView
         );
     }
 
+    public static function getIndexViewOptions($optionName)
+    {
+        $fields = explode(';', get_option($optionName));
+        $fields = array_map('trim', $fields);
+
+        $layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
+        $elementNames = $layoutDefinitions['elements'];
+
+        $options = array();
+
+        foreach ($fields as $elementName)
+        {
+            if (empty(trim($elementName)))
+            {
+                continue;
+            }
+
+            if (!isset($elementNames[$elementName]))
+            {
+                continue;
+            }
+
+            $label = $elementNames[$elementName];
+
+            if ($elementName == '<title>')
+                $elementName = ItemView::getTitleElementName();
+
+            $elementId = ElementFinder::getElementIdForElementName($elementName);
+            $options[$elementId] = $label;
+        }
+
+        return $options;
+    }
+
     public function getKeywords()
     {
         if (isset($this->keywords))

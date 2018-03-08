@@ -118,6 +118,8 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         set_option('search_detail_layout', $_POST['search_detail_layout']);
         set_option('search_layouts', $_POST['search_layouts']);
         set_option('search_elements', $_POST['search_elements']);
+        set_option('search_index_view_elements', $_POST['search_index_view_elements']);
+        set_option('search_tree_view_elements', $_POST['search_tree_view_elements']);
         set_option('search_private_elements', $_POST['search_private_elements']);
     }
 

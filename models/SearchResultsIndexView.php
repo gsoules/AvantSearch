@@ -26,12 +26,6 @@ class SearchResultsIndexView extends SearchResultsView
 
     public function getIndexFieldOptions()
     {
-        return array(
-            SearchResultsView::getElementId('Dublin Core,Title') => 'Title',
-            SearchResultsView::getElementId('Dublin Core,Creator') => 'Creator',
-            SearchResultsView::getElementId('Dublin Core,Publisher') => 'Publisher',
-            SearchResultsView::getElementId('Item Type Metadata,Location') => 'Location',
-            SearchResultsView::getElementId('Dublin Core,Subject') => 'Subject',
-            SearchResultsView::getElementId('Dublin Core,Type') => 'Type');
+        return self::getIndexViewOptions('search_index_view_elements');
     }
 }
