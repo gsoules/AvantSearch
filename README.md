@@ -95,7 +95,7 @@ with this code
 The new code will replace the native Omeka simple and advanced search controls with the AvantSearch controls, but
 will revert to the native controls if the AvantSearch plugin is deactivated.
 
-## Database Considerations
+## Improving Search Results
 
 The AvantSearch plugin will work without any modifications to your database. However, please read this section to
 learn how you can improve search results by changing just one setting.
@@ -152,7 +152,9 @@ The subsections that follow explain the options listed in the table above. Some 
 formatted list of information using commas, semicolons or other characters as separators. For these options, spaces
 around separators are ignored. For example "a,b,c" is treated the same as "a, b, c".
 
-##### Titles Only
+<hr/>
+
+#### Titles Only
 When this option is checked, radio buttons will appear under the keywords text box on the Advanced Search page to let the user choose
 to search in all fields or in titles only. This feature is very helpful for narrowing search results down
 to only the most relevant items.
@@ -165,7 +167,9 @@ This is easily done using phpMyAdmin by following these steps:
 1. Click OK on the dialog confirming that you want to add FULLTEXT to the column
 1. The `title` column will now appear in the Indexes section showing its type as FULLTEXT
 
-##### Date Range
+<hr/>
+
+#### Date Range
 When this option is checked, Date Start and Date End text boxes will appear as filters at the bottom of the
 Advanced Search page.
 
@@ -180,7 +184,9 @@ If you only provide a value for End, the filter will find items where Date End i
 
 [Learn more about Date Filters](http://swhplibrary.net/searching/advanced-search/) (see the Date Filters section).
 
-##### Relationships View
+<hr/>
+
+#### Relationships View
 
 When this option is checked, an option to show search results in Relationships View will appear on the Advanced
 Search page. This option can only be used when the [AvantRelationships](https://github.com/gsoules/AvantRelationships)
@@ -188,7 +194,9 @@ plugin is installed and activated.
 
 [Learn more about Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/). 
 
-##### Address Sorting (requires MariaDB)
+<hr/>
+
+#### Address Sorting (requires MariaDB)
 Address sorting improves search results by sorting addresses first on the street name and then by the street number as an integer.
 Normally addresses are sorted in a database, or in an Excel spreadsheet, as ordinary text where numbers sort before
 letters. Furthermore, numbers are normally sorted as text, rather than as integers such that `10` appears before `9`.
@@ -210,7 +218,9 @@ street addresses which typically begin with a number, followed by a street name.
 If your server is running [MySQL](https://www.mysql.com/), do NOT select this option or you will get an Omeka error that
 will prevent your site from working.
 
-##### Private Elements
+<hr/>
+
+#### Private Elements
 This option lets you specify a semicolon-separated list of element names that should not be visible to public users for searching
 purposes. For example, you might have elements used to record internal information such as notes and item status that
 contain information meant only for administrators. You can specify "Notes, Status" in the Private Elements text box to
@@ -241,7 +251,10 @@ Below is an example specification of the Private Elements option.
 Notes;
 Status;
 ```
-##### Result Elements
+
+<hr/>
+
+#### Result Elements
 
 Use this option to specify which elements will appear in a search result layout.
 AvantSearch uses this information to associate labels with element names. For example,
@@ -288,7 +301,9 @@ Status;
 Description;
 ```
 
-##### Layouts
+<hr/>
+
+#### Layouts
 
 The Layouts option lets you specify different ways to present search results in table view. The layouts you define
 here will appear as Table Layout options on the Advanced Search page, and in the green Change Layout list that appears on
@@ -331,7 +346,9 @@ a mising colon after the *Name* specifier, the affected elements will be ignored
 
 [Learn more about layouts](http://swhplibrary.net/searching/search-results-table-view/).
 
-##### Detail Layout
+<hr/>
+
+#### Detail Layout
 
 Use the Detail Layout to specify the elements which appear in the three columns of the L1 detail element. A screen shot
 of the detail layout appears at the top of this documentation.
@@ -357,7 +374,9 @@ Type, Accession Number, Subject, Date, <tags>;
 Creator, Publisher, Medium, Condition, Number of Pages;
 ```
 
-##### Index View
+<hr/>
+
+#### Index View
 
 The Index View option lets you specify a semicolon-separated list of elements that can be used as the Index Field when choosing Index View from
 the Advanced Search page. If you leave this option blank, Index View will not appear as an option on the Advanced
@@ -374,7 +393,10 @@ Type;
 
 [Learn more about Index View.](http://swhplibrary.net/searching/search-results-index-view/)
 
-##### Treeview
+
+<hr/>
+
+#### Treeview
 
 The Tree View option lets you specify a semicolon-separated list of elements that can used as the Tree Field when choosing Tree View from
 the Advanced Search page. If you leave this option blank, Tree View will not appear as an option on the Advanced
@@ -389,7 +411,10 @@ Type;
 
 [Learn more about Tree View.](http://swhplibrary.net/searching/search-results-tree-view/)
 
-##### Subject Search
+
+<hr/>
+
+#### Subject Search
 
 Use this option to specify the Type and Subject lists that appear on the Subject Search page. If you leave this option
 blank, the Subject Search link will not appear next to the Advanced Search link below the simple search text box.
@@ -407,7 +432,7 @@ Document, Image, Map;
 
 [Learn more about Subject Search.](http://swhplibrary.net/searching/subject-search/)
 
-#### CSS
+## CSS
 
 You can override Search Results styling in your theme. Using Developer tools in your browser,
 you can see that AvantSearch specifies unique classes to the HTML tags in search results. Find the classes you
