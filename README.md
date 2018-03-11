@@ -19,8 +19,8 @@ A screen shot of the search results produced by AvantSearch appears below.
 
 #### Differences from Omeka search:
 
-AvantSearch completely replaces Omeka's public search features. It provides its own
-[Advanced Search](http://swhplibrary.net/searching/advanced-search/ page
+AvantSearch completely overrides Omeka's public search features. It provides its own
+[Advanced Search](http://swhplibrary.net/searching/advanced-search/) page
 and presents search results in an entirely different way. It does not affect Omeka's admin search other than
 by controlling which content gets stored in the search_texts table as explained later in the sections 
 for the Titles Only and Private Elements configuration options.
@@ -46,7 +46,7 @@ Address sorting | Sorts first on street name, then on street number | Can only s
 Search by File, Collection, Features | Not in the current release. | Yes
 
 ## Dependencies
-The AvantSearch plugin requires that the [AvantCommon](https://github.com/gsoules/AvantCommon) plugin be installed.
+The AvantSearch plugin requires that the [AvantCommon](https://github.com/gsoules/AvantCommon) plugin be installed and activated.
 AvantCommon contains common logic used by [AvantSearch](https://github.com/gsoules/AvantSearch) and
 [AvantRelationships](https://github.com/gsoules/AvantRelationships).
 
@@ -93,7 +93,7 @@ with this code
 </div>
 ```
 The new code will replace the native Omeka simple and advanced search controls with the AvantSearch controls, but
-will revert to the native controls if the AvantSearch plugin is deactivated.
+will automatically revert to the native controls if the AvantSearch plugin is deactivated.
 
 ## Improving Search Results
 
@@ -125,7 +125,7 @@ Follow these steps to change your search_texts table from MyISAM to InnoDB:
 * Click Go
 
 ## Usage
-Once installed, AvantSearch entirely replaces Omeka's native user interface for public search (Omeka's native admin
+Once installed, AvantSearch entirely overrides Omeka's native user interface for public search (Omeka's native admin
 search is still available from admin pages). There are several configuration options available on the plugin's
 configuration page.
 
