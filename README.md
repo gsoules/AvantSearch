@@ -358,6 +358,7 @@ element. In the screen shot, the last row shows Type and Subject in column one, 
 If an element has no text, it will not appear in the Detail layout. In the screen shot, the first row shows Date in
 column one, but Date does not appear in the other rows because those items have no date information.
 
+
 ###### Format:
 * Specify the column one elements in the first row ending with a semicolon.
 * Specify the column two elements on the second row ending with a semicolon.
@@ -374,6 +375,18 @@ Type, Accession Number, Subject, Date, <tags>;
 Creator, Publisher, Medium, Condition, Number of Pages;
 ```
 
+If you prefer to have only two detail columns, specify only a semicolon on the second line above, and add the
+following to your theme's CSS. Doing so will display element values in column one and the description in column two.
+
+```
+.search-results-detail-col2 {
+	display: none;
+}
+
+.search-results-detail-col3 {
+	width: 70%;
+}
+```
 <hr/>
 
 #### Index View
@@ -438,7 +451,7 @@ You can override Search Results styling in your theme. Using Developer tools in 
 you can see that AvantSearch specifies unique classes to the HTML tags in search results. Find the classes you
 are interested in and override them in your theme's style.css file.
 
-Examples:
+The examples below show how to use CSS to set the column width the Identifier element.
 
 ```
 .search-th-identifier {
@@ -450,6 +463,12 @@ Examples:
 	width: 100px;
 }
 ```
+
+Notes:
+* A space in an Omeka element name will appear as a hyphen in the CSS class name. For example
+the header class name for an element named "First Name" will be 'search-th-first-name' not 'search-th-first name'.
+* '#' used in an Omeka element name will not appear in the corresponding CSS class name. For example
+the header class name for an element named "Catalog #" will be 'search-th-catalog-' not 'search-th-catalog-#'.
 
 ##  License
 
