@@ -214,10 +214,15 @@ input[type="checkbox"] {
 	color: #777;
 }
 
-.search-titles-only,
-.search-files-only
+.search-titles-only
 {
 	color: #DD0000;
+	font-weight: bold;
+}
+
+.search-files-only
+{
+	color: #777777;
 	font-weight: bold;
 }
 
