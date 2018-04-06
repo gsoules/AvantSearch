@@ -40,6 +40,7 @@ class SearchResultsView
         $columnClass = str_replace(' ', '-', strtolower($key));
         $columnClass = str_replace('<', '', $columnClass);
         $columnClass = str_replace('>', '', $columnClass);
+        $columnClass = str_replace('#', '', $columnClass);
         $columnClass = "search-$tag-$columnClass";
         return $columnClass;
     }
