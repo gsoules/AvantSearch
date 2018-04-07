@@ -406,7 +406,10 @@ class SearchQueryBuilder
         if (!ctype_alnum($word))
         {
             // Treat non alphanumeric text as a stop word.
-            return true;
+            // This logic was intended to prevent the return of meaningless search results, but is proving
+            // to be too restrictive e.g. it won't let you find a catalogue number of the form 2017.123.4567.
+            // For now always return false instead of true.
+            return false;
         }
 
         $stopwords = array(
