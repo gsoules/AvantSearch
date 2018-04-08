@@ -4,10 +4,12 @@ class SearchResultsTableViewRowData
 {
     public $elementValue;
     public $itemThumbnailHtml;
+    public $layoutElements;
 
     public function __construct($item, $searchResults, $layoutElements)
     {
-        $this->initializeData($item, $searchResults, $layoutElements);
+        $this->layoutElements = $layoutElements;
+        $this->initializeData($item, $searchResults);
     }
 
     protected function generateDateRange()
@@ -31,6 +33,13 @@ class SearchResultsTableViewRowData
 
     protected function generateDescription()
     {
+        if (!isset($this->elementValue['Description']['text']))
+        {
+            // The admin has not configured the Description element for use with AvantSearch.
+            $this->layoutElements['Description'] = 'Description';
+            $this->elementValue['Description']['text'] = '';
+        }
+
         // Shorten the description text if it's too long.
         $maxLength = 250;
         $descriptionText = $this->elementValue['Description']['text'];
@@ -47,9 +56,9 @@ class SearchResultsTableViewRowData
         }
     }
 
-    protected function generateItemDetails($searchResults, $layoutElements)
+    protected function generateItemDetails($searchResults)
     {
-        foreach ($layoutElements as $elementName => $layoutElement)
+        foreach ($this->layoutElements as $elementName => $layoutElement)
         {
             $this->elementValue[$elementName]['detail'] = $searchResults->emitFieldDetail($layoutElement,  $this->elementValue[$elementName]['text']);
         }
@@ -57,6 +66,13 @@ class SearchResultsTableViewRowData
 
     protected function generateLocationText()
     {
+        if (!isset($this->elementValue['Location']['text']))
+        {
+            // The admin has not configured the Location element for use with AvantSearch.
+            $this->layoutElements['Location'] = 'Location';
+            $this->elementValue['Location']['text'] = '';
+        }
+
         // Special case the Location by stripping off leading "MDI, "
         if (strpos($this->elementValue['Location']['text'], 'MDI, ') === 0)
         {
@@ -124,22 +140,22 @@ class SearchResultsTableViewRowData
         return $texts;
     }
 
-    protected function initializeData($item, $searchResults, $layoutElements)
+    protected function initializeData($item, $searchResults)
     {
         $this->elementValue = array();
 
-        $this->readMetadata($item, $layoutElements);
+        $this->readMetadata($item);
         $this->generateDescription();
         $this->generateLocationText();
         $this->generateDateRange();
-        $this->generateItemDetails($searchResults, $layoutElements);
+        $this->generateItemDetails($searchResults);
         $this->generateTitles($item);
         $this->generateThumbnailHtml($item);
     }
 
-    protected function readMetadata($item, $layoutElements)
+    protected function readMetadata($item)
     {
-        foreach ($layoutElements as $elementName => $layoutElement)
+        foreach ($this->layoutElements as $elementName => $layoutElement)
         {
             switch ($elementName)
             {

@@ -74,8 +74,12 @@ class SearchResultsTableView extends SearchResultsView
         $detailsDefinitions = array_map('trim', $detailsDefinitions);
 
         $details = array();
-        if (count($detailsDefinitions) < 2)
-            return $details;
+        $columnsCount = count($detailsDefinitions);
+        if ($columnsCount)
+        if (count($detailsDefinitions) == 1)
+        {
+            $detailsDefinitions[] = '';
+        }
 
         $column1elementNames = explode(',', $detailsDefinitions[0]);
         $details['column1'] = array_map('trim', $column1elementNames);
@@ -143,7 +147,7 @@ class SearchResultsTableView extends SearchResultsView
     {
         $elementClasses = array();
 
-        // Find which columns appear in which layouts and set the header column's clases to be a list of layout Ids for that column.
+        // Find which columns appear in which layouts and set the header column's classes to be a list of layout Ids for that column.
         foreach ($layoutColumns as $layoutId => $columns)
         {
             foreach ($columns as $elementName)
@@ -184,13 +188,13 @@ class SearchResultsTableView extends SearchResultsView
     public static function getLayoutIdFirst()
     {
         $keys = array_keys(self::getLayoutDefinitionNames());
-        return min($keys);
+        return empty($keys) ? 0 : min($keys);
     }
 
     public static function getLayoutIdLast()
     {
         $keys = array_keys(self::getLayoutDefinitionNames());
-        return max($keys);
+        return empty($keys) ? 0 : max($keys);
     }
 
     protected static function getLayoutInfo($layoutDefinition)

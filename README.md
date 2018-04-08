@@ -269,8 +269,7 @@ a label, the element name will be used as its label.
 identifier and title. You must use these even if you use the Dublin Core names Identifier and
 Title. You specify your installation's identifier and title elements on the configuration page for the
 [AvantCommon](https://github.com/gsoules/AvantCommon) plugin. 
-* There are two pseudo-element names: `<image>`, and `<tags>` that refer to values for which there is no element. Use
-them to show an item's image and tags in search results.
+* Use the pseudo-element `<tags>` to display an item's tags in search results.
 
 > **IMPORTANT**: You must specify every element that you want reference in the Layouts and Detail Layout options.
 An element specified in those options, but not in Results Elements, will be ignored.
@@ -285,7 +284,6 @@ Subject followed by Type in the layout definition.
 
 ```
 <identifier>: Item;
-<image>: Image;
 <title>:Title;
 Type;
 Subject;
@@ -375,8 +373,8 @@ Type, Accession Number, Subject, Date, <tags>;
 Creator, Publisher, Medium, Condition, Number of Pages;
 ```
 
-If you prefer to have only two detail columns, specify only a semicolon on the second line above, and add the
-following to your theme's CSS. Doing so will display element values in column one and the description in column two.
+If you prefer to have only two detail columns, specify only one row of elements and also add the following to your
+theme's CSS. Doing so will display element values in column one and the description in column two.
 
 ```
 .search-results-detail-col2 {

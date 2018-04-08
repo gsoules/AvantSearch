@@ -75,7 +75,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
             </td>
             <td class="search-results-detail-col3">
                 <div>
-                    <?php echo $text = $data->elementValue['Description']['detail'];; ?>
+                    <?php echo $text = $data->elementValue['Description']['detail']; ?>
                 </div>
             </td>
         </tr>

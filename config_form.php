@@ -1,4 +1,20 @@
-<?php $view = get_view(); ?>
+<?php
+$view = get_view();
+
+$searchElements = get_option('search_elements');
+if (empty(trim($searchElements)))
+{
+    $searchELements = '<identifier>: Item;' . PHP_EOL . '<title>:Title;';
+    set_option('search_elements', $searchElements);
+}
+
+$layouts = get_option('search_layouts');
+if (empty(trim($layouts)))
+{
+    $layouts = 'L1, public, Details;';
+    set_option('search_layouts', $layouts);
+}
+?>
 
 <hr/>
 <h4>Read the <a href="https://github.com/gsoules/AvantSearch/blob/master/README.md" target="_blank">AvantSearch documentation</a> before choosing any of these options.</h4>
@@ -60,7 +76,7 @@
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Names and labels of elements that can appear in search results."); ?></p>
-        <?php echo $view->formTextarea('search_elements', get_option('search_elements'), array('rows'=>'16','cols'=>'40')); ?>
+        <?php echo $view->formTextarea('search_elements', $searchElements, array('rows'=>'16','cols'=>'40')); ?>
     </div>
 </div>
 
@@ -70,7 +86,7 @@
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Layout definitions."); ?></p>
-        <?php echo $view->formTextarea('search_layouts', get_option('search_layouts'), array('rows'=>'8','cols'=>'40')); ?>
+        <?php echo $view->formTextarea('search_layouts', $layouts, array('rows'=>'8','cols'=>'40')); ?>
     </div>
 </div>
 
