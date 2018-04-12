@@ -24,8 +24,8 @@ echo "<h1>$pageTitle</h1>";
         foreach ($results as $item)
         {
             set_current_record('Item', $item);
-            $itemView = new ItemView($item);
-            echo $itemView->emitItemPreviewAsListElement(false);
+            $itemPreview = new ItemPreview($item);
+            echo $itemPreview->emitItemPreviewAsListElement(false);
         }
         ?>
         </ul>

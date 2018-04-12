@@ -29,6 +29,7 @@ Here are some of the basic differences between AvantSearch and Omeka's native se
 
 Feature | AvantSearch | Omeka Search
 --------|------------ | ------------
+Quick search |  Displays an item (instead of search results) when its Identifier value is typed in the public Simple search box. | Displays search results for all items containing the identifier.
 Simple search |  Looks for all keywords to return more relevant results. | Looks for any of the keywords.
 Search in Titles only | Yes | No
 Search only items with images or files | Yes | No

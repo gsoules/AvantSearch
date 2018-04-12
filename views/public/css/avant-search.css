@@ -909,12 +909,6 @@ input[type="checkbox"] {
 	width: 64%;
 }
 
-#search-table-view .relationships-table-view .lightbox {
-	padding-left: 0;
-}
-
-
-
 /* === CSS for Width less than 844px ===
 --------------------------------------------------------- */
 @media screen and (max-width: 844px) {

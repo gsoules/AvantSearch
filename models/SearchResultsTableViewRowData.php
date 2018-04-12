@@ -82,17 +82,17 @@ class SearchResultsTableViewRowData
 
     protected function generateThumbnailHtml($item)
     {
-        $itemView = new ItemView($item);
-        $this->itemThumbnailHtml = $itemView->emitItemHeader();
-        $this->itemThumbnailHtml .= $itemView->emitItemThumbnail(false);
+        $itemPreview = new ItemPreview($item);
+        $this->itemThumbnailHtml = $itemPreview->emitItemHeader();
+        $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
 
     protected function generateTitles($item)
     {
-        $titleParts = ItemView::getPartsForTitleElement();
+        $titleParts = ItemMetadata::getPartsForTitleElement();
 
         // Create a link for the Title followed by a list of AKA (Also Known As) titles.
-        $titleLink = link_to_item(ItemView::getItemTitle($item));
+        $titleLink = link_to_item(ItemMetadata::getItemTitle($item));
         $this->elementValue['<title>']['text'] = $titleLink;
 
         $titles = $item->getElementTexts($titleParts[0], $titleParts[1]);
@@ -160,7 +160,7 @@ class SearchResultsTableViewRowData
             switch ($elementName)
             {
                 case '<identifier>';
-                    $text = ItemView::getItemIdentifier($item);
+                    $text = ItemMetadata::getItemIdentifier($item);
                     if ($item->public == 0)
                         $text .= '*';
                     break;

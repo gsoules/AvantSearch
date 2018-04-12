@@ -76,16 +76,16 @@ class SearchResultsView
         foreach ($headerColumns as $columnName => $headerColumn)
         {
             if ($columnName == '<identifier>')
-                $columnName = ItemView::getIdentifierElementName();
+                $columnName = ItemMetadata::getIdentifierElementName();
             else if ($columnName == '<title>')
-                $columnName = ItemView::getTitleElementName();
+                $columnName = ItemMetadata::getTitleElementName();
 
             $columnLabel = $headerColumn['label'];
             $classes = $headerColumn['classes'];
 
             if ($headerColumn['sortable'])
             {
-                $columnElementId = ItemView::getElementIdForElementName($columnName);
+                $columnElementId = ItemMetadata::getElementIdForElementName($columnName);
                 $params = $_GET;
                 $params['sort'] = $columnElementId;
                 $sortDirection = 'a';
@@ -171,7 +171,7 @@ class SearchResultsView
         foreach ($privateFieldNames as $name)
         {
             $name = trim($name);
-            $elementId = ItemView::getElementIdForElementName($name);
+            $elementId = ItemMetadata::getElementIdForElementName($name);
             $privateFields[$elementId] = $name;
         }
 
@@ -243,9 +243,9 @@ class SearchResultsView
             $label = $elementNames[$elementName];
 
             if ($elementName == '<title>')
-                $elementName = ItemView::getTitleElementName();
+                $elementName = ItemMetadata::getTitleElementName();
 
-            $elementId = ItemView::getElementIdForElementName($elementName);
+            $elementId = ItemMetadata::getElementIdForElementName($elementName);
             $options[$elementId] = $label;
         }
 
@@ -373,12 +373,12 @@ class SearchResultsView
         $this->sortField = isset($_GET['sort']) ? intval($_GET['sort']) : 0;
 
         // Validate the sort field Id by attempting to get the field's name.
-        $this->sortFieldName = ItemView::getElementNameFromId($this->sortField);
+        $this->sortFieldName = ItemMetadata::getElementNameFromId($this->sortField);
         if (empty($this->sortFieldName))
         {
             // The Id is not valid. Use the Title as a default.
-            $this->sortField = ItemView::getTitleElementId();
-            $this->sortFieldName = ItemView::getTitleElementName();
+            $this->sortField = ItemMetadata::getTitleElementId();
+            $this->sortFieldName = ItemMetadata::getTitleElementName();
         }
         return $this->sortField;
     }

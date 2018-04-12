@@ -42,7 +42,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         if (is_admin_theme())
             return $params;
 
-        $params[0] = ItemView::getTitleElementId();
+        $params[0] = ItemMetadata::getTitleElementId();
         $params[1] = 'a';
         return $params;
     }
@@ -160,8 +160,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookDefineRoutes($args)
     {
-        $args['router']->addConfig(new Zend_Config_Ini(
-            dirname(__FILE__) . DIRECTORY_SEPARATOR . 'routes.ini', 'routes'));
+        $args['router']->addConfig(new Zend_Config_Ini(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'routes.ini', 'routes'));
     }
 
     public function hookInitialize()
@@ -173,9 +172,10 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookItemsBrowseSql($args)
     {
+        // This method is called whenever any kind of query is being generated.
+
         $params = $args['params'];
 
-        // This method is called when a query is being generated.
         $isSearchQuery = isset($params['module']) && $params['module'] == 'avant-search';
         if (!$isSearchQuery)
         {
@@ -187,20 +187,13 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         if ($simpleSearch)
         {
             $query = $params['query'];
-            if (is_numeric($query))
+            $id = ItemMetadata::getItemIdFromIdentifier($query);
+            if ($id)
             {
-                // The user typed a number. If the number is a valid item Identifier show the item
-                // instead of displaying search results.
-                $id = ItemView::getItemIdFromIdentifier($query);
-                if ($id)
-                {
-                    $this->redirectToShowPageForItem($id);
-                }
+                // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
+                $this->redirectToShowPageForItem($id);
             }
         }
-
-        if (is_admin_theme())
-            return;
 
         $queryBuilder = new SearchQueryBuilder();
         $queryBuilder->buildAdvancedSearchQuery($args);

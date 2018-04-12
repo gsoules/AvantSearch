@@ -209,7 +209,7 @@ class SearchQueryBuilder
         $secondaryColumnName = null;
         $secondaryColumnSortOrder = '';
 
-        if ($sortField == ItemView::getElementIdForElementName('Identifier'))
+        if ($sortField == ItemMetadata::getElementIdForElementName('Identifier'))
         {
             // When sorting the Identifier field, replace the default text sorting with a numeric sort.
             $this->select->reset(Zend_Db_Select::ORDER);
@@ -218,9 +218,9 @@ class SearchQueryBuilder
             return;
         }
 
-        $addressFieldElementId = ItemView::getElementIdForElementName('Address');
-        $locationFieldElementId = ItemView::getElementIdForElementName('Location');
-        $titleFieldElementId = ItemView::getTitleElementId();
+        $addressFieldElementId = ItemMetadata::getElementIdForElementName('Address');
+        $locationFieldElementId = ItemMetadata::getElementIdForElementName('Location');
+        $titleFieldElementId = ItemMetadata::getTitleElementId();
 
         $sortByAddress = $sortField == $addressFieldElementId;
         $sortByLocation = $sortField == $locationFieldElementId;

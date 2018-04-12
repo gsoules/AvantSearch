@@ -21,7 +21,7 @@ echo "<h1>$pageTitle</h1>";
 echo $searchResults->emitModifySearchButton();
 echo $searchResults->emitSearchFilters(__('Index View by %s', $indexFieldName));
 
-if ($indexFieldElementId == ItemView::getElementIdForElementName('Location'))
+if ($indexFieldElementId == ItemMetadata::getElementIdForElementName('Location'))
 {
     // Special case logic for the Location field. This will need to be addressed a
     // better way to make this plugin be general purpose.

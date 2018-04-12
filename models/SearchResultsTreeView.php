@@ -66,12 +66,12 @@ class SearchResultsTreeView extends SearchResultsView
 
     public function generateTree()
     {
-        if ($this->treeFieldElementId == ItemView::getElementIdForElementName('Location'))
+        if ($this->treeFieldElementId == ItemMetadata::getElementIdForElementName('Location'))
         {
             $tree = $this->generateLocationsTree();
             $this->treeFieldName = __('Location');
         }
-        elseif ($this->treeFieldElementId == ItemView::getElementIdForElementName('Type'))
+        elseif ($this->treeFieldElementId == ItemMetadata::getElementIdForElementName('Type'))
         {
             $tree = $this->generateTreeFromSimpleVocabHierarchy();
             $this->treeFieldName = __('Type');

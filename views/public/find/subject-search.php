@@ -15,9 +15,9 @@ $keywords = empty($_GET['keywords']) ? '' : $_GET['keywords'];
 if (empty($keywords))
     $keywords = empty($_GET['query']) ? '' : $_GET['query'];
 
-$subjectElementId = ItemView::getElementIdForElementName('Subject');
-$typeElementId = ItemView::getElementIdForElementName('Type');
-$titleElementId = ItemView::getTitleElementId();
+$subjectElementId = ItemMetadata::getElementIdForElementName('Subject');
+$typeElementId = ItemMetadata::getElementIdForElementName('Type');
+$titleElementId = ItemMetadata::getTitleElementId();
 
 $subjectSearchOptions = explode(';', get_option('search_subject_search'));
 $subjectSearchOptions = array_map('trim', $subjectSearchOptions);

@@ -7,8 +7,8 @@ $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 
 // Get the name of the element that this installation uses for the item identifier and title.
 // Normally these are Dublin Core Identifier and Title, but the admin can use other elements.
-$identifierElementName = ItemView::getIdentifierElementName();
-$titleElementName = ItemView::getTitleElementName();
+$identifierElementName = ItemMetadata::getIdentifierElementName();
+$titleElementName = ItemMetadata::getTitleElementName();
 
 // Get the label that the admin configured to show for the identifier element.
 $layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
@@ -44,9 +44,9 @@ echo "<h1>$pageTitle</h1>";
         foreach ($results as $item)
         {
             set_current_record('Item', $item);
-            $itemIdentifier = ItemView::getItemIdentifier($item);
-            $itemView = new ItemView($item);
-            $itemThumbnailHtml = $itemView->emitItemPreview(false);
+            $itemIdentifier = ItemMetadata::getItemIdentifier($item);
+            $itemPreview = new ItemPreview($item);
+            $itemThumbnailHtml = $itemPreview->emitItemPreview(false);
             $typeText = metadata($item, array('Dublin Core', 'Type'), array('no_filter' => true));
             $typeDetail = $searchResults->emitFieldDetail('Type', $typeText);
             $relatedItemsModel = apply_filters('related_items_model', null, array('item' => $item, 'view' => $this));

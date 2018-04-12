@@ -5,16 +5,13 @@ class AvantSearch_Controller_Plugin_DispatchFilter extends Zend_Controller_Plugi
     public function preDispatch(Zend_Controller_Request_Abstract $request)
     {
         $isAdminRequest = $request->getParam('admin', false);
+        if ($isAdminRequest)
+            return;
+
         $moduleName = $request->getModuleName();
         $controllerName = $request->getControllerName();
         $actionName = $request->getActionName();
-
-        if (!$isAdminRequest)
-        {
-            $this->bypassOmekaSearch($request, $moduleName, $controllerName, $actionName);
-        }
-
-        return;
+        $this->bypassOmekaSearch($request, $moduleName, $controllerName, $actionName);
     }
 
     protected function bypassOmekaSearch($request, $moduleName, $controllerName, $actionName)
