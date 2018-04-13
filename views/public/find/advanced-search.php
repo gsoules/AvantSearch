@@ -23,29 +23,30 @@ $showDateRangeOption = get_option('search_filters_show_date_range_option') == tr
 $pageTitle = __('Advanced Search');
 
 queue_js_file('js.cookie');
-echo head(array('title' => $pageTitle, 'bodyclass' => 'advanced-search'));
+echo head(array('title' => $pageTitle, 'bodyclass' => 'avantsearch-advanced'));
 echo "<h1>$pageTitle</h1>";
+echo "<div id='avantsearch-container'>";
 ?>
 
 <form <?php echo tag_attributes($advancedFormAttributes); ?>>
 
 	<!-- Left Panel -->
-	<div id="primary">
+	<div id="avantsearch-primary">
 		<div class="search-form-section">
 			<div class="search-field">
-				<div class="two columns">
+				<div class="avantsearch-label-column">
 					<?php echo $this->formLabel('keywords', __('Keywords')); ?><br>
 				</div>
-				<div class="five columns inputs">
+				<div class="avantsearch-option-column inputs">
 					<?php echo $this->formText('keywords', $keywords, array('id' => 'keywords')); ?>
 				</div>
 			</div>
             <?php if ($showTitlesOption): ?>
             <div class="search-field">
-                <div class="two columns">
+                <div class="avantsearch-label-column">
                     <?php echo $this->formLabel('title-only', __('Search in')); ?><br>
                 </div>
-                <div class="five columns">
+                <div class="avantsearch-option-column">
                 	<div class="search-radio-buttons">
 						<?php echo $this->formRadio('titles', $searchTitlesOnly, null, $searchResults->getKeywordSearchTitlesOptions()); ?>
 					</div>
@@ -53,10 +54,10 @@ echo "<h1>$pageTitle</h1>";
             </div>
             <?php endif; ?>
             <div class="search-field">
-				<div class="two columns">
+				<div class="avantsearch-label-column">
 					<?php echo $this->formLabel('keyword-conditions', __('Condition')); ?><br>
 				</div>
-				<div class="five columns">
+				<div class="avantsearch-option-column">
 					<div class="search-radio-buttons">
 						<?php echo $this->formRadio('condition', $condition, null, $searchResults->getKeywordsConditionOptions()); ?>
 					</div>
@@ -66,10 +67,10 @@ echo "<h1>$pageTitle</h1>";
 
 		<div  id="search-narrow-by-fields" class="search-form-section">
 			<div>
-				<div class="two columns">
+				<div class="avantsearch-label-column">
 					<label><?php echo __('Fields'); ?></label>
 				</div>
-				<div class="five columns inputs">
+				<div class="avantsearch-option-column inputs">
 					<?php
 					// If the form has been submitted, retain the number of search fields used and rebuild the form
 					if (!empty($_GET['advanced']))
@@ -146,10 +147,10 @@ echo "<h1>$pageTitle</h1>";
 
         <div class="search-form-section">
             <div>
-                <div class="two columns">
+                <div class="avantsearch-label-column">
                     <?php echo $this->formLabel('tag-search', __('Tags')); ?>
                 </div>
-                <div class="five columns inputs">
+                <div class="avantsearch-option-column inputs">
                     <?php echo $this->formText('tags', @$_REQUEST['tags'], array('size' => '40', 'id' => 'tags')); ?>
                 </div>
             </div>
@@ -158,19 +159,19 @@ echo "<h1>$pageTitle</h1>";
         <?php if ($showDateRangeOption): ?>
         <div class="search-form-section">
 			<div>
-				<div class="two columns">
+				<div class="avantsearch-label-column">
 					<?php echo $this->formLabel('date-start', __('Date Start')); ?>
 				</div>
-				<div class="five columns inputs">
+				<div class="avantsearch-option-column inputs">
 					<?php echo $this->formText('date_start', @$_REQUEST['date_start'], array('size' => '40', 'id' => 'date-start', 'title' => 'Four digit start year'));	?>
 				</div>
 			</div>
 
 			<div>
-				<div class="two columns">
+				<div class="avantsearch-label-column">
 					<?php echo $this->formLabel('date-end', __('Date End')); ?>
 				</div>
-				<div class="five columns inputs">
+				<div class="avantsearch-option-column inputs">
 					<?php echo $this->formText('date_end', @$_REQUEST['date_end'], array('size' => '40', 'id' => 'date-end', 'title' => 'Four digit end year'));	?>
 				</div>
 			</div>
@@ -179,7 +180,7 @@ echo "<h1>$pageTitle</h1>";
 	</div>
 
 	<!-- Right Panel -->
-	<div id="secondary">
+	<div id="avantsearch-secondary">
 		<div id="search-button" class="panel">
 			<input type="submit" class="submit button" value="<?php echo $advancedSubmitButtonText; ?>">
 		</div>
@@ -238,6 +239,7 @@ echo "<h1>$pageTitle</h1>";
         </div>
     </div>
 </form>
+</div>
 
 <?php echo js_tag('items-search'); ?>
 
