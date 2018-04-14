@@ -166,7 +166,7 @@ class SearchResultsView
     {
         // Get the names of the private elements from the coma-separated list on the configuration page.
         // @TODO: Make this work with Dublin Core fields as well.
-        $privateFieldNames = explode(',', get_option('search_private_elements'));
+        $privateFieldNames = explode(',', get_option('avantsearch_private_elements'));
         $privateFields = array();
         foreach ($privateFieldNames as $name)
         {
@@ -257,7 +257,7 @@ class SearchResultsView
         if (isset($this->keywords))
             return $this->keywords;
 
-        // Get keywords that were specified on the Advanced Search or Subject Search pages.
+        // Get keywords that were specified on the Advanced Search page.
         $this->keywords = isset($_GET['keywords']) ? $_GET['keywords'] : '';
 
         // Check if keywords came from the Simple Search text box.

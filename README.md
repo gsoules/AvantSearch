@@ -39,7 +39,6 @@ User can specify number of results | Yes, from the Advanced Search page. | No. S
 Customize results | Admin can configure custom result layouts. | No configuration.
 Private data | Private elements of public items can be hidden from pubic users. | No hiding of private data.
 Address sorting | Sorts first on street name, then on street number | Can only sort on Title, Creator, and Date Added.
-[Subject Search](http://swhplibrary.net/searching/subject-search/) | Yes | No
 [Image View](http://swhplibrary.net/searching/search-results-image-view/) | Yes| No
 [Index View](http://swhplibrary.net/searching/search-results-index-view/) | Yes| No
 [Tree View](http://swhplibrary.net/searching/search-results-tree-view/) | Yes | No
@@ -147,7 +146,6 @@ Layouts | Layout definitions.
 Detail Layout | Detail layout elements.
 Index View | Elements that can be used as the Index View field.
 Tree View | Elements that can be used as the Tree View field
-Subject Search | Subjects and Types that appear on the Subject Search page.
 
 The subsections that follow explain the options listed in the table above. Some options require that you specify
 formatted list of information using commas, semicolons or other characters as separators. For these options, spaces
@@ -414,7 +412,7 @@ The Tree View option lets you specify a semicolon-separated list of elements tha
 the Advanced Search page. If you leave this option blank, Tree View will not appear as an option on the Advanced
 Search page.
 
-Below is an example specification of the Subject Search option.
+Below is an example specification of the Tree View option.
 
 ```
 Subject;
@@ -423,26 +421,6 @@ Type;
 
 [Learn more about Tree View.](http://swhplibrary.net/searching/search-results-tree-view/)
 
-
-<hr/>
-
-#### Subject Search
-
-Use this option to specify the Type and Subject lists that appear on the Subject Search page. If you leave this option
-blank, the Subject Search link will not appear next to the Advanced Search link below the simple search text box.
-
-###### Format:
-* Specify types in the first row ending with a semicolon.
-* Specify subjects on the second row ending with a semicolon.
-
-Below is an example specification of the Subject Search option.
-
-```
-People, Places, Structures;
-Document, Image, Map;
-```
-
-[Learn more about Subject Search.](http://swhplibrary.net/searching/subject-search/)
 
 ## CSS
 
