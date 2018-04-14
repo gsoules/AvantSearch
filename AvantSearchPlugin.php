@@ -201,7 +201,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookPublicHead($args)
     {
-        queue_css_file('avant-search');
+        queue_css_file('avantsearch');
     }
 
     protected function redirectToShowPageForItem($id)
