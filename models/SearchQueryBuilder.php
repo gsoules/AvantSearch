@@ -16,7 +16,7 @@ class SearchQueryBuilder
     public function buildAdvancedSearchQuery($args)
     {
         $this->select = $args['select'];
-        $this->smartSortingEnabled = get_option('search_filters_smart_sorting') == true;
+        $this->smartSortingEnabled = get_option('avantsearch_filters_smart_sorting') == true;
 
         /* @var $searchResults SearchResultsView */
         $searchResults = $args['params']['results'];

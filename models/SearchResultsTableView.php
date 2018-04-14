@@ -34,7 +34,7 @@ class SearchResultsTableView extends SearchResultsView
 
     protected static function getLayoutDefinitionElementNames()
     {
-        $elementDefinitions = explode(';', get_option('search_elements'));
+        $elementDefinitions = explode(';', get_option('avantsearch_elements'));
         $elementDefinitions = array_map('trim', $elementDefinitions);
         $elements = array();
         foreach ($elementDefinitions as $elementDefinition)
@@ -70,7 +70,7 @@ class SearchResultsTableView extends SearchResultsView
 
     protected static function getLayoutDetailElements($layoutElements)
     {
-        $detailsDefinitions = explode(';', get_option('search_detail_layout'));
+        $detailsDefinitions = explode(';', get_option('avantsearch_detail_layout'));
         $detailsDefinitions = array_map('trim', $detailsDefinitions);
 
         $details = array();
@@ -116,7 +116,7 @@ class SearchResultsTableView extends SearchResultsView
 
     protected static function getLayoutDefinitionsFromOptions()
     {
-        $layoutOptions = explode(';', get_option('search_layouts'));
+        $layoutOptions = explode(';', get_option('avantsearch_layouts'));
         $layoutOptions = array_map('trim', $layoutOptions);
 
         $layoutDefinitions = array();
