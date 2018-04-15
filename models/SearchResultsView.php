@@ -75,11 +75,6 @@ class SearchResultsView
 
         foreach ($headerColumns as $columnName => $headerColumn)
         {
-            if ($columnName == '<identifier>')
-                $columnName = ItemMetadata::getIdentifierElementName();
-            else if ($columnName == '<title>')
-                $columnName = ItemMetadata::getTitleElementName();
-
             $columnLabel = $headerColumn['label'];
             $classes = $headerColumn['classes'];
 
@@ -152,14 +147,15 @@ class SearchResultsView
 
         $text = __('Modify Search');
         $uri = url('find/' . ($this->subjectSearch ? 'subject' : 'advanced'));
-        $props = array('class' => 'small blue button modify-search-button search-link');
-        $props['href'] = $uri . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
-        return '<a ' . tag_attributes($props) . '>' . $text . '</a>';
+        $action = $uri . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
+        $form = "<form id='modify-form' name='modify-form' action='$action' method='post' class='modify-search-button'>";
+        $form .= "<button id='submit_modify' 'type='submit' value='Modify'>$text</button></form>";
+        return $form;
     }
 
-    public function emitSearchFilters($message)
+    public function emitSearchFilters($layoutIndicator, $paginationNav)
     {
-        return $this->searchFilters->emitSearchFilters($message);
+        return $this->searchFilters->emitSearchFilters($layoutIndicator, $paginationNav);
     }
 
     public function getAdvancedSearchFields()
@@ -241,9 +237,6 @@ class SearchResultsView
             }
 
             $label = $elementNames[$elementName];
-
-            if ($elementName == '<title>')
-                $elementName = ItemMetadata::getTitleElementName();
 
             $elementId = ItemMetadata::getElementIdForElementName($elementName);
             $options[$elementId] = $label;

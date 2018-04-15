@@ -18,7 +18,7 @@ foreach ($elementNames as $key => $alias)
 
     $classes = isset($elementClasses[$key]) ? $elementClasses[$key] : '';
 
-    if ($key == '<title>')
+    if ($key == 'Title')
     {
         // Add the L1 class to the Title so it will get a column in the Detail layout.
         $classes = 'L1 ' . $classes;
