@@ -9,13 +9,16 @@ $treeFieldName = $searchResults->getTreeFieldName();
 $pageTitle = "Search Results";
 
 echo head(array('title' => $pageTitle));
-echo "<div class='search-results-container'>";
-echo "<div class='search-results-title'>$pageTitle</div>";
+echo "<h1>$pageTitle</h1>";
 ?>
+
+<div class="search-results-toggle">
+    <button class="search-view-toggle-button">Show Entire Tree</button>
+</div>
 
 <?php
 echo $searchResults->emitModifySearchButton();
-echo $searchResults->emitSearchFilters(__('Tree View by %s', $treeFieldName), $totalResults ? pagination_links() : '');
+echo $searchResults->emitSearchFilters("Tree View by $treeFieldName");
 
 if ($totalResults):
 ?>
@@ -77,7 +80,6 @@ if ($totalResults):
     ?>
 </ul>
 </div>
-<?php echo '</div>'; ?>
 <?php echo $this->partial('/tree-view-script.php'); ?>
 <?php else: ?>
 <div id="no-results">

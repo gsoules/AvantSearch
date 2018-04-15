@@ -265,8 +265,7 @@ echo "<div id='avantsearch-container'>";
     function disableEmptyField(selector)
     {
         var field = jQuery(selector);
-        var fieldExists = field.size() > 0;
-        if (fieldExists && field.val().trim().length === 0)
+        if (field.val().trim().length === 0)
         {
             field.prop("disabled", true);
         }
@@ -286,6 +285,7 @@ echo "<div id='avantsearch-container'>";
     {
         var select = jQuery(selector);
         var selectedOption = select.find(":selected");
+        var selectedOptionValue = selectedOption.val();
         var hidden = select.is(':hidden');
         if (hidden)
         {

@@ -19,6 +19,10 @@ foreach ($layoutElements as $key => $layoutElement)
     // element is not used for a column but may be used in the L1 Detail layout.
     $classes = isset($layoutClasses[$key]) ? $layoutClasses[$key] : '';
 
+    // Remove the L1 class so that an L1 column does not get emitted here. This logic is
+    // for every layout except L1. The logic to emit the L1 Detail layout follows below.
+    $classes = trim(str_replace('L1', '', $classes));
+
     if (!empty(($classes)))
     {
         $columnHtml = "<td class=\"search-result $columnClass $classes\">$text</td>";
@@ -47,7 +51,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
 
 <td class="search-td-title-detail L1">
     <div class="search-result-title">
-        <?php echo $data->elementValue['Title']['text']; ?>
+        <?php echo $data->elementValue['<title>']['text']; ?>
     </div>
     <table class="search-results-detail-table">
         <tr class="search-results-detail-row">

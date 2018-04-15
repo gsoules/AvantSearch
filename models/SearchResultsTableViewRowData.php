@@ -76,7 +76,7 @@ class SearchResultsTableViewRowData
         // Special case the Location by stripping off leading "MDI, "
         if (strpos($this->elementValue['Location']['text'], 'MDI, ') === 0)
         {
-            $this->elementValue['Location']['text'] = substr($this->elementValue['Location']['text'], 5);
+            $this->locationText = substr($this->$this->elementValue['Location']['text'], 5);
         }
     }
 
@@ -89,18 +89,20 @@ class SearchResultsTableViewRowData
 
     protected function generateTitles($item)
     {
+        $titleParts = ItemMetadata::getPartsForTitleElement();
+
         // Create a link for the Title followed by a list of AKA (Also Known As) titles.
         $titleLink = link_to_item(ItemMetadata::getItemTitle($item));
-        $this->elementValue['Title']['text'] = $titleLink;
+        $this->elementValue['<title>']['text'] = $titleLink;
 
-        $titles = $item->getElementTexts('Dublin Core', 'Title');
+        $titles = $item->getElementTexts($titleParts[0], $titleParts[1]);
         foreach ($titles as $key => $title)
         {
             if ($key == 0)
             {
                 continue;
             }
-            $this->elementValue['Title']['text'] .= '<div class="search-title-aka">' . html_escape($title) . '</div>';
+            $this->elementValue['<title>']['text'] .= '<div class="search-title-aka">' . html_escape($title) . '</div>';
         }
     }
 
@@ -157,7 +159,12 @@ class SearchResultsTableViewRowData
         {
             switch ($elementName)
             {
-                case 'Title';
+                case '<identifier>';
+                    $text = ItemMetadata::getItemIdentifier($item);
+                    if ($item->public == 0)
+                        $text .= '*';
+                    break;
+                case '<title>';
                     // Do nothing here because titles get special handling to include a link to the item.
                     break;
                 case '<tags>';
@@ -169,14 +176,6 @@ class SearchResultsTableViewRowData
                     break;
                 default:
                     $text = $this->getElementTextsAsHtml($item, $elementName);
-            }
-
-            if ($elementName == ItemMetadata::getIdentifierElementName())
-            {
-                // Indicate when an item is private.
-                $text = ItemMetadata::getItemIdentifier($item);
-                if ($item->public == 0)
-                    $text .= '*';
             }
 
             $this->elementValue[$elementName]['text'] = $text;

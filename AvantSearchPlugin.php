@@ -11,7 +11,6 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         'install',
         'items_browse_sql',
         'public_head',
-        'public_footer',
         'uninstall'
     );
 
@@ -20,6 +19,20 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         'items_browse_params',
         'search_element_texts'
     );
+
+    public static function emitSearchForm()
+    {
+        $url = url('find');
+
+        $form =
+            '<form id="search-form" name="search-form" action="' . $url. '" method="get">
+            <input type="text" name="query" id="query" value="" title="Search">
+            <button id="submit_search" type="submit" value="Search">Search</button></form>';
+
+        $form .= '<a class="simple-search-advanced-link" href="' . WEB_ROOT . '/find/advanced">Advanced Search</a>';
+
+        echo $form;
+    }
 
     public function filterItemsBrowseDefaultSort($params)
     {
@@ -92,7 +105,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
         foreach ($privateElements as $privateElement)
         {
-            $elements = AvantSearch::removeFromSearchElementTexts($elements, $elementTable, $privateElement);
+            $elements = $this->removeFromSearchElementTexts($elements, $elementTable, $privateElement);
         }
 
         return $elements;
@@ -119,7 +132,6 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
         set_option('avantsearch_detail_layout', $_POST['avantsearch_detail_layout']);
         set_option('avantsearch_layouts', $_POST['avantsearch_layouts']);
-        set_option('avantsearch_layout_selector_width', intval($_POST['avantsearch_layout_selector_width']));
         set_option('avantsearch_elements', $_POST['avantsearch_elements']);
         set_option('avantsearch_index_view_elements', $_POST['avantsearch_index_view_elements']);
         set_option('avantsearch_tree_view_elements', $_POST['avantsearch_tree_view_elements']);
@@ -174,7 +186,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
             if ($id)
             {
                 // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
-                AvantSearch::redirectToShowPageForItem($id);
+                $this->redirectToShowPageForItem($id);
             }
         }
 
@@ -187,8 +199,37 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         queue_css_file('avantsearch');
     }
 
-    public function hookPublicFooter($args)
+    protected function redirectToShowPageForItem($id)
     {
-        echo get_view()->partial('avantsearch-script.php');
+        // Construct the URL for the 'show' page. If the user is on an admin page, display
+        // the item on the admin show page, otherwise display it on the public show page.
+        $referrer = $_SERVER['HTTP_REFERER'];
+        $onAdminPage = strpos($referrer, '/admin');
+        $url = "/items/show/$id";
+        if ($onAdminPage)
+        {
+            $url = '/admin' . $url;
+        }
+
+        // Abandon the search request and redirect to the 'show' page.
+        $redirector = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
+        $redirector->gotoUrl($url);
+    }
+
+    protected function removeFromSearchElementTexts($elementTexts, $elementTable, $elementName)
+    {
+        $element = $elementTable->findByElementSetNameAndElementName('Item Type Metadata', $elementName);
+        $elementId = $element->id;
+
+        foreach ($elementTexts as $key => $elementText)
+        {
+            if ($elementText->element_id == $elementId)
+            {
+                unset($elementTexts[$key]);
+                break;
+            }
+        }
+
+        return $elementTexts;
     }
 }

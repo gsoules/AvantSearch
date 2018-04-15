@@ -3,6 +3,10 @@
 	--link-hover-color: #7596b9;
 }
 
+#avantsearch-container {
+	background-color: yellow;
+}
+
 /* Override any theme's attempt to force field/option pairs to not be side-by-side. */
 #content .inputs {
 	clear: none !important;
@@ -17,6 +21,131 @@
 	width: 100px;
 }
 
+.search-th-catalogue- {
+	min-width: 100px;
+}
+
+.search-td-catalogue- {
+	text-align: left;
+	width: 100px;
+}
+
+.search-results-layout-options-button,
+.search-view-toggle-button {
+	background: rgba(0,0,0,0) linear-gradient(to bottom, #7ea115, #608002) repeat scroll 0 0;
+	border: 1px solid #7ea115;
+	-webkit-box-shadow: 0 3px 3px 0 #a1b566 inset, 0 -2px 2px 0 #52690c inset, 2px 2px 2px 0 #aaa;
+	-moz-box-shadow: 0 3px 3px 0 #a1b566 inset, 0 -2px 2px 0 #52690c inset, 2px 2px 2px 0 #aaa;
+	box-shadow: 0 3px 3px 0 #a1b566 inset, 0 -2px 2px 0 #52690c inset, 2px 2px 2px 0 #aaa;
+	color: #fff;
+	padding: 3px 8px;
+}
+
+.search-results-layout-options-button:hover,
+.search-view-toggle-button:hover {
+	-webkit-box-shadow: 0 4px 4px 0 #a1b566 inset, 0 -2px 3px 0 #52690c inset, 3px 3px 3px 0 #aaa;
+	-moz-box-shadow: 0 4px 4px 0 #a1b566 inset, 0 -2px 3px 0 #52690c inset, 3px 3px 3px 0 #aaa;
+	box-shadow: 0 4px 4px 0 #a1b566 inset, 0 -2px 3px 0 #52690c inset, 3px 3px 3px 0 #aaa;
+}
+
+/* Modify Search button */
+.modify-search-button {
+	background: rgba(0,0,0,0) linear-gradient(to bottom, #376c8b, #29536b) repeat scroll 0 0;
+	border: 1px solid #29536b;
+	-webkit-box-shadow: 0 3px 3px 0 #6194b1 inset, 0 -2px 2px 0 #17313f inset, 2px 2px 2px 0 #aaa;
+	-moz-box-shadow: 0 3px 3px 0 #6194b1 inset, 0 -2px 2px 0 #17313f inset, 2px 2px 2px 0 #aaa;
+	box-shadow: 0 3px 3px 0 #6194b1 inset, 0 -2px 2px 0 #17313f inset, 2px 2px 2px 0 #aaa;
+	color: #fff;
+	font-family: "Lato", sans-serif;
+	font-size: 14px;
+	margin-top: 6px;
+	min-width: 124px;
+	padding: 3px 8px;
+	width: 150px;
+}
+
+.modify-search-button:hover {
+	-webkit-box-shadow: 0 4px 4px 0 #6194b1 inset, 0 -2px 3px 0 #17313f inset, 3px 3px 3px 0 #aaa;
+	-moz-box-shadow: 0 4px 4px 0 #6194b1 inset, 0 -2px 3px 0 #17313f inset, 3px 3px 3px 0 #aaa;
+	box-shadow: 0 4px 4px 0 #6194b1 inset, 0 -2px 3px 0 #17313f inset, 3px 3px 3px 0 #aaa;
+}
+
+
+/* === Search Box in banner ===
+--------------------------------------------------------- */
+#simple-search-container {
+	margin-right: 12px;
+	padding: 16px 10px 0px 6px;
+	position: absolute;
+	right:0;
+	text-align: right;
+	width: 30%;
+	z-index: 250;
+}
+
+#simple-search-container a {
+	color: var(--nav-link-color);
+	font-size: 16px;
+}
+
+#simple-search-container a:hover {
+	color: var(--nav-link-hover-color);
+}
+
+#simple-search-container a:link,
+#simple-search-container a:visited {
+	text-decoration: none;
+}
+
+#simple-search-container button {
+	border: none;
+	box-shadow: none;
+	padding: 0.25em;
+	position: relative;
+	text-indent: -9999px; /* move default text out of the way */
+	width: 32px;
+}
+
+#simple-search-container button::after {
+	background-color: #29536b;
+	bottom: 0;
+	content: "\f002";
+	font-family: "FontAwesome";
+	left: 0;
+	line-height: 28px;
+	position: absolute;
+	text-indent: 0;
+	top: 0;
+	width: 32px;
+}
+
+#simple-search-container button:hover::after {
+	background-color: #5f5f5f;
+}
+
+#simple-search-container form {
+	margin: 0.375em 0;
+}
+
+#simple-search-container input {
+	vertical-align: top;
+	margin: 0;
+}
+
+#simple-search-container input[type=text] {
+	float: left;
+	width: 240px;
+}
+
+#simple-search-container .simple-search-subject-link {
+	float: left;
+}
+
+/* ------- Advanced Search page styling that is specific to this theme. ------*/
+#search-filter-form {
+	font-family: "Lato", sans-serif;
+}
+
 .table-view-layout-option select {
 	width: 160px;
 }
@@ -25,10 +154,7 @@
 	width: 60px;
 }
 
-#search-filter-form {
-	font-family: "Lato", sans-serif;
-}
-
+/* add a little padding before the Field filter text box */
 #search-filter-form .advanced-search-terms {
 	margin-top:8px;
 }
@@ -82,20 +208,50 @@
 	padding: 8px 0;
 }
 
-/* Add field button */
-.add_search {
-	margin: 6px 0 12px 0;
+#search-title-only .search-radio-buttons {
+	margin-bottom: 40px;
 }
 
-/* Remove field button */
+#search-selects {
+	margin-top: 12px;
+}
+
+/* Buttons for Add a Field and Remove field */
+.add_search {
+	margin-top: 6px;
+	margin-bottom: 12px;
+}
+
+/* Remove field button - styled red */
+.search-form-section .remove_search {
+	background: rgba(0,0,0,0) linear-gradient(to bottom, #ad6345, #7d422a) repeat scroll 0 0;
+	border: 1px solid #7e432c;
+	-webkit-box-shadow: 0 3px 3px 0 #b87979 inset, 0 -2px 2px 0 #535030 inset, 2px 2px 2px 0 #aaa;
+	-moz-box-shadow: 0 3px 3px 0 #b87979 inset, 0 -2px 2px 0 #535030 inset, 2px 2px 2px 0 #aaa;
+	box-shadow: 0 3px 3px 0 #b87979 inset, 0 -2px 2px 0 #535030 inset, 2px 2px 2px 0 #aaa;
+	color: #fff;
+	font-size: 14px;
+	line-height: 21px;
+	padding: 3px 8px;
+}
+
+.search-form-section .remove_search:hover {
+	-webkit-box-shadow: 0 4px 4px 0 #b87979 inset, 0 -2px 3px 0 #535030 inset, 3px 3px 3px 0 #aaa;
+	-moz-box-shadow: 0 4px 4px 0 #b87979 inset, 0 -2px 3px 0 #535030 inset, 3px 3px 3px 0 #aaa;
+	box-shadow: 0 4px 4px 0 #b87979 inset, 0 -2px 3px 0 #535030 inset, 3px 3px 3px 0 #aaa;
+}
+
 .remove_search {
+	height: 29px;
 	margin: 8px 0 16px 0;
+	position: relative;
+	text-indent: 0px;
+	width: 102px;
 }
 
 .remove_search:after {
 	content: "";
 }
-
 
 /* === Advanced Search Form ===
 --------------------------------------------------------- */
@@ -114,18 +270,26 @@ input[type="checkbox"] {
 }
 
 #search-filter-form #avantsearch-primary {
+    float:left;
+    width: 60%;
 	box-sizing: border-box;
-    	float:left;
-    	width: 60%;
 }
 
 #search-filter-form #avantsearch-secondary {
-	border-left: none;
-	float: right;
-	margin-top: 12px;
-	padding: 0 0 1.5em 1.5em;
-	width: 37%;
-	word-wrap: break-word;
+    border-left: none;
+    float: right;
+    margin-top: 12px;
+    padding: 0 0 1.5em 1.5em;
+    width: 37%;
+    word-wrap: break-word;
+}
+
+#search-filter-form .left {
+	width: 60%;
+}
+
+#search-filter-form input {
+    display: inline-block;
 }
 
 /* Format the boxed section containing one set of search criteria */
@@ -160,20 +324,20 @@ input[type="checkbox"] {
 }
 
 .search-entry:first-of-type .advanced-search-joiner {
-  	display: none;
+  display: none;
 }
 
 .advanced-search-joiner {
-  	width: 15%;
+  width: 15%;
 }
 
 .search-entry:first-of-type select {
-  	width:48%;
+  width:48%;
 }
 
 /* Make the width of the select boxes that appear after the joiner dropdown narrower */
 .search-entry:not(:first-of-type) select:not(:first-of-type) {
-  	width: 40%;
+  width: 40%;
 }
 
 /* Date fields */
@@ -181,6 +345,17 @@ input[type="checkbox"] {
 #search-filter-form #date-end {
 	margin-right: 1px;
 	width: 15%
+}
+
+/* Search Results Options - Right Panel */
+
+.search-form-section.right {
+	box-shadow: none;
+	border-top: none;
+	float: left;
+	margin-left: 30px;
+	margin-top: 0;
+	width: 34%;
 }
 
 #search-button {
@@ -202,7 +377,7 @@ input[type="checkbox"] {
 }
 
 .search-images-only-option {
-    	clear: both;
+    clear: both;
 }
 
 .search-view-options {
@@ -253,17 +428,6 @@ input[type="checkbox"] {
 
 /* === Search Results - Common to all Views ===
 --------------------------------------------------------- */
-/* Position Modify Search button */
-.modify-search-button {
-	float: right;
-	margin: 12px 0;
-	text-align: center;
-}
-
-.modify-search-button button {
-	min-width: 165px;
-}
-
 .search-result {
 	padding-left:4px;
 }
@@ -309,66 +473,55 @@ input[type="checkbox"] {
 	font-weight: bold;
 }
 
-.search-results-title {
-	float: left;
-	width: 60%;
-	margin: 12px 0;
-	padding: 0;
-	color: #333;
-	font-size:26px;
-	font-weight: 400;
-	line-height: 1.2em;
-}
-
 .search-results-buttons {
 	float: right;
-	width: 30%;
+	width: 35%;
 }
 
-/* The text that describes the current set of filters */
+/* The text that appears at the start of the list of filters */
+#search-results-filter-message {
+	background-color: #a1b566;
+	color: white;
+	display: inline-block;
+	font-size: 14px;
+	margin: 0;
+	margin-right: 5px;
+	padding: 4px 6px 2px 6px;
+}
 
 /* Item filters display */
 #search-filter-bar {
 	clear: both;
-	padding-top: 0;
-	padding-bottom: 12px;
+	padding-top: 8px;
+	padding-bottom: 1em;
 }
 
-#search-filter-bar .search-filter-bar-message {
+#search-filter-bar div:first-of-type {
 	font-size:20px;
-	margin-bottom: 12px;
+	margin-bottom: 20px;
 }
 
-#search-filter-bar .search-filter-bar-message::before {
+#search-filter-bar div:first-of-type::before {
 	color: #29536b;
-	content: "\f002";
-	font-family: "FontAwesome";
+    content: "\f002";
+    font-family: "FontAwesome";
 	font-size: 22px;
-	line-height: 24px;
-	padding: 0 8px 0 0;
+    line-height: 24px;
+    padding: 0 8px 0 0;
 }
 
-.search-filter-bar-layout {
-	height: 30px;
+.browse ul.pagination li a:hover:not(.active) {
+	background-color: #D6CFB2;
 }
-
-.search-filter-bar-layout-details {
-	display: inline-block;
-	height: 100%;
-	margin-left:12px;
-	padding-top: 5px;
-}
-
-
-/* Position buttons on search results view */
-.search-results-toggle  {
-	float:left;
-	height: 100%;
-	margin: 0;
-}
-
 /* End item filter display */
 
+
+/* Position Modify Search button */
+.modify-search-button {
+	float: right;
+	margin-top: 10px !important;
+	text-align: center;
+}
 
 #no-results {
 	clear: both;
@@ -378,36 +531,39 @@ input[type="checkbox"] {
 	margin-top: 0px;
 }
 
-.search-results-layout-options-button {
-	width: 200px;
-	text-align: left;
+/* Green toggle button on search results view */
+.search-results-toggle  {
+	float:left;
+	margin-top: 10px;
+	margin-left: 16px;
 }
 
-.search-results-layout-options-button:after {
-	content: "\f0d7";
-	font-family: "FontAwesome";
-	padding-left: 6px;
-	float: right;
+.search-results-toggle button {
+	width: 150px;
 }
 
-/* Change Layout sub menu buttons */
+/* Change Layout button */
 .search-results-layout-options {
-	position: relative;
+	-webkit-box-shadow: 2px 2px 2px 0 #aaa;
+	-moz-box-shadow: 2px 2px 2px 0 #aaa;
+	box-shadow: 2px 2px 2px 0 #aaa;
+	position: absolute;
 	z-index: 250;
-	-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-	-moz-box-shadow:    0 4px 8px 0 rgba(0, 0, 0, 0.2);
-	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 .search-results-layout-options ul {
 	list-style-type: none;
-	margin: 0;
+	margin: 2px 0 0 0;
 	padding: 0;
 }
 
 .search-results-layout-options li {
 	border-bottom: 1px solid #666;
 	position: relative;
+}
+
+.search-results-layout-options li:last-of-type {
+	border-bottom: none;
 }
 
 .search-results-layout-options li a {
@@ -419,36 +575,36 @@ input[type="checkbox"] {
 	border-radius: 0;
 	cursor: pointer;
 	display: inline-block;
-	height: auto;
+	font-family: "Lato", sans-serif;
+	font-size: 14px;
 	line-height: 21px;
 	margin: 0;
 	padding: 2px 8px;
-	width: 100%;
-}
-
-/* Default colors for layout options dropdown items */
-
-.search-results-layout-options li a.layout-normal {
-	background-color: #eee;
-	color: #222;
-}
-
-.search-results-layout-options li a.layout-normal:hover {
-	background-color: #aaa;
-	color: #222;
+	width: 150px;
 }
 
 .search-results-layout-options li a.layout-selected {
-	background-color: #aaa;
-	color: #fff;
+	background-color: #a1b566;
 }
 
+.search-results-layout-options li a.layout-normal {
+	background-color: #eee;
+	color: #333;
+}
+
+.search-results-layout-options li a:hover {
+	background-color: #a1b566;
+}
+
+.search-results-layout-options-button {
+	width: 150px;
+}
 
 /* === Pagination controls for Table View ===
 --------------------------------------------------------- */
 .search-pagination-nav {
-	float: right;
-	xclear: both;
+	float: none;
+	clear: both;
 	position: relative;
 }
 
@@ -701,7 +857,6 @@ input[type="checkbox"] {
 #search-index-view-headings {
 	clear: both;
 	padding: 16px 0;
-	column-count: 2;
 }
 
 /* Index letter heading */
@@ -1022,15 +1177,37 @@ input[type="checkbox"] {
 		margin-top: 8px;
 	}
 
-	#search-filter-bar {
-		display: block;
+    #search-filter-bar {
+        display: block;
+    }
+
+    #search-entry .advanced-search-joiner {
+	    width: 30%;
 	}
 
-	#search-entry .advanced-search-joiner {
-	    	width: 30%;
+	/* search box in banner */
+	#simple-search-container {
+		margin-bottom: 0;
+		margin-right: 0;
+		position: relative;
+		width: 98%;
 	}
 
-	.modify-search-button {
+	#simple-search-container input[type="text"] {
+		width: 100%;
+	}
+
+	#simple-search-container button, #simple-search-container .button {
+		position: absolute;
+		right: 0px;
+	}
+
+	#simple-search-container a {
+		line-height: 30px;
+	}
+
+	.modify-search-button,
+	.small.blue.button.modify-search-button {
 		clear: both;
 		float: left;
 	}
@@ -1129,10 +1306,6 @@ input[type="checkbox"] {
 
 	.search-filter-form input[type=text] {
 		width: 100%;
-	}
-
-	#search-index-view-headings {
-		column-count: 1;
 	}
 }
 

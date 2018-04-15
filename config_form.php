@@ -4,7 +4,7 @@ $view = get_view();
 $searchElements = get_option('avantsearch_elements');
 if (empty(trim($searchElements)))
 {
-    $searchELements = 'Identifier: Item;' . PHP_EOL . 'Title;' . PHP_EOL . 'Type;' . PHP_EOL . 'Subject;';
+    $searchELements = '<identifier>: Item;' . PHP_EOL . '<title>:Title;';
     set_option('avantsearch_elements', $searchElements);
 }
 
@@ -12,7 +12,6 @@ $layouts = get_option('avantsearch_layouts');
 if (empty(trim($layouts)))
 {
     $layouts = 'L1, public, Details;';
-    $layouts .= 'L2, public, Type / Subject: Type, Subject;';
     set_option('avantsearch_layouts', $layouts);
 }
 ?>
@@ -90,17 +89,6 @@ if (empty(trim($layouts)))
         <?php echo $view->formTextarea('avantsearch_layouts', $layouts, array('rows'=>'8','cols'=>'40')); ?>
     </div>
 </div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label for="avantsearch_layout_selector_width"><?php echo __('Layout Selector Width'); ?></label>
-    </div>
-    <div class="inputs five columns">
-        <p class="explanation"><?php echo __('The width of the layout selector dropdown.'); ?></p>
-        <?php echo $view->formText('avantsearch_layout_selector_width', get_option('avantsearch_layout_selector_width')); ?>
-    </div>
-</div>
-
 
 <div class="field">
     <div class="two columns alpha">
