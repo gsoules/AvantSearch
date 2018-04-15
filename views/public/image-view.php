@@ -4,7 +4,8 @@ $totalResults = $searchResults->getTotalResults();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 
 echo head(array('title' => $pageTitle));
-echo "<h1>$pageTitle</h1>";
+echo "<div class='search-results-container'>";
+echo "<div class='search-results-title'>$pageTitle</div>";
 ?>
 
 <div class="search-results-buttons">
@@ -13,11 +14,9 @@ echo "<h1>$pageTitle</h1>";
 ?>
 </div>
 
-<?php echo $searchResults->emitSearchFilters(__('Image View')); ?>
+<?php echo $searchResults->emitSearchFilters(__('Image View'), $totalResults ? pagination_links() : ''); ?>
 
 <?php if ($totalResults): ?>
-    <?php echo pagination_links(); ?>
-
     <div>
         <ul class="item-preview">
         <?php
@@ -32,6 +31,7 @@ echo "<h1>$pageTitle</h1>";
     </div>
 
     <?php echo pagination_links(); ?>
+    <?php echo '</div>'; ?>
 <?php else: ?>
     <div id="no-results">
         <p><?php echo __('Your search returned no results.'); ?></p>

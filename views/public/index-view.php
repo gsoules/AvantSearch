@@ -10,16 +10,13 @@ $indexFieldName = empty($element) ? '' : $element['name'];
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 
 echo head(array('title' => $pageTitle));
-echo "<h1>$pageTitle</h1>";
+echo "<div class='search-results-container'>";
+echo "<div class='search-results-title'>$pageTitle</div>";
 ?>
-
-<div class="search-results-toggle">
-    <button class="search-view-toggle-button">Show Two Columns</button>
-</div>
 
 <?php
 echo $searchResults->emitModifySearchButton();
-echo $searchResults->emitSearchFilters(__('Index View by %s', $indexFieldName));
+echo $searchResults->emitSearchFilters(__('Index View by %s', $indexFieldName), $totalResults ? pagination_links() : '');
 
 if ($indexFieldElementId == ItemMetadata::getElementIdForElementName('Location'))
 {
@@ -148,7 +145,7 @@ if ($totalResults):
         <?php echo $letterIndex; ?>
     </div>
 <?php endif; ?>
-<?php echo $this->partial('/index-view-script.php', array('resultsCount' => $totalResults)); ?>
+<?php echo '</div>'; ?>
 <?php else: ?>
     <div id="no-results">
         <p><?php echo __('Your search returned no results.'); ?></p>

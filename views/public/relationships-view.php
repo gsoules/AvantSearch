@@ -12,14 +12,15 @@ $titleElementName = ItemMetadata::getTitleElementName();
 
 // Get the label that the admin configured to show for the identifier element.
 $layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
-$identifierNameLabel = $layoutDefinitions['elements']['<identifier>'];
+$identifierNameLabel = $layoutDefinitions['elements'][ItemMetadata::getIdentifierAliasElementName()];
 
 $headerColumns[$identifierElementName] = array('label' => $identifierNameLabel, 'classes' => 'search-th-identifier', 'sortable' => true);
 $headerColumns[$titleElementName] = array('label' => $titleElementName, 'classes' =>  'search-th-title', 'sortable' => true);
 $headerColumns[__('<related-items>')] = array('label' => __('Related Items'), 'classes' => 'search-th-relationship', 'sortable' => false);
 
 echo head(array('title' => $pageTitle));
-echo "<h1>$pageTitle</h1>";
+echo "<div class='search-results-container'>";
+echo "<div class='search-results-title'>$pageTitle</div>";
 ?>
 
 <div class="search-results-buttons">
@@ -28,11 +29,9 @@ echo "<h1>$pageTitle</h1>";
 ?>
 </div>
 
-<?php echo $searchResults->emitSearchFilters(__('Relationships View')); ?>
+<?php echo $searchResults->emitSearchFilters(__('Relationships View'), $totalResults ? pagination_links() : ''); ?>
 
 <?php if ($totalResults): ?>
-    <?php echo pagination_links(); ?>
-
     <table id="search-table-view" class="relationships-table-view">
         <thead>
         <tr>
@@ -44,7 +43,7 @@ echo "<h1>$pageTitle</h1>";
         foreach ($results as $item)
         {
             set_current_record('Item', $item);
-            $itemIdentifier = ItemMetadata::getItemIdentifier($item);
+            $itemIdentifier = ItemMetadata::getItemIdentifierAlias($item);
             $itemPreview = new ItemPreview($item);
             $itemThumbnailHtml = $itemPreview->emitItemPreview(false);
             $typeText = metadata($item, array('Dublin Core', 'Type'), array('no_filter' => true));
@@ -71,6 +70,7 @@ echo "<h1>$pageTitle</h1>";
     </table>
 
     <?php echo pagination_links(); ?>
+    <?php echo '</div>'; ?>
 <?php else: ?>
     <div id="no-results">
         <p><?php echo __('Your search returned no results.'); ?></p>
