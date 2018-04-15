@@ -27,7 +27,7 @@ class SearchResultsFilters
         $this->filterCount++;
     }
 
-    public function emitSearchFilters($message)
+    public function emitSearchFilters($layoutIndicator, $paginationNav)
     {
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $requestArray = $request->getParams();
@@ -120,17 +120,24 @@ class SearchResultsFilters
                 $displayArray[__('\'Date equal to or before')] = $dateEnd;
         }
 
-        $layoutMessage = "<span id=\"search-results-filter-message\">$message</span>";
+        $layoutDetails = '';
 
         if ($this->searchResults->getTotalResults() && $this->searchResults->getViewId() == SearchResultsViewFactory::TABLE_VIEW_ID)
         {
-            $layoutMessage .= __('Sorted by %s', $this->searchResults->getSortFieldName());
+            $layoutDetails .= __('Sorted by %s', $this->searchResults->getSortFieldName());
         }
 
         if ($this->searchResults->getSearchFiles())
         {
-            $layoutMessage .= ' ' .  ' <span class="search-files-only">' . __('(only showing items with images or files)') . '</span>';
+            $layoutDetails .= ' ' .  ' <span class="search-files-only">' . __('(only showing items with images or files)') . '</span>';
         }
+
+        if (!empty($layoutDetails))
+        {
+            $layoutDetails = "<div class='search-filter-bar-layout-details'>$layoutDetails</div>";
+        }
+
+        $layoutMessage = $layoutIndicator . $layoutDetails;
 
         foreach ($displayArray as $name => $query)
         {
@@ -157,8 +164,8 @@ class SearchResultsFilters
         }
 
         $html = "<div id='search-filter-bar'>";
-        $html .= "<div>$this->filterMessage</div>";
-        $html .= "<div>$layoutMessage</div>";
+        $html .= "<div class='search-filter-bar-message'>$this->filterMessage</div>";
+        $html .= "<div class='search-filter-bar-layout'>{$layoutMessage}{$paginationNav}</div>";
         $html .= '</div>';
 
         return $html;

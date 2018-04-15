@@ -53,7 +53,7 @@ class SearchResultsTableView extends SearchResultsView
             $elementName = $parts[0];
             $label = $partsCount == 2 ? $parts[1] : $elementName;
 
-            if ($elementName != '<identifier>' && $elementName != '<title>' && $elementName != '<image>' && $elementName != '<tags>')
+            if ($elementName != '<image>' && $elementName != '<tags>')
             {
                 $elementId = ItemMetadata::getElementIdForElementName($elementName);
                 if ($elementId == 0)
@@ -150,6 +150,12 @@ class SearchResultsTableView extends SearchResultsView
         // Find which columns appear in which layouts and set the header column's classes to be a list of layout Ids for that column.
         foreach ($layoutColumns as $layoutId => $columns)
         {
+            if ($layoutId == 'L1')
+            {
+                // The L1 columns are not configurable. If the admin specifies any, they are ignored.
+                continue;
+            }
+
             foreach ($columns as $elementName)
             {
                 if (!array_key_exists($elementName, $layoutElements))

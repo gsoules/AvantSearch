@@ -8,7 +8,7 @@ Archive topic [Searching the Digital Archive](http://swhplibrary.net/searching/)
 [Digital Archive](http://swhplibrary.net/archive) and therefore **this plugin is not yet usable for
 another Omeka installation**. Please wait for the 2.0 release before using the plugin with your own installation. 
 
-This plugin was developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Southwest Harbor, Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
+This plugin was originally developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Southwest Harbor, Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
 
 A screen shot of the search results produced by AvantSearch appears below.
 <hr/>
@@ -60,40 +60,9 @@ To install the AvantSearch plugin, follow these steps:
 1. Activate the plugin from the Admin → Settings → Plugins page.
 1. Configure the AvantCommon plugin to specify your item identifier and title elements.
 1. Configure the AvantSearch plugin as decribed in the Configuration Options section below.
-1. Edit your theme so that it displays the AvantSearch search box and Advanced Search link instead
-of the native Omeka search. Instructions for editing your theme are below.
 
-In your theme's header.php file,
-
-Replace this code
-
-```
-<div id="search-container" role="search">
-    <?php if (get_theme_option('use_advanced_search') === null || get_theme_option('use_advanced_search')): ?>
-    <?php echo search_form(array('show_advanced' => true)); ?>
-    <?php else: ?>
-    <?php echo search_form(); ?>
-    <?php endif; ?>
-</div>
-```
-with this code
-```
-<div id="search-container" role="search">
-    <?php
-    if (plugin_is_active('AvantSearch'))
-    {
-        echo AvantSearchPlugin::emitSearchForm();
-    }
-    else
-    {
-        $advancedOption = get_theme_option('use_advanced_search');
-        echo search_form(array('show_advanced' => $advancedOption === null || $advancedOption == true));
-    }
-    ?>
-</div>
-```
-The new code will replace the native Omeka simple and advanced search controls with the AvantSearch controls, but
-will automatically revert to the native controls if the AvantSearch plugin is deactivated.
+Note that when this plugin is activated, it dynamically replaces the native Omeka search box (located in the page
+header) with the version used by AvantSearch.
 
 ## Improving Search Results
 
@@ -143,6 +112,7 @@ Address Sorting | Sort street addresses first by street name, then by street num
 Private Elements | Elements that should not be searched by public users.
 Result Elements | Names and labels of elements that can appear in search results.
 Layouts | Layout definitions.
+Layout Selector Width | Specifies the width of the layout selector dropdown that appears on search results pages.
 Detail Layout | Detail layout elements.
 Index View | Elements that can be used as the Index View field.
 Tree View | Elements that can be used as the Tree View field
@@ -264,10 +234,6 @@ The label value will appear in place of the element name in search results and i
 * Specify each element on a separate row ending with a semicolon.
 * On each row, type the element name optionally followed by a colon and the element's label. If you don't specify
 a label, the element name will be used as its label.
-* Use the aliases `<identifier>` and `<title>`to specify the elements that your installation uses for the item
-identifier and title. You must use these even if you use the Dublin Core names Identifier and
-Title. You specify your installation's identifier and title elements on the configuration page for the
-[AvantCommon](https://github.com/gsoules/AvantCommon) plugin. 
 * Use the pseudo-element `<tags>` to display an item's tags in search results.
 
 > **IMPORTANT**: You must specify every element that you want reference in the Layouts and Detail Layout options.
@@ -282,8 +248,8 @@ a layout that displays both, will always put the Type column before the Subject 
 Subject followed by Type in the layout definition.
 
 ```
-<identifier>: Item;
-<title>:Title;
+Identifier: Item;
+Title;
 Type;
 Subject;
 Accession Number;
@@ -319,17 +285,17 @@ logged in as an administrator.
 If you decided to add a new column to a layout, make sure to add it to the Result Element list if it's not already
 there, otherwise that column won't appear in the layout.
 
-Below is an example specification of Layouts. Note that each layout uses the aliases `<identifier>` and `<title>`.
-They are not required, but it's helpful to users to always see this information on each layout. Remember also
+Below is an example specification of Layouts. Note that each layout except L1 begins with Identifier and Title.
+This is not required, but its helpful for users to always see this information on each layout. Remember also
 that the order in which columns appear in a layout is the order in which they appear in the Search Results list. For instance,
 in the example below, you could list Publisher before Creator, but if Creator precedes Publisher in the Search Results
 list, that will be the order of the columns regardless of the order in the layout specification.
 
 ```
 L1, public, Summary;
-L2, public, Creator/Publisher: <identifier>, <title>, Creator, Publisher, Date;
-L3, public, Type/Subject: <identifier>, <title>, Subject, Type;
-L6, admin, Admin Info: <identifier>, <title>, Status, Medium, Condition;
+L2, public, Creator/Publisher: Identifier, Title, Creator, Publisher, Date;
+L3, public, Type/Subject: Identifier, Title, Subject, Type;
+L6, admin, Admin Info: Identifier, Title, Status, Medium, Condition;
 ```
 
 Notice that the specification above includes L1 in the first row, but that row does not list any columns. You must specify
@@ -344,6 +310,12 @@ a mising colon after the *Name* specifier, the affected elements will be ignored
 [Learn more about layouts](http://swhplibrary.net/searching/search-results-table-view/).
 
 <hr/>
+
+#### Layout Selector Width
+Use this option to specify an integer indicating the width in pixels of the layout selector that appears on search
+results pages. For example, specify 250 to mean 250px. This option saves you from having to code CSS to adjust the
+width to a size that is appropriate for your layout options and your theme's styling. Experiment to find a value that
+makes the selector just wide enough to accommodate the longest layout you defined in the Layouts section above.
 
 #### Detail Layout
 
@@ -395,14 +367,22 @@ Search page.
 Below is an example specification of the Index View option.
 
 ```
-<title>;
+Title;
 Creator;
 Publisher;
 Type;
 ```
 
-[Learn more about Index View.](http://swhplibrary.net/searching/search-results-index-view/)
+By default, the Index View displays results in two columns. You can change it to show one column by placing the 
+following CSS in your theme's style.css file. To show three columns, specify 3 instead of 1.
 
+```
+#search-index-view-headings {
+	column-count: 1;
+}
+```
+
+[Learn more about Index View.](http://swhplibrary.net/searching/search-results-index-view/)
 
 <hr/>
 

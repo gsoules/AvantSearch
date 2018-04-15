@@ -40,13 +40,15 @@
 
         // Show the user which layout is selected.
         var layoutName = layout.text();
-        jQuery('#search-results-filter-message').text(layoutName + ' Layout');
+        jQuery('.search-results-layout-options-button').text(layoutName + ' Layout');
 
-        // Update the layout Id in all links that post back to this page or to Advanced Search.
         if (layoutId !== currentLayoutId)
         {
+            // Update the layout query string value to reflect the newly selected layout.
             var oldPattern = new RegExp('&layout=' + currentLayoutId);
             var newPattern = '&layout=' + layoutId;
+
+            // Update the layout Id in all links that post back to this page or to Advanced Search.
             jQuery(".search-link")
                 .each(function () {
                     var oldHref = jQuery(this).prop("href");
@@ -55,6 +57,16 @@
                     jQuery(this).prop("href", newHref);
                 });
 
+            // Update the layout Id in the action for the Modify Search button's form.
+            jQuery(".modify-search-button")
+                .each(function () {
+                    var oldAction = jQuery(this).prop("action");
+                    var newAction = oldAction.replace(oldPattern, '');
+                    newAction = newAction + newPattern;
+                    jQuery(this).prop("action", newAction);
+                });
+
+            // Update the URL in the browser's address bar.
             var oldUrl = document.location.href;
             var newUrl = oldUrl.replace(oldPattern, '');
             newUrl = newUrl + newPattern;
