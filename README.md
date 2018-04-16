@@ -4,9 +4,7 @@ The AvantSearch plugin provides extended searching and search results capabiliti
 Omeka site. User documentation describing this plugin's extensive functionality is located in the Digital
 Archive topic [Searching the Digital Archive](http://swhplibrary.net/searching/).
 
-> Release 1.1 of AvantSearch is specific to the Southwest Harbor Public Library's
-[Digital Archive](http://swhplibrary.net/archive) and therefore **this plugin is not yet usable for
-another Omeka installation**. Please wait for the 2.0 release before using the plugin with your own installation. 
+> **This plugin is under development**. Please wait for the 2.0 release before using with your own installation. 
 
 This plugin was originally developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Southwest Harbor, Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
 
