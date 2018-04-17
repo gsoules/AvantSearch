@@ -9,38 +9,43 @@ $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 $layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
 
 echo head(array('title' => $pageTitle));
-echo "<h1>$pageTitle</h1>";
+echo "<div class='search-results-container'>";
+echo "<div class='search-results-title'>$pageTitle</div>";
+
+$layoutButtonHtml = '';
+if ($totalResults)
+{
+    // Get the width of the layout selector. Because of the fact that this control is a button with a dropdown effect
+    // created from ul and li tags, and because we don't know how wide the contents will be, it's nearly impossible
+    // to properly style the width of button and dropdown using CSS. Instead we let the admin choose its width.
+    $width = intval(get_option('avantsearch_layout_selector_width'));
+    if ($width == 0)
+        $width = '200';
+
+    $layoutButtonHtml = "<div class='search-results-toggle'>";
+    $layoutButtonHtml .= "<button class='search-results-layout-options-button' style='width:{$width}px;'></button>";
+    $layoutButtonHtml .= "<div class='search-results-layout-options'>";
+    $layoutButtonHtml .= "<ul>";
+    foreach ($layoutDefinitions['layouts'] as $key => $layoutName)
+    {
+        $id = "L$key";
+        $layoutButtonHtml .= "<li><a id='$id' class='button show-layout-button'>$layoutName</a></li>";
+    }
+    $layoutButtonHtml .= " </ul>";
+    $layoutButtonHtml .= "</div>";
+    $layoutButtonHtml .= "</div>";
+}
 ?>
 
 <div class="search-results-buttons">
-	<?php if ($totalResults): ?>
-		<div class="search-results-toggle">
-			<button class="search-results-layout-options-button"><?php echo __('Change Layout') ?></button>
-			<div class="search-results-layout-options">
-				<ul>
-                    <?php
-                    $class = 'small blue button show-layout-button';
-                    $layoutNames = $layoutDefinitions['layouts'];
-                    foreach ($layoutNames as $key => $layoutName)
-                    {
-                        $id = "L$key";
-                        echo "<li><a id='$id' class='$class'>$layoutName</a></li>";
-                    }
-                    ?>
-				</ul>
-			</div>
-		</div>
-	<?php endif; ?>
-	<?php
-	echo $searchResults->emitModifySearchButton();
-	?>
+    <?php
+    echo $searchResults->emitModifySearchButton();
+    ?>
 </div>
 
-<?php echo $searchResults->emitSearchFilters(__('Table View')); ?>
+<?php echo $searchResults->emitSearchFilters($layoutButtonHtml, $totalResults ? pagination_links() : ''); ?>
 
 <?php if ($totalResults): ?>
-    <?php echo pagination_links(); ?>
-
     <table id="search-table-view">
         <thead>
         <tr>
@@ -57,9 +62,9 @@ echo "<h1>$pageTitle</h1>";
         ?>
         </tbody>
     </table>
-
     <?php echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId)); ?>
     <?php echo pagination_links(); ?>
+    <?php echo '</div>'; ?>
 <?php else: ?>
     <div id="no-results">
         <p><?php echo __('Your search returned no results.'); ?></p>
