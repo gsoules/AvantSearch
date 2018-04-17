@@ -78,24 +78,23 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         return $params;
     }
 
-    public function filterSearchElementTexts($elements)
+    public function filterSearchElementTexts($elementTexts)
     {
-        // Prevent non-public elements likes Notes and Instructions from being saved to the
+        // Prevent elements that the admin has configured to be private from being saved to the
         // Search Text table. That's the table that's queried for simple searches (advanced
         // search queries individual elements). If we didn't do this, users would get hits on
         // items that contain matching text in elements that are not displayed on public pages.
 
-        $elementTable = get_db()->getTable('Element');
+        if (empty($elementTexts))
+            return $elementTexts;
 
-        $privateElements = explode(',', get_option('avantsearch_private_elements'));
-        $privateElements = array_map('trim', $privateElements);
-
-        foreach ($privateElements as $privateElement)
+        $privateElementsData = json_decode(get_option('avantsearch_private_elements'), true);
+        foreach ($privateElementsData as $elementId => $name)
         {
-            $elements = AvantSearch::removeFromSearchElementTexts($elements, $elementTable, $privateElement);
+            $elementTexts = AvantSearch::removeFromSearchElementTexts($elementTexts, $elementId);
         }
 
-        return $elements;
+        return $elementTexts;
     }
 
     public function hookAdminSettingsSearchForm($args)
@@ -113,17 +112,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookConfig()
     {
-        set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
-        set_option('avantsearch_filters_show_titles_option', $_POST['avantsearch_filters_show_titles_option']);
-        set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
-        set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
-        set_option('avantsearch_detail_layout', $_POST['avantsearch_detail_layout']);
-        set_option('avantsearch_layouts', $_POST['avantsearch_layouts']);
-        set_option('avantsearch_layout_selector_width', intval($_POST['avantsearch_layout_selector_width']));
-        set_option('avantsearch_elements', $_POST['avantsearch_elements']);
-        set_option('avantsearch_index_view_elements', $_POST['avantsearch_index_view_elements']);
-        set_option('avantsearch_tree_view_elements', $_POST['avantsearch_tree_view_elements']);
-        set_option('avantsearch_private_elements', $_POST['avantsearch_private_elements']);
+        AvantSearch::saveConfiguration();
     }
 
     public function hookInstall()

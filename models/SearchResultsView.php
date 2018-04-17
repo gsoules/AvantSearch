@@ -160,14 +160,11 @@ class SearchResultsView
 
     public function getAdvancedSearchFields()
     {
-        // Get the names of the private elements from the coma-separated list on the configuration page.
-        // @TODO: Make this work with Dublin Core fields as well.
-        $privateFieldNames = explode(',', get_option('avantsearch_private_elements'));
+        // Get the names of the private elements that the admin configured.
+        $privateElementsData = json_decode(get_option('avantsearch_private_elements'), true);
         $privateFields = array();
-        foreach ($privateFieldNames as $name)
+        foreach ($privateElementsData as $elementId => $name)
         {
-            $name = trim($name);
-            $elementId = ItemMetadata::getElementIdForElementName($name);
             $privateFields[$elementId] = $name;
         }
 

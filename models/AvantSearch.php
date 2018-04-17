@@ -33,11 +33,8 @@ class AvantSearch
         $redirector->gotoUrl($url);
     }
 
-    public static function removeFromSearchElementTexts($elementTexts, $elementTable, $elementName)
+    public static function removeFromSearchElementTexts($elementTexts, $elementId)
     {
-        $element = $elementTable->findByElementSetNameAndElementName('Item Type Metadata', $elementName);
-        $elementId = $element->id;
-
         foreach ($elementTexts as $key => $elementText)
         {
             if ($elementText->element_id == $elementId)
@@ -48,5 +45,21 @@ class AvantSearch
         }
 
         return $elementTexts;
+    }
+
+    public static function saveConfiguration()
+    {
+        SearchConfigurationOptions::validateAndSavePrivateElementsOption();
+        SearchConfigurationOptions::validateAndSaveLayoutSelectorWidthOption();
+
+        set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
+        set_option('avantsearch_filters_show_titles_option', $_POST['avantsearch_filters_show_titles_option']);
+        set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
+        set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
+        set_option('avantsearch_detail_layout', $_POST['avantsearch_detail_layout']);
+        set_option('avantsearch_layouts', $_POST['avantsearch_layouts']);
+        set_option('avantsearch_elements', $_POST['avantsearch_elements']);
+        set_option('avantsearch_index_view_elements', $_POST['avantsearch_index_view_elements']);
+        set_option('avantsearch_tree_view_elements', $_POST['avantsearch_tree_view_elements']);
     }
 }

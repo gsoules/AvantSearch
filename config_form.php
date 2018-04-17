@@ -1,6 +1,12 @@
 <?php
 $view = get_view();
 
+$privateElementsOption = SearchConfigurationOptions::getPrivateElementsOption();
+$privateElementOptionRows = max(3, count(explode(';', $privateElementsOption)) - 1);
+
+$layoutSelectorWidth = SearchConfigurationOptions::getLayoutSelectorWidthOption();
+
+
 $searchElements = get_option('avantsearch_elements');
 if (empty(trim($searchElements)))
 {
@@ -20,11 +26,6 @@ if (empty(trim($layouts)))
 <div class="plugin-help">
     <a href="https://github.com/gsoules/AvantSearch#usage" target="_blank">Learn about the configuration options on this page</a>
 </div>
-
-<hr/>
-<h4>Read the <a href="https://github.com/gsoules/AvantSearch/blob/master/README.md" target="_blank">AvantSearch documentation</a> before choosing any of these options.</h4>
-<hr/>
-<br/>
 
 <div class="field">
     <div class="two columns alpha">
@@ -72,7 +73,7 @@ if (empty(trim($layouts)))
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Elements that should not be searched by public users."); ?></p>
-        <?php echo $view->formTextarea('avantsearch_private_elements', get_option('avantsearch_private_elements'), array('rows'=>'2','cols'=>'40')); ?>
+        <?php echo $view->formTextarea('avantsearch_private_elements', $privateElementsOption, array('rows'=>$privateElementOptionRows,'cols'=>'40')); ?>
     </div>
 </div>
 <div class="field">
@@ -101,7 +102,7 @@ if (empty(trim($layouts)))
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __('The width of the layout selector dropdown.'); ?></p>
-        <?php echo $view->formText('avantsearch_layout_selector_width', get_option('avantsearch_layout_selector_width')); ?>
+        <?php echo $view->formText('avantsearch_layout_selector_width', $layoutSelectorWidth, array('style' => 'width: 50px;')); ?>
     </div>
 </div>
 
