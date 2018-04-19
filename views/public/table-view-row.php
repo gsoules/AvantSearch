@@ -1,23 +1,23 @@
 <?php
+/* @var $searchResults SearchResultsTableView */
 
-$layoutClasses = $layoutDefinitions['classes'];
-$layoutElements = $layoutDefinitions['elements'];
-$data = new SearchResultsTableViewRowData($item, $searchResults, $layoutElements);
+$data = new SearchResultsTableViewRowData($item, $searchResults);
+$columnData = $searchResults->getColumnsData();
+$layoutData = $searchResults->getLayoutsData();
 
 echo '<tr>';
 
 // Emit the columns for this row's data.
-foreach ($layoutElements as $key => $layoutElement)
+foreach ($columnData as $columnName => $column)
 {
     // Form the special class name e.g. 'search-td-title' that is unique to this row column.
-    $columnClass = SearchResultsView::createColumnClass($key, 'td');
+    $columnClass = SearchResultsView::createColumnClass($columnName, 'td');
 
     // Get this row's column text.
-    $text = $data->elementValue[$key]['text'];
+    $text = $data->elementValue[$columnName]['text'];
 
-    // Get the layout classes for this element name e.g. 'L2 L7'. If there are none, the
-    // element is not used for a column but may be used in the L1 Detail layout.
-    $classes = isset($layoutClasses[$key]) ? $layoutClasses[$key] : '';
+    // Get the layout classes for this element name e.g. 'L2 L7'.
+    $classes = SearchResultsTableView::createLayoutClasses($column);
 
     if (!empty(($classes)))
     {
@@ -26,17 +26,12 @@ foreach ($layoutElements as $key => $layoutElement)
     }
 }
 
-if (!isset($layoutDefinitions['columns']['L1']))
+if (!$searchResults->hasLayoutL1())
 {
     // The admin did not configure an L1 layout.
     echo '</tr>';
     return;
 }
-
-// Get the names of the elements that the admin configured to appear in columns 1 and 2
-// of the Detail layout. The Description element value always appears in column 3.
-$column1 =  $layoutDefinitions['details']['column1'];
-$column2 =  $layoutDefinitions['details']['column2'];
 
 // The code that follows emits the L1 Detail layout which is a table a column of the overall layout table.
 ?>
@@ -60,6 +55,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
                 }
                 ?>
             </td>
+<?php if (!empty($column2)): ?>
             <td class="search-results-detail-col2">
                 <?php
                 foreach ($column2 as $elementName)
@@ -69,6 +65,7 @@ $column2 =  $layoutDefinitions['details']['column2'];
                 }
                 ?>
             </td>
+<?php endif; ?>
             <td class="search-results-detail-col3">
                 <div>
                     <?php echo $text = $data->elementValue['Description']['detail']; ?>

@@ -1,7 +1,7 @@
 <script>
     var currentLayoutId = 0;
-    var firstLayoutId = <?php echo SearchResultsTableView::getLayoutIdFirst(); ?>;
-    var lastLayoutId = <?php echo SearchResultsTableView::getLayoutIdLast(); ?>;
+    var firstLayoutId = <?php echo $layoutIdFirst; ?>;
+    var lastLayoutId = <?php echo $layoutIdLast; ?>;
 
     function deselectLayoutButtons()
     {

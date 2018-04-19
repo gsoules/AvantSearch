@@ -12,7 +12,7 @@ $titleElementName = ItemMetadata::getTitleElementName();
 
 // Get the label that the admin configured to show for the identifier element.
 $layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
-$identifierNameLabel = $layoutDefinitions['elements'][ItemMetadata::getIdentifierAliasElementName()];
+$identifierNameLabel = $layoutDefinitions['columns'][ItemMetadata::getIdentifierAliasElementName()];
 
 $headerColumns[$identifierElementName] = array('label' => $identifierNameLabel, 'classes' => 'search-th-identifier', 'sortable' => true);
 $headerColumns[$titleElementName] = array('label' => $titleElementName, 'classes' =>  'search-th-title', 'sortable' => true);

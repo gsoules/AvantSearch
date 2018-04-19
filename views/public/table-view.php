@@ -3,10 +3,17 @@
 
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
-$layoutId = $searchResults->getLayoutId();
 $showRelationships = $searchResults->getShowRelationships();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
-$layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
+
+$layoutId = $searchResults->getLayoutId();
+$layoutsData = $searchResults->getLayoutsData();
+$layoutIdFirst = $searchResults->getLayoutIdFirst();
+$layoutIdLast = $searchResults->getLayoutIdLast();;
+
+$detailLayoutData = $searchResults->getDetailLayoutData();
+$column1 =  isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
+$column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
 
 echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";
@@ -26,10 +33,16 @@ if ($totalResults)
     $layoutButtonHtml .= "<button class='search-results-layout-options-button' style='width:{$width}px;'></button>";
     $layoutButtonHtml .= "<div class='search-results-layout-options'>";
     $layoutButtonHtml .= "<ul>";
-    foreach ($layoutDefinitions['layouts'] as $key => $layoutName)
+    foreach ($layoutsData as $idNumber => $layout)
     {
-        $id = "L$key";
-        $layoutButtonHtml .= "<li><a id='$id' class='button show-layout-button'>$layoutName</a></li>";
+        if ($layout['rights'] == 'admin' && !is_allowed('Users', 'edit'))
+        {
+            // Omit admin layouts for non-admin users.
+            continue;
+        }
+
+        $id = "L$idNumber";
+        $layoutButtonHtml .= "<li><a id='$id' class='button show-layout-button'>{$layout['name']}</a></li>";
     }
     $layoutButtonHtml .= " </ul>";
     $layoutButtonHtml .= "</div>";
@@ -57,12 +70,12 @@ if ($totalResults)
         foreach ($results as $result)
         {
             set_current_record('Item', $result);
-            echo $this->partial('/table-view-row.php', array('item' => $result, 'searchResults' => $searchResults, 'layoutDefinitions' => $layoutDefinitions));
+            echo $this->partial('/table-view-row.php', array('item'=> $result, 'searchResults' => $searchResults, 'column1' => $column1, 'column2' => $column2));
         }
         ?>
         </tbody>
     </table>
-    <?php echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId)); ?>
+    <?php echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId, 'layoutIdFirst' => $layoutIdFirst, 'layoutIdLast' => $layoutIdLast)); ?>
     <?php echo pagination_links(); ?>
     <?php echo '</div>'; ?>
 <?php else: ?>

@@ -117,7 +117,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookInstall()
     {
-        return;
+        SearchConfigurationOptions::setDefaultOptionValues();
     }
 
     public function hookUninstall()

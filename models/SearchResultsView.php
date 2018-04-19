@@ -35,9 +35,9 @@ class SearchResultsView
         $this->isAdmin = is_allowed('Users', 'edit');
     }
 
-    public static function createColumnClass($key, $tag)
+    public static function createColumnClass($columnName, $tag)
     {
-        $columnClass = str_replace(' ', '-', strtolower($key));
+        $columnClass = str_replace(' ', '-', strtolower($columnName));
         $columnClass = str_replace('<', '', $columnClass);
         $columnClass = str_replace('>', '', $columnClass);
         $columnClass = str_replace('#', '', $columnClass);
@@ -209,37 +209,6 @@ class SearchResultsView
             '0' => __('All items'),
             '1' => __('Only items with images or files')
         );
-    }
-
-    public static function getIndexViewOptions($optionName)
-    {
-        $fields = explode(';', get_option($optionName));
-        $fields = array_map('trim', $fields);
-
-        $layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
-        $elementNames = $layoutDefinitions['elements'];
-
-        $options = array();
-
-        foreach ($fields as $elementName)
-        {
-            if (empty(trim($elementName)))
-            {
-                continue;
-            }
-
-            if (!isset($elementNames[$elementName]))
-            {
-                continue;
-            }
-
-            $label = $elementNames[$elementName];
-
-            $elementId = ItemMetadata::getElementIdForElementName($elementName);
-            $options[$elementId] = $label;
-        }
-
-        return $options;
     }
 
     public function getKeywords()

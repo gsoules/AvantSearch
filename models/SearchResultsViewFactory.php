@@ -63,10 +63,10 @@ class SearchResultsViewFactory
         $views[SearchResultsViewFactory::TABLE_VIEW_ID] = __('Table View');
         $views[SearchResultsViewFactory::IMAGE_VIEW_ID] = __('Image View');
 
-        if (count(SearchResultsView::getIndexViewOptions('avantsearch_index_view_elements')) >= 1)
+        if (count(SearchResultsIndexView::getIndexFieldOptions()) >= 1)
             $views[SearchResultsViewFactory::INDEX_VIEW_ID] = __('Index View');
 
-        if (count(SearchResultsView::getIndexViewOptions('avantsearch_tree_view_elements')) >= 1)
+        if (count(SearchResultsTreeView::getTreeFieldOptions()) >= 1)
             $views[SearchResultsViewFactory::TREE_VIEW_ID] = __('Tree View');
 
         // Check if this plugin is configured to work with the AvantRelationships plugin. If yes, allow Relationships layout.

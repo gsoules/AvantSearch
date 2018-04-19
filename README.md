@@ -327,33 +327,20 @@ column one, but Date does not appear in the other rows because those items have 
 
 
 ###### Format:
-* Specify the column one elements in the first row ending with a semicolon.
-* Specify the column two elements on the second row ending with a semicolon.
+* Specify the column one elements in the first row.
+* Specify the column two elements on the second row.
 * Specify the elements as a comma-separated list of element names chosen from those in the Result Element list.
-If you decided to add a new element to a column, make sure to add it to the Result Element list if it's not already
-there, otherwise that element won't appear in the column.
 * Unlike the other layouts, the top to bottom order of elements in the Detail layout columns is not dictated by
-the order of elements in the Results List. The top to bottom order is the order in the comma-separated lists.
+the order of elements in the Columns option. The top to bottom order is the order in the comma-separated lists.
 
 Below is an example specification of the Detail Layout option.
 
 ```
-Type, Accession Number, Subject, Date, <tags>;
-Creator, Publisher, Medium, Condition, Number of Pages;
+Type, Accession Number, Subject, Date, <tags>
+Creator, Publisher, Medium, Condition, Number of Pages
 ```
 
-If you prefer to have only two detail columns, specify only one row of elements and also add the following to your
-theme's CSS. Doing so will display element values in column one and the description in column two.
-
-```
-.search-results-detail-col2 {
-	display: none;
-}
-
-.search-results-detail-col3 {
-	width: 70%;
-}
-```
+If you prefer to have only one detail column plus the description column, specify only one row of elements.
 <hr/>
 
 #### Index View

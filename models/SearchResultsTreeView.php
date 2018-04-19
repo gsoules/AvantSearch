@@ -199,9 +199,15 @@ class SearchResultsTreeView extends SearchResultsView
         return $this->treeFieldName;
     }
 
-    public function getTreeFieldOptions()
+    public static function getTreeFieldOptions()
     {
-        return self::getIndexViewOptions('avantsearch_tree_view_elements');
+        //$treeViewData = SearchConfigurationOptions::getTreeViewData();
+        $options = array();
+//        foreach ($treeViewData as $elementId => $elementName)
+//        {
+//            $options[$elementId] = $elementName;
+//        }
+        return $options;
     }
 
     protected function insertPseudoAncestors($hierarchy)

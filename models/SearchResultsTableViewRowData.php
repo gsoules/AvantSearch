@@ -2,13 +2,13 @@
 
 class SearchResultsTableViewRowData
 {
+    public $columnsData;
     public $elementValue;
     public $itemThumbnailHtml;
-    public $layoutElements;
 
-    public function __construct($item, $searchResults, $layoutElements)
+    public function __construct($item, $searchResults)
     {
-        $this->layoutElements = $layoutElements;
+        $this->columnsData = $searchResults->getColumnsData();
         $this->initializeData($item, $searchResults);
     }
 
@@ -36,7 +36,7 @@ class SearchResultsTableViewRowData
         if (!isset($this->elementValue['Description']['text']))
         {
             // The admin has not configured the Description element for use with AvantSearch.
-            $this->layoutElements['Description'] = 'Description';
+            $this->columns['Description'] = 'Description';
             $this->elementValue['Description']['text'] = '';
         }
 
@@ -58,9 +58,9 @@ class SearchResultsTableViewRowData
 
     protected function generateItemDetails($searchResults)
     {
-        foreach ($this->layoutElements as $elementName => $layoutElement)
+        foreach ($this->columnsData as $columnName => $column)
         {
-            $this->elementValue[$elementName]['detail'] = $searchResults->emitFieldDetail($layoutElement,  $this->elementValue[$elementName]['text']);
+            $this->elementValue[$columnName]['detail'] = $searchResults->emitFieldDetail($column['alias'],  $this->elementValue[$columnName]['text']);
         }
     }
 
@@ -69,7 +69,7 @@ class SearchResultsTableViewRowData
         if (!isset($this->elementValue['Location']['text']))
         {
             // The admin has not configured the Location element for use with AvantSearch.
-            $this->layoutElements['Location'] = 'Location';
+            $this->columns['Location'] = 'Location';
             $this->elementValue['Location']['text'] = '';
         }
 
@@ -106,6 +106,11 @@ class SearchResultsTableViewRowData
 
     public static function getElementDetail($data, $elementName)
     {
+        if ($elementName == '<tags>')
+        {
+            return metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+        }
+
         if (!isset($data->elementValue[$elementName]))
         {
             // The element name is not configured in the elements list.
@@ -153,33 +158,24 @@ class SearchResultsTableViewRowData
 
     protected function readMetadata($item)
     {
-        foreach ($this->layoutElements as $elementName => $layoutElement)
+        foreach ($this->columnsData as $columnName => $column)
         {
-            switch ($elementName)
+            $text = '';
+
+            if ($columnName != 'Title')
             {
-                case 'Title';
-                    // Do nothing here because titles get special handling to include a link to the item.
-                    break;
-                case '<tags>';
-                    $text = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
-                    break;
-                    break;
-                case '<image>';
-                    $text = '';
-                    break;
-                default:
-                    $text = $this->getElementTextsAsHtml($item, $elementName);
+                $text = $this->getElementTextsAsHtml($item, $columnName);
+
+                if ($columnName == ItemMetadata::getIdentifierElementName())
+                {
+                    // Indicate when an item is private.
+                    $text = ItemMetadata::getItemIdentifier($item);
+                    if ($item->public == 0)
+                        $text .= '*';
+                }
             }
 
-            if ($elementName == ItemMetadata::getIdentifierElementName())
-            {
-                // Indicate when an item is private.
-                $text = ItemMetadata::getItemIdentifier($item);
-                if ($item->public == 0)
-                    $text .= '*';
-            }
-
-            $this->elementValue[$elementName]['text'] = $text;
+            $this->elementValue[$columnName]['text'] = $text;
         }
     }
 }

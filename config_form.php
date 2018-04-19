@@ -2,25 +2,20 @@
 $view = get_view();
 
 $privateElementsOption = SearchConfigurationOptions::getPrivateElementsOption();
-$privateElementOptionRows = max(3, count(explode(';', $privateElementsOption)) - 1);
+$privateElementOptionRows = max(3, count(explode(PHP_EOL, $privateElementsOption)) - 1);
+
+$columnsOption = SearchConfigurationOptions::getColumnsOption();
+$columnsOptionRows = max(3, count(explode(PHP_EOL, $columnsOption)) - 1);
+
+$layoutsOption = SearchConfigurationOptions::getLayoutsOption();
+$layoutsOptionRows = max(3, count(explode(PHP_EOL, $layoutsOption)) - 1);
+
+$indexViewOption = SearchConfigurationOptions::getIndexViewOption();
+$indexViewOptionRows = max(3, count(explode(PHP_EOL, $indexViewOption)) - 1);
+
+$detailLayoutOption = SearchConfigurationOptions::getDetailLayoutOption();
 
 $layoutSelectorWidth = SearchConfigurationOptions::getLayoutSelectorWidthOption();
-
-
-$searchElements = get_option('avantsearch_elements');
-if (empty(trim($searchElements)))
-{
-    $searchELements = 'Identifier: Item;' . PHP_EOL . 'Title;' . PHP_EOL . 'Type;' . PHP_EOL . 'Subject;';
-    set_option('avantsearch_elements', $searchElements);
-}
-
-$layouts = get_option('avantsearch_layouts');
-if (empty(trim($layouts)))
-{
-    $layouts = 'L1, public, Details;';
-    $layouts .= 'L2, public, Type / Subject: Type, Subject;';
-    set_option('avantsearch_layouts', $layouts);
-}
 ?>
 
 <div class="plugin-help">
@@ -78,11 +73,11 @@ if (empty(trim($layouts)))
 </div>
 <div class="field">
     <div class="two columns alpha">
-        <label for="avantsearch_elements"><?php echo __('Result Elements'); ?></label>
+        <label for="avantsearch_columns"><?php echo __('Columns'); ?></label>
     </div>
     <div class="inputs five columns">
-        <p class="explanation"><?php echo __("Names and labels of elements that can appear in search results."); ?></p>
-        <?php echo $view->formTextarea('avantsearch_elements', $searchElements, array('rows'=>'16','cols'=>'40')); ?>
+        <p class="explanation"><?php echo __("The order of elements in search results Table View columns."); ?></p>
+        <?php echo $view->formTextarea('avantsearch_columns', $columnsOption, array('rows'=>$columnsOptionRows,'cols'=>'40')); ?>
     </div>
 </div>
 
@@ -92,7 +87,7 @@ if (empty(trim($layouts)))
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Layout definitions."); ?></p>
-        <?php echo $view->formTextarea('avantsearch_layouts', $layouts, array('rows'=>'8','cols'=>'40')); ?>
+        <?php echo $view->formTextarea('avantsearch_layouts', $layoutsOption, array('rows'=>$layoutsOptionRows,'cols'=>'40')); ?>
     </div>
 </div>
 
@@ -113,7 +108,7 @@ if (empty(trim($layouts)))
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Detail layout elements."); ?></p>
-        <?php echo $view->formTextarea('avantsearch_detail_layout', get_option('avantsearch_detail_layout'), array('rows'=>'3','cols'=>'40')); ?>
+        <?php echo $view->formTextarea('avantsearch_detail_layout', $detailLayoutOption, array('rows'=>'2','cols'=>'40')); ?>
     </div>
 </div>
 
@@ -123,7 +118,7 @@ if (empty(trim($layouts)))
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Elements that can be used as the Index View field."); ?></p>
-        <?php echo $view->formTextarea('avantsearch_index_view_elements', get_option('avantsearch_index_view_elements'), array('rows' => '5', 'cols' => '40')); ?>
+        <?php echo $view->formTextarea('avantsearch_index_view_elements', $indexViewOption, array('rows'=>$indexViewOptionRows, 'cols' => '40')); ?>
     </div>
 </div>
 

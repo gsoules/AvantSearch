@@ -1,40 +1,30 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
-$layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
-$layoutColumns = $layoutDefinitions['columns'];
-$elementNames = $layoutDefinitions['elements'];
-$elementClasses = $layoutDefinitions['classes'];
+$columnsData = $searchResults->getColumnsData();
+$layoutData = $searchResults->getLayoutsData();
 
 $headerColumns = array();
 
-// Set the Image column which only appears in the L1 Detail layout.
-$imageLabel = isset($elementNames['<image>']) ? $elementNames['<image>'] : __('Image');
-$headerColumns['<image>'] = array('label' => $imageLabel, 'classes' => 'L1', 'sortable' => false);
-
-foreach ($elementNames as $key => $alias)
+if ($searchResults->hasLayoutL1())
 {
-    $label = empty($alias) ? $key : $alias;
+    // Set the Image column which only appears in the L1 Detail layout.
+    $headerColumns['<image>'] = array('label' => '', 'classes' => 'L1', 'sortable' => false);
+}
 
-    $classes = isset($elementClasses[$key]) ? $elementClasses[$key] : '';
-
-    if ($key == 'Title')
-    {
-        // Add the L1 class to the Title so it will get a column in the Detail layout.
-        $classes = 'L1 ' . $classes;
-    }
-
-    $classes = trim($classes);
+foreach ($columnsData as $columnName => $column)
+{
+    $classes = SearchResultsTableView::createLayoutClasses($column);
     if (empty($classes))
     {
-        // An element that has no classes is not used in any layout except for L1.
+        // An element that has no classes is not used in any layout.
         continue;
     }
 
     // Form the special class name e.g. 'search-th-title' that is unique to this header column.
-    $classes .= ' ' . SearchResultsView::createColumnClass($key, 'th');
+    $classes .= ' ' . SearchResultsView::createColumnClass($columnName, 'th');
 
-    $headerColumns[$key] = array('label' => $label, 'classes' => $classes, 'sortable' => true);
+    $headerColumns[$columnName] = array('label' => $column['alias'], 'classes' => $classes, 'sortable' => true);
 }
 
 echo $searchResults->emitHeaderRow($headerColumns);

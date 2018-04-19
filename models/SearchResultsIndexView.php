@@ -26,8 +26,14 @@ class SearchResultsIndexView extends SearchResultsView
         return $this->indexFieldElementId;
     }
 
-    public function getIndexFieldOptions()
+    public static function getIndexFieldOptions()
     {
-        return self::getIndexViewOptions('avantsearch_index_view_elements');
+        $indexViewData = SearchConfigurationOptions::getIndexViewData();
+        $options = array();
+        foreach ($indexViewData as $elementId => $elementName)
+        {
+            $options[$elementId] = $elementName;
+        }
+        return $options;
     }
 }

@@ -4,7 +4,10 @@ class SearchResultsTableView extends SearchResultsView
     const DEFAULT_LAYOUT = 1;
     const RELATIONSHIPS_LAYOUT = 6;
 
+    protected $columnsData;
+    protected $detailLayoutData;
     protected $layoutId;
+    protected $layoutsData;
     protected $limit;
     protected $showRelationships;
 
@@ -12,63 +15,77 @@ class SearchResultsTableView extends SearchResultsView
     {
         parent::__construct();
 
+        $this->columnsData = SearchConfigurationOptions::getColumnsData();
+        $this->layoutsData = SearchConfigurationOptions::getLayoutsData();
+        $this->detailLayoutData = SearchConfigurationOptions::getDetailLayoutData();
+        $this->addLayoutIdsToColumns();
+
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
     }
 
-    protected static function getLayoutDefinitionColumns($layoutDefinitions)
+    protected function addLayoutIdsToColumns()
     {
-        $columns = array();
-        foreach ($layoutDefinitions as $key => $layoutDefinition)
+        foreach ($this->layoutsData as $idNumber => $layout)
         {
-            if ($layoutDefinition['valid'] == false)
+            foreach ($layout['columns'] as $columnName => $elementId)
             {
-                continue;
-            }
-
-            $elementNames = explode(',', $layoutDefinition['elements']);
-            $elementNames = array_map('trim', $elementNames);
-            $columns[$layoutDefinition['id']] = $elementNames;
-        }
-        return $columns;
-    }
-
-    protected static function getLayoutDefinitionElementNames()
-    {
-        $elementDefinitions = explode(';', get_option('avantsearch_elements'));
-        $elementDefinitions = array_map('trim', $elementDefinitions);
-        $elements = array();
-        foreach ($elementDefinitions as $elementDefinition)
-        {
-            if (empty($elementDefinition))
-            {
-                continue;
-            }
-            $parts = explode(':', $elementDefinition);
-            $parts = array_map('trim', $parts);
-            $partsCount = count($parts);
-            if ($partsCount > 2)
-            {
-                continue;
-            }
-            $elementName = $parts[0];
-            $label = $partsCount == 2 ? $parts[1] : $elementName;
-
-            if ($elementName != '<image>' && $elementName != '<tags>')
-            {
-                $elementId = ItemMetadata::getElementIdForElementName($elementName);
-                if ($elementId == 0)
+                if ($layout['rights'] == 'admin' && !is_allowed('Users', 'edit'))
                 {
-                    // The admin specified the name of an element that does not exist.
+                    // Don't add admin layouts for non-admin users.
                     continue;
                 }
-            }
 
-            $elements[$elementName] = $label;
+                if ($idNumber == 1 && ($columnName == 'Identifier' || $columnName == 'Title'))
+                {
+                    // L1 is treated differently so don't add it to the Identifier or Title columns.
+                    continue;
+                }
+
+                if (!isset($this->columnsData[$columnName]))
+                {
+                    // This column is specified in the Layouts option, but is not listed in the Columns option.
+                    $this->columnsData[$columnName] = self::createColumn($columnName, 0);
+                }
+                $this->columnsData[$columnName]['layouts'][] = "L$idNumber";
+            }
         }
-        return $elements;
     }
 
-    protected static function getLayoutDetailElements($layoutElements)
+    public static function createColumn($alias, $width)
+    {
+        $column = array();
+        $column['alias'] = $alias;
+        $column['width'] = $width;
+        $column['layouts'] = array();
+        return $column;
+    }
+
+    public static function createLayoutClasses($column)
+    {
+        $classes = '';
+        foreach ($column['layouts'] as $layoutID)
+        {
+            $classes .= $layoutID . ' ';
+        }
+        return trim($classes);
+    }
+
+    public function getColumnsData()
+    {
+        return $this->columnsData;
+    }
+
+    public function getDetailLayoutData()
+    {
+        return $this->detailLayoutData;
+    }
+
+    public function getLayoutsData()
+    {
+        return $this->layoutsData;
+    }
+
+    public static function getLayoutDetailElements()
     {
         $detailsDefinitions = explode(';', get_option('avantsearch_detail_layout'));
         $detailsDefinitions = array_map('trim', $detailsDefinitions);
@@ -89,97 +106,13 @@ class SearchResultsTableView extends SearchResultsView
         return $details;
     }
 
-    public static function getLayoutDefinitionNames()
-    {
-        return self::parseLayoutDefinitions()['names'];
-    }
-
-    public static function getLayoutDefinitions()
-    {
-        $layouts = self::parseLayoutDefinitions();
-        $definitions = $layouts['definitions'];
-
-        $layoutColumns = self::getLayoutDefinitionColumns($definitions);
-        $layoutElements = self::getLayoutDefinitionElementNames();
-        $layoutClasses = self::getLayoutElementClasses($layoutElements, $layoutColumns);
-        $layoutDetails = self::getLayoutDetailElements($layoutElements);
-
-        $layoutDefinitions = array();
-        $layoutDefinitions['layouts'] = $layouts['names'];
-        $layoutDefinitions['columns'] = $layoutColumns;
-        $layoutDefinitions['elements'] = $layoutElements;
-        $layoutDefinitions['classes'] = $layoutClasses;
-        $layoutDefinitions['details'] = $layoutDetails;
-
-        return $layoutDefinitions;
-    }
-
-    protected static function getLayoutDefinitionsFromOptions()
-    {
-        $layoutOptions = explode(';', get_option('avantsearch_layouts'));
-        $layoutOptions = array_map('trim', $layoutOptions);
-
-        $layoutDefinitions = array();
-
-        foreach ($layoutOptions as $layoutOption)
-        {
-            if (empty(trim($layoutOption)))
-            {
-                continue;
-            }
-
-            $parts = explode(':', $layoutOption);
-            $partsCount = count($parts);
-            if ($partsCount < 1 || $partsCount > 2)
-            {
-                continue;
-            }
-
-            $parts = array_map('trim', $parts);
-            $types = $parts[0];
-            $elements = $partsCount == 2 ? $parts[1] : '';
-            $layoutDefinitions[] = array('id' => '', 'types' => $types, 'elements' => $elements, 'valid' => false);
-        }
-        return $layoutDefinitions;
-    }
-
-    protected static function getLayoutElementClasses($layoutElements, $layoutColumns)
-    {
-        $elementClasses = array();
-
-        // Find which columns appear in which layouts and set the header column's classes to be a list of layout Ids for that column.
-        foreach ($layoutColumns as $layoutId => $columns)
-        {
-            if ($layoutId == 'L1')
-            {
-                // The L1 columns are not configurable. If the admin specifies any, they are ignored.
-                continue;
-            }
-
-            foreach ($columns as $elementName)
-            {
-                if (!array_key_exists($elementName, $layoutElements))
-                {
-                    // The layout specified the column name incorrectly.
-                    continue;
-                }
-
-                $classes = isset($elementClasses[$elementName]) ? $elementClasses[$elementName] . ' ' : '';
-                $classes .= $layoutId;
-                $elementClasses[$elementName] = $classes;
-            }
-        }
-
-        return $elementClasses;
-    }
-
     public function getLayoutId()
     {
         if (isset($this->layoutId))
             return $this->layoutId;
 
-        $firstLayoutId = self::getLayoutIdFirst();
-        $lastLayoutId = self::getLayoutIdLast();
+        $firstLayoutId = $this->getLayoutIdFirst();
+        $lastLayoutId =$this->getLayoutIdLast();
 
         $id = isset($_GET['layout']) ? intval($_GET['layout']) : $firstLayoutId;
 
@@ -191,44 +124,33 @@ class SearchResultsTableView extends SearchResultsView
         return $this->layoutId;
     }
 
-    public static function getLayoutIdFirst()
+    public function getLayoutIdFirst()
     {
-        $keys = array_keys(self::getLayoutDefinitionNames());
+        $keys = array_keys($this->layoutsData);
         return empty($keys) ? 0 : min($keys);
     }
 
-    public static function getLayoutIdLast()
+    public function getLayoutIdLast()
     {
-        $keys = array_keys(self::getLayoutDefinitionNames());
+        $keys = array_keys($this->layoutsData);
         return empty($keys) ? 0 : max($keys);
     }
 
-    protected static function getLayoutInfo($layoutDefinition)
+    public function getLayoutSelectOptions()
     {
-        $parts = explode(',', $layoutDefinition['types']);
-        $parts = array_map('trim', $parts);
+        $layoutsData = $this->layoutsData;
+        $layoutSelectOptions = array();
+        foreach ($layoutsData as $idNumber => $layout)
+        {
+            if ($layout['rights'] == 'admin' && !is_allowed('Users', 'edit'))
+            {
+                // Omit admin layouts for non-admin users.
+                continue;
+            }
 
-        // Make sure the layout has exactly 3 parts.
-        $partsCount = count($parts);
-        if ($partsCount != 3)
-            return null;
-
-        // Validate that the rights value is either 'admin' or 'public'. If admin, make sure the user has
-        // admin rights and if not, skip this layout so that a non-admin user won't be able to choose it.
-        $rights = strtolower($parts[1]);
-        if (!($rights == 'public' || ($rights == 'admin' && is_allowed('Users', 'edit'))))
-            return null;
-
-        // Make sure the ID starts with 'L' followed by a single digit > 0.
-        $id = $parts[0];
-        if (strtoupper(substr($id, 0, 1)) != 'L')
-            return null;
-
-        $idNumber = intval(substr($id, 1));
-        if ($idNumber <= 0)
-            return null;
-
-        return array('id' => $idNumber, 'name' => $parts[2]);
+            $layoutSelectOptions[$idNumber] = $layout['name'];
+        }
+        return $layoutSelectOptions;
     }
 
     public static function getLimitOptions()
@@ -246,30 +168,8 @@ class SearchResultsTableView extends SearchResultsView
         return $this->showRelationships;
     }
 
-    protected static function parseLayoutDefinitions()
+    public function hasLayoutL1()
     {
-        $layoutDefinitions = self::getLayoutDefinitionsFromOptions();
-        $layoutNames = array();
-
-        foreach ($layoutDefinitions as $key => $layoutDefinition)
-        {
-            $layoutInfo = self::getLayoutInfo($layoutDefinition);
-            if ($layoutInfo)
-            {
-                $id = $layoutInfo['id'];
-                $name = $layoutInfo['name'];
-                $layoutDefinitions[$key]['valid'] = true;
-                $layoutDefinitions[$key]['id'] = 'L' . $id;
-                $layoutNames[$id] = $name;
-            }
-        }
-
-        // Ideally this information would get written to the database so that this function
-        // does not need to get called over an over. The data cannot be saved as a class variable
-        // because this function and its callers must be static. Also note that if this data
-        // were written to the database, it would need to be updated whenever layout configuration
-        // options were saved, and there would have to be one set of data for admin users and
-        // another for non-admin users.
-        return array('definitions' => $layoutDefinitions, 'names' => $layoutNames);
+        return isset($this->layoutsData[1]);
     }
 }

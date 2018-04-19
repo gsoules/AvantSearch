@@ -194,8 +194,8 @@ echo "<div id='avantsearch-container'>";
             <div class="table-view-layout-option search-view-option">
                 <?php
                 echo $this->formLabel('layout', __('Table Layout'));
-                $layoutOptions = $searchResultsTable->getLayoutDefinitionNames();
-                echo $this->formSelect('layout', $selectedLayoutId, array(), $layoutOptions);
+                $layoutSelectOptions = $searchResultsTable->getLayoutSelectOptions();
+                echo $this->formSelect('layout', $selectedLayoutId, array(), $layoutSelectOptions);
                 ?>
             </div>
         </div>
