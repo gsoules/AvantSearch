@@ -73,19 +73,18 @@ class SearchResultsView
 
         $headerRow = '';
 
-        foreach ($headerColumns as $columnName => $headerColumn)
+        foreach ($headerColumns as $elementId => $headerColumn)
         {
             $columnLabel = $headerColumn['label'];
             $classes = $headerColumn['classes'];
 
             if ($headerColumn['sortable'])
             {
-                $columnElementId = ItemMetadata::getElementIdForElementName($columnName);
                 $params = $_GET;
-                $params['sort'] = $columnElementId;
+                $params['sort'] = $elementId;
                 $sortDirection = 'a';
 
-                if ($sortField == $columnElementId)
+                if ($sortField == $elementId)
                 {
                     if ($sortOrder == 'd')
                     {

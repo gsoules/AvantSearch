@@ -15,6 +15,12 @@ if ($searchResults->hasLayoutL1())
 foreach ($columnsData as $elementId => $column)
 {
     $classes = SearchResultsTableView::createLayoutClasses($column);
+
+    if ($column['name'] == 'Title')
+    {
+        $classes = 'L1 ' . $classes;
+    }
+
     if (empty($classes))
     {
         // An element that has no classes is not used in any layout.

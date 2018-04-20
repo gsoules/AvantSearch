@@ -68,11 +68,13 @@ if (!$searchResults->hasLayoutL1())
                 ?>
             </td>
 <?php endif; ?>
+<?php if (isset($data->elementValue['Description']['detail'])): ?>
             <td class="search-results-detail-col3">
                 <div>
                     <?php echo $text = $data->elementValue['Description']['detail']; ?>
                 </div>
             </td>
+<?php endif; ?>
         </tr>
     </table>
 </td>

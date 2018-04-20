@@ -78,7 +78,15 @@ class SearchOptions
         {
             foreach ($row as $elementId)
             {
-                $elementName = ItemMetadata::getElementNameFromId($elementId);
+                if ($elementId == '<tags>')
+                {
+                    $elementName = '<tags>';
+                }
+                else
+                {
+                    $elementName = ItemMetadata::getElementNameFromId($elementId);
+                }
+
                 if (empty($elementName))
                 {
                     // This element must have been deleted since the AvantSearch configuration was last saved.
@@ -102,12 +110,14 @@ class SearchOptions
         $data = json_decode(get_option(self::OPTION_LAYOUTS), true);
         if (empty($data))
         {
+            // Provide a default L1 layout in case the admin removed all layouts.
             $data = array();
+            $data[1] = array('name' => 'Details', 'admin' => false);
         }
 
         foreach ($data as $idNumber => $layout)
         {
-            $rawColumns = $layout['columns'];
+            $rawColumns = isset($layout['columns']) ? $layout['columns'] : array();
             $columns = array();
             foreach ($rawColumns as $elementId)
             {
@@ -366,7 +376,11 @@ class SearchOptions
                 if (empty($columnName))
                     continue;
 
-                if ($columnName != '<tags>')
+                if ($columnName == '<tags>')
+                {
+                    $elementId = '<tags>';
+                }
+                else
                 {
                     $elementId = ItemMetadata::getElementIdForElementName($columnName);
                     if ($elementId == 0)
@@ -432,7 +446,7 @@ class SearchOptions
             }
             $layouts[$idNumber]['admin'] = $rights == 'admin';
 
-            $columnString = isset($parts[1]) ? $parts[1] : 'Identifier, Title';
+            $columnString = isset($parts[1]) ? $parts[1] : '';
             $columns = array_map('trim', explode(',', $columnString));
             foreach ($columns as $columnName)
             {
@@ -474,9 +488,6 @@ class SearchOptions
 
     public static function setDefaultOptionValues()
     {
-        $layouts = 'L1, public, Details';
-        set_option(self::OPTION_LAYOUTS, $layouts);
-
         set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, 175);
     }
 

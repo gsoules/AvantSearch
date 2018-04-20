@@ -19,8 +19,52 @@ class SearchResultsTableView extends SearchResultsView
         $this->layoutsData = SearchOptions::getOptionDataForLayouts();
         $this->detailLayoutData = SearchOptions::getOptionDataForDetailLayout();
         $this->addLayoutIdsToColumns();
+        $this->addDetailLayoutIdsToColumns();
+        $this->addDescriptionColumn();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
+    }
+
+    protected function addDescriptionColumn()
+    {
+        // Make sure there's a Description column because it's needed by the L1 detail layout.
+        $hasDescriptionColumn = false;
+        foreach ($this->columnsData as $column)
+        {
+            if ($column['name'] == 'Description')
+            {
+                $hasDescriptionColumn = true;
+                break;
+            }
+        }
+        if (!$hasDescriptionColumn)
+        {
+            $elementId = ItemMetadata::getElementIdForElementName('Description');
+            if ($elementId != 0)
+            {
+                $this->columnsData[$elementId] = self::createColumn('Description', 0);
+            }
+        }
+    }
+
+    protected function addDetailLayoutIdsToColumns()
+    {
+        foreach ($this->detailLayoutData as $row)
+        {
+            foreach ($row as $elementId => $elementName)
+            {
+                if ($elementName == '<tags>')
+                {
+                    // Tags are special cased elsewhere as a pseudo element.
+                    continue;
+                }
+                if (!isset($this->columnsData[$elementId]))
+                {
+                    // This column is specified in the Detail Layout option, but is not listed in the Columns option.
+                    $this->columnsData[$elementId] = self::createColumn($elementName, 0);
+                }
+            }
+        }
     }
 
     protected function addLayoutIdsToColumns()
@@ -69,6 +113,7 @@ class SearchResultsTableView extends SearchResultsView
         {
             $classes .= $layoutID . ' ';
         }
+
         return trim($classes);
     }
 

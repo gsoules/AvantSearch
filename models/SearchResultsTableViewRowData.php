@@ -6,7 +6,7 @@ class SearchResultsTableViewRowData
     public $elementValue;
     public $itemThumbnailHtml;
 
-    public function __construct($item, $searchResults)
+    public function __construct($item, SearchResultsTableView $searchResults)
     {
         $this->columnsData = $searchResults->getColumnsData();
         $this->initializeData($item, $searchResults);
@@ -33,9 +33,11 @@ class SearchResultsTableViewRowData
 
     protected function generateDescription()
     {
+        // Get the description text, making sure that the Description element is defined.
+        $descriptionText = isset($this->elementValue['Description']['text']) ? $this->elementValue['Description']['text'] : '';
+
         // Shorten the description text if it's too long.
         $maxLength = 250;
-        $descriptionText = $this->elementValue['Description']['text'];
         $this->elementValue['Description']['text'] = str_replace('<br />', '', $descriptionText);
         $descriptionText = $this->elementValue['Description']['text'];
         if (strlen($descriptionText) > $maxLength)
@@ -49,17 +51,28 @@ class SearchResultsTableViewRowData
         }
     }
 
-    protected function generateItemDetails($searchResults)
+    protected function generateItemDetails(SearchResultsTableView $searchResults)
     {
         foreach ($this->columnsData as $elementId => $column)
         {
             $columnName = $column['name'];
             $this->elementValue[$columnName]['detail'] = $searchResults->emitFieldDetail($column['alias'],  $this->elementValue[$columnName]['text']);
         }
+
+        // Create a psuedo element value for tags since there is no actual tags element.
+        $tags = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+        $this->elementValue['<tags>']['text'] = '';
+        $this->elementValue['<tags>']['detail'] = $searchResults->emitFieldDetail(__('Tags'),  $tags);
     }
 
     protected function generateLocationText()
     {
+        if (!isset($this->elementValue['Location']['text']))
+        {
+            // Temporary until we are no longer hard-coding special casing for Location.
+            return;
+        }
+
         // Special case the Location by stripping off leading "MDI, "
         if (strpos($this->elementValue['Location']['text'], 'MDI, ') === 0)
         {
@@ -93,16 +106,6 @@ class SearchResultsTableViewRowData
 
     public static function getElementDetail($data, $elementName)
     {
-        if ($elementName == '<tags>')
-        {
-            return metadata('item', 'has tags') ? tag_string('item', 'find') : '';
-        }
-
-        if (!isset($data->elementValue[$elementName]))
-        {
-            // The element name is not configured in the elements list.
-            return '';
-        }
         return $data->elementValue[$elementName]['detail'];
     }
 
