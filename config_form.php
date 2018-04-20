@@ -1,24 +1,24 @@
 <?php
 $view = get_view();
 
-$privateElementsOption = SearchConfigurationOptions::getOptionTextForPrivateElements();
+$privateElementsOption = SearchOptions::getOptionTextForPrivateElements();
 $privateElementOptionRows = max(3, count(explode(PHP_EOL, $privateElementsOption)) - 1);
 
-$columnsOption = SearchConfigurationOptions::getOptionTextForColumns();
+$columnsOption = SearchOptions::getOptionTextForColumns();
 $columnsOptionRows = max(3, count(explode(PHP_EOL, $columnsOption)) - 1);
 
-$layoutsOption = SearchConfigurationOptions::getOptionTextForLayouts();
+$layoutsOption = SearchOptions::getOptionTextForLayouts();
 $layoutsOptionRows = max(3, count(explode(PHP_EOL, $layoutsOption)) - 1);
 
-$indexViewOption = SearchConfigurationOptions::getOptionTextForIndexView();
+$indexViewOption = SearchOptions::getOptionTextForIndexView();
 $indexViewOptionRows = max(3, count(explode(PHP_EOL, $indexViewOption)) - 1);
 
-$treeViewOption = SearchConfigurationOptions::getOptionTextForTreeView();
+$treeViewOption = SearchOptions::getOptionTextForTreeView();
 $treeViewOptionRows = max(3, count(explode(PHP_EOL, $treeViewOption)) - 1);
 
-$detailLayoutOption = SearchConfigurationOptions::getOptionTextForDetailLayout();
+$detailLayoutOption = SearchOptions::getOptionTextForDetailLayout();
 
-$layoutSelectorWidth = SearchConfigurationOptions::getOptionTextForLayoutSelectorWidth();
+$layoutSelectorWidth = SearchOptions::getOptionTextForLayoutSelectorWidth();
 ?>
 
 <div class="plugin-help">
@@ -71,7 +71,7 @@ $layoutSelectorWidth = SearchConfigurationOptions::getOptionTextForLayoutSelecto
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Elements that should not be searched by public users."); ?></p>
-        <?php echo $view->formTextarea(SearchConfigurationOptions::OPTION_PRIVATE_ELEMENTS, $privateElementsOption, array('rows'=>$privateElementOptionRows,'cols'=>'40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_PRIVATE_ELEMENTS, $privateElementsOption, array('rows'=>$privateElementOptionRows,'cols'=>'40')); ?>
     </div>
 </div>
 <div class="field">
@@ -80,7 +80,7 @@ $layoutSelectorWidth = SearchConfigurationOptions::getOptionTextForLayoutSelecto
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("The order of elements in search results Table View columns."); ?></p>
-        <?php echo $view->formTextarea(SearchConfigurationOptions::OPTION_COLUMNS, $columnsOption, array('rows'=>$columnsOptionRows,'cols'=>'40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_COLUMNS, $columnsOption, array('rows'=>$columnsOptionRows,'cols'=>'40')); ?>
     </div>
 </div>
 
@@ -90,7 +90,7 @@ $layoutSelectorWidth = SearchConfigurationOptions::getOptionTextForLayoutSelecto
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Layout definitions."); ?></p>
-        <?php echo $view->formTextarea(SearchConfigurationOptions::OPTION_LAYOUTS, $layoutsOption, array('rows'=>$layoutsOptionRows,'cols'=>'40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_LAYOUTS, $layoutsOption, array('rows'=>$layoutsOptionRows,'cols'=>'40')); ?>
     </div>
 </div>
 
@@ -100,7 +100,7 @@ $layoutSelectorWidth = SearchConfigurationOptions::getOptionTextForLayoutSelecto
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __('The width of the layout selector dropdown.'); ?></p>
-        <?php echo $view->formText(SearchConfigurationOptions::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth, array('style' => 'width: 50px;')); ?>
+        <?php echo $view->formText(SearchOptions::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth, array('style' => 'width: 50px;')); ?>
     </div>
 </div>
 
@@ -111,7 +111,7 @@ $layoutSelectorWidth = SearchConfigurationOptions::getOptionTextForLayoutSelecto
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Detail layout elements."); ?></p>
-        <?php echo $view->formTextarea(SearchConfigurationOptions::OPTION_DETAIL_LAYOUT, $detailLayoutOption, array('rows'=>'2','cols'=>'40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_DETAIL_LAYOUT, $detailLayoutOption, array('rows'=>'2','cols'=>'40')); ?>
     </div>
 </div>
 
@@ -121,7 +121,7 @@ $layoutSelectorWidth = SearchConfigurationOptions::getOptionTextForLayoutSelecto
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Elements that can be used as the Index View field."); ?></p>
-        <?php echo $view->formTextarea(SearchConfigurationOptions::OPTION_INDEX_VIEW, $indexViewOption, array('rows'=>$indexViewOptionRows, 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_INDEX_VIEW, $indexViewOption, array('rows'=>$indexViewOptionRows, 'cols' => '40')); ?>
     </div>
 </div>
 
@@ -131,7 +131,7 @@ $layoutSelectorWidth = SearchConfigurationOptions::getOptionTextForLayoutSelecto
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Elements that can be used as the Tree View field."); ?></p>
-        <?php echo $view->formTextarea(SearchConfigurationOptions::OPTION_TREE_VIEW, $treeViewOption, array('rows'=>$treeViewOptionRows, 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_TREE_VIEW, $treeViewOption, array('rows'=>$treeViewOptionRows, 'cols' => '40')); ?>
     </div>
 </div>
 

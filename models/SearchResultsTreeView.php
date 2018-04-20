@@ -201,7 +201,7 @@ class SearchResultsTreeView extends SearchResultsView
 
     public static function getTreeFieldOptions()
     {
-        $treeViewData = SearchConfigurationOptions::getOptionDataForTreeView();
+        $treeViewData = SearchOptions::getOptionDataForTreeView();
         $options = array();
         foreach ($treeViewData as $elementId => $elementName)
         {

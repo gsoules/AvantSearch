@@ -1,6 +1,50 @@
 <?php
 class AvantSearch
 {
+    public static function emitSearchResultsTableCss()
+    {
+        $columnsData = SearchOptions::getOptionDataForColumns();
+
+        $css = array();
+
+        foreach ($columnsData as $column)
+        {
+            $width = intval($column['width']);
+            if ($width == 0)
+                continue;
+
+            $th = SearchResultsView::createColumnClass($column['name'], 'th');
+            $td = SearchResultsView::createColumnClass($column['name'], 'td');
+
+            $align = $column['align'];
+            $alignCss = '';
+            if (!empty($align))
+            {
+                $alignCss = "text-align:$align;";
+            }
+
+            $css[] = ".$th {min-width:{$width}px;$alignCss}";
+
+            if ($align == 'right')
+            {
+                $alignCss .= "padding-right:12px;";
+            }
+
+            $css[] = ".$td {width:{$width}px;$alignCss}";
+        }
+
+        echo PHP_EOL . '<style>' . PHP_EOL;
+
+        echo '#search-table-view th {text-align: left;}';
+
+        foreach ($css as $specifier)
+        {
+            echo '#search-table-view ' . $specifier . PHP_EOL;
+        }
+
+        echo '</style>' . PHP_EOL;
+    }
+
     public static function getSearchFormHtml()
     {
         $url = url('find');
@@ -49,13 +93,13 @@ class AvantSearch
 
     public static function saveConfiguration()
     {
-        SearchConfigurationOptions::saveOptionDataForPrivateElements();
-        SearchConfigurationOptions::saveOptionDataForLayouts();
-        SearchConfigurationOptions::saveOptionDataForLayoutSelectorWidth();
-        SearchConfigurationOptions::saveOptionDataForColumns();
-        SearchConfigurationOptions::saveOptionDataForDetailLayout();
-        SearchConfigurationOptions::saveOptionDataForIndexView();
-        SearchConfigurationOptions::saveOptionDataForTreeView();
+        SearchOptions::saveOptionDataForPrivateElements();
+        SearchOptions::saveOptionDataForLayouts();
+        SearchOptions::saveOptionDataForLayoutSelectorWidth();
+        SearchOptions::saveOptionDataForColumns();
+        SearchOptions::saveOptionDataForDetailLayout();
+        SearchOptions::saveOptionDataForIndexView();
+        SearchOptions::saveOptionDataForTreeView();
 
         set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
         set_option('avantsearch_filters_show_titles_option', $_POST['avantsearch_filters_show_titles_option']);

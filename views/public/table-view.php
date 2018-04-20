@@ -25,7 +25,7 @@ if ($totalResults)
     // Get the width of the layout selector. Because of the fact that this control is a button with a dropdown effect
     // created from ul and li tags, and because we don't know how wide the contents will be, it's nearly impossible
     // to properly style the width of button and dropdown using CSS. Instead we let the admin choose its width.
-    $width = intval(SearchConfigurationOptions::getOptionTextForLayoutSelectorWidth());
+    $width = intval(SearchOptions::getOptionTextForLayoutSelectorWidth());
     if ($width == 0)
         $width = '200';
 
@@ -35,7 +35,7 @@ if ($totalResults)
     $layoutButtonHtml .= "<ul>";
     foreach ($layoutsData as $idNumber => $layout)
     {
-        if ($layout['rights'] == 'admin' && !is_allowed('Users', 'edit'))
+        if (!SearchOptions::userHasAccessToLayout($layout))
         {
             // Omit admin layouts for non-admin users.
             continue;

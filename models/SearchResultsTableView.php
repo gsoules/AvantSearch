@@ -15,9 +15,9 @@ class SearchResultsTableView extends SearchResultsView
     {
         parent::__construct();
 
-        $this->columnsData = SearchConfigurationOptions::getOptionDataForColumns();
-        $this->layoutsData = SearchConfigurationOptions::getOptionDataForLayouts();
-        $this->detailLayoutData = SearchConfigurationOptions::getOptionDataForDetailLayout();
+        $this->columnsData = SearchOptions::getOptionDataForColumns();
+        $this->layoutsData = SearchOptions::getOptionDataForLayouts();
+        $this->detailLayoutData = SearchOptions::getOptionDataForDetailLayout();
         $this->addLayoutIdsToColumns();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
@@ -29,7 +29,7 @@ class SearchResultsTableView extends SearchResultsView
         {
             foreach ($layout['columns'] as $elementId => $columnName)
             {
-                if ($layout['rights'] == 'admin' && !is_allowed('Users', 'edit'))
+                if (!SearchOptions::userHasAccessToLayout($layout))
                 {
                     // Don't add admin layouts for non-admin users.
                     continue;
@@ -51,11 +51,12 @@ class SearchResultsTableView extends SearchResultsView
         }
     }
 
-    public static function createColumn($name, $width)
+    public static function createColumn($name, $width, $align = '')
     {
         $column = array();
         $column['alias'] = $name;
         $column['width'] = $width;
+        $column['align'] = $align;
         $column['layouts'] = array();
         $column['name'] = $name;
         return $column;
@@ -122,7 +123,7 @@ class SearchResultsTableView extends SearchResultsView
         $layoutSelectOptions = array();
         foreach ($layoutsData as $idNumber => $layout)
         {
-            if ($layout['rights'] == 'admin' && !is_allowed('Users', 'edit'))
+            if (!SearchOptions::userHasAccessToLayout($layout))
             {
                 // Omit admin layouts for non-admin users.
                 continue;

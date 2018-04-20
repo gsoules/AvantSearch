@@ -1,5 +1,5 @@
 <?php
-class SearchConfigurationOptions
+class SearchOptions
 {
     const OPTION_COLUMNS = 'avantsearch_columns';
     const OPTION_DETAIL_LAYOUT = 'avantsearch_detail_layout';
@@ -180,6 +180,8 @@ class SearchConfigurationOptions
                     $columnsOption .= ': ' . $column['alias'];
                 if ($column['width'] > 0)
                     $columnsOption .= ', ' . $column['width'];
+                if (!empty($column['align']))
+                    $columnsOption .= ', ' . $column['align'];
             }
         }
         return $columnsOption;
@@ -241,8 +243,12 @@ class SearchConfigurationOptions
                     $layoutsOption .= PHP_EOL;
                 }
                 $layoutsOption .= 'L' . $id;
-                $layoutsOption .= ', ' . $layout['rights'];
                 $layoutsOption .= ', ' . $layout['name'];
+
+                if ($layout['admin'])
+                {
+                    $layoutsOption .= ', admin';
+                }
 
                 if ($id == '1')
                 {
@@ -315,8 +321,8 @@ class SearchConfigurationOptions
             if (empty($columnDefinition))
                 continue;
 
-            // Column definitions are of the form: <element-name>:<alias>,<width>
-            // Both <alias> and <width> are optional.
+            // Column definitions are of the form: <element-name>:<alias>,<width>,<alignment>
+            // The <alias>, <width>, and <alignment> parameters are optional.
 
             $parts = array_map('trim', explode(',', $columnDefinition));
 
@@ -325,15 +331,20 @@ class SearchConfigurationOptions
             $alias = isset($nameParts[1]) ? $nameParts[1] : $name;
 
             $width = isset($parts[1]) ? intval($parts[1]) : 0;
+            $align = isset($parts[2]) ? strtolower($parts[2]) : '';
+
+            if (!empty($align) && !($align == 'left' || $align == 'center' || $align == 'right'))
+            {
+                throw new Omeka_Validate_Exception(__('Columns (\'%s\'): \'%s\' is not valid for alignment. Use \'left\', \'center\' , or \'right\'.', $name, $align));
+            }
 
             $elementId = ItemMetadata::getElementIdForElementName($name);
             if ($elementId == 0)
             {
                 throw new Omeka_Validate_Exception(__('Columns: \'%s\' is not an element.', $name));
-                continue;
             }
 
-            $columns[$elementId] = SearchResultsTableView::createColumn($alias, $width);
+            $columns[$elementId] = SearchResultsTableView::createColumn($alias, $width, $align);
         }
 
         set_option(self::OPTION_COLUMNS, json_encode($columns));
@@ -411,15 +422,15 @@ class SearchConfigurationOptions
                 throw new Omeka_Validate_Exception(__('Layouts: \'%s\' is not a valid layout Id. Specify \'L\' followed by an integer greater than 0.', $id));
             }
 
-            $name = isset($declarationParts[2]) ? $declarationParts[2] : '$id';
+            $name = isset($declarationParts[1]) ? $declarationParts[1] : '$id';
             $layouts[$idNumber]['name'] = $name;
 
-            $rights = isset($declarationParts[1]) ? $declarationParts[1] : 'public';
-            if (!($rights == 'public' || $rights == 'admin'))
+            $rights = isset($declarationParts[2]) ? strtolower($declarationParts[2]) : '';
+            if (!empty($rights) && $rights != 'admin')
             {
-                throw new Omeka_Validate_Exception(__('Layouts (%s): \'%s\' has a syntax error. Specify \'public\' or \'admin\'', $id, $rights));
+                throw new Omeka_Validate_Exception(__('Layouts (%s): Syntax error at \'%s\'. Only \'admin\' is allowed after the layout name.', $id, $rights));
             }
-            $layouts[$idNumber]['rights'] = $rights;
+            $layouts[$idNumber]['admin'] = $rights == 'admin';
 
             $columnString = isset($parts[1]) ? $parts[1] : 'Identifier, Title';
             $columns = array_map('trim', explode(',', $columnString));
@@ -467,5 +478,10 @@ class SearchConfigurationOptions
         set_option(self::OPTION_LAYOUTS, $layouts);
 
         set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, 175);
+    }
+
+    public static function userHasAccessToLayout($layout)
+    {
+        return $layout['admin'] == false || is_allowed('Users', 'edit');
     }
 }

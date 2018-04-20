@@ -12,7 +12,7 @@ if ($searchResults->hasLayoutL1())
     $headerColumns['<image>'] = array('label' => '', 'classes' => 'L1', 'sortable' => false);
 }
 
-foreach ($columnsData as $columnName => $column)
+foreach ($columnsData as $elementId => $column)
 {
     $classes = SearchResultsTableView::createLayoutClasses($column);
     if (empty($classes))
@@ -22,9 +22,9 @@ foreach ($columnsData as $columnName => $column)
     }
 
     // Form the special class name e.g. 'search-th-title' that is unique to this header column.
-    $classes .= ' ' . SearchResultsView::createColumnClass($columnName, 'th');
+    $classes .= ' ' . SearchResultsView::createColumnClass($column['name'], 'th');
 
-    $headerColumns[$columnName] = array('label' => $column['alias'], 'classes' => $classes, 'sortable' => true);
+    $headerColumns[$elementId] = array('label' => $column['alias'], 'classes' => $classes, 'sortable' => true);
 }
 
 echo $searchResults->emitHeaderRow($headerColumns);
