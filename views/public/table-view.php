@@ -25,7 +25,7 @@ if ($totalResults)
     // Get the width of the layout selector. Because of the fact that this control is a button with a dropdown effect
     // created from ul and li tags, and because we don't know how wide the contents will be, it's nearly impossible
     // to properly style the width of button and dropdown using CSS. Instead we let the admin choose its width.
-    $width = intval(get_option('avantsearch_layout_selector_width'));
+    $width = intval(SearchConfigurationOptions::getOptionTextForLayoutSelectorWidth());
     if ($width == 0)
         $width = '200';
 

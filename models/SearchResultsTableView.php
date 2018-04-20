@@ -15,9 +15,9 @@ class SearchResultsTableView extends SearchResultsView
     {
         parent::__construct();
 
-        $this->columnsData = SearchConfigurationOptions::getColumnsData();
-        $this->layoutsData = SearchConfigurationOptions::getLayoutsData();
-        $this->detailLayoutData = SearchConfigurationOptions::getDetailLayoutData();
+        $this->columnsData = SearchConfigurationOptions::getOptionDataForColumns();
+        $this->layoutsData = SearchConfigurationOptions::getOptionDataForLayouts();
+        $this->detailLayoutData = SearchConfigurationOptions::getOptionDataForDetailLayout();
         $this->addLayoutIdsToColumns();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
@@ -27,7 +27,7 @@ class SearchResultsTableView extends SearchResultsView
     {
         foreach ($this->layoutsData as $idNumber => $layout)
         {
-            foreach ($layout['columns'] as $columnName => $elementId)
+            foreach ($layout['columns'] as $elementId => $columnName)
             {
                 if ($layout['rights'] == 'admin' && !is_allowed('Users', 'edit'))
                 {
@@ -41,22 +41,23 @@ class SearchResultsTableView extends SearchResultsView
                     continue;
                 }
 
-                if (!isset($this->columnsData[$columnName]))
+                if (!isset($this->columnsData[$elementId]))
                 {
                     // This column is specified in the Layouts option, but is not listed in the Columns option.
-                    $this->columnsData[$columnName] = self::createColumn($columnName, 0);
+                    $this->columnsData[$elementId] = self::createColumn($columnName, 0);
                 }
-                $this->columnsData[$columnName]['layouts'][] = "L$idNumber";
+                $this->columnsData[$elementId]['layouts'][] = "L$idNumber";
             }
         }
     }
 
-    public static function createColumn($alias, $width)
+    public static function createColumn($name, $width)
     {
         $column = array();
-        $column['alias'] = $alias;
+        $column['alias'] = $name;
         $column['width'] = $width;
         $column['layouts'] = array();
+        $column['name'] = $name;
         return $column;
     }
 
@@ -83,27 +84,6 @@ class SearchResultsTableView extends SearchResultsView
     public function getLayoutsData()
     {
         return $this->layoutsData;
-    }
-
-    public static function getLayoutDetailElements()
-    {
-        $detailsDefinitions = explode(';', get_option('avantsearch_detail_layout'));
-        $detailsDefinitions = array_map('trim', $detailsDefinitions);
-
-        $details = array();
-        $columnsCount = count($detailsDefinitions);
-        if ($columnsCount)
-        if (count($detailsDefinitions) == 1)
-        {
-            $detailsDefinitions[] = '';
-        }
-
-        $column1elementNames = explode(',', $detailsDefinitions[0]);
-        $details['column1'] = array_map('trim', $column1elementNames);
-        $column2elementNames = explode(',', $detailsDefinitions[1]);
-        $details['column2'] = array_map('trim', $column2elementNames);
-
-        return $details;
     }
 
     public function getLayoutId()

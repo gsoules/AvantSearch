@@ -88,7 +88,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         if (empty($elementTexts))
             return $elementTexts;
 
-        $privateElementsData = json_decode(get_option('avantsearch_private_elements'), true);
+        $privateElementsData = SearchConfigurationOptions::getOptionDataForPrivateElements();
         foreach ($privateElementsData as $elementId => $name)
         {
             $elementTexts = AvantSearch::removeFromSearchElementTexts($elementTexts, $elementId);

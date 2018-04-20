@@ -1,205 +1,22 @@
 <?php
 class SearchConfigurationOptions
 {
+    const OPTION_COLUMNS = 'avantsearch_columns';
+    const OPTION_DETAIL_LAYOUT = 'avantsearch_detail_layout';
+    const OPTION_INDEX_VIEW = 'avantsearch_index_view_elements';
+    const OPTION_LAYOUTS = 'avantsearch_layouts';
+    const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
+    const OPTION_PRIVATE_ELEMENTS = 'avantsearch_private_elements';
+    const OPTION_TREE_VIEW = 'avantsearch_tree_view_elements';
+
     protected static function configurationErrorsDetected()
     {
         return $_SERVER['REQUEST_METHOD'] == 'POST';
     }
 
-    public static function getColumnsData()
+    public static function getOptionData($optionName)
     {
-        $columnsData = json_decode(get_option('avantsearch_columns'), true);
-        if (empty($columnsData))
-        {
-            $columnsData = array();
-        }
-        return $columnsData;
-    }
-
-    public static function getColumnsOption()
-    {
-        if (self::configurationErrorsDetected())
-        {
-            $columnsOption = $_POST['avantsearch_columns'];
-        }
-        else
-        {
-            $columnsData = self::getColumnsData();
-            $columnsOption = '';
-
-            foreach ($columnsData as $name => $column)
-            {
-                if (!empty($columnsOption))
-                {
-                    $columnsOption .= PHP_EOL;
-                }
-                $columnsOption .= $name;
-                if ($column['alias'] != $name)
-                    $columnsOption .= ': ' . $column['alias'];
-                if ($column['width'] > 0)
-                    $columnsOption .= ', ' . $column['width'];
-            }
-        }
-        return $columnsOption;
-    }
-
-    public static function getDetailLayoutData()
-    {
-        $detailLayoutData = json_decode(get_option('avantsearch_detail_layout'), true);
-        if (empty($detailLayoutData))
-        {
-            $detailLayoutData = array();
-        }
-        return $detailLayoutData;
-    }
-
-    public static function getDetailLayoutOption()
-    {
-        if (self::configurationErrorsDetected())
-        {
-            $detailLayoutOption = $_POST['avantsearch_detail_layout'];
-        }
-        else
-        {
-            $detailLayoutData = self::getDetailLayoutData();
-            $detailLayoutOption = '';
-
-            foreach ($detailLayoutData as $detailRow)
-            {
-                if (!empty($detailLayoutOption))
-                {
-                    $detailLayoutOption .= PHP_EOL;
-                }
-
-                $row = '';
-                foreach ($detailRow as $columnName)
-                {
-                    if (!empty($row))
-                    {
-                        $row .= ', ';
-                    }
-                    $row .= $columnName;
-                }
-                $detailLayoutOption .= $row;
-            }
-        }
-        return $detailLayoutOption;
-    }
-
-    public static function getIndexViewData()
-    {
-        $indexViewRawData = json_decode(get_option('avantsearch_index_view_elements'), true);
-        if (empty($indexViewRawData))
-        {
-            $indexViewRawData = array();
-        }
-
-        $indexViewData = array();
-
-        foreach ($indexViewRawData as $elementId)
-        {
-            $elementName = ItemMetadata::getElementNameFromId($elementId);
-            if (empty($elementName))
-            {
-                // This element must have been deleted since the AvantSearch configuration was last saved.
-                continue;
-            }
-            $indexViewData[$elementId] = $elementName;
-        }
-
-        return $indexViewData;
-    }
-
-    public static function getIndexViewOption()
-    {
-        if (self::configurationErrorsDetected())
-        {
-            $indexViewOption = $_POST['avantsearch_index_view_elements'];
-        }
-        else
-        {
-            $indexViewData = self::getIndexViewData();
-            $indexViewOption = '';
-
-            foreach ($indexViewData as $elementId => $elementName)
-            {
-                if (!empty($indexViewOption))
-                {
-                    $indexViewOption .= PHP_EOL;
-                }
-                $indexViewOption .= $elementName;
-            }
-        }
-        return $indexViewOption;
-    }
-
-    public static function getLayoutsData()
-    {
-        $layoutsData = json_decode(get_option('avantsearch_layouts'), true);
-        if (empty($layoutsData))
-        {
-            $layoutsData = array();
-        }
-        return $layoutsData;
-    }
-
-    public static function getLayoutsOption()
-    {
-        if (self::configurationErrorsDetected())
-        {
-            $layoutsOption = $_POST['avantsearch_layouts'];
-        }
-        else
-        {
-            $layoutsData = self::getLayoutsData();
-            $layoutsOption = '';
-
-            foreach ($layoutsData as $id => $layout)
-            {
-                if (!empty($layoutsOption))
-                {
-                    $layoutsOption .= PHP_EOL;
-                }
-                $layoutsOption .= 'L' . $id;
-                $layoutsOption .= ', ' . $layout['rights'];
-                $layoutsOption .= ', ' . $layout['name'];
-
-                if ($id == '1')
-                {
-                    // Ignore any columns that were specified for L1.
-                    continue;
-                }
-
-                $columns = $layout['columns'];
-                $list = '';
-                foreach ($columns as $name => $elementId)
-                {
-                    if (!empty($list))
-                        $list .= ', ';
-                    $list .= $name;
-                }
-                $layoutsOption .= ': ' . $list;
-            }
-        }
-        return $layoutsOption;
-    }
-
-    public static function getLayoutSelectorWidthOption()
-    {
-        if (self::configurationErrorsDetected())
-        {
-            $layoutSelectorWidth = $_POST['avantsearch_layout_selector_width'];
-        }
-        else
-        {
-            $layoutSelectorWidth = get_option('avantsearch_layout_selector_width');
-        }
-        return $layoutSelectorWidth;
-    }
-
-    public static function getPrivateElementsData()
-    {
-        $rawData = json_decode(get_option('avantsearch_private_elements'), true);
+        $rawData = json_decode(get_option($optionName), true);
         if (empty($rawData))
         {
             $rawData = array();
@@ -221,39 +38,17 @@ class SearchConfigurationOptions
         return $data;
     }
 
-    public static function getPrivateElementsOption()
+    public static function getOptionDataForColumns()
     {
-        if (self::configurationErrorsDetected())
+        $rawData = json_decode(get_option(self::OPTION_COLUMNS), true);
+        if (empty($rawData))
         {
-            $privateElementsOption = $_POST['avantsearch_private_elements'];
-        }
-        else
-        {
-            $privateElementsData = self::getPrivateElementsData();
-            $privateElementsOption = '';
-            foreach ($privateElementsData as $elementName)
-            {
-                if (!empty($privateElementsOption))
-                {
-                    $privateElementsOption .= PHP_EOL;
-                }
-                $privateElementsOption .= $elementName;
-            }
-        }
-        return $privateElementsOption;
-    }
-
-    public static function getTreeViewData()
-    {
-        $treeViewRawData = json_decode(get_option('avantsearch_tree_view_elements'), true);
-        if (empty($treeViewRawData))
-        {
-            $treeViewRawData = array();
+            $rawData = array();
         }
 
-        $treeViewData = array();
+        $data = array();
 
-        foreach ($treeViewRawData as $elementId)
+        foreach ($rawData as $elementId => $columnData)
         {
             $elementName = ItemMetadata::getElementNameFromId($elementId);
             if (empty($elementName))
@@ -261,51 +56,260 @@ class SearchConfigurationOptions
                 // This element must have been deleted since the AvantSearch configuration was last saved.
                 continue;
             }
-            $treeViewData[$elementId] = $elementName;
+            $columnData['name'] = $elementName;
+            $data[$elementId] = $columnData;
         }
 
-        return $treeViewData;
+        return $data;
     }
 
-    public static function getTreeViewOption()
+    public static function getOptionDataForDetailLayout()
+    {
+        $rawData = json_decode(get_option(self::OPTION_DETAIL_LAYOUT), true);
+        if (empty($rawData))
+        {
+            $rawData = array();
+        }
+
+        $data = array();
+
+        $rowId = 0;
+        foreach ($rawData as $row)
+        {
+            foreach ($row as $elementId)
+            {
+                $elementName = ItemMetadata::getElementNameFromId($elementId);
+                if (empty($elementName))
+                {
+                    // This element must have been deleted since the AvantSearch configuration was last saved.
+                    continue;
+                }
+                $data[$rowId][$elementId] = $elementName;
+            }
+            $rowId++;
+        }
+
+        return $data;
+    }
+
+    public static function getOptionDataForIndexView()
+    {
+        return self::getOptionData(self::OPTION_INDEX_VIEW);
+    }
+
+    public static function getOptionDataForLayouts()
+    {
+        $data = json_decode(get_option(self::OPTION_LAYOUTS), true);
+        if (empty($data))
+        {
+            $data = array();
+        }
+
+        foreach ($data as $idNumber => $layout)
+        {
+            $rawColumns = $layout['columns'];
+            $columns = array();
+            foreach ($rawColumns as $elementId)
+            {
+                $elementName = ItemMetadata::getElementNameFromId($elementId);
+                if (empty($elementName))
+                {
+                    // This element must have been deleted since the AvantSearch configuration was last saved.
+                    continue;
+                }
+                $columns[$elementId] = $elementName;
+            }
+            $data[$idNumber]['columns'] = $columns;
+        }
+
+        return $data;
+    }
+
+    public static function getOptionDataForPrivateElements()
+    {
+        return self::getOptionData(self::OPTION_PRIVATE_ELEMENTS);
+    }
+
+    public static function getOptionDataForTreeView()
+    {
+        return self::getOptionData(self::OPTION_TREE_VIEW);
+    }
+
+    public static function getOptionText($optionName)
     {
         if (self::configurationErrorsDetected())
         {
-            $treeViewOption = $_POST['avantsearch_tree_view_elements'];
+            $text = $_POST[$optionName];
         }
         else
         {
-            $treeViewData = self::getTreeViewData();
-            $treeViewOption = '';
-
-            foreach ($treeViewData as $elementId => $elementName)
+            $data = self::getOptionData($optionName);
+            $text = '';
+            foreach ($data as $elementName)
             {
-                if (!empty($treeViewOption))
+                if (!empty($text))
                 {
-                    $treeViewOption .= PHP_EOL;
+                    $text .= PHP_EOL;
                 }
-                $treeViewOption .= $elementName;
+                $text .= $elementName;
             }
         }
-        return $treeViewOption;
+        return $text;
     }
 
-    public static function setDefaultOptionValues()
+    public static function getOptionTextForColumns()
     {
-        $searchColumns = 'Identifier: Item' . PHP_EOL . 'Title' . PHP_EOL . 'Type' . PHP_EOL . 'Subject';
-        set_option('avantsearch_columns', $searchColumns);
+        if (self::configurationErrorsDetected())
+        {
+            $columnsOption = $_POST[self::OPTION_COLUMNS];
+        }
+        else
+        {
+            $columnsData = self::getOptionDataForColumns();
+            $columnsOption = '';
 
-        $layouts = 'L1, public, Details';
-        $layouts .= 'L2, public, Type / Subject: Type, Subject';
-        set_option('avantsearch_layouts', $layouts);
-
-        set_option('avantsearch_layout_selector_width', 175);
+            foreach ($columnsData as $elementId => $column)
+            {
+                if (!empty($columnsOption))
+                {
+                    $columnsOption .= PHP_EOL;
+                }
+                $name = $column['name'];
+                $columnsOption .= $name;
+                if ($column['alias'] != $name)
+                    $columnsOption .= ': ' . $column['alias'];
+                if ($column['width'] > 0)
+                    $columnsOption .= ', ' . $column['width'];
+            }
+        }
+        return $columnsOption;
     }
 
-    public static function validateAndSaveColumnsOption()
+    public static function getOptionTextForDetailLayout()
+    {
+        if (self::configurationErrorsDetected())
+        {
+            $detailLayoutOption = $_POST[self::OPTION_DETAIL_LAYOUT];
+        }
+        else
+        {
+            $detailLayoutData = self::getOptionDataForDetailLayout();
+            $detailLayoutOption = '';
+
+            foreach ($detailLayoutData as $detailRow)
+            {
+                if (!empty($detailLayoutOption))
+                {
+                    $detailLayoutOption .= PHP_EOL;
+                }
+
+                $row = '';
+                foreach ($detailRow as $elementId => $columnName)
+                {
+                    if (!empty($row))
+                    {
+                        $row .= ', ';
+                    }
+                    $row .= $columnName;
+                }
+                $detailLayoutOption .= $row;
+            }
+        }
+        return $detailLayoutOption;
+    }
+
+    public static function getOptionTextForIndexView()
+    {
+        return self::getOptionText('avantsearch_index_view_elements');
+    }
+
+    public static function getOptionTextForLayouts()
+    {
+        if (self::configurationErrorsDetected())
+        {
+            $layoutsOption = $_POST[self::OPTION_LAYOUTS];
+        }
+        else
+        {
+            $layoutsData = self::getOptionDataForLayouts();
+            $layoutsOption = '';
+
+            foreach ($layoutsData as $id => $layout)
+            {
+                if (!empty($layoutsOption))
+                {
+                    $layoutsOption .= PHP_EOL;
+                }
+                $layoutsOption .= 'L' . $id;
+                $layoutsOption .= ', ' . $layout['rights'];
+                $layoutsOption .= ', ' . $layout['name'];
+
+                if ($id == '1')
+                {
+                    // Ignore any columns that were specified for L1.
+                    continue;
+                }
+
+                $columns = $layout['columns'];
+                $list = '';
+                foreach ($columns as $elementId => $name)
+                {
+                    if (!empty($list))
+                        $list .= ', ';
+                    $list .= $name;
+                }
+                $layoutsOption .= ': ' . $list;
+            }
+        }
+        return $layoutsOption;
+    }
+
+    public static function getOptionTextForLayoutSelectorWidth()
+    {
+        if (self::configurationErrorsDetected())
+        {
+            $layoutSelectorWidth = $_POST[self::OPTION_LAYOUT_SELECTOR_WIDTH];
+        }
+        else
+        {
+            $layoutSelectorWidth = get_option(self::OPTION_LAYOUT_SELECTOR_WIDTH);
+        }
+        return $layoutSelectorWidth;
+    }
+
+    public static function getOptionTextForPrivateElements()
+    {
+        return self::getOptionText(self::OPTION_PRIVATE_ELEMENTS);
+    }
+
+    public static function getOptionTextForTreeView()
+    {
+        return self::getOptionText('avantsearch_tree_view_elements');
+    }
+
+    public static function saveOptionData($optionName, $optionLabel)
+    {
+        $elements = array();
+        $names = array_map('trim', explode(PHP_EOL, $_POST[$optionName]));
+        foreach ($names as $name)
+        {
+            if (empty($name))
+                continue;
+            $elementId = ItemMetadata::getElementIdForElementName($name);
+            if ($elementId == 0)
+            {
+                throw new Omeka_Validate_Exception($optionLabel . ': ' . __('\'%s\' is not an element.', $name));
+            }
+            $elements[] = $elementId;
+        }
+
+        set_option($optionName, json_encode($elements));
+    }
+
+    public static function saveOptionDataForColumns()
     {
         $columns = array();
-        $columnDefinitions = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_columns']));
+        $columnDefinitions = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_COLUMNS]));
         foreach ($columnDefinitions as $columnDefinition)
         {
             if (empty($columnDefinition))
@@ -329,16 +333,16 @@ class SearchConfigurationOptions
                 continue;
             }
 
-            $columns[$name] = SearchResultsTableView::createColumn($alias, $width);
+            $columns[$elementId] = SearchResultsTableView::createColumn($alias, $width);
         }
 
-        set_option('avantsearch_columns', json_encode($columns));
+        set_option(self::OPTION_COLUMNS, json_encode($columns));
     }
 
-    public static function validateAndSaveDetailLayoutOption()
+    public static function saveOptionDataForDetailLayout()
     {
         $detailRows = array();
-        $detailLayouts = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_detail_layout']));
+        $detailLayouts = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_DETAIL_LAYOUT]));
         $row = 0;
         foreach ($detailLayouts as $detailLayout)
         {
@@ -348,6 +352,9 @@ class SearchConfigurationOptions
             $columnNames = array_map('trim', explode(',', $detailLayout));
             foreach ($columnNames as $columnName)
             {
+                if (empty($columnName))
+                    continue;
+
                 if ($columnName != '<tags>')
                 {
                     $elementId = ItemMetadata::getElementIdForElementName($columnName);
@@ -356,37 +363,23 @@ class SearchConfigurationOptions
                         throw new Omeka_Validate_Exception(__('Detail Layout: \'%s\' is not an element.', $columnName));
                     }
                 }
-                $detailRows[$row][] = $columnName;
+                $detailRows[$row][] = $elementId;
             }
             $row++;
         }
 
-        set_option('avantsearch_detail_layout', json_encode($detailRows));
+        set_option(self::OPTION_DETAIL_LAYOUT, json_encode($detailRows));
     }
 
-    public static function validateAndSaveIndexViewOption()
+    public static function saveOptionDataForIndexView()
     {
-        $indexViewElements = array();
-        $indexViewElementNames = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_index_view_elements']));
-        foreach ($indexViewElementNames as $elementName)
-        {
-            if (empty($elementName))
-                continue;
-            $elementId = ItemMetadata::getElementIdForElementName($elementName);
-            if ($elementId == 0)
-            {
-                throw new Omeka_Validate_Exception(__('Index View: \'%s\' is not an element.', $elementName));
-            }
-            $indexViewElements[] = $elementId;
-        }
-
-        set_option('avantsearch_index_view_elements', json_encode($indexViewElements));
+        self::saveOptionData(self::OPTION_INDEX_VIEW, 'Index View');
     }
 
-    public static function validateAndSaveLayoutsOption()
+    public static function saveOptionDataForLayouts()
     {
         $layouts = array();
-        $layoutDefinitions = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_layouts']));
+        $layoutDefinitions = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_LAYOUTS]));
         foreach ($layoutDefinitions as $layoutDefinition)
         {
             if (empty($layoutDefinition))
@@ -430,66 +423,49 @@ class SearchConfigurationOptions
 
             $columnString = isset($parts[1]) ? $parts[1] : 'Identifier, Title';
             $columns = array_map('trim', explode(',', $columnString));
-            foreach ($columns as $column)
+            foreach ($columns as $columnName)
             {
-                $elementId = ItemMetadata::getElementIdForElementName($column);
+                if (empty($columnName))
+                    continue;
+
+                $elementId = ItemMetadata::getElementIdForElementName($columnName);
                 if ($elementId == 0)
                 {
-                    throw new Omeka_Validate_Exception(__('Layouts (%s): \'%s\' is not an element.', $id, $column));
+                    throw new Omeka_Validate_Exception(__('Layouts (%s): \'%s\' is not an element.', $id, $columnName));
                 }
-                $layouts[$idNumber]['columns'][$column] = $elementId ;
+                $layouts[$idNumber]['columns'][] = $elementId ;
             }
         }
 
-        set_option('avantsearch_layouts', json_encode($layouts));
+        set_option(self::OPTION_LAYOUTS, json_encode($layouts));
     }
 
-    public static function validateAndSaveLayoutSelectorWidthOption()
+    public static function saveOptionDataForLayoutSelectorWidth()
     {
-        $layoutSelectorWidth = intval($_POST['avantsearch_layout_selector_width']);
+        $layoutSelectorWidth = intval($_POST[self::OPTION_LAYOUT_SELECTOR_WIDTH]);
         if ($layoutSelectorWidth < 100)
         {
             throw new Omeka_Validate_Exception(__('Layout Selector Width must be an integer value of 100 or greater.'));
         }
 
-        set_option('avantsearch_layout_selector_width', $layoutSelectorWidth);
+        set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth);
     }
 
-    public static function savePrivateElementsOption()
+    public static function saveOptionDataForPrivateElements()
     {
-        $privateElements = array();
-        $privateElementNames = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_private_elements']));
-        foreach ($privateElementNames as $privateElementName)
-        {
-            if (empty($privateElementName))
-                continue;
-            $elementId = ItemMetadata::getElementIdForElementName($privateElementName);
-            if ($elementId == 0)
-            {
-                throw new Omeka_Validate_Exception(__('Private Elements: \'%s\' is not an element.', $privateElementName));
-            }
-            $privateElements[] = $elementId;
-        }
-
-        set_option('avantsearch_private_elements', json_encode($privateElements));
+        self::saveOptionData(self::OPTION_PRIVATE_ELEMENTS, 'Private Elements');
     }
 
-    public static function validateAndSaveTreeViewOption()
+    public static function saveOptionDataForTreeView()
     {
-        $treeViewElements = array();
-        $treeViewElementNames = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_tree_view_elements']));
-        foreach ($treeViewElementNames as $elementName)
-        {
-            if (empty($elementName))
-                continue;
-            $elementId = ItemMetadata::getElementIdForElementName($elementName);
-            if ($elementId == 0)
-            {
-                throw new Omeka_Validate_Exception(__('Tree View: \'%s\' is not an element.', $elementName));
-            }
-            $treeViewElements[] = $elementId;
-        }
+        self::saveOptionData(self::OPTION_TREE_VIEW, 'Tree View');
+    }
 
-        set_option('avantsearch_tree_view_elements', json_encode($treeViewElements));
+    public static function setDefaultOptionValues()
+    {
+        $layouts = 'L1, public, Details';
+        set_option(self::OPTION_LAYOUTS, $layouts);
+
+        set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, 175);
     }
 }

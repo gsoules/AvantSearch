@@ -33,13 +33,6 @@ class SearchResultsTableViewRowData
 
     protected function generateDescription()
     {
-        if (!isset($this->elementValue['Description']['text']))
-        {
-            // The admin has not configured the Description element for use with AvantSearch.
-            $this->columns['Description'] = 'Description';
-            $this->elementValue['Description']['text'] = '';
-        }
-
         // Shorten the description text if it's too long.
         $maxLength = 250;
         $descriptionText = $this->elementValue['Description']['text'];
@@ -58,21 +51,15 @@ class SearchResultsTableViewRowData
 
     protected function generateItemDetails($searchResults)
     {
-        foreach ($this->columnsData as $columnName => $column)
+        foreach ($this->columnsData as $elementId => $column)
         {
+            $columnName = $column['name'];
             $this->elementValue[$columnName]['detail'] = $searchResults->emitFieldDetail($column['alias'],  $this->elementValue[$columnName]['text']);
         }
     }
 
     protected function generateLocationText()
     {
-        if (!isset($this->elementValue['Location']['text']))
-        {
-            // The admin has not configured the Location element for use with AvantSearch.
-            $this->columns['Location'] = 'Location';
-            $this->elementValue['Location']['text'] = '';
-        }
-
         // Special case the Location by stripping off leading "MDI, "
         if (strpos($this->elementValue['Location']['text'], 'MDI, ') === 0)
         {
@@ -158,9 +145,10 @@ class SearchResultsTableViewRowData
 
     protected function readMetadata($item)
     {
-        foreach ($this->columnsData as $columnName => $column)
+        foreach ($this->columnsData as $column)
         {
             $text = '';
+            $columnName = $column['name'];
 
             if ($columnName != 'Title')
             {

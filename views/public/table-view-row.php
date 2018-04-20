@@ -8,8 +8,10 @@ $layoutData = $searchResults->getLayoutsData();
 echo '<tr>';
 
 // Emit the columns for this row's data.
-foreach ($columnData as $columnName => $column)
+foreach ($columnData as $elementId => $column)
 {
+    $columnName = $column['name'];
+
     // Form the special class name e.g. 'search-td-title' that is unique to this row column.
     $columnClass = SearchResultsView::createColumnClass($columnName, 'td');
 

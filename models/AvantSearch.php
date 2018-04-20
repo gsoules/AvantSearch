@@ -49,13 +49,13 @@ class AvantSearch
 
     public static function saveConfiguration()
     {
-        SearchConfigurationOptions::savePrivateElementsOption();
-        SearchConfigurationOptions::validateAndSaveLayoutsOption();
-        SearchConfigurationOptions::validateAndSaveLayoutSelectorWidthOption();
-        SearchConfigurationOptions::validateAndSaveColumnsOption();
-        SearchConfigurationOptions::validateAndSaveDetailLayoutOption();
-        SearchConfigurationOptions::validateAndSaveIndexViewOption();
-        SearchConfigurationOptions::validateAndSaveTreeViewOption();
+        SearchConfigurationOptions::saveOptionDataForPrivateElements();
+        SearchConfigurationOptions::saveOptionDataForLayouts();
+        SearchConfigurationOptions::saveOptionDataForLayoutSelectorWidth();
+        SearchConfigurationOptions::saveOptionDataForColumns();
+        SearchConfigurationOptions::saveOptionDataForDetailLayout();
+        SearchConfigurationOptions::saveOptionDataForIndexView();
+        SearchConfigurationOptions::saveOptionDataForTreeView();
 
         set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
         set_option('avantsearch_filters_show_titles_option', $_POST['avantsearch_filters_show_titles_option']);
