@@ -49,17 +49,17 @@ class AvantSearch
 
     public static function saveConfiguration()
     {
-        SearchConfigurationOptions::validateAndSavePrivateElementsOption();
+        SearchConfigurationOptions::savePrivateElementsOption();
         SearchConfigurationOptions::validateAndSaveLayoutsOption();
         SearchConfigurationOptions::validateAndSaveLayoutSelectorWidthOption();
         SearchConfigurationOptions::validateAndSaveColumnsOption();
         SearchConfigurationOptions::validateAndSaveDetailLayoutOption();
         SearchConfigurationOptions::validateAndSaveIndexViewOption();
+        SearchConfigurationOptions::validateAndSaveTreeViewOption();
 
         set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
         set_option('avantsearch_filters_show_titles_option', $_POST['avantsearch_filters_show_titles_option']);
         set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
         set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
-        set_option('avantsearch_tree_view_elements', $_POST['avantsearch_tree_view_elements']);
     }
 }

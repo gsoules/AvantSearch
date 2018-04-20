@@ -88,11 +88,25 @@ class SearchConfigurationOptions
 
     public static function getIndexViewData()
     {
-        $indexViewData = json_decode(get_option('avantsearch_index_view_elements'), true);
-        if (empty($indexViewData))
+        $indexViewRawData = json_decode(get_option('avantsearch_index_view_elements'), true);
+        if (empty($indexViewRawData))
         {
-            $indexViewData = array();
+            $indexViewRawData = array();
         }
+
+        $indexViewData = array();
+
+        foreach ($indexViewRawData as $elementId)
+        {
+            $elementName = ItemMetadata::getElementNameFromId($elementId);
+            if (empty($elementName))
+            {
+                // This element must have been deleted since the AvantSearch configuration was last saved.
+                continue;
+            }
+            $indexViewData[$elementId] = $elementName;
+        }
+
         return $indexViewData;
     }
 
@@ -107,13 +121,13 @@ class SearchConfigurationOptions
             $indexViewData = self::getIndexViewData();
             $indexViewOption = '';
 
-            foreach ($indexViewData as $columnName)
+            foreach ($indexViewData as $elementId => $elementName)
             {
                 if (!empty($indexViewOption))
                 {
                     $indexViewOption .= PHP_EOL;
                 }
-                $indexViewOption .= $columnName;
+                $indexViewOption .= $elementName;
             }
         }
         return $indexViewOption;
@@ -183,6 +197,30 @@ class SearchConfigurationOptions
         return $layoutSelectorWidth;
     }
 
+    public static function getPrivateElementsData()
+    {
+        $rawData = json_decode(get_option('avantsearch_private_elements'), true);
+        if (empty($rawData))
+        {
+            $rawData = array();
+        }
+
+        $data = array();
+
+        foreach ($rawData as $elementId)
+        {
+            $elementName = ItemMetadata::getElementNameFromId($elementId);
+            if (empty($elementName))
+            {
+                // This element must have been deleted since the AvantSearch configuration was last saved.
+                continue;
+            }
+            $data[$elementId] = $elementName;
+        }
+
+        return $data;
+    }
+
     public static function getPrivateElementsOption()
     {
         if (self::configurationErrorsDetected())
@@ -191,22 +229,65 @@ class SearchConfigurationOptions
         }
         else
         {
-            $privateElementsData = json_decode(get_option('avantsearch_private_elements'), true);
-            if (empty($privateElementsData))
-            {
-                $privateElementsData = array();
-            }
+            $privateElementsData = self::getPrivateElementsData();
             $privateElementsOption = '';
-            foreach ($privateElementsData as $privateElementName)
+            foreach ($privateElementsData as $elementName)
             {
                 if (!empty($privateElementsOption))
                 {
                     $privateElementsOption .= PHP_EOL;
                 }
-                $privateElementsOption .= $privateElementName;
+                $privateElementsOption .= $elementName;
             }
         }
         return $privateElementsOption;
+    }
+
+    public static function getTreeViewData()
+    {
+        $treeViewRawData = json_decode(get_option('avantsearch_tree_view_elements'), true);
+        if (empty($treeViewRawData))
+        {
+            $treeViewRawData = array();
+        }
+
+        $treeViewData = array();
+
+        foreach ($treeViewRawData as $elementId)
+        {
+            $elementName = ItemMetadata::getElementNameFromId($elementId);
+            if (empty($elementName))
+            {
+                // This element must have been deleted since the AvantSearch configuration was last saved.
+                continue;
+            }
+            $treeViewData[$elementId] = $elementName;
+        }
+
+        return $treeViewData;
+    }
+
+    public static function getTreeViewOption()
+    {
+        if (self::configurationErrorsDetected())
+        {
+            $treeViewOption = $_POST['avantsearch_tree_view_elements'];
+        }
+        else
+        {
+            $treeViewData = self::getTreeViewData();
+            $treeViewOption = '';
+
+            foreach ($treeViewData as $elementId => $elementName)
+            {
+                if (!empty($treeViewOption))
+                {
+                    $treeViewOption .= PHP_EOL;
+                }
+                $treeViewOption .= $elementName;
+            }
+        }
+        return $treeViewOption;
     }
 
     public static function setDefaultOptionValues()
@@ -287,16 +368,16 @@ class SearchConfigurationOptions
     {
         $indexViewElements = array();
         $indexViewElementNames = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_index_view_elements']));
-        foreach ($indexViewElementNames as $columnName)
+        foreach ($indexViewElementNames as $elementName)
         {
-            if (empty($columnName))
+            if (empty($elementName))
                 continue;
-            $elementId = ItemMetadata::getElementIdForElementName($columnName);
+            $elementId = ItemMetadata::getElementIdForElementName($elementName);
             if ($elementId == 0)
             {
-                throw new Omeka_Validate_Exception(__('Index View: \'%s\' is not an element.', $columnName));
+                throw new Omeka_Validate_Exception(__('Index View: \'%s\' is not an element.', $elementName));
             }
-            $indexViewElements[$elementId] = $columnName;
+            $indexViewElements[] = $elementId;
         }
 
         set_option('avantsearch_index_view_elements', json_encode($indexViewElements));
@@ -374,7 +455,7 @@ class SearchConfigurationOptions
         set_option('avantsearch_layout_selector_width', $layoutSelectorWidth);
     }
 
-    public static function validateAndSavePrivateElementsOption()
+    public static function savePrivateElementsOption()
     {
         $privateElements = array();
         $privateElementNames = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_private_elements']));
@@ -387,9 +468,28 @@ class SearchConfigurationOptions
             {
                 throw new Omeka_Validate_Exception(__('Private Elements: \'%s\' is not an element.', $privateElementName));
             }
-            $privateElements[$elementId] = $privateElementName;
+            $privateElements[] = $elementId;
         }
 
         set_option('avantsearch_private_elements', json_encode($privateElements));
+    }
+
+    public static function validateAndSaveTreeViewOption()
+    {
+        $treeViewElements = array();
+        $treeViewElementNames = array_map('trim', explode(PHP_EOL, $_POST['avantsearch_tree_view_elements']));
+        foreach ($treeViewElementNames as $elementName)
+        {
+            if (empty($elementName))
+                continue;
+            $elementId = ItemMetadata::getElementIdForElementName($elementName);
+            if ($elementId == 0)
+            {
+                throw new Omeka_Validate_Exception(__('Tree View: \'%s\' is not an element.', $elementName));
+            }
+            $treeViewElements[] = $elementId;
+        }
+
+        set_option('avantsearch_tree_view_elements', json_encode($treeViewElements));
     }
 }

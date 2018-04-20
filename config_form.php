@@ -13,6 +13,9 @@ $layoutsOptionRows = max(3, count(explode(PHP_EOL, $layoutsOption)) - 1);
 $indexViewOption = SearchConfigurationOptions::getIndexViewOption();
 $indexViewOptionRows = max(3, count(explode(PHP_EOL, $indexViewOption)) - 1);
 
+$treeViewOption = SearchConfigurationOptions::getTreeViewOption();
+$treeViewOptionRows = max(3, count(explode(PHP_EOL, $treeViewOption)) - 1);
+
 $detailLayoutOption = SearchConfigurationOptions::getDetailLayoutOption();
 
 $layoutSelectorWidth = SearchConfigurationOptions::getLayoutSelectorWidthOption();
@@ -128,7 +131,7 @@ $layoutSelectorWidth = SearchConfigurationOptions::getLayoutSelectorWidthOption(
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __("Elements that can be used as the Tree View field."); ?></p>
-        <?php echo $view->formTextarea('avantsearch_tree_view_elements', get_option('avantsearch_tree_view_elements'), array('rows' => '5', 'cols' => '40')); ?>
+        <?php echo $view->formTextarea('avantsearch_tree_view_elements', $treeViewOption, array('rows'=>$treeViewOptionRows, 'cols' => '40')); ?>
     </div>
 </div>
 
