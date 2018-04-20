@@ -79,7 +79,7 @@ $layoutSelectorWidth = SearchOptions::getOptionTextForLayoutSelectorWidth();
         <label><?php echo __('Columns'); ?></label>
     </div>
     <div class="inputs five columns">
-        <p class="explanation"><?php echo __("The order of elements in search results Table View columns."); ?></p>
+        <p class="explanation"><?php echo __("Customization of columns in Table View search results."); ?></p>
         <?php echo $view->formTextarea(SearchOptions::OPTION_COLUMNS, $columnsOption, array('rows'=>$columnsOptionRows,'cols'=>'40')); ?>
     </div>
 </div>
@@ -96,7 +96,7 @@ $layoutSelectorWidth = SearchOptions::getOptionTextForLayoutSelectorWidth();
 
 <div class="field">
     <div class="two columns alpha">
-        <label"><?php echo __('Layout Selector Width'); ?></label>
+        <label><?php echo __('Layout Selector Width'); ?></label>
     </div>
     <div class="inputs five columns">
         <p class="explanation"><?php echo __('The width of the layout selector dropdown.'); ?></p>

@@ -59,7 +59,7 @@ To install the AvantSearch plugin, follow these steps:
 1. Configure the AvantCommon plugin to specify your item identifier and title elements.
 1. Configure the AvantSearch plugin as decribed in the Configuration Options section below.
 
-Note that when this plugin is activated, it dynamically replaces the native Omeka search box (located in the page
+When this plugin is activated, it dynamically overrides the native Omeka search box (located in the page
 header) with the version used by AvantSearch.
 
 ## Improving Search Results
@@ -108,7 +108,7 @@ Date Range | Show the Advanced Search option to search within a range of years.
 Relationships View | Show the option to show search results in Relationships View.
 Address Sorting | Sort street addresses first by street name, then by street number.
 Private Elements | Elements that should not be searched by public users.
-Result Elements | Names and labels of elements that can appear in search results.
+Columns | Customization of columns in Table View search results.
 Layouts | Layout definitions.
 Layout Selector Width | Specifies the width of the layout selector dropdown that appears on search results pages.
 Detail Layout | Detail layout elements.
@@ -116,8 +116,8 @@ Index View | Elements that can be used as the Index View field.
 Tree View | Elements that can be used as the Tree View field
 
 The subsections that follow explain the options listed in the table above. Some options require that you specify
-formatted list of information using commas, semicolons or other characters as separators. For these options, spaces
-around separators are ignored. For example "a,b,c" is treated the same as "a, b, c".
+formatted list of information using commas or other characters as separators. For these options, spaces
+around separators are ignored. For example "a, b , c" is treated the same as "a,b,c".
 
 <hr/>
 
@@ -188,16 +188,21 @@ will prevent your site from working.
 <hr/>
 
 #### Private Elements
-This option lets you specify a semicolon-separated list of element names that should not be visible to public users for searching
-purposes. For example, you might have elements used to record internal information such as notes and item status that
-contain information meant only for administrators. You can specify "Notes, Status" in the Private Elements text box to
+This option lets you specify a list of element names, one per row, that:
+* Should not be searchable via a keyword search
+* Don't appear to public uses in the Fields dropdown on the Advanced Search page (they will appear to a logged in administrator)
+
+For example, you might have elements used to record internal information such as notes and item status that
+contain information meant only for administrators. You can specify "Notes" and "Status" in the Private Elements text box to
 prevent this information from being searched by the public.
+
+Here are key points regarding private elements:
 
 * Private elements will not appear as field selections on the Advanced Search page unless you are logged
 in as an administrator.
 * The text of private elements will not be recorded in the search_texts table, and therefore will not be searched when
 performing a keyword search. This is true whether or not you are logged in as an administrator.
-* To search for text in private elements, and administrator can do a field search in those fields, either through the public
+* To search for text in private elements, an administrator can do a field search in those fields, either through the public
 Advanced Search page or using the native Omeka Advanced Search page.
 * If you add an existing element to the private elements list, that element's text will still be contained in the
 search_texts table and therefore be found via a keyword search. To hide the element's content, you
@@ -215,52 +220,57 @@ then gets a search result that appears to contain none of the keywords they were
 Below is an example specification of the Private Elements option.
 
 ```
-Notes;
-Status;
+Notes
+Status
 ```
 
 <hr/>
 
-#### Result Elements
+#### Columns
 
-Use this option to specify which elements will appear in a search result layout.
-AvantSearch uses this information to associate labels with element names. For example,
-you might have an element named "Object ID" but want it to appear in search results as "Item" or "Catalog #".
-The label value will appear in place of the element name in search results and in options of the Advanced Search page.
+Use the Columns option specify:
+* The order of columns from left to right in search results Table View
+* An alias for an elements name e.g. 'Catalog #' for the Identifier element
+* The width of a column
+* The alignment of column text (left, center, or right)
 
 ###### Format:
-* Specify each element on a separate row ending with a semicolon.
-* On each row, type the element name optionally followed by a colon and the element's label. If you don't specify
-a label, the element name will be used as its label.
-* Use the pseudo-element `<tags>` to display an item's tags in search results.
+* Specify each element on a separate row.
+* To specify an alias, follow the element name with a colon and then the alias name e.g. `Identifier: ID`.
+* To specify a width in pixels, follow the element name and optional alias with a comma and then a number
+e.g. `Identifier: ID, 120` to specify a width of 120px. 
+* To specify alignment, follow the width with a comma and then the alignment e.g. `Identifier: ID, 120, right`. 
 
-> **IMPORTANT**: You must specify every element that you want reference in the Layouts and Detail Layout options.
-An element specified in those options, but not in Results Elements, will be ignored.
+###### Column Order:
 
-> **IMPORTANT**: The order in which you specify elements is the order in which the columns for the elements willl
-appear in table layouts. This enforces consistent presentation of results which means that you cannot have one
-element appear before another in one layout, and after it in another.
+The order of columns from left to right in search results Table View is determined as follows:
+* The order, first to last, in which you specify elements with the Columns option.
+* For elements that are not specified in the Columns option, the order in which column names appear, top to bottom, and
+left to right, in the Detail Layout option.
 
-Below is an example specification of Result Elements. Note the order of elements. Because Type appears before Subject,
-a layout that displays both, will always put the Type column before the Subject column even if you specified
-Subject followed by Type in the layout definition.
+Note that because of the order precedence above, you cannot have columns appear in a specific order in one layout
+and in a different order in another layout. The reason for this restriction is because the content for all columns
+is contained in the HTML for the search results Table View; however, only the columns for the selected
+layout are visible. When you select another layout, the previous layout's columns are hidden and the new layout's
+columns are made visible. This is what allows instantaneous switching between layouts.
+
+Below is an example specification for the Columns option.
 
 ```
-Identifier: Item;
-Title;
-Type;
-Subject;
-Accession Number;
-Creator;
-Publisher;
-Date;
-Medium;
-Number of Pages: Pages;
-Condition;
-Status;
-<tags>: Tags;
-Description;
+Identifier: ID, 120, right
+Title, 300, center
+Type, 250, right
+Subject,
+Archive Volume: Volume
 ```
+
+<hr/>
+
+#### Layout Selector Width
+Use this option to specify an integer indicating the width in pixels of the layout selector that appears on search
+results Table View pages. For example, specify 250 to mean 250px. This option saves you from having to code CSS to adjust the
+width to a size that is appropriate for your layout options and your theme's styling. Experiment to find a value that
+makes the selector just wide enough to accommodate the longest layout you defined in the Layouts option described below.
 
 <hr/>
 
@@ -309,12 +319,6 @@ a mising colon after the *Name* specifier, the affected elements will be ignored
 
 <hr/>
 
-#### Layout Selector Width
-Use this option to specify an integer indicating the width in pixels of the layout selector that appears on search
-results pages. For example, specify 250 to mean 250px. This option saves you from having to code CSS to adjust the
-width to a size that is appropriate for your layout options and your theme's styling. Experiment to find a value that
-makes the selector just wide enough to accommodate the longest layout you defined in the Layouts section above.
-
 #### Detail Layout
 
 Use the Detail Layout to specify the elements which appear in the three columns of the L1 detail element. A screen shot
@@ -332,6 +336,7 @@ column one, but Date does not appear in the other rows because those items have 
 * Specify the elements as a comma-separated list of element names chosen from those in the Result Element list.
 * Unlike the other layouts, the top to bottom order of elements in the Detail layout columns is not dictated by
 the order of elements in the Columns option. The top to bottom order is the order in the comma-separated lists.
+* Use the pseudo-element `<tags>` to display an item's tags in search results.
 
 Below is an example specification of the Detail Layout option.
 
