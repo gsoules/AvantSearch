@@ -48,6 +48,7 @@ if (!$searchResults->hasLayoutL1())
     </div>
     <table class="search-results-detail-table">
         <tr class="search-results-detail-row">
+            <?php if (!empty($column1)): ?>
             <td class="search-results-detail-col1">
                 <?php
                 foreach ($column1 as $elementName)
@@ -57,7 +58,8 @@ if (!$searchResults->hasLayoutL1())
                 }
                 ?>
             </td>
-<?php if (!empty($column2)): ?>
+            <?php endif; ?>
+            <?php if (!empty($column2)): ?>
             <td class="search-results-detail-col2">
                 <?php
                 foreach ($column2 as $elementName)
@@ -67,14 +69,14 @@ if (!$searchResults->hasLayoutL1())
                 }
                 ?>
             </td>
-<?php endif; ?>
-<?php if (isset($data->elementValue['Description']['detail'])): ?>
+            <?php endif; ?>
+            <?php if (isset($data->elementValue['Description']['detail'])): ?>
             <td class="search-results-detail-col3">
                 <div>
                     <?php echo $text = $data->elementValue['Description']['detail']; ?>
                 </div>
             </td>
-<?php endif; ?>
+            <?php endif; ?>
         </tr>
     </table>
 </td>
