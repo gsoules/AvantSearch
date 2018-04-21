@@ -169,29 +169,31 @@ class SearchResultsView
 
         // Get all the elements and then filter to leave only public elements.
         $allFields = get_table_options('Element', null, array('record_types' => array('Item', 'All'), 'sort' => 'alpha'));
+
+        $allFields = self::getAllFields();
         $publicFields = array_diff($allFields, $privateFields);
 
-        $options = array('' => __('Select Below'));
+        $options = array();
 
         if ($this->isAdmin)
         {
             // When an admin is logged in, display the public fields first, then the private fields.
             // We do this so that commonly used public fields like Title don't end up at the very
             // bottom of the list and require scrolling to select.
-            foreach ($publicFields as $key => $fieldName)
+            foreach ($publicFields as $elementId => $fieldName)
             {
-                if (empty($key))
+                if (empty($elementId))
                 {
                     // Skip "Select Below" that get_table_options inserts.
                     continue;
                 }
                 $value = $fieldName;
-                $options[__('Public Fields')][$key] = $value;
+                $options[__('Public Fields')][$elementId] = $value;
             }
-            foreach ($privateFields as $key => $fieldName)
+            foreach ($privateFields as $elementId => $fieldName)
             {
                 $value = $fieldName;
-                $options[__('Admin Fields')][$key] = $value;
+                $options[__('Admin Fields')][$elementId] = $value;
             }
         }
         else
@@ -200,6 +202,24 @@ class SearchResultsView
         }
 
         return $options;
+    }
+
+    public function getAllFields()
+    {
+        $options['record_types'] = array('Item', 'All');
+        $table = get_db()->getTable('Element');
+        $select = $table->getSelectForFindBy($options);
+        $select->reset(Zend_Db_Select::COLUMNS);
+        $select->from(array(), array('id' => 'elements.id', 'name' => 'elements.name'));
+        $elements = $table->fetchAll($select);
+
+        $fields = array('' => __('Select Below'));
+        foreach ($elements as $element)
+        {
+            $fields[$element['id']] = $element['name'];
+        }
+
+        return $fields;
     }
 
     public function getFilesOnlyOptions()
