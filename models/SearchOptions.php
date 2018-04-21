@@ -436,6 +436,15 @@ class SearchOptions
                 throw new Omeka_Validate_Exception(__('Layouts: \'%s\' is not a valid layout Id. Specify \'L\' followed by an integer greater than 0.', $id));
             }
 
+            // Make sure the ID is unique.
+            foreach ($layouts as $existingIdNumber => $layout)
+            {
+                if ($idNumber == $existingIdNumber)
+                {
+                    throw new Omeka_Validate_Exception(__('Layouts: \'L%s\' is specified twice.', $idNumber));
+                }
+            }
+
             $name = isset($declarationParts[1]) ? $declarationParts[1] : '$id';
             $layouts[$idNumber]['name'] = $name;
 
