@@ -167,26 +167,18 @@ class SearchResultsView
             $privateFields[$elementId] = $name;
         }
 
-        // Get all the elements and then filter to leave only public elements.
-        $allFields = get_table_options('Element', null, array('record_types' => array('Item', 'All'), 'sort' => 'alpha'));
-
         $allFields = self::getAllFields();
         $publicFields = array_diff($allFields, $privateFields);
 
-        $options = array();
+        $options = array('' => __('Select Below'));
 
-        if ($this->isAdmin)
+        if ($this->isAdmin && !empty($privateFields))
         {
             // When an admin is logged in, display the public fields first, then the private fields.
             // We do this so that commonly used public fields like Title don't end up at the very
             // bottom of the list and require scrolling to select.
             foreach ($publicFields as $elementId => $fieldName)
             {
-                if (empty($elementId))
-                {
-                    // Skip "Select Below" that get_table_options inserts.
-                    continue;
-                }
                 $value = $fieldName;
                 $options[__('Public Fields')][$elementId] = $value;
             }
@@ -198,7 +190,11 @@ class SearchResultsView
         }
         else
         {
-            $options = $publicFields;
+            foreach ($publicFields as $elementId => $fieldName)
+            {
+                $value = $fieldName;
+                $options[$elementId] = $value;
+            }
         }
 
         return $options;
@@ -213,7 +209,6 @@ class SearchResultsView
         $select->from(array(), array('id' => 'elements.id', 'name' => 'elements.name'));
         $elements = $table->fetchAll($select);
 
-        $fields = array('' => __('Select Below'));
         foreach ($elements as $element)
         {
             $fields[$element['id']] = $element['name'];
