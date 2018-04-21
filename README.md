@@ -267,8 +267,8 @@ Archive Volume: Volume
 <hr/>
 
 #### Layout Selector Width
-Use this option to specify an integer indicating the width in pixels of the layout selector that appears on search
-results Table View pages. For example, specify 250 to mean 250px. This option saves you from having to code CSS to adjust the
+Use this option to specify an integer indicating the width of the layout selector that appears on Table View search
+results. For example, specify 250 to mean 250px. This option saves you from having to code CSS to adjust the
 width to a size that is appropriate for your layout options and your theme's styling. Experiment to find a value that
 makes the selector just wide enough to accommodate the longest layout you defined in the Layouts option described below.
 
@@ -276,67 +276,57 @@ makes the selector just wide enough to accommodate the longest layout you define
 
 #### Layouts
 
-The Layouts option lets you specify different ways to present search results in table view. The layouts you define
-here will appear as Table Layout options on the Advanced Search page, and in the green Change Layout list that appears on
-at the top of search results to the left of the blue Modify Search button.
+The Layouts option lets you specify different ways to present search results in Table Vew. The layouts you define
+here will appear in the Layout Selector and on the Advanced Search page.
 
 ###### Format:
-* Specify each layout on a separate row ending with a semicolon.
-* Each row must contain: *ID*, *Access*, *Name*: *Columns*;
-* The layout Name must be followed by a colon.
-* The *ID* specifier must start with 'L' followed by an integer >= 2.  The numbers do not have to be consecutive.
-The layout ID L1 is reserved for the Detail layout.
-* The *Access* specifier must be either `public` or `admin` to indicate if anyone can see the layout or only someone
-logged in as an administrator.
-* The *Name* specifier is text that briefly describes the layout.
-* The *Columns* specified is a comma-separated list of element names chosen from those in the Result Element list.
-If you decided to add a new column to a layout, make sure to add it to the Result Element list if it's not already
-there, otherwise that column won't appear in the layout.
+* Specify each layout on a separate row
+* On each row specify: *ID*, *Name*, *'admin'* (optional), a colon, comma-separated list of columns
+* The *ID* must start with 'L' followed by an integer e.g. 'L3'.  The numbers do not have to be consecutive.
+* The ID 'L1' is reserved for the Detail layout described in the next section.
+* Specify `admin` after the *Name* to indicate that only a logged in administrator can see and use the layout.
 
-Below is an example specification of Layouts. Note that each layout except L1 begins with Identifier and Title.
-This is not required, but its helpful for users to always see this information on each layout. Remember also
-that the order in which columns appear in a layout is the order in which they appear in the Search Results list. For instance,
-in the example below, you could list Publisher before Creator, but if Creator precedes Publisher in the Search Results
-list, that will be the order of the columns regardless of the order in the layout specification.
+The purpose of the ID is to uniquely identify a layout in the query string for Table View page. You can use this query string as a link
+on web pages to display search results in a specific layout. The ID ensures that those results will appear using the correct
+layout even if you change the layout's *Name* or its position in the Layouts list.
+
+Below is an example specification of Layouts.
 
 ```
-L1, public, Summary;
-L2, public, Creator/Publisher: Identifier, Title, Creator, Publisher, Date;
-L3, public, Type/Subject: Identifier, Title, Subject, Type;
-L6, admin, Admin Info: Identifier, Title, Status, Medium, Condition;
+L1, Summary
+L2, Creator/Publisher: Identifier, Title, Creator, Publisher, Date
+L3, Type/Subject: Identifier, Title, Subject, Type
+L6, Confidential, admin: Identifier, Title, Status, Notes;
 ```
 
-Notice that the specification above includes L1 in the first row, but that row does not list any columns. You must specify
-L1 in order to give it a name which in this example is Summary. If you omit L1, the detail layout will not appear as
-a table view option.
-
-> **TIP**: If a layout is not displaying as you expect, carefully look at the layout definition and at the rows in the
-Results Element option. If an element name is misspelled in either place, the element will be ignored in the layout.
-Also, if you have a syntax error in either location, for example a row ending in a colon instead of a semicolon, or
-a mising colon after the *Name* specifier, the affected elements will be ignored.
+Notes about the example above:
+* Each layout begins with an *ID* and *Name*
+* The fourth row also specifies *'admin'*
+* You don't specify columns for the L1 Layout (described in the next section), but you do specify its *Name*.
+* In the example, the columns for the other layouts always begin with "Identifier, Title" so that users see those
+values on every layout. Repeating these columns is a convention, but is not required.
 
 [Learn more about layouts](http://swhplibrary.net/searching/search-results-table-view/).
 
 <hr/>
 
-#### Detail Layout
+#### L1 Detail Layout
 
-Use the Detail Layout to specify the elements which appear in the three columns of the L1 detail element. A screen shot
+L1 is a special layout referred to as the Detail Layout because it presents a lot of information about an item,
+including a thumbnail, in a single row. Use the Detail Layout option to specify the elements which appear in the
+first two columns of this layout. The third column is reserved for the Description element. A screen shot
 of the detail layout appears at the top of this documentation.
 
-You can specify elements for column one and column two, but column three is always the items Dublin Core Description
-element. In the screen shot, the last row shows Type and Subject in column one, and Address and Location in column two.
+In the screen shot, the last row shows Type and Subject in column one, and Address and Location in column two.
 If an element has no text, it will not appear in the Detail layout. In the screen shot, the first row shows Date in
 column one, but Date does not appear in the other rows because those items have no date information.
 
 
 ###### Format:
-* Specify the column one elements in the first row.
-* Specify the column two elements on the second row.
-* Specify the elements as a comma-separated list of element names chosen from those in the Result Element list.
-* Unlike the other layouts, the top to bottom order of elements in the Detail layout columns is not dictated by
-the order of elements in the Columns option. The top to bottom order is the order in the comma-separated lists.
-* Use the pseudo-element `<tags>` to display an item's tags in search results.
+* Specify the column one elements in the first row
+* Specify the column two elements on the second row
+* Specify the elements as a comma-separated list of element names
+* Use the pseudo-element `<tags>` to display an item's tags
 
 Below is an example specification of the Detail Layout option.
 
@@ -345,22 +335,22 @@ Type, Accession Number, Subject, Date, <tags>
 Creator, Publisher, Medium, Condition, Number of Pages
 ```
 
-If you prefer to have only one detail column plus the description column, specify only one row of elements.
+If you prefer to have only one detail column plus the Description column, specify only one row of elements.
 <hr/>
 
 #### Index View
 
-The Index View option lets you specify a semicolon-separated list of elements that can be used as the Index Field when choosing Index View from
+The Index View option lets you specify a list of elements that can be used as the Index Field when choosing Index View from
 the Advanced Search page. If you leave this option blank, Index View will not appear as an option on the Advanced
 Search page.
 
 Below is an example specification of the Index View option.
 
 ```
-Title;
-Creator;
-Publisher;
-Type;
+Title
+Creator
+Publisher
+Type
 ```
 
 By default, the Index View displays results in two columns. You can change it to show one column by placing the 
@@ -378,44 +368,19 @@ following CSS in your theme's style.css file. To show three columns, specify 3 i
 
 #### Treeview
 
-The Tree View option lets you specify a semicolon-separated list of elements that can used as the Tree Field when choosing Tree View from
+The Tree View option lets you specify a list of elements that can used as the Tree Field when choosing Tree View from
 the Advanced Search page. If you leave this option blank, Tree View will not appear as an option on the Advanced
 Search page.
 
 Below is an example specification of the Tree View option.
 
 ```
-Subject;
-Type;
+Subject
+Type
 ```
 
 [Learn more about Tree View.](http://swhplibrary.net/searching/search-results-tree-view/)
 
-
-## CSS
-
-You can override Search Results styling in your theme. Using Developer tools in your browser,
-you can see that AvantSearch specifies unique classes to the HTML tags in search results. Find the classes you
-are interested in and override them in your theme's style.css file.
-
-The examples below show how to use CSS to set the column width the Identifier element.
-
-```
-.search-th-identifier {
-	min-width: 100px;
-}
-
-.search-td-identifier {
-	text-align: left;
-	width: 100px;
-}
-```
-
-Notes:
-* A space in an Omeka element name will appear as a hyphen in the CSS class name. For example
-the header class name for an element named "First Name" will be 'search-th-first-name' not 'search-th-first name'.
-* '#' used in an Omeka element name will not appear in the corresponding CSS class name. For example
-the header class name for an element named "Catalog #" will be 'search-th-catalog-' not 'search-th-catalog-#'.
 
 ##  License
 
