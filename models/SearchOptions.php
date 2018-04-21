@@ -498,6 +498,17 @@ class SearchOptions
     public static function setDefaultOptionValues()
     {
         set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, 175);
+
+        // Create default L1 and L2 layouts.
+        $typeElementId = ItemMetadata::getElementIdForElementName('Type');
+        $subjectElementId = ItemMetadata::getElementIdForElementName('Subject');
+        $columns = "[$typeElementId,$subjectElementId]";
+        $layoutsData = '{"1":{"name":"Details","admin":false},"2":{"name":"Type / Subject ","admin":false,"columns":' . $columns . '}}';
+        set_option(self::OPTION_LAYOUTS, $layoutsData);
+
+        // Create a default Detail Layout
+        $detailLayoutData = "[[$typeElementId,$subjectElementId]]";
+        set_option(self::OPTION_DETAIL_LAYOUT, $detailLayoutData);
     }
 
     public static function userHasAccessToLayout($layout)
