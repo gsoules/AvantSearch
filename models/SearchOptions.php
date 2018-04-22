@@ -7,11 +7,27 @@ class SearchOptions
     const OPTION_LAYOUTS = 'avantsearch_layouts';
     const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
     const OPTION_PRIVATE_ELEMENTS = 'avantsearch_private_elements';
+    const OPTION_TITLES_ONLY = 'avantsearch_filters_show_titles_option';
     const OPTION_TREE_VIEW = 'avantsearch_tree_view_elements';
 
     protected static function configurationErrorsDetected()
     {
         return $_SERVER['REQUEST_METHOD'] == 'POST';
+    }
+
+    public static function emitInnoDbMessage($engine)
+    {
+        echo '<p class="storage-engine learn-more">' . __('This installation uses the %s storage engine for keyword searching.</br>', $engine);
+        echo "For improved search results, switch to the InnoDB storage engine. ";
+        echo "<a class='avantsearch-help' href='https://github.com/gsoules/AvantSearch#improving-search-results' target='_blank'>" . __('Learn more.') . "</a>";
+        echo "</p>";
+    }
+
+    public static function emitOptionNotSupported($hash)
+    {
+        echo "<p class='explanation learn-more'>" . __('Not available for this installation. ');
+        echo "<a class='avantsearch-help' href='https://github.com/gsoules/AvantSearch#$hash' target='_blank'>" . __('Learn more.') . "</a>";
+        echo "</p>";
     }
 
     public static function getOptionData($optionName)
@@ -143,6 +159,77 @@ class SearchOptions
     public static function getOptionDataForTreeView()
     {
         return self::getOptionData(self::OPTION_TREE_VIEW);
+    }
+
+    public static function getOptionSupportedDateRange()
+    {
+        $dateStartElementId = ItemMetadata::getElementIdForElementName('Date Start');
+        $dateEndElementId = ItemMetadata::getElementIdForElementName('Date End');
+        $dateElementId = ItemMetadata::getElementIdForElementName('Date');
+
+        return ($dateStartElementId != 0 && $dateEndElementId != 0 && $dateElementId != 0);
+    }
+
+    public static function getOptionSupportedRelationshipsView()
+    {
+        return plugin_is_active('AvantRelationships');
+    }
+
+    public static function getOptionSupportedAddressSorting()
+    {
+        // Determine if this database supports the REGEXP_REPLACE function which is needed to perform
+        // smart sorting of addresses. MariaDB provides this function, but MySQL does not.
+
+        $addressElementId = ItemMetadata::getElementIdForElementName('Address');
+        if ($addressElementId == 0)
+        {
+            // This option only works when an Address element is defined.
+            return false;
+        }
+
+        $supported = true;
+
+        $db = get_db();
+        $sql = "SELECT REGEXP_REPLACE('test','TEST','')";
+
+        try
+        {
+            $db->query($sql)->fetch();
+        }
+        catch (Zend_Db_Statement_Mysqli_Exception $e)
+        {
+            $supported = false;
+        }
+        return $supported;
+    }
+
+    public static function getOptionsSupportedTitlesOnly()
+    {
+        // Determine if this database allows a full text search on the search_texts table's title column.
+        // Success is determined by the table's storage engine (MyISAM  vs InnoDB) and whether a FULLTEXT
+        // index is set on the title column. We have not definitively determined which combinations work,
+        // but it seems that it always works with MyISAM whether or not there is a FULLTEXT index and only
+        // with InnoDB when there is a FULLTEXT index on the title column. However, it may work differently
+        // with different versions of MySQL or MariaDB. Note that a default Omeka installation uses MyISAM
+        // for the search_texts table with a FULLTEXT index only on the text column. A DB admin must
+        // manually add an index to the title column.
+
+        $supported = true;
+
+        $db = get_db();
+        $select = $db->select()
+            ->from($db->SearchTexts)
+            ->where("MATCH (text) AGAINST ('test' IN BOOLEAN MODE)");
+
+        try
+        {
+            $db->getTable('ElementText')->fetchObjects($select);
+        }
+        catch (Zend_Db_Statement_Mysqli_Exception $e)
+        {
+            $supported = false;
+        }
+        return $supported;
     }
 
     public static function getOptionText($optionName)
@@ -301,6 +388,22 @@ class SearchOptions
     public static function getOptionTextForTreeView()
     {
         return self::getOptionText('avantsearch_tree_view_elements');
+    }
+
+    public static function saveConfiguration()
+    {
+        SearchOptions::saveOptionDataForPrivateElements();
+        SearchOptions::saveOptionDataForLayouts();
+        SearchOptions::saveOptionDataForLayoutSelectorWidth();
+        SearchOptions::saveOptionDataForColumns();
+        SearchOptions::saveOptionDataForDetailLayout();
+        SearchOptions::saveOptionDataForIndexView();
+        SearchOptions::saveOptionDataForTreeView();
+        SearchOptions::saveOptionDataForTitlesOnly();
+
+        set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
+        set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
+        set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
     }
 
     public static function saveOptionData($optionName, $optionLabel)
@@ -488,6 +591,32 @@ class SearchOptions
     public static function saveOptionDataForPrivateElements()
     {
         self::saveOptionData(self::OPTION_PRIVATE_ELEMENTS, 'Private Elements');
+    }
+
+    public static function saveOptionDataForTitlesOnly()
+    {
+        $titlesOnly = $_POST[self::OPTION_TITLES_ONLY];
+
+
+        if ($titlesOnly)
+        {
+            $db = get_db();
+            $select = $db->select()
+                ->from($db->SearchTexts)
+                ->where("MATCH (text) AGAINST ('test' IN BOOLEAN MODE)");
+
+            try
+            {
+                $results = $db->getTable('ElementText')->fetchObjects($select);
+            }
+            catch (Zend_Db_Statement_Mysqli_Exception $e)
+            {
+                $titlesOnly = false;
+                throw new Omeka_Validate_Exception(__('Titles Only option not supported.'));
+            }
+        }
+
+        set_option(self::OPTION_TITLES_ONLY, $titlesOnly);
     }
 
     public static function saveOptionDataForTreeView()

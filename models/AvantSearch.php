@@ -60,6 +60,28 @@ class AvantSearch
         return $html;
     }
 
+    public static function getStorageEngineForSearchTextsTable()
+    {
+        $db = get_db();
+        $dbFile = BASE_DIR . '/db.ini';
+        $dbIni = new Zend_Config_Ini($dbFile, 'database');
+        $dbName = $dbIni->dbname;
+        $tableName = $db->prefix . 'search_texts';
+        $sql = "SELECT ENGINE FROM information_schema.Tables WHERE TABLE_NAME='$tableName' AND TABLE_SCHEMA='$dbName'";
+
+        try
+        {
+            $result = $db->query($sql)->fetch();
+            $engine = $result['ENGINE'];
+        }
+        catch (Zend_Db_Statement_Mysqli_Exception $e)
+        {
+            $engine = 'UNKNOWN';
+        }
+
+        return $engine;
+    }
+
     public static function redirectToShowPageForItem($id)
     {
         // Construct the URL for the 'show' page. If the user is on an admin page, display
@@ -89,21 +111,5 @@ class AvantSearch
         }
 
         return $elementTexts;
-    }
-
-    public static function saveConfiguration()
-    {
-        SearchOptions::saveOptionDataForPrivateElements();
-        SearchOptions::saveOptionDataForLayouts();
-        SearchOptions::saveOptionDataForLayoutSelectorWidth();
-        SearchOptions::saveOptionDataForColumns();
-        SearchOptions::saveOptionDataForDetailLayout();
-        SearchOptions::saveOptionDataForIndexView();
-        SearchOptions::saveOptionDataForTreeView();
-
-        set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
-        set_option('avantsearch_filters_show_titles_option', $_POST['avantsearch_filters_show_titles_option']);
-        set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
-        set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
     }
 }
