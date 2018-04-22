@@ -5,10 +5,10 @@ class SearchQueryBuilder
     const MIN_KEYWORD_LENGTH = 3;
 
     protected $db;
+    protected $hierarcyElements;
+    protected $integerSortElements;
     protected $select;
     protected $smartSortingEnabled;
-    protected $integerSortElements;
-
 
     function __construct()
     {
@@ -20,6 +20,7 @@ class SearchQueryBuilder
         $this->select = $args['select'];
         $this->smartSortingEnabled = get_option('avantsearch_filters_smart_sorting') == true;
         $this->integerSortElements = SearchOptions::getOptionDataForIntegerSorting();
+        $this->hierarcyElements = SearchOptions::getOptionDataForHierarchy();
 
         /* @var $searchResults SearchResultsView */
         $searchResults = $args['params']['results'];
@@ -219,11 +220,10 @@ class SearchQueryBuilder
         }
 
         $addressFieldElementId = ItemMetadata::getElementIdForElementName('Address');
-        $locationFieldElementId = ItemMetadata::getElementIdForElementName('Location');
         $titleFieldElementId = ItemMetadata::getTitleElementId();
 
         $sortByAddress = $sortField == $addressFieldElementId;
-        $sortByLocation = $sortField == $locationFieldElementId;
+        $sortAsHierarchy = array_key_exists($sortField, $this->hierarcyElements);
         $sortByTitle = $sortField == $titleFieldElementId;
 
         $performSecondarySort = !$isIndexQuery && !$sortByTitle;
@@ -255,12 +255,10 @@ class SearchQueryBuilder
             $primaryColumnName .= '_exp';
             $this->select->columns($this->columnValueForStreetNameSort("_primary_column.text", $primaryColumnName));
         }
-        elseif ($sortByLocation)
+        elseif ($sortAsHierarchy)
         {
-            // Sort by location using a virtual column that does not ever start with "MDI, ". We do this so that
-            // MDI locations like Bar Harbor sort above Boston instead of sorting with the M's.
             $primaryColumnName .= '_exp';
-            $this->select->columns($this->columnValueForLocationSort("_primary_column.text", $primaryColumnName));
+            $this->select->columns($this->columnValueForHierarchySort("_primary_column.text", $primaryColumnName));
         }
         else
         {
@@ -322,17 +320,9 @@ class SearchQueryBuilder
         }
     }
 
-    protected function columnValueForLocationSort($columnName, $alias)
+    protected function columnValueForHierarchySort($columnName, $alias)
     {
-        if ($this->smartSortingEnabled)
-        {
-            // Replaces 'MDI, ' at the beginning of a location with an empty string.
-            return "REGEXP_REPLACE($columnName, '^MDI, ', '') AS $alias";
-        }
-        else
-        {
-            return "$columnName AS $alias";
-        }
+        return "TRIM(SUBSTRING_INDEX($columnName, ',', -1)) AS $alias";
     }
 
     protected function columnValueForStreetNameSort($columnName, $alias)
