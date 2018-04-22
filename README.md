@@ -104,9 +104,6 @@ default option values using commonly used Dublin Core elements.
 Option | Description
 ----------------- | -----------
 Titles Only | Show the Advanced Search option to limit keyword searching to Title text.
-Date Range | Show the Advanced Search option to search within a range of years.
-Relationships View | Show the option to show search results in Relationships View.
-Address Sorting | Sort street addresses first by street name, then by street number.
 Private Elements | Elements that should not be searched by public users.
 Columns | Customization of columns in Table View search results.
 Layouts | Layout definitions.
@@ -114,6 +111,9 @@ Layout Selector Width | Specifies the width of the layout selector dropdown that
 Detail Layout | Detail layout elements.
 Index View | Elements that can be used as the Index View field.
 Tree View | Elements that can be used as the Tree View field
+Date Range | Show the Advanced Search option to search within a range of years.
+Relationships View | Show the option to show search results in Relationships View.
+Address Sorting | Sort street addresses first by street name, then by street number.
 
 The subsections that follow explain the options listed in the table above. Some options require that you specify
 formatted list of information using commas or other characters as separators. For these options, spaces
@@ -124,66 +124,16 @@ around separators are ignored. For example "a, b , c" is treated the same as "a,
 #### Titles Only
 When this option is checked, radio buttons will appear under the keywords text box on the Advanced Search page to let the user choose
 to search in all fields or in titles only. This feature is very helpful for narrowing search results down
-to only the most relevant items.
+to only the most relevant items because titles often contain the most important keywords.
 
-The Titles Only option requires that a FULLTEXT index be set on the `title` column of the `search_text` table.
-This is easily done using phpMyAdmin by following these steps:
+**NOTE:** If you want to use this option, but the configuration page says it's not available for your installation, you'll need to add a FULLTEXT
+index to the `title` column of the `search_text` table. This is easily done using phpMyAdmin by following these steps:
 1. Select the 'search_texts' table
 1. Click the Structure tab
 1. On the row for the `title` column, click Fulltext among the actions at the far right
 1. Click OK on the dialog confirming that you want to add FULLTEXT to the column
-1. The `title` column will now appear in the Indexes section showing its type as FULLTEXT
-
-<hr/>
-
-#### Date Range
-When this option is checked, Date Start and Date End text boxes will appear as filters at the bottom of the
-Advanced Search page.
-
-The Date Range option requires that your Omeka installation has elements named `Date Start` and `Date End` and elements
-and that these elements are used exclusively to store four digit years.
-
-A user can provide values for both Date Start and Date End to limit search results to
-items in that range inclusive. For example if you specify 1900 for Date Start and 1940 for Date End, the
-search will find items with Date Start greater than or equal to 1900 and less than or equal to 1940. If you only
-provide a value for Date Start, the search will find items where Date Start is that date or more recent.
-If you only provide a value for End, the filter will find items where Date End is that date or older.
-
-[Learn more about Date Filters](http://swhplibrary.net/searching/advanced-search/) (see the Date Filters section).
-
-<hr/>
-
-#### Relationships View
-
-When this option is checked, an option to show search results in Relationships View will appear on the Advanced
-Search page. This option can only be used when the [AvantRelationships](https://github.com/gsoules/AvantRelationships)
-plugin is installed and activated.
-
-[Learn more about Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/). 
-
-<hr/>
-
-#### Address Sorting (requires MariaDB)
-Address sorting improves search results by sorting addresses first on the street name and then by the street number as an integer.
-Normally addresses are sorted in a database, or in an Excel spreadsheet, as ordinary text where numbers sort before
-letters. Furthermore, numbers are normally sorted as text, rather than as integers such that `10` appears before `9`.
-
-Without address sorting:
-* 10 Main Street
-* 72 Pleasant Lane
-* 9 Main Street
-
-With address sorting:
-* 9 Main Street
-* 10 Main Street
-* 72 Pleasant Lane
-
-The Address Sorting option requires that your Omeka installation has an element named `Address` that is used to store
-street addresses which typically begin with a number, followed by a street name.
-
-> **IMPORTANT**: Address sorting uses a SQL function called REGEXP_REPLACE that is only supported by [MariaDB](https://mariadb.org/).
-If your server is running [MySQL](https://www.mysql.com/), do NOT select this option or you will get an Omeka error that
-will prevent your site from working.
+1. The `title` column will now appear in the Indexes section showing its type as FULLTEXT (expand the Indexes
+section if it's not visible)
 
 <hr/>
 
@@ -381,6 +331,58 @@ Type
 
 [Learn more about Tree View.](http://swhplibrary.net/searching/search-results-tree-view/)
 
+<hr/>
+
+#### Date Range
+When this option is checked, Date Start and Date End text boxes will appear as filters at the bottom of the
+Advanced Search page.
+
+A user can provide values for both Date Start and Date End to limit search results to
+items in that range inclusive. For example if you specify 1900 for Date Start and 1940 for Date End, the
+search will find items with Date Start greater than or equal to 1900 and less than or equal to 1940. If you only
+provide a value for Date Start, the search will find items where Date Start is that date or more recent.
+If you only provide a value for End, the filter will find items where Date End is that date or older.
+
+**NOTE:** If you want to use this option, but the configuration page says it's not available for your installation,
+you'll need to add `Date Start` and `Date End` elements and use them exclusively to store four digit years.
+
+[Learn more about Date Filters](http://swhplibrary.net/searching/advanced-search/) (see the Date Filters section).
+
+<hr/>
+
+#### Relationships View
+
+When this option is checked, an option to show search results in Relationships View will appear on the Advanced
+Search page.
+
+**NOTE:** If you want to use this option, but the configuration page says it's not available for your installation,
+you'll need to install and activate the [AvantRelationships](https://github.com/gsoules/AvantRelationships) plugin.
+
+[Learn more about Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/). 
+
+<hr/>
+
+#### Address Sorting
+
+> This option is only supported by the [MariaDB](https://mariadb.org/) database.
+If your server is running [MySQL](https://www.mysql.com/), the AvantSearch configuration page will say the option
+is not available for your installation. If you want to use this option, contact your web host to ask
+about moving to a server that has MariaDB. If your server is running MariaDB and you are seeing the message
+that the option is not available for your installation, you'll have to add an element named Address.
+
+Address sorting improves search results by sorting addresses first on the street name and then by the street number as an integer.
+Normally addresses are sorted in a database, or in an Excel spreadsheet, as ordinary text where numbers sort before
+letters. Furthermore, numbers are normally sorted as text, rather than as integers such that `10` appears before `9`.
+
+Without address sorting:
+* 10 Main Street
+* 72 Pleasant Lane
+* 9 Main Street
+
+With address sorting:
+* 9 Main Street
+* 10 Main Street
+* 72 Pleasant Lane
 
 ##  License
 
