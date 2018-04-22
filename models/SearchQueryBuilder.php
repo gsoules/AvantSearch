@@ -7,6 +7,8 @@ class SearchQueryBuilder
     protected $db;
     protected $select;
     protected $smartSortingEnabled;
+    protected $integerSortElements;
+
 
     function __construct()
     {
@@ -17,6 +19,7 @@ class SearchQueryBuilder
     {
         $this->select = $args['select'];
         $this->smartSortingEnabled = get_option('avantsearch_filters_smart_sorting') == true;
+        $this->integerSortElements = SearchOptions::getOptionDataForIntegerSorting();
 
         /* @var $searchResults SearchResultsView */
         $searchResults = $args['params']['results'];
@@ -60,17 +63,14 @@ class SearchQueryBuilder
         // Group the results to eliminate duplicates.
         if ($isIndexQuery)
         {
-            if ($searchHasFilters)
-            {
-                // Prevent index queries from returning null records;
-                $this->select->where('_primary_column.text IS NOT NULL');
+            // Prevent index queries from returning null records;
+            $this->select->where('_primary_column.text IS NOT NULL');
 
-                // Group records that got returned more than once and get the group count. For example, when
-                // indexing by subject, the query returns the same item three times if the item has three subjects.
-                $this->select->columns('COUNT(*) AS count');
-                $this->select->columns('_primary_column.text AS text');
-                $this->select->group('text');
-            }
+            // Group records that got returned more than once and get the group count. For example, when
+            // indexing by subject, the query returns the same item three times if the item has three subjects.
+            $this->select->columns('COUNT(*) AS count');
+            $this->select->columns('_primary_column.text AS text');
+            $this->select->group('text');
         }
         else
         {
@@ -78,7 +78,7 @@ class SearchQueryBuilder
             $this->select->group('items.id');
         }
 
-        if (!$searchHasFilters)
+        if (!$searchHasFilters && !$isIndexQuery)
         {
             // The user did not specify any filters. Force the query to return zero results.
             $this->select->where("items.id = 0");
@@ -209,9 +209,9 @@ class SearchQueryBuilder
         $secondaryColumnName = null;
         $secondaryColumnSortOrder = '';
 
-        if ($sortField == ItemMetadata::getElementIdForElementName('Identifier'))
+        if (array_key_exists($sortField, $this->integerSortElements))
         {
-            // When sorting the Identifier field, replace the default text sorting with a numeric sort.
+            // When sorting integer fields, replace the default text sorting with a signed integer sort.
             $this->select->reset(Zend_Db_Select::ORDER);
             $order[] = "CAST(_primary_column.text AS SIGNED INTEGER) $sortOrder";
             $this->select->order($order);

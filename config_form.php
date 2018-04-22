@@ -25,6 +25,10 @@ $treeViewOptionRows = max(3, count(explode(PHP_EOL, $treeViewOption)) - 1);
 $detailLayoutOption = SearchOptions::getOptionTextForDetailLayout();
 
 $layoutSelectorWidth = SearchOptions::getOptionTextForLayoutSelectorWidth();
+
+$integerSortingOption = SearchOptions::getOptionTextForIntegerSorting();
+$integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)) - 1);
+
 ?>
 
 <style>
@@ -128,6 +132,30 @@ $layoutSelectorWidth = SearchOptions::getOptionTextForLayoutSelectorWidth();
 
 <div class="field">
     <div class="two columns alpha">
+        <label><?php echo __('Integer Sorting'); ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __("Columns that should be sorted as integers."); ?></p>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_INTEGER_SORTING, $integerSortingOption, array('rows' => $integerSortingOptionRows, 'cols' => '40')); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
+        <label><?php echo __('Address Sorting'); ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <?php if ($addressSortingSupported): ?>
+            <p class="explanation"><?php echo __('Sort street addresses by street name, then by street number.'); ?></p>
+            <?php echo $view->formCheckbox('avantsearch_filters_smart_sorting', true, array('checked' => (boolean)get_option('avantsearch_filters_smart_sorting'))); ?>
+        <?php else: ?>
+            <?php SearchOptions::emitOptionNotSupported('address-sorting'); ?>
+        <?php endif; ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
         <label><?php echo __('Date Range'); ?></label>
     </div>
     <div class="inputs five columns omega">
@@ -150,20 +178,6 @@ $layoutSelectorWidth = SearchOptions::getOptionTextForLayoutSelectorWidth();
             <?php echo $view->formCheckbox('avantsearch_filters_enable_relationships', true, array('checked' => (boolean)get_option('avantsearch_filters_enable_relationships'))); ?>
         <?php else: ?>
             <?php SearchOptions::emitOptionNotSupported('relationships-view'); ?>
-        <?php endif; ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo __('Address Sorting'); ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <?php if ($addressSortingSupported): ?>
-            <p class="explanation"><?php echo __('Sort street addresses by street name, then by street number.'); ?></p>
-            <?php echo $view->formCheckbox('avantsearch_filters_smart_sorting', true, array('checked' => (boolean)get_option('avantsearch_filters_smart_sorting'))); ?>
-        <?php else: ?>
-            <?php SearchOptions::emitOptionNotSupported('address-sorting'); ?>
         <?php endif; ?>
     </div>
 </div>

@@ -36,8 +36,8 @@ User can specify number of results | Yes, from the Advanced Search page. | No. S
 [Tabular results](http://swhplibrary.net/searching/search-results-table-view/) | Results are presented in Excel-like tables with sortable columns. | Results are returned as a list with options to sort by Title, Creator, or Date Added.
 Customize results | Admin can configure custom result layouts. | No configuration.
 Private data | Private elements of public items can be hidden from pubic users. | No hiding of private data.
-Integer sorting | Sorts integer element values numerically instead of alphabetically. | No. All data is sorted alphabetically.
-Address sorting | Sorts first on street name, then on street number | Can only sort on Title, Creator, and Date Added.
+[Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting) | Sorts integer element values numerically instead of alphabetically. | No. All data is sorted alphabetically.
+[Address sorting](https://github.com/gsoules/AvantSearch#address-sorting) | Sorts first on street name, then on street number | Can only sort on Title, Creator, and Date Added.
 [Image View](http://swhplibrary.net/searching/search-results-image-view/) | Yes| No
 [Index View](http://swhplibrary.net/searching/search-results-index-view/) | Yes| No
 [Tree View](http://swhplibrary.net/searching/search-results-tree-view/) | Yes | No

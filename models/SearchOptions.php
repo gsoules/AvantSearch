@@ -4,6 +4,7 @@ class SearchOptions
     const OPTION_COLUMNS = 'avantsearch_columns';
     const OPTION_DETAIL_LAYOUT = 'avantsearch_detail_layout';
     const OPTION_INDEX_VIEW = 'avantsearch_index_view_elements';
+    const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
     const OPTION_LAYOUTS = 'avantsearch_layouts';
     const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
     const OPTION_PRIVATE_ELEMENTS = 'avantsearch_private_elements';
@@ -119,6 +120,11 @@ class SearchOptions
     public static function getOptionDataForIndexView()
     {
         return self::getOptionData(self::OPTION_INDEX_VIEW);
+    }
+
+    public static function getOptionDataForIntegerSorting()
+    {
+        return self::getOptionData(self::OPTION_INTEGER_SORTING);
     }
 
     public static function getOptionDataForLayouts()
@@ -319,7 +325,12 @@ class SearchOptions
 
     public static function getOptionTextForIndexView()
     {
-        return self::getOptionText('avantsearch_index_view_elements');
+        return self::getOptionText(self::OPTION_INDEX_VIEW);
+    }
+
+    public static function getOptionTextForIntegerSorting()
+    {
+        return self::getOptionText(self::OPTION_INTEGER_SORTING);
     }
 
     public static function getOptionTextForLayouts()
@@ -387,7 +398,7 @@ class SearchOptions
 
     public static function getOptionTextForTreeView()
     {
-        return self::getOptionText('avantsearch_tree_view_elements');
+        return self::getOptionText(self::OPTION_TREE_VIEW);
     }
 
     public static function saveConfiguration()
@@ -400,6 +411,7 @@ class SearchOptions
         SearchOptions::saveOptionDataForIndexView();
         SearchOptions::saveOptionDataForTreeView();
         SearchOptions::saveOptionDataForTitlesOnly();
+        SearchOptions::saveOptionDataForIntegerSorting();
 
         set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
         set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
@@ -502,6 +514,11 @@ class SearchOptions
     public static function saveOptionDataForIndexView()
     {
         self::saveOptionData(self::OPTION_INDEX_VIEW, 'Index View');
+    }
+
+    public static function saveOptionDataForIntegerSorting()
+    {
+        self::saveOptionData(self::OPTION_INTEGER_SORTING, 'Integer Sorting');
     }
 
     public static function saveOptionDataForLayouts()
