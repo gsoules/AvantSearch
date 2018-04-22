@@ -154,9 +154,9 @@ class SearchResultsView
         return $form;
     }
 
-    public function emitSearchFilters($layoutIndicator, $paginationNav)
+    public function emitSearchFilters($layoutIndicator, $paginationNav, $filtersExpected = true)
     {
-        return $this->searchFilters->emitSearchFilters($layoutIndicator, $paginationNav);
+        return $this->searchFilters->emitSearchFilters($layoutIndicator, $paginationNav, $filtersExpected);
     }
 
     public function getAdvancedSearchFields()
@@ -209,6 +209,7 @@ class SearchResultsView
         $select = $table->getSelectForFindBy($options);
         $select->reset(Zend_Db_Select::COLUMNS);
         $select->from(array(), array('id' => 'elements.id', 'name' => 'elements.name'));
+        $select->order('name');
         $elements = $table->fetchAll($select);
 
         foreach ($elements as $element)

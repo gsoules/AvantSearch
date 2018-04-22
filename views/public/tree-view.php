@@ -15,7 +15,7 @@ echo "<div class='search-results-title'>$pageTitle</div>";
 
 <?php
 echo $searchResults->emitModifySearchButton();
-echo $searchResults->emitSearchFilters(__('Tree View by %s', $treeFieldName), $totalResults ? pagination_links() : '');
+echo $searchResults->emitSearchFilters(__('Tree View by %s', $treeFieldName), $totalResults ? pagination_links() : '', false);
 
 if ($totalResults):
 ?>

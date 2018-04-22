@@ -16,7 +16,7 @@ echo "<div class='search-results-title'>$pageTitle</div>";
 
 <?php
 echo $searchResults->emitModifySearchButton();
-echo $searchResults->emitSearchFilters(__('Index View by %s', $indexFieldName), $totalResults ? pagination_links() : '');
+echo $searchResults->emitSearchFilters(__('Index View by %s', $indexFieldName), $totalResults ? pagination_links() : '', false);
 
 if ($indexFieldElementId == ItemMetadata::getElementIdForElementName('Location'))
 {

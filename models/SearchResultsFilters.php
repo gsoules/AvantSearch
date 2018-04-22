@@ -27,7 +27,7 @@ class SearchResultsFilters
         $this->filterCount++;
     }
 
-    public function emitSearchFilters($layoutIndicator, $paginationNav)
+    public function emitSearchFilters($layoutIndicator, $paginationNav, $filtersExpected)
     {
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $requestArray = $request->getParams();
@@ -157,14 +157,14 @@ class SearchResultsFilters
             }
         }
 
-        if ($this->filterCount == 0)
+        if ($filtersExpected && $this->filterCount == 0)
         {
             $message = __('No search filters were provided');
             $this->addFilterMessageCriteria(html_escape($message));
         }
 
         $html = "<div id='search-filter-bar'>";
-        $html .= "<div class='search-filter-bar-message'>$this->filterMessage</div>";
+        $html .= $this->filterCount> 0 ? "<div class='search-filter-bar-message'>$this->filterMessage</div>" : '';
         $html .= "<div class='search-filter-bar-layout'>{$layoutMessage}{$paginationNav}</div>";
         $html .= '</div>';
 
