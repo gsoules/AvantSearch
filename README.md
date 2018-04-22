@@ -29,13 +29,14 @@ Feature | AvantSearch | Omeka Search
 --------|------------ | ------------
 Quick search |  Displays an item (instead of search results) when its Identifier value is typed in the public Simple search box. | Displays search results for all items containing the identifier.
 Simple search |  Looks for all keywords to return more relevant results. | Looks for any of the keywords.
-Search in Titles only | Yes | No
+[Search in Titles only](https://github.com/gsoules/AvantSearch#titles-only) | Yes | No
 Search only items with images or files | Yes | No
 [Date range search](http://swhplibrary.net/searching/advanced-search/) | Yes | No
 User can specify number of results | Yes, from the Advanced Search page. | No. Set by the administrator.
 [Tabular results](http://swhplibrary.net/searching/search-results-table-view/) | Results are presented in Excel-like tables with sortable columns. | Results are returned as a list with options to sort by Title, Creator, or Date Added.
 Customize results | Admin can configure custom result layouts. | No configuration.
 Private data | Private elements of public items can be hidden from pubic users. | No hiding of private data.
+Integer sorting | Sorts integer element values numerically instead of alphabetically. | No. All data is sorted alphabetically.
 Address sorting | Sorts first on street name, then on street number | Can only sort on Title, Creator, and Date Added.
 [Image View](http://swhplibrary.net/searching/search-results-image-view/) | Yes| No
 [Index View](http://swhplibrary.net/searching/search-results-index-view/) | Yes| No
@@ -110,10 +111,11 @@ Layouts | Layout definitions.
 Layout Selector Width | Specifies the width of the layout selector dropdown that appears on search results pages.
 Detail Layout | Detail layout elements.
 Index View | Elements that can be used as the Index View field.
-Tree View | Elements that can be used as the Tree View field
+Tree View | Elements that can be used as the Tree View field.
+Integer Sorting | Columns that should be sorted as integers.
+Address Sorting | Sort street addresses first by street name, then by street number.
 Date Range | Show the Advanced Search option to search within a range of years.
 Relationships View | Show the option to show search results in Relationships View.
-Address Sorting | Sort street addresses first by street name, then by street number.
 
 The subsections that follow explain the options listed in the table above. Some options require that you specify
 formatted list of information using commas or other characters as separators. For these options, spaces
@@ -333,6 +335,73 @@ Type
 
 <hr/>
 
+#### Integer Sorting
+
+The Integer Sorting option lets you specify a list of elements for columns that should be sorted as integers instead
+of as text. This option ensures that the data in these column is sorted numerically instead of alphabetically.
+For example, an alphabetic sort of `14, 116, 127, 1102` results in `1102, 116, 127, 14` because alphabetically,
+the *character sequence* `1102` precedes `14`, `116`, and `127`. Likewise, the characters `14` are greater than the
+first two characters in the other three numbers and thus `14` sorts last. The values of elements specified with this
+option are converted to integers for sorting purposes.
+
+Below is an example specification of the Integer Sorting option.
+
+```
+Identifier
+Box #
+```
+
+Note that you can use the Integer Sorting option for elements with values that only contain integers and also for
+elements with values that start with integers, but are followed by text. In that case, the text is ignored and the
+sort is performed only on the integer portion of the value.
+
+<hr/>
+
+#### Address Sorting
+
+> This option is only supported by the [MariaDB](https://mariadb.org/) database.
+If your server is running [MySQL](https://www.mysql.com/), the AvantSearch configuration page will say the option
+is not available for your installation. If you want to use this option, contact your web host to ask
+about moving to a server that has MariaDB. If your server is running MariaDB and you are seeing the message
+that the option is not available for your installation, you'll have to add an element named Address.
+
+Address sorting improves search results by sorting addresses first on the street name and then by the street number as an integer.
+Normally addresses are sorted in a database, or in an Excel spreadsheet, as ordinary text where numbers sort before
+letters. Furthermore, numbers are normally sorted as text, rather than as integers such that `10` appears before `9`.
+
+Without address sorting:
+* 10 Main Street
+* 72 Pleasant Lane
+* 9 Main Street
+
+With address sorting:
+* 9 Main Street
+* 10 Main Street
+* 72 Pleasant Lane
+
+NOTE: If your installation does not support Address Sorting, you might consider using the Integer Sort option
+so that addresses are sorted numerically.
+
+##  License
+
+This plugin is published under [GNU/GPL].
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+
+<hr/>
+
 #### Date Range
 When this option is checked, Date Start and Date End text boxes will appear as filters at the bottom of the
 Advanced Search page.
@@ -359,48 +428,6 @@ Search page.
 you'll need to install and activate the [AvantRelationships](https://github.com/gsoules/AvantRelationships) plugin.
 
 [Learn more about Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/). 
-
-<hr/>
-
-#### Address Sorting
-
-> This option is only supported by the [MariaDB](https://mariadb.org/) database.
-If your server is running [MySQL](https://www.mysql.com/), the AvantSearch configuration page will say the option
-is not available for your installation. If you want to use this option, contact your web host to ask
-about moving to a server that has MariaDB. If your server is running MariaDB and you are seeing the message
-that the option is not available for your installation, you'll have to add an element named Address.
-
-Address sorting improves search results by sorting addresses first on the street name and then by the street number as an integer.
-Normally addresses are sorted in a database, or in an Excel spreadsheet, as ordinary text where numbers sort before
-letters. Furthermore, numbers are normally sorted as text, rather than as integers such that `10` appears before `9`.
-
-Without address sorting:
-* 10 Main Street
-* 72 Pleasant Lane
-* 9 Main Street
-
-With address sorting:
-* 9 Main Street
-* 10 Main Street
-* 72 Pleasant Lane
-
-##  License
-
-This plugin is published under [GNU/GPL].
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation; either version 3 of the License, or (at your option) any later
-version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-details.
-
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 ## Copyright
 
