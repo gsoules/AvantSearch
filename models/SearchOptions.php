@@ -2,6 +2,7 @@
 class SearchOptions
 {
     const OPTION_COLUMNS = 'avantsearch_columns';
+    const OPTION_HIERARCHY = 'avantsearch_hierarchy';
     const OPTION_DETAIL_LAYOUT = 'avantsearch_detail_layout';
     const OPTION_INDEX_VIEW = 'avantsearch_index_view_elements';
     const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
@@ -115,6 +116,11 @@ class SearchOptions
         }
 
         return $data;
+    }
+
+    public static function getOptionDataForHierarchy()
+    {
+        return self::getOptionData(self::OPTION_HIERARCHY);
     }
 
     public static function getOptionDataForIndexView()
@@ -323,6 +329,11 @@ class SearchOptions
         return $detailLayoutOption;
     }
 
+    public static function getOptionTextForHierarchy()
+    {
+        return self::getOptionText(self::OPTION_HIERARCHY);
+    }
+
     public static function getOptionTextForIndexView()
     {
         return self::getOptionText(self::OPTION_INDEX_VIEW);
@@ -403,15 +414,16 @@ class SearchOptions
 
     public static function saveConfiguration()
     {
-        SearchOptions::saveOptionDataForPrivateElements();
-        SearchOptions::saveOptionDataForLayouts();
-        SearchOptions::saveOptionDataForLayoutSelectorWidth();
-        SearchOptions::saveOptionDataForColumns();
-        SearchOptions::saveOptionDataForDetailLayout();
-        SearchOptions::saveOptionDataForIndexView();
-        SearchOptions::saveOptionDataForTreeView();
-        SearchOptions::saveOptionDataForTitlesOnly();
-        SearchOptions::saveOptionDataForIntegerSorting();
+        self::saveOptionDataForPrivateElements();
+        self::saveOptionDataForLayouts();
+        self::saveOptionDataForLayoutSelectorWidth();
+        self::saveOptionDataForColumns();
+        self::saveOptionDataForDetailLayout();
+        self::saveOptionDataForIndexView();
+        self::saveOptionDataForTreeView();
+        self::saveOptionDataForTitlesOnly();
+        self::saveOptionDataForIntegerSorting();
+        self::saveOptionDataForHierarchy();
 
         set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
         set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
@@ -509,6 +521,11 @@ class SearchOptions
         }
 
         set_option(self::OPTION_DETAIL_LAYOUT, json_encode($detailRows));
+    }
+
+    public static function saveOptionDataForHierarchy()
+    {
+        self::saveOptionData(self::OPTION_HIERARCHY, 'Hierarchy');
     }
 
     public static function saveOptionDataForIndexView()
