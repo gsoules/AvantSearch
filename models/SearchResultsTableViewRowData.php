@@ -65,21 +65,6 @@ class SearchResultsTableViewRowData
         $this->elementValue['<tags>']['detail'] = $searchResults->emitFieldDetail(__('Tags'),  $tags);
     }
 
-    protected function generateLocationText()
-    {
-        if (!isset($this->elementValue['Location']['text']))
-        {
-            // Temporary until we are no longer hard-coding special casing for Location.
-            return;
-        }
-
-        // Special case the Location by stripping off leading "MDI, "
-        if (strpos($this->elementValue['Location']['text'], 'MDI, ') === 0)
-        {
-            $this->elementValue['Location']['text'] = substr($this->elementValue['Location']['text'], 5);
-        }
-    }
-
     protected function generateThumbnailHtml($item)
     {
         $itemPreview = new ItemPreview($item);
@@ -139,7 +124,6 @@ class SearchResultsTableViewRowData
 
         $this->readMetadata($item);
         $this->generateDescription();
-        $this->generateLocationText();
         $this->generateDateRange();
         $this->generateItemDetails($searchResults);
         $this->generateTitles($item);
