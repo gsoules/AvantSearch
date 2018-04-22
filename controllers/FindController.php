@@ -37,12 +37,21 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $recordsPerPage = 100000;
         }
 
-        // Perform the query using the built-in Omeka mechanism for advanced search.
-        // That code will eventually call this plugin's hookItemsBrowseSql() method.
-        $currentPage = $this->getParam('page', 1);
-        $this->_helper->db->setDefaultModelName('Item');
-        $records = $this->_helper->db->findBy($params, $recordsPerPage, $currentPage);
-        $totalRecords = $this->_helper->db->count($params);
+        try
+        {
+            // Perform the query using the built-in Omeka mechanism for advanced search.
+            // That code will eventually call this plugin's hookItemsBrowseSql() method.
+            $currentPage = $this->getParam('page', 1);
+            $this->_helper->db->setDefaultModelName('Item');
+            $records = $this->_helper->db->findBy($params, $recordsPerPage, $currentPage);
+            $totalRecords = $this->_helper->db->count($params);
+        }
+        catch (Zend_Db_Statement_Mysqli_Exception $e)
+        {
+            $totalRecords = 0;
+            $records = array();
+            $searchResults->setError($e->getMessage());
+        }
 
         if ($recordsPerPage)
         {

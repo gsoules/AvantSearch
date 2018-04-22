@@ -80,7 +80,13 @@ if ($totalResults)
     <?php echo '</div>'; ?>
 <?php else: ?>
     <div id="no-results">
-        <p><?php echo __('Your search returned no results.'); ?></p>
+        <p>
+            <?php
+            $error = $searchResults->getError();
+            $message = empty($error) ? __('Your search returned no results.') : $error;
+            echo $message;
+            ?>
+        </p>
     </div>
 <?php endif; ?>
 <?php echo foot(); ?>

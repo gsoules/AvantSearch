@@ -15,6 +15,7 @@ class SearchResultsView
 
     protected $condition;
     protected $conditionName;
+    protected $error;
     protected $files;
     protected $isAdmin;
     protected $keywords;
@@ -33,6 +34,7 @@ class SearchResultsView
     {
         $this->searchFilters = new SearchResultsFilters($this);
         $this->isAdmin = is_allowed('Users', 'edit');
+        $this->error = '';
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -215,6 +217,11 @@ class SearchResultsView
         }
 
         return $fields;
+    }
+
+    public function getError()
+    {
+        return $this->error;
     }
 
     public function getFilesOnlyOptions()
@@ -415,6 +422,11 @@ class SearchResultsView
     public function getViewShortName()
     {
         return SearchResultsViewFactory::getViewShortName($this->getViewId());
+    }
+
+    public function setError($message)
+    {
+        $this->error = $message;
     }
 
     public function setResults($results)
