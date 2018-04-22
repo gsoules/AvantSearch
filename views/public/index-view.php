@@ -12,44 +12,44 @@ $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";
 echo "<div class='search-results-title'>$pageTitle</div>";
-?>
 
-<?php
 echo $searchResults->emitModifySearchButton();
 echo $searchResults->emitSearchFilters(__('Index View by %s', $indexFieldName), $totalResults ? pagination_links() : '', false);
 
-if ($indexFieldElementId == ItemMetadata::getElementIdForElementName('Location'))
+if ($totalResults)
 {
-    // Special case logic for the Location field. This will need to be addressed a
-    // better way to make this plugin be general purpose.
-    foreach ($results as $key => $result)
+    $entries = array();
+    foreach ($results as $result)
     {
-        $entry = $result['text'];
-        if (empty($entry))
-            continue;
-        if (substr($entry, 0, 5) == 'MDI, ')
-            $results[$key]['text'] = substr($entry, 5);
+        // Get the text from the pseudo column text_exp emitted by the SQL query for index views.
+        $text = $result['text_exp'];
+        $count = $result['count'];
+        if (isset($entries[$text]))
+        {
+            // Another entry has the same leaf text as another entry that shares the same ancestry.
+            // Add the counts of all the duplicate entries and apply them to a single unique entry.
+            $count += $entries[$text]['count'];
+        }
+        $entries[$text]['count'] = $count;
+        $entries[$text]['id'] = $result['id'];
     }
-}
 
-if ($totalResults):
     if ($showLetterIndex)
     {
         // Determine which letters to enable in the letter index.
         $letters = array('#' => false) + array_fill_keys(range('A', 'Z'), false);
-        foreach ($results as $result)
+        foreach ($entries as $entryText => $entry)
         {
-            $entry = $result['text'];
-            if (empty($entry))
+            if (empty($entryText))
             {
                 continue;
             }
 
             // Get the entry's first letter. If it's a double quote, use the second letter instead.
-            $firstLetter = substr($entry, 0, 1);
-            if ($firstLetter == '"' && strlen($entry) > 1)
+            $firstLetter = substr($entryText, 0, 1);
+            if ($firstLetter == '"' && strlen($entryText) > 1)
             {
-                $firstLetter = substr($entry, 1, 1);
+                $firstLetter = substr($entryText, 1, 1);
             }
 
             // If the first letter is not A-Z, treat is as a number so that it groups with the '#" index.
@@ -89,19 +89,24 @@ if ($totalResults):
     echo '<div id="search-index-view-headings">';
     $currentHeading = '';
     $headingId = '';
-    foreach ($results as $result)
+    foreach ($entries as $entryText => $entry)
     {
-        $entry = $result['text'];
-        if (empty($entry))
+        if (empty($entryText))
+        {
             continue;
+        }
 
         // Get the entry's first letter. If it's a double quote, use the second letter instead.
-        $firstLetter = substr($entry, 0, 1);
-        if ($firstLetter == '"' && strlen($entry) > 1)
-            $firstLetter = substr($entry, 1, 1);
+        $firstLetter = substr($entryText, 0, 1);
+        if ($firstLetter == '"' && strlen($entryText) > 1)
+        {
+            $firstLetter = substr($entryText, 1, 1);
+        }
 
         if (preg_match('/[^a-zA-Z]+/', $firstLetter))
+        {
             $firstLetter = '#';
+        }
 
         $currentLetter = strtoupper($firstLetter);
         if ($currentHeading != $currentLetter)
@@ -113,42 +118,47 @@ if ($totalResults):
 
         echo "<p class=\"search-index-view-record\">";
 
-        $count = $result['count'];
+        $count = $entry['count'];
         if ($count === 1)
         {
             // Emit a link directly to the item's show page.
-            $item = get_record_by_id('Item', $result['id']);
-            echo link_to($item, null, $entry);
+            $item = get_record_by_id('Item', $entry['id']);
+            echo link_to($item, null, $entryText);
         }
         else
         {
             // Emit a link to produce search results showing all items for this entry.
             if ($indexFieldElementId != 0)
             {
-                $url = $searchResults->emitIndexEntryUrl($entry, $indexFieldElementId, 'is exactly');
-                echo "<a href=\"$url\">$entry</a>";
+                $url = $searchResults->emitIndexEntryUrl($entryText, $indexFieldElementId, 'ends with');
+                echo "<a href=\"$url\">$entryText</a>";
             }
             else
             {
                 // This case would only be true if someone hand-edited the query emitted by the advanced search page.
-                echo "$entry";
+                echo "$entryText";
             }
             if ($count)
+            {
                 echo ' <span class="search-index-view-count">(' . $count . ')</span>';
+            }
         }
         echo "</p>";
     }
     echo "</div>";
-    ?>
-<?php if ($showLetterIndex): ?>
-    <div class="search-index-view-index" id="search-index-view-index-bottom">
-        <?php echo $letterIndex; ?>
-    </div>
-<?php endif; ?>
-<?php echo '</div>'; ?>
-<?php else: ?>
-    <div id="no-results">
-        <p><?php echo __('Your search returned no results.'); ?></p>
-    </div>
-<?php endif; ?>
-<?php echo foot(); ?>
+    if ($showLetterIndex)
+    {
+        echo '<div class="search-index-view-index" id="search-index-view-index-bottom">';
+        echo $letterIndex;
+        echo '</div>';
+    }
+    echo '</div>';
+}
+else
+{
+    echo '<div id="no-results">';
+    echo '<p>' . __('Your search returned no results.') . '</p>';
+    echo '</div>';
+}
+echo foot();
+?>
