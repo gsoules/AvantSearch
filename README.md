@@ -359,11 +359,11 @@ sort is performed only on the integer portion of the value.
 
 #### Address Sorting
 
-> This option is only supported by the [MariaDB](https://mariadb.org/) database.
-If your server is running [MySQL](https://www.mysql.com/), the AvantSearch configuration page will say the option
+> This option is only supported by [MariaDB](https://mariadb.org/) and MySQL 8.0.
+If your server is not running one of these databases, the AvantSearch configuration page will say the option
 is not available for your installation. If you want to use this option, contact your web host to ask
-about moving to a server that has MariaDB. If your server is running MariaDB and you are seeing the message
-that the option is not available for your installation, you'll have to add an element named Address.
+about moving to a server that has MariaDB. If your server is running one of the supporting databases and you are
+seeing the message that the option is not available for your installation, you'll have to add an element named Address.
 
 Address sorting improves search results by sorting addresses first on the street name and then by the street number as an integer.
 Normally addresses are sorted in a database, or in an Excel spreadsheet, as ordinary text where numbers sort before
