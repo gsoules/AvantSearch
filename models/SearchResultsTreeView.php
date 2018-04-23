@@ -120,6 +120,15 @@ class SearchResultsTreeView extends SearchResultsView
             $exactCount = $this->getExactItemCountFor($hierarchy[$key]);
             $text = $hierarchy[$key];
 
+            if ($startsWithCount != $exactCount)
+            {
+                // This text appears as an ancestor in a hierarchy, but might also appear alone. For example, it might
+                // appear as 'Boston, Roxbury' and also as just 'Boston'. Combine both counts to get the total since
+                // that's the number that appears in the tree. That's also how many hits someone will get when they
+                // they click on 'Boston' and the search returns all instances that start with 'Boston'.
+                $startsWithCount += $exactCount;
+            }
+
             if ($startsWithCount || $exactCount)
             {
                 if ($exactCount == 1 && $startsWithCount == 1)
@@ -129,14 +138,15 @@ class SearchResultsTreeView extends SearchResultsView
                 }
                 else
                 {
-                    $url = $this->emitIndexEntryUrl($text, $this->treeFieldElementId, 'starts with');
+                    $condition = $exactCount == $startsWithCount ? 'is exactly' : 'starts with';
+                    $url = $this->emitIndexEntryUrl($text, $this->treeFieldElementId, $condition);
                 }
 
                 $html = '<a href="' . $url . '">' . $node . '</a>';
 
-                if ($exactCount > 0)
+                if ($startsWithCount > 0)
                 {
-                    $html .= ' <span class="tree-node-count">(' . $exactCount . ')</span>';
+                    $html .= ' <span class="tree-node-count">(' . $startsWithCount . ')</span>';
                 }
             }
             else
@@ -167,10 +177,18 @@ class SearchResultsTreeView extends SearchResultsView
 
     protected function getStartsWithItemCountFor($value)
     {
+        // Look for instances where the value followed by a comma exists. This will find that 'Boston,Roxbury'
+        // starts with 'Boston,', but won't find that 'Blue Hill Bay' starts with 'Blue Hill'. First strip out all
+        // spaces so that inconsistent spacing won't affect this logic. A return count of 0 means that value is
+        // not an ancestor in any hierarchy (because ancestors are always followed by a comma).
+
         $count = 0;
+        $value = str_replace(' ', '', $value);
+        $value .= ',';
         foreach ($this->results as $result)
         {
             $entry = $result['text'];
+            $entry = str_replace(' ', '', $entry);
             if (strpos($entry, $value) === 0)
                 $count += $result['count'];
         }
