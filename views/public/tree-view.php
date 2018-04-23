@@ -1,32 +1,8 @@
 <?php
 /* @var $searchResults SearchResultsTreeView */
 
-$results = $searchResults->getResults();
-$treeFieldElementId = $searchResults->getTreeFieldElementId();
-$totalResults = count($results);
-$tree = $searchResults->generateTree();
-$treeFieldName = $searchResults->getTreeFieldName();
-$pageTitle = "Search Results";
-
-echo head(array('title' => $pageTitle));
-echo "<div class='search-results-container'>";
-echo "<div class='search-results-title'>$pageTitle</div>";
-?>
-
-<?php
-echo $searchResults->emitModifySearchButton();
-echo $searchResults->emitSearchFilters(__('Tree View by %s', $treeFieldName), $totalResults ? pagination_links() : '', false);
-
-if ($totalResults):
-?>
-<div id="search-tree-headings" class="search-tree-headings">
-<ul class="search-tree">
-    <?php
-    $previous_level = 0;
-    $levels = $tree['levels'];
-    $html = $tree['html'];
-
-    // Create the tree.
+function emitTree($levels, $html, $previous_level)
+{
     foreach ($levels as $key => $level)
     {
         // Skip blank entries.
@@ -73,15 +49,46 @@ if ($totalResults):
         echo $entry;
         $previous_level = $level;
     }
+    return $previous_level;
+}
+
+$results = $searchResults->getResults();
+$treeFieldElementId = $searchResults->getTreeFieldElementId();
+$totalResults = count($results);
+$tree = $searchResults->generateTree();
+$treeFieldName = $searchResults->getTreeFieldName();
+$pageTitle = "Search Results";
+
+echo head(array('title' => $pageTitle));
+echo "<div class='search-results-container'>";
+echo "<div class='search-results-title'>$pageTitle</div>";
+
+echo $searchResults->emitModifySearchButton();
+echo $searchResults->emitSearchFilters(__('Tree View by %s', $treeFieldName), $totalResults ? pagination_links() : '', false);
+
+if ($totalResults)
+{
+    echo '<div id="search-tree-headings" class="search-tree-headings">';
+    echo '<ul class="search-tree">';
+    $previous_level = 0;
+    $levels = $tree['levels'];
+    $html = $tree['html'];
+
+    // Create the tree.
+    $previous_level = emitTree($levels, $html, $previous_level);
+
     echo '</li>' . PHP_EOL . str_repeat('</ul></li>' . PHP_EOL, $previous_level);
-    ?>
-</ul>
-</div>
-<?php echo '</div>'; ?>
-<?php echo $this->partial('/tree-view-script.php'); ?>
-<?php else: ?>
-<div id="no-results">
-    <p><?php echo __('Your search returned no results.'); ?></p>
-</div>
-<?php endif; ?>
-<?php echo foot(); ?>
+    echo '</ul>';
+    echo '</div>';
+    echo '</div>';
+    echo $this->partial('/tree-view-script.php');
+}
+else
+{
+    echo '<div id="no-results">';
+    echo '<p>' . __('Your search returned no results.');
+    echo '</div>';
+    echo '</div>';
+}
+echo foot();
+?>
