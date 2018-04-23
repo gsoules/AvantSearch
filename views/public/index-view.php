@@ -187,6 +187,7 @@ else
     echo '<div id="no-results">';
     echo '<p>' . __('Your search returned no results.') . '</p>';
     echo '</div>';
+    echo '</div>';
 }
 echo foot();
 ?>
