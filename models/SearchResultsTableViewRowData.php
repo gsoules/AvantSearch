@@ -6,12 +6,14 @@ class SearchResultsTableViewRowData
     public $elementValue;
     protected $hierarchyElements;
     public $itemThumbnailHtml;
+    protected $searchResults;
 
     public function __construct($item, SearchResultsTableView $searchResults)
     {
+        $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
         $this->hierarchyElements = SearchOptions::getOptionDataForHierarchy();
-        $this->initializeData($item, $searchResults);
+        $this->initializeData($item);
     }
 
     protected function filterHierarchicalElementText(ElementText $elementText)
@@ -69,20 +71,7 @@ class SearchResultsTableViewRowData
             $remainingText .= '<span class="search-show-more"> ['. __('show more') . ']</span>';
             $this->elementValue['Description']['text'] = $shortText . $remainingText;
         }
-    }
-
-    protected function generateItemDetails(SearchResultsTableView $searchResults)
-    {
-        foreach ($this->columnsData as $elementId => $column)
-        {
-            $columnName = $column['name'];
-            $this->elementValue[$columnName]['detail'] = $searchResults->emitFieldDetail($column['alias'],  $this->elementValue[$columnName]['text']);
-        }
-
-        // Create a psuedo element value for tags since there is no actual tags element.
-        $tags = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
-        $this->elementValue['<tags>']['text'] = '';
-        $this->elementValue['<tags>']['detail'] = $searchResults->emitFieldDetail(__('Tags'),  $tags);
+        $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetail('Description', $this->elementValue['Description']['text']);
     }
 
     protected function generateThumbnailHtml($item)
@@ -114,17 +103,21 @@ class SearchResultsTableViewRowData
         return $data->elementValue[$elementName]['detail'];
     }
 
-    protected function getElementTextsAsHtml($item, $elementId, $elementName)
+
+    protected function getElementTexts($item, $elementName)
     {
         try
         {
             $elementTexts = $item->getElementTexts('Dublin Core', $elementName);
-        }
-        catch (Omeka_Record_Exception $e)
+        } catch (Omeka_Record_Exception $e)
         {
             $elementTexts = $item->getElementTexts('Item Type Metadata', $elementName);
         }
+        return $elementTexts;
+    }
 
+    protected function getElementTextsAsHtml($elementTexts, $filtered)
+    {
         $texts = '';
         foreach ($elementTexts as $key => $elementText)
         {
@@ -132,21 +125,21 @@ class SearchResultsTableViewRowData
             {
                 $texts .= '<br/>';
             }
-            $text = $this->filterHierarchicalElementText($elementText);
+
+            $text = $filtered ? $this->filterHierarchicalElementText($elementText) : $elementText;
             $texts .= html_escape($text);
         }
 
         return $texts;
     }
 
-    protected function initializeData($item, $searchResults)
+    protected function initializeData($item)
     {
         $this->elementValue = array();
 
         $this->readMetadata($item);
         $this->generateDescription();
         $this->generateDateRange();
-        $this->generateItemDetails($searchResults);
         $this->generateTitles($item);
         $this->generateThumbnailHtml($item);
     }
@@ -155,23 +148,32 @@ class SearchResultsTableViewRowData
     {
         foreach ($this->columnsData as $elementId => $column)
         {
-            $text = '';
-            $columnName = $column['name'];
+            $elementName = $column['name'];
 
-            if ($columnName != 'Title')
+            if ($elementName != 'Title')
             {
-                $text = $this->getElementTextsAsHtml($item, $elementId, $columnName);
+                $elementTexts = $this->getElementTexts($item, $elementName);
+                $fullText = $this->getElementTextsAsHtml($elementTexts, false);
+                $filteredText =  $this->getElementTextsAsHtml($elementTexts, true);
 
-                if ($columnName == ItemMetadata::getIdentifierElementName())
+                if ( $elementName != 'Description')
                 {
-                    // Indicate when an item is private.
-                    $text = ItemMetadata::getItemIdentifier($item);
-                    if ($item->public == 0)
-                        $text .= '*';
+                    $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetail($column['alias'], $fullText);
+                }
+
+                if ($item->public == 0 && $elementName == ItemMetadata::getIdentifierElementName())
+                {
+                    // Indicate that this item is private.
+                    $filteredText .= '*';
                 }
             }
 
-            $this->elementValue[$columnName]['text'] = $text;
+            $this->elementValue[$elementName]['text'] = $filteredText;
         }
+
+        // Create a psuedo element value for tags since there is no actual tags element.
+        $tags = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+        $this->elementValue['<tags>']['text'] = '';
+        $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetail(__('Tags'),  $tags);
     }
 }
