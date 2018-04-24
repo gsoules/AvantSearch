@@ -3,9 +3,7 @@
 > **This plugin is under development**. Please wait for the 2.0 release. 
 
 The AvantSearch plugin provides extended searching and search results capabilities for the public interface of an
-Omeka site.
-
-This plugin was originally developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
+Omeka Classic installation.
 
 ## Table of Contents
 
@@ -22,12 +20,22 @@ This plugin was originally developed for the [Southwest Harbor Public Library](h
 - [Usage](https://github.com/gsoules/AvantSearch#usage)
     - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search-page)
     - [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options)
-        - [Ttles Only](https://github.com/gsoules/AvantSearch#titles-only)
-        - [Private Elements](https://github.com/gsoules/AvantSearch#private-elements)
-        - [Columns](https://github.com/gsoules/AvantSearch#columns)
+        - [Ttles Only Option](https://github.com/gsoules/AvantSearch#titles-only-option)
+        - [Private Elements Option](https://github.com/gsoules/AvantSearch#private-elements-option)
+        - [Columns Option](https://github.com/gsoules/AvantSearch#columns-option)
+        - [Layout Selector Width Option](https://github.com/gsoules/AvantSearch#layout-selector-width-option)
+        - [Layouts Option](https://github.com/gsoules/AvantSearch#layouts-option)
+        - [Detail Columns Option](https://github.com/gsoules/AvantSearch#l1-detail-columns-option)
+        - [Index View Option](https://github.com/gsoules/AvantSearch#index-view-option)
+        - [Tree View Option](https://github.com/gsoules/AvantSearch#tree-view-option)
+        - [Integer Sorting Option](https://github.com/gsoules/AvantSearch#integer-sorting-option)
+        - [Address Sorting Option](https://github.com/gsoules/AvantSearch#address-sorting-option)
+        - [Date Range Option](https://github.com/gsoules/AvantSearch#date-range-option)
+        - [Relationships View Option](https://github.com/gsoules/AvantSearch#relationships-view-option)
 - [Improving Search Results](https://github.com/gsoules/AvantSearch#improving-search-results)
 - [License](https://github.com/gsoules/AvantSearch#license)
 - [Copyright](https://github.com/gsoules/AvantSearch#copyright)
+- [Credits](https://github.com/gsoules/AvantSearch#credits)
         
 
 ## Dependencies
@@ -170,7 +178,7 @@ around separators are ignored. For example "a, b , c" is treated the same as "a,
 
 <hr/>
 
-#### Titles Only
+#### Titles Only Option
 When this option is checked, radio buttons will appear under the keywords text box on the Advanced Search page to let the user choose
 to search in all fields or in titles only. This feature is very helpful for narrowing search results down
 to only the most relevant items because titles often contain the most important keywords.
@@ -186,7 +194,7 @@ section if it's not visible)
 
 <hr/>
 
-#### Private Elements
+#### Private Elements Option
 This option lets you specify a list of element names, one per row, that:
 * Should not be searchable via a keyword search
 * Don't appear to public uses in the Fields dropdown on the Advanced Search page (they will appear to a logged in administrator)
@@ -225,7 +233,7 @@ Status
 
 <hr/>
 
-#### Columns
+#### Columns Option
 
 Use the Columns option specify:
 * The order of columns from left to right in search results Table View
@@ -265,7 +273,7 @@ Archive Volume: Volume
 
 <hr/>
 
-#### Layout Selector Width
+#### Layout Selector Width Option
 Use this option to specify an integer indicating the width of the layout selector that appears on Table View search
 results. For example, specify 250 to mean 250px. This option saves you from having to code CSS to adjust the
 width to a size that is appropriate for your layout options and your theme's styling. Experiment to find a value that
@@ -273,7 +281,7 @@ makes the selector just wide enough to accommodate the longest layout you define
 
 <hr/>
 
-#### Layouts
+#### Layouts Option
 
 The Layouts option lets you specify different ways to present search results in Table Vew. The layouts you define
 here will appear in the Layout Selector and on the Advanced Search page.
@@ -305,14 +313,12 @@ Notes about the example above:
 * In the example, the columns for the other layouts always begin with "Identifier, Title" so that users see those
 values on every layout. Repeating these columns is a convention, but is not required.
 
-[Learn more about layouts](http://swhplibrary.net/searching/search-results-table-view/).
-
 <hr/>
 
-#### L1 Detail Layout
+#### Detail Columns Option
 
 L1 is a special layout referred to as the Detail Layout because it presents a lot of information about an item,
-including a thumbnail, in a single row. Use the Detail Layout option to specify the elements which appear in the
+including a thumbnail, in a single row. Use the Detail Columns option to specify the elements which appear in the
 first two columns of this layout. The third column is reserved for the Description element. A screen shot
 of the detail layout appears at the top of this documentation.
 
@@ -337,7 +343,7 @@ Creator, Publisher, Medium, Condition, Number of Pages
 If you prefer to have only one detail column plus the Description column, specify only one row of elements.
 <hr/>
 
-#### Index View
+#### Index View Option
 The Index View option lets you specify a list of elements that can be used as the Index Field when choosing Index View from
 the Advanced Search page. If you leave this option blank, Index View will not appear as an option on the Advanced
 Search page.
@@ -360,11 +366,9 @@ following CSS in your theme's style.css file. To show three columns, specify 3 i
 }
 ```
 
-[Learn more about Index View.](http://swhplibrary.net/searching/search-results-index-view/)
-
 <hr/>
 
-#### Treeview
+#### Treeview Option
 
 The Tree View option lets you specify a list of elements that contain hierarchical data. In these elements, the
 hierarchy must be represented by a comma-separated list for example `United States, Maine, Bangor`.
@@ -383,11 +387,9 @@ Subject
 Type
 ```
 
-[Learn more about Tree View.](http://swhplibrary.net/searching/search-results-tree-view/)
-
 <hr/>
 
-#### Integer Sorting
+#### Integer Sorting Option
 
 The Integer Sorting option lets you specify a list of elements for columns that should be sorted as integers instead
 of as text. This option ensures that the data in these column is sorted numerically instead of alphabetically.
@@ -409,7 +411,7 @@ sort is performed only on the integer portion of the value.
 
 <hr/>
 
-#### Address Sorting
+#### Address Sorting Option
 
 > This option is only supported by [MariaDB](https://mariadb.org/) and MySQL 8.0.
 If your server is not running one of these databases, the AvantSearch configuration page will say the option
@@ -433,7 +435,7 @@ With address sorting:
 
 <hr/>
 
-#### Date Range
+#### Date Range Option
 When this option is checked, Date Start and Date End text boxes will appear as filters at the bottom of the
 Advanced Search page.
 
@@ -446,19 +448,15 @@ If you only provide a value for End, the filter will find items where Date End i
 **NOTE:** If you want to use this option, but the configuration page says it's not available for your installation,
 you'll need to add `Date Start` and `Date End` elements and use them exclusively to store four digit years.
 
-[Learn more about Date Filters](http://swhplibrary.net/searching/advanced-search/) (see the Date Filters section).
-
 <hr/>
 
-#### Relationships View
+#### Relationships View Option
 
 When this option is checked, an option to show search results in Relationships View will appear on the Advanced
 Search page.
 
 **NOTE:** If you want to use this option, but the configuration page says it's not available for your installation,
 you'll need to install and activate the [AvantRelationships](https://github.com/gsoules/AvantRelationships) plugin.
-
-[Learn more about Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/). 
 
 ## Improving Search Results
 
@@ -509,12 +507,16 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 ## Copyright
 
-* Created by [gsoules](https://github.com/gsoules) for the Southwest Harbor Public Library's [Digital Archive](http://swhplibrary.net/archive)
+* Created by [gsoules](https://github.com/gsoules) 
 * Copyright George Soules, 2016-2018.
 * See [LICENSE](https://github.com/gsoules/AvantRelationships/blob/master/LICENSE) for more information.
 
-Inspiration for the [Index View](http://swhplibrary.net/searching/search-results-index-view/) and
-[Tree View](http://swhplibrary.net/searching/search-results-tree-view/) search results came from the alphabetized
+
+## Credits
+This plugin was originally developed for the Southwest Harbor Public Library [Digital Archive](http://swhplibrary.net/archive).
+Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
+
+Inspiration for the Index View and Tree View search results came from the alphabetized
 index and hierarchical list features in the [Daniel-KM / Reference](https://github.com/Daniel-KM/Reference) plugin.
 
 
