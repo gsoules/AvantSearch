@@ -11,11 +11,25 @@ This plugin was originally developed for the [Southwest Harbor Public Library](h
 A screen shot of Table View search results produced by AvantSearch appears below.
 <hr/>
 
-![Example](readme/table-view.jpg)
+<hr/>
+
+#### Detail Layout
+![Summary Layout](readme/table-view-summary.jpg)
 
 <hr/>
 
-#### Differences from Omeka search:
+#### Type / Subject Layout
+![Type Subject Layout](readme/table-view-type-subject.jpg)
+
+<hr/>
+
+#### Creator / Publisher Layout
+![Creator Publisher Layout](readme/table-view-creator-publisher.jpg)
+
+
+<hr/>
+
+## Differences from Omeka search:
 
 AvantSearch completely overrides Omeka's public search features. It provides its own
 [Advanced Search](http://swhplibrary.net/searching/advanced-search/) page
