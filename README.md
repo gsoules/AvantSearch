@@ -1,7 +1,5 @@
 # AvantSearch
 
-[TEST](https://github.com/gsoules/AvantSearch/README-Index-View.md).
-
 > **This plugin is under development**. Please wait for the 2.0 release. 
 
 The AvantSearch plugin provides extended searching and search results capabilities for the public interface of an
