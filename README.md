@@ -17,6 +17,7 @@ Omeka Classic installation.
     - [Image View](https://github.com/gsoules/AvantSearch#image-view)
     - [Tree View](https://github.com/gsoules/AvantSearch#tree-view)
     - [Index View](https://github.com/gsoules/AvantSearch#index-view)
+- [Lightbox Feature]((https://github.com/gsoules/AvantSearch#lightbox-feature))
 - [Usage](https://github.com/gsoules/AvantSearch#usage)
     - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search-page)
     - [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options)
@@ -83,8 +84,10 @@ Private data | Private elements of public items can be hidden from pubic users. 
 [Image View](http://swhplibrary.net/searching/search-results-image-view/) | Yes| No
 [Index View](http://swhplibrary.net/searching/search-results-index-view/) | Yes| No
 [Tree View](http://swhplibrary.net/searching/search-results-tree-view/) | Yes, for hierarchical data | No support for hierarchical data
+[Image View](https://github.com/gsoules/AvantSearch#image-view) | Displays results as a grid of thumbnail images | No
 [Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/) | Yes | No
-Search by File, Collection, Features | Not in the current release. | Yes
+[Lightbox Feature](https://github.com/gsoules/AvantSearch#lightbox-feature) | Displays a large version of a thumbnail image in a popup | No. Images open in a browser window.
+Search by File, Collection, Featured | Not in the current release. | Yes
 
 ## Search Results Views
 One of the most powerful features of AvantSearch is its ability to display search results in many different ways
@@ -99,7 +102,7 @@ The Detail Layout provides a compact presentation of key information about an it
 You specify which elements appear in the two columns to the right of the thumbnail. The item's description
 automatically appears in the third column. The screen shot below is truncated after the first three results.
 
-![Summary Layout](readme/table-view-detail.jpg)
+![Summary Layout Example](readme/table-view-detail.jpg)
 
 <hr/>
 
@@ -107,7 +110,7 @@ automatically appears in the third column. The screen shot below is truncated af
 This is an example of a custom layout showing the item's Type and Subject elements. The red triangle next to 'Type'
 in the header indicates that the results are sorted ascending by Type. The screen shot below is truncated after the first 10 results.
 
-![Type Subject Layout](readme/table-view-type-subject.jpg)
+![Custom Layout Example](readme/table-view-type-subject.jpg)
 
 <hr/>
 
@@ -117,26 +120,39 @@ is not public. When not logged in, the item does not appear in the results. You 
 only be chosen when logged in. These layout can be used to show data that is normally hidden from public users.
 The screen shot below is truncated after the first 10 results.
 
-![Creator Publisher Layout](readme/table-view-creator-publisher.jpg)
+![Custom Layout Example](readme/table-view-creator-publisher.jpg)
 
 ### Image View
 Image View displays search results as a grid of thumbnails. It's a more compact way to view results when the image is
 most important for identifying items of interest. The screen shot below is truncated after the first 10 results.
 
-![Example](readme/image-view.jpg)
+![Image View Example](readme/image-view.jpg)
 
 ### Index View
 Index View displays information like the index in a book. It consolidates values into unique groups having the same
 value. The screen shot below is truncated midway through the B's. 
 
-![Example](readme/index-view.jpg)
+![Index View Example](readme/index-view.jpg)
 
 ### Tree View
 
 Tree View display hierarchical data in tree format. The screen shot below shows just a fragment of the 
 full hierarchy (the places on Mount Desert Island a.k.a. MDI).
                                                                                                    
-![Example](readme/tree-view.jpg)
+![Tree View Example](readme/tree-view.jpg)
+
+## Lightbox Feature
+Both the Table View Detail Layout and the Image View display thumbnails for an item's image if it has one. If the item
+has no image, a placeholder image is displayed. When you click on a thumbnail, the AvantSearch plugin displays a large
+version of the image in a popup. You can close the popup by clicking on the red X above its top right corner,
+or by clicking anywere outside the popop, or by pressing the ESC key.
+
+You can click on the popup to see the next image, or click on the left or right arrows on either side of the image
+to navigate forward or backward through the image. The lightbox will display every thumbnail that appears on the page.
+
+In the screens shot below, the popup appeared when the user clicked on the thumbnail for item 2602
+                                                                                                   
+![Lightbox Example](readme/lightbox.jpg)
 
 ## Usage
 Once installed, AvantSearch entirely overrides Omeka's native user interface for public search (Omeka's native admin
@@ -154,27 +170,10 @@ specified to generate the Table View Custom Layout - Type / Subject screen shot 
 ![Summary Layout](readme/advanced-search.jpg)
 
 ### Configuration Options
-The table below lists the options available on the AvantSearch plugin configuration page. To help get you started using AvantSearch, the installer provides some
-default option values using commonly used Dublin Core elements.
+The sections that follow describe each of the options on the AvantSearch plugin configuration page.
 
-Option | Description
------------------ | -----------
-Titles Only | Show the Advanced Search option to limit keyword searching to Title text.
-Private Elements | Elements that should not be searched by public users.
-Columns | Customization of columns in Table View search results.
-Layouts | Layout definitions.
-Layout Selector Width | Specifies the width of the layout selector dropdown that appears on search results pages.
-Detail Layout | Detail layout elements.
-Index View | Elements that can be used as the Index View field.
-Tree View | Elements containing hierarchical data that can be used as the Tree View field.
-Integer Sorting | Columns that should be sorted as integers.
-Address Sorting | Sort street addresses first by street name, then by street number.
-Date Range | Show the Advanced Search option to search within a range of years.
-Relationships View | Show the option to show search results in Relationships View.
-
-The subsections that follow explain the options listed in the table above. Some options require that you specify
-formatted list of information using commas or other characters as separators. For these options, spaces
-around separators are ignored. For example "a, b , c" is treated the same as "a,b,c".
+Many options require that you specify a formatted list of information using commas or other characters as separators.
+For these options, spaces before and after the separators are ignored.
 
 <hr/>
 
