@@ -168,11 +168,6 @@ class SearchOptions
         return self::getOptionData(self::OPTION_PRIVATE_ELEMENTS);
     }
 
-    public static function getOptionDataForTreeView()
-    {
-        return self::getOptionData(self::OPTION_TREE_VIEW);
-    }
-
     public static function getOptionSupportedDateRange()
     {
         $dateStartElementId = ItemMetadata::getElementIdForElementName('Date Start');
@@ -407,11 +402,6 @@ class SearchOptions
         return self::getOptionText(self::OPTION_PRIVATE_ELEMENTS);
     }
 
-    public static function getOptionTextForTreeView()
-    {
-        return self::getOptionText(self::OPTION_TREE_VIEW);
-    }
-
     public static function saveConfiguration()
     {
         self::saveOptionDataForPrivateElements();
@@ -420,10 +410,9 @@ class SearchOptions
         self::saveOptionDataForColumns();
         self::saveOptionDataForDetailLayout();
         self::saveOptionDataForIndexView();
-        self::saveOptionDataForTreeView();
+        self::saveOptionDataForHierarchy();
         self::saveOptionDataForTitlesOnly();
         self::saveOptionDataForIntegerSorting();
-        self::saveOptionDataForHierarchy();
 
         set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
         set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
@@ -651,11 +640,6 @@ class SearchOptions
         }
 
         set_option(self::OPTION_TITLES_ONLY, $titlesOnly);
-    }
-
-    public static function saveOptionDataForTreeView()
-    {
-        self::saveOptionData(self::OPTION_TREE_VIEW, 'Tree View');
     }
 
     public static function setDefaultOptionValues()

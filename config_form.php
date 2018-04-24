@@ -19,7 +19,7 @@ $layoutsOptionRows = max(3, count(explode(PHP_EOL, $layoutsOption)) - 1);
 $indexViewOption = SearchOptions::getOptionTextForIndexView();
 $indexViewOptionRows = max(3, count(explode(PHP_EOL, $indexViewOption)) - 1);
 
-$treeViewOption = SearchOptions::getOptionTextForTreeView();
+$treeViewOption = SearchOptions::getOptionTextForHierarchy();
 $treeViewOptionRows = max(3, count(explode(PHP_EOL, $treeViewOption)) - 1);
 
 $detailLayoutOption = SearchOptions::getOptionTextForDetailLayout();
@@ -129,16 +129,6 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Elements that can be used as the Tree View field."); ?></p>
-        <?php echo $view->formTextarea(SearchOptions::OPTION_TREE_VIEW, $treeViewOption, array('rows' => $treeViewOptionRows, 'cols' => '40')); ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo __('Hierarchy'); ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __("Elements that contain hierarchical data."); ?></p>
         <?php echo $view->formTextarea(SearchOptions::OPTION_HIERARCHY, $hierarchyOption, array('rows' => $hierarchyOptionRows, 'cols' => '40')); ?>
     </div>
 </div>
