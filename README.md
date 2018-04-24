@@ -2,8 +2,7 @@
 
 > **This plugin is under development**. Please wait for the 2.0 release. 
 
-The AvantSearch plugin provides extended searching and search results capabilities for the public interface of an
-Omeka Classic installation.
+Provides extended searching and search results capabilities for an Omeka Classic installation.
 
 ## Table of Contents
 
@@ -41,8 +40,6 @@ Omeka Classic installation.
 
 ## Dependencies
 The AvantSearch plugin requires that the [AvantCommon](https://github.com/gsoules/AvantCommon) plugin be installed and activated.
-AvantCommon contains common logic used by [AvantSearch](https://github.com/gsoules/AvantSearch) and
-[AvantRelationships](https://github.com/gsoules/AvantRelationships).
 
 ## Installation
 
@@ -53,10 +50,10 @@ To install the AvantSearch plugin, follow these steps:
 1. Rename the folder to AvantSearch.
 1. Activate the plugin from the Admin → Settings → Plugins page.
 1. Configure the AvantCommon plugin to specify your item identifier and title elements.
-1. Configure the AvantSearch plugin as decribed in the Configuration Options section below.
+1. Configure the AvantSearch plugin as decribed in the [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options) section below.
 
 When this plugin is activated, it dynamically overrides the native Omeka search box (located in the page
-header) with the version used by AvantSearch.
+header) with the version used by AvantSearch. When you deactivate the plugin, the Omeka search box returns.
 
 ## Differences from Omeka's Native Search
 
