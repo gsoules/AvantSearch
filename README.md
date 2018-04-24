@@ -8,26 +8,23 @@ Archive topic [Searching the Digital Archive](http://swhplibrary.net/searching/)
 
 This plugin was originally developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Southwest Harbor, Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
 
-A screen shot of Table View search results produced by AvantSearch appears below.
-<hr/>
+The screen shots that follow show the same AvantSearch results in three different Table View layouts.
 
 <hr/>
 
-#### Detail Layout
+### Detail Layout
 ![Summary Layout](readme/table-view-summary.jpg)
 
 <hr/>
 
-#### Type / Subject Layout
+### Type / Subject Layout
 ![Type Subject Layout](readme/table-view-type-subject.jpg)
 
 <hr/>
 
-#### Creator / Publisher Layout
+### Creator / Publisher Layout
 ![Creator Publisher Layout](readme/table-view-creator-publisher.jpg)
 
-
-<hr/>
 
 ## Differences from Omeka search:
 
