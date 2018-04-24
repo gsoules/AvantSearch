@@ -42,6 +42,7 @@ Private data | Private elements of public items can be hidden from pubic users. 
 [Index View](http://swhplibrary.net/searching/search-results-index-view/) | Yes| No
 [Tree View](http://swhplibrary.net/searching/search-results-tree-view/) | Yes | No
 [Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/) | Yes | No
+[Hierarchical data support](https://github.com/gsoules/AvantSearch#hierarchy)|Yes|No
 Search by File, Collection, Features | Not in the current release. | Yes
 
 ## Dependencies
@@ -112,6 +113,7 @@ Layout Selector Width | Specifies the width of the layout selector dropdown that
 Detail Layout | Detail layout elements.
 Index View | Elements that can be used as the Index View field.
 Tree View | Elements that can be used as the Tree View field.
+Hierarchy | Elements that contain hierarchical data.
 Integer Sorting | Columns that should be sorted as integers.
 Address Sorting | Sort street addresses first by street name, then by street number.
 Date Range | Show the Advanced Search option to search within a range of years.
@@ -332,6 +334,16 @@ Type
 ```
 
 [Learn more about Tree View.](http://swhplibrary.net/searching/search-results-tree-view/)
+
+<hr/>
+
+#### Hierarchy
+
+The Hierarchy option lets you specify a list of elements that contain hierarchical data. In these elements, the
+hierarchy is represented by a comma-separated list for example `United States, Maine, Bangor`.
+
+In Table View, columns containing hierarchical content are sorted based on the leaf value in the hierarchy e.g.
+`Bangor` instead of `United States`.
 
 <hr/>
 
