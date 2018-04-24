@@ -64,7 +64,7 @@ The screen shots that follow show the same AvantSearch results in three differen
 #### Table View Detail Layout
 The Detail Layout provides a compact presentation of key information about an item including a thumbnail image.
 You specify which elements appear in the two columns to the right of the thumbnail. The item's description
-automatically appears in the third column.
+automatically appears in the third column. The screen shot below is truncated after the first three results.
 
 ![Summary Layout](readme/table-view-detail.jpg)
 
@@ -72,7 +72,7 @@ automatically appears in the third column.
 
 #### Table View Custom Layout - Type / Subject
 This is an example of a custom layout showing the item's Type and Subject elements. The red triangle next to 'Type'
-in the header indicates that the results are sorted ascending by Type.
+in the header indicates that the results are sorted ascending by Type. The screen shot below is truncated after the first 10 results.
 
 ![Type Subject Layout](readme/table-view-type-subject.jpg)
 
@@ -83,21 +83,26 @@ This is another example of a custom layout, but this one shows the item's Creato
 Note the asterisk on item 2636. When you are logged in as an administrator, the astersisk indicates that the item
 is not public. When not logged in, the item does not appear in the results. You can also define layouts that can
 only be chosen when logged in. These layout can be used to show data that is normally hidden from public users.
+The screen shot below is truncated after the first 10 results.
 
 ![Creator Publisher Layout](readme/table-view-creator-publisher.jpg)
 
+## ImageView
+Image View displays search results as a grid of thumbnails. It's a more compact way to view results when the image is
+most important for identifying items of interest. The screen shot below is truncated after the first 10 results.
+
+![Example](readme/image-view.jpg)
+
 ## Index View
-The Index View option lets you specify a list of elements that can be used as the Index Field when choosing Index View from
-the Advanced Search page. If you leave this option blank, Index View will not appear as an option on the Advanced
-Search page. A screen shot showing Index View results appears below.
+Index View displays information like the index in a book. It consolidates values into unique groups having the same
+value. The screen shot below is truncated midway through the B's. 
 
 ![Example](readme/index-view.jpg)
 
 ## Treeview
 
-The Tree View option lets you specify a list of elements that contain hierarchical data. In these elements, the
-hierarchy must be represented by a comma-separated list for example `United States, Maine, Bangor`.
-A screen shot showing Tree View results appears below.
+Tree View display hierarchical data in tree format. The screen shot below shows just a fragment of the 
+full hierarchy (the places on Mount Desert Island a.k.a. MDI).
                                                                                                    
 ![Example](readme/tree-view.jpg)
 
@@ -106,6 +111,15 @@ Once installed, AvantSearch entirely overrides Omeka's native user interface for
 search is still available from admin pages). There are several configuration options available on the plugin's
 configuration page.
 
+#### Advanced Search
+AvantSearch provides its own Advanced Search page. You access this page by either clicking on the Advanced Search
+link that appears below the simple search box in the header of every page, or by clicking the Modify Search button
+that appears on search result pages.
+
+The screen shot below shows the search conditions that were
+specified to generate the Table View Custom Layout - Type / Subject screen shot shown earlier.
+
+![Summary Layout](readme/advanced-search.jpg)
 
 #### Configuration Options
 The table below lists the options available on the AvantSearch plugin configuration page. To help get you started using AvantSearch, the installer provides some
@@ -302,7 +316,7 @@ If you prefer to have only one detail column plus the Description column, specif
 #### Index View
 The Index View option lets you specify a list of elements that can be used as the Index Field when choosing Index View from
 the Advanced Search page. If you leave this option blank, Index View will not appear as an option on the Advanced
-Search page. A screen shot showing Index View results appears below.
+Search page.
 
 Below is an example specification of the Index View option.
 
@@ -330,7 +344,6 @@ following CSS in your theme's style.css file. To show three columns, specify 3 i
 
 The Tree View option lets you specify a list of elements that contain hierarchical data. In these elements, the
 hierarchy must be represented by a comma-separated list for example `United States, Maine, Bangor`.
-A screen shot showing Tree View results appears below.
  
 The elements listed using the Tree View option will appear as Tree View fields on the Advanced Search page.
 If you leave this option blank, Tree View will not appear as an option on the Advanced Search page.
@@ -394,24 +407,6 @@ With address sorting:
 * 10 Main Street
 * 72 Pleasant Lane
 
-##  License
-
-This plugin is published under [GNU/GPL].
-
-This program is free software; you can redistribute it and/or modify it under
-the terms of the GNU General Public License as published by the Free Software
-Foundation; either version 3 of the License, or (at your option) any later
-version.
-
-This program is distributed in the hope that it will be useful, but WITHOUT
-ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
-details.
-
-You should have received a copy of the GNU General Public License along with
-this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
-
 <hr/>
 
 #### Date Range
@@ -469,6 +464,24 @@ Follow these steps to change your search_texts table from MyISAM to InnoDB:
 * Click on the Operations tab
 * In the Table options section, change Storage Engine from MyISAM to InnoDB
 * Click Go
+
+##  License
+
+This plugin is published under [GNU/GPL].
+
+This program is free software; you can redistribute it and/or modify it under
+the terms of the GNU General Public License as published by the Free Software
+Foundation; either version 3 of the License, or (at your option) any later
+version.
+
+This program is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+details.
+
+You should have received a copy of the GNU General Public License along with
+this program; if not, write to the Free Software Foundation, Inc.,
+51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 
 ## Copyright
 
