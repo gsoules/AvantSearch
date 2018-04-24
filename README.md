@@ -26,7 +26,7 @@ To install the AvantSearch plugin, follow these steps:
 When this plugin is activated, it dynamically overrides the native Omeka search box (located in the page
 header) with the version used by AvantSearch.
 
-## Differences from Omeka search:
+## Differences from Omeka's Native Search
 
 AvantSearch completely overrides Omeka's public search features. It provides its own
 [Advanced Search](http://swhplibrary.net/searching/advanced-search/) page
@@ -61,7 +61,7 @@ which you can customize to meet your needs. In addition to the Index View and Tr
 the Table View lets you specify any number of different layouts to display results in rows and sortable columns.
 The screen shots that follow show the same AvantSearch results in three different Table View layouts.
 
-### Table View Detail Layout
+#### Table View Detail Layout
 The Detail Layout provides a compact presentation of key information about an item including a thumbnail image.
 You specify which elements appear in the two columns to the right of the thumbnail. The item's description
 automatically appears in the third column.
@@ -70,7 +70,7 @@ automatically appears in the third column.
 
 <hr/>
 
-### Table View Custom Layout - Type / Subject
+#### Table View Custom Layout - Type / Subject
 This is an example of a custom layout showing the item's Type and Subject elements. The red triangle next to 'Type'
 in the header indicates that the results are sorted ascending by Type.
 
@@ -78,7 +78,7 @@ in the header indicates that the results are sorted ascending by Type.
 
 <hr/>
 
-### Table View Custom Layout - Creator / Publisher
+#### Table View Custom Layout - Creator / Publisher
 This is another example of a custom layout, but this one shows the item's Creator and Publisher elements.
 Note the asterisk on item 2636. When you are logged in as an administrator, the astersisk indicates that the item
 is not public. When not logged in, the item does not appear in the results. You can also define layouts that can
@@ -86,35 +86,20 @@ only be chosen when logged in. These layout can be used to show data that is nor
 
 ![Creator Publisher Layout](readme/table-view-creator-publisher.jpg)
 
+## Index View
+The Index View option lets you specify a list of elements that can be used as the Index Field when choosing Index View from
+the Advanced Search page. If you leave this option blank, Index View will not appear as an option on the Advanced
+Search page. A screen shot showing Index View results appears below.
 
-## Improving Search Results
+![Example](readme/index-view.jpg)
 
-The AvantSearch plugin will work without any modifications to your database. However, please read this section to
-learn how you can improve search results by changing just one setting.
+## Treeview
 
-Like Omeka's native search, AvantSearch performs keyword searches using the Omeka `search_texts` table. The Omeka installer creates this table
-using the MyISAM storage engine. You will get much better results from keyword searches by changing the table to use the InnoDB
-storage engine because MyISAM negatively affects keyword searches in two ways:
- 
-* MyISAM uses a very long list of [stopwords](https://dev.mysql.com/doc/refman/5.7/en/fulltext-stopwords.html).
-* MyISAM's default settings ignores keywords of three characters or less (ft_min_word_len).
- 
-With MyISAM a search for "road+ map+" will ignore 'map' and thus return all items containing 'road' instead of only
-those items containing 'road' AND 'map'. Additionally, the MyISAM stopword list contains so many words that people
-commonly search for that users are often surprised when items don't appear in search results.
- 
-In contrast, InnoDB has a very short list of stopwords and only ignores keywords that are two characters or less
-(innodb_ft_min_token_size). Although you can change the value of ft_min_word_len to 3, this variable
-can only be set at the MySQL server level and a server restart is required to change them. If you are
-using a shared server, you probably don't have the option to change this value.
-
-Follow these steps to change your search_texts table from MyISAM to InnoDB:
- 
-* In phpAdmin, click on your database to see its tables
-* Click on the search_texts table (probably called omeka_search_texts or something similar)
-* Click on the Operations tab
-* In the Table options section, change Storage Engine from MyISAM to InnoDB
-* Click Go
+The Tree View option lets you specify a list of elements that contain hierarchical data. In these elements, the
+hierarchy must be represented by a comma-separated list for example `United States, Maine, Bangor`.
+A screen shot showing Tree View results appears below.
+                                                                                                   
+![Example](readme/tree-view.jpg)
 
 ## Usage
 Once installed, AvantSearch entirely overrides Omeka's native user interface for public search (Omeka's native admin
@@ -319,8 +304,6 @@ The Index View option lets you specify a list of elements that can be used as th
 the Advanced Search page. If you leave this option blank, Index View will not appear as an option on the Advanced
 Search page. A screen shot showing Index View results appears below.
 
-![Example](readme/index-view.jpg)
-
 Below is an example specification of the Index View option.
 
 ```
@@ -348,8 +331,6 @@ following CSS in your theme's style.css file. To show three columns, specify 3 i
 The Tree View option lets you specify a list of elements that contain hierarchical data. In these elements, the
 hierarchy must be represented by a comma-separated list for example `United States, Maine, Bangor`.
 A screen shot showing Tree View results appears below.
-                                                                                                   
-![Example](readme/tree-view.jpg)
  
 The elements listed using the Tree View option will appear as Tree View fields on the Advanced Search page.
 If you leave this option blank, Tree View will not appear as an option on the Advanced Search page.
@@ -459,6 +440,35 @@ Search page.
 you'll need to install and activate the [AvantRelationships](https://github.com/gsoules/AvantRelationships) plugin.
 
 [Learn more about Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/). 
+
+## Improving Search Results
+
+The AvantSearch plugin will work without any modifications to your database. However, please read this section to
+learn how you can improve search results by changing just one setting.
+
+Like Omeka's native search, AvantSearch performs keyword searches using the Omeka `search_texts` table. The Omeka installer creates this table
+using the MyISAM storage engine. You will get much better results from keyword searches by changing the table to use the InnoDB
+storage engine because MyISAM negatively affects keyword searches in two ways:
+ 
+* MyISAM uses a very long list of [stopwords](https://dev.mysql.com/doc/refman/5.7/en/fulltext-stopwords.html).
+* MyISAM's default settings ignores keywords of three characters or less (ft_min_word_len).
+ 
+With MyISAM a search for "road+ map+" will ignore 'map' and thus return all items containing 'road' instead of only
+those items containing 'road' AND 'map'. Additionally, the MyISAM stopword list contains so many words that people
+commonly search for that users are often surprised when items don't appear in search results.
+ 
+In contrast, InnoDB has a very short list of stopwords and only ignores keywords that are two characters or less
+(innodb_ft_min_token_size). Although you can change the value of ft_min_word_len to 3, this variable
+can only be set at the MySQL server level and a server restart is required to change them. If you are
+using a shared server, you probably don't have the option to change this value.
+
+Follow these steps to change your search_texts table from MyISAM to InnoDB:
+ 
+* In phpAdmin, click on your database to see its tables
+* Click on the search_texts table (probably called omeka_search_texts or something similar)
+* Click on the Operations tab
+* In the Table options section, change Storage Engine from MyISAM to InnoDB
+* Click Go
 
 ## Copyright
 
