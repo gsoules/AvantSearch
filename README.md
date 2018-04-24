@@ -25,7 +25,7 @@ Provides extended searching and search results capabilities for an Omeka Classic
         - [Columns Option](https://github.com/gsoules/AvantSearch#columns-option)
         - [Layout Selector Width Option](https://github.com/gsoules/AvantSearch#layout-selector-width-option)
         - [Layouts Option](https://github.com/gsoules/AvantSearch#layouts-option)
-        - [Detail Columns Option](https://github.com/gsoules/AvantSearch#l1-detail-columns-option)
+        - [Detail Columns Option](https://github.com/gsoules/AvantSearch#detail-columns-option)
         - [Index View Option](https://github.com/gsoules/AvantSearch#index-view-option)
         - [Tree View Option](https://github.com/gsoules/AvantSearch#tree-view-option)
         - [Integer Sorting Option](https://github.com/gsoules/AvantSearch#integer-sorting-option)
@@ -66,12 +66,12 @@ Feature | AvantSearch | Omeka Search
 --------|------------ | ------------
 [Quick search](https://github.com/gsoules/AvantSearch#quick-search) |  **Yes** - Feature | No
 [Simple search for All Words](https://github.com/gsoules/AvantSearch#simple-search) |  **Yes** - Feature | No
-[Search in Titles only](https://github.com/gsoules/AvantSearch#titles-only) | **Yes** - Advanced Search page option | No
+[Search in Titles only](https://github.com/gsoules/AvantSearch#titles-only-option) | **Yes** - Advanced Search page option | No
 [Search only items with images or files](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
 [Date range search](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
 [User can specify number of results](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
 [Tabular results](https://github.com/gsoules/AvantSearch#table-view) | **Yes** - Feature | No
-[Custom Results Layouts](https://github.com/gsoules/AvantSearch#table-view-custom-layouts-option) | **Yes** - Congfiguration option | No
+[Custom Results Layouts](https://github.com/gsoules/AvantSearch#table-view-custom-layouts) | **Yes** - Congfiguration option | No
 [Private Elements](https://github.com/gsoules/AvantSearch#private-elements-option) | **Yes** - Congfiguration option | No
 [Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting-option) | **Yes** - Congfiguration option | No
 [Address sorting](https://github.com/gsoules/AvantSearch#address-sorting-option) | **Yes** - Congfiguration option | No
@@ -374,7 +374,7 @@ following CSS in your theme's style.css file. To show three columns, specify 3 i
 
 <hr/>
 
-#### Treeview Option
+#### Tree View Option
 
 The Tree View option lets you specify a list of elements that contain hierarchical data. In these elements, the
 hierarchy must be represented by a comma-separated list for example `United States, Maine, Bangor`.
