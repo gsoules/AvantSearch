@@ -12,15 +12,15 @@ This plugin was originally developed for the [Southwest Harbor Public Library](h
 - [Dependencies](https://github.com/gsoules/AvantSearch#dependencies)
 - [Installation](https://github.com/gsoules/AvantSearch#installation)
 - [Differences from Omeka's Native Search](https://github.com/gsoules/AvantSearch#differences-from-omekas-native-search)
-- [Search Results Views]()
+- [Search Results Views](https://github.com/gsoules/AvantSearch#search-results-views)
     - [Table View](https://github.com/gsoules/AvantSearch#table-view)
         - [Table View Detail Layout](https://github.com/gsoules/AvantSearch#table-view-detail-layout)
         - [Table View Custom Layouts](https://github.com/gsoules/AvantSearch#table-view-custom-layouts)
-    - [Image View](https://github.com/gsoules/AvantSearch#imageview)
-    - [Tree View](https://github.com/gsoules/AvantSearch#index-view)
-    - [Index View](https://github.com/gsoules/AvantSearch#treeview)
+    - [Image View](https://github.com/gsoules/AvantSearch#image-view)
+    - [Tree View](https://github.com/gsoules/AvantSearch#tree-view)
+    - [Index View](https://github.com/gsoules/AvantSearch#index-view)
 - [Usage](https://github.com/gsoules/AvantSearch#usage)
-    - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search)
+    - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search-page)
     - [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options)
         - [Ttles Only](https://github.com/gsoules/AvantSearch#titles-only)
         - [Private Elements](https://github.com/gsoules/AvantSearch#private-elements)
@@ -78,11 +78,13 @@ Private data | Private elements of public items can be hidden from pubic users. 
 [Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/) | Yes | No
 Search by File, Collection, Features | Not in the current release. | Yes
 
-## Table View
+## Search Results Views
 One of the most powerful features of AvantSearch is its ability to display search results in many different ways
 which you can customize to meet your needs. In addition to the Index View and Tree View presentations described later,
 the Table View lets you specify any number of different layouts to display results in rows and sortable columns.
 The screen shots that follow show the same AvantSearch results in three different Table View layouts.
+
+### Table View
 
 #### Table View Detail Layout
 The Detail Layout provides a compact presentation of key information about an item including a thumbnail image.
@@ -109,19 +111,19 @@ The screen shot below is truncated after the first 10 results.
 
 ![Creator Publisher Layout](readme/table-view-creator-publisher.jpg)
 
-## ImageView
+### Image View
 Image View displays search results as a grid of thumbnails. It's a more compact way to view results when the image is
 most important for identifying items of interest. The screen shot below is truncated after the first 10 results.
 
 ![Example](readme/image-view.jpg)
 
-## Index View
+### Index View
 Index View displays information like the index in a book. It consolidates values into unique groups having the same
 value. The screen shot below is truncated midway through the B's. 
 
 ![Example](readme/index-view.jpg)
 
-## Treeview
+### Tree View
 
 Tree View display hierarchical data in tree format. The screen shot below shows just a fragment of the 
 full hierarchy (the places on Mount Desert Island a.k.a. MDI).
@@ -133,7 +135,7 @@ Once installed, AvantSearch entirely overrides Omeka's native user interface for
 search is still available from admin pages). There are several configuration options available on the plugin's
 configuration page.
 
-#### Advanced Search
+### Advanced Search Page
 AvantSearch provides its own Advanced Search page. You access this page by either clicking on the Advanced Search
 link that appears below the simple search box in the header of every page, or by clicking the Modify Search button
 that appears on search result pages.
@@ -143,7 +145,7 @@ specified to generate the Table View Custom Layout - Type / Subject screen shot 
 
 ![Summary Layout](readme/advanced-search.jpg)
 
-## Configuration Options
+### Configuration Options
 The table below lists the options available on the AvantSearch plugin configuration page. To help get you started using AvantSearch, the installer provides some
 default option values using commonly used Dublin Core elements.
 
