@@ -16,7 +16,7 @@ Provides extended searching and search results capabilities for an Omeka Classic
     - [Image View](https://github.com/gsoules/AvantSearch#image-view)
     - [Tree View](https://github.com/gsoules/AvantSearch#tree-view)
     - [Index View](https://github.com/gsoules/AvantSearch#index-view)
-- [Lightbox Feature](https://github.com/gsoules/AvantSearch#lightbox-feature)
+- [Lightbox](https://github.com/gsoules/AvantSearch#lightbox)
 - [Usage](https://github.com/gsoules/AvantSearch#usage)
     - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search-page)
     - [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options)
@@ -71,14 +71,14 @@ Feature | AvantSearch | Omeka Search
 [Date range search](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
 [User can specify number of results](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
 [Tabular results](https://github.com/gsoules/AvantSearch#table-view) | **Yes** - Feature | No
-[Custom Results Layouts](https://github.com/gsoules/AvantSearch#table-view-custom-layouts) | **Yes** - Congfiguration option | No
+[Custom Results Layouts](https://github.com/gsoules/AvantSearch#table-view-custom-layouts-option) | **Yes** - Congfiguration option | No
 [Private Elements](https://github.com/gsoules/AvantSearch#private-elements-option) | **Yes** - Congfiguration option | No
-[Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting) | **Yes** - Congfiguration option | No
-[Address sorting](https://github.com/gsoules/AvantSearch#address-sorting) | **Yes** - Congfiguration option | No
-[Image View](https://github.com/gsoules/AvantSearch#image-view/) | **Yes** - Feature | No
-[Index View](https://github.com/gsoules/AvantSearch#index-view/) | **Yes** - Congfiguration option| No
-[Tree View (Hierarchical Data)](https://github.com/gsoules/AvantSearch#tree-view/) | **Yes** - Congfiguration option | No
-[Relationships View](https://github.com/gsoules/AvantSearch#relationships-view/) | **Yes** - Congfiguration option | No
+[Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting-option) | **Yes** - Congfiguration option | No
+[Address sorting](https://github.com/gsoules/AvantSearch#address-sorting-option) | **Yes** - Congfiguration option | No
+[Image View](https://github.com/gsoules/AvantSearch#image-view) | **Yes** - Feature | No
+[Index View](https://github.com/gsoules/AvantSearch#index-view) | **Yes** - Congfiguration option| No
+[Tree View (Hierarchical Data)](https://github.com/gsoules/AvantSearch#tree-view) | **Yes** - Congfiguration option | No
+[Relationships View](https://github.com/gsoules/AvantSearch#relationships-view-option) | **Yes** - Congfiguration option | No
 [Lightbox](https://github.com/gsoules/AvantSearch#lightbox) | **Yes** - Feature | No
 Search by File, Collection, Featured | No | Yes
 
