@@ -1,13 +1,34 @@
 # AvantSearch
 
-[TEST](readme/test.md).
-
 > **This plugin is under development**. Please wait for the 2.0 release. 
 
 The AvantSearch plugin provides extended searching and search results capabilities for the public interface of an
 Omeka site.
 
 This plugin was originally developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
+
+## Table of Contents
+
+- [Dependencies](https://github.com/gsoules/AvantSearch#dependencies)
+- [Installation](https://github.com/gsoules/AvantSearch#installation)
+- [Differences from Omeka's Native Search](https://github.com/gsoules/AvantSearch#differences-from-omekas-native-search)
+- [Search Results Views]()
+    - [Table View](https://github.com/gsoules/AvantSearch#table-view)
+        - [Table View Detail Layout](https://github.com/gsoules/AvantSearch#table-view-detail-layout)
+        - [Table View Custom Layouts](https://github.com/gsoules/AvantSearch#table-view-custom-layouts)
+    - [Image View](https://github.com/gsoules/AvantSearch#imageview)
+    - [Tree View](https://github.com/gsoules/AvantSearch#index-view)
+    - [Index View](https://github.com/gsoules/AvantSearch#treeview)
+- [Usage](https://github.com/gsoules/AvantSearch#usage)
+    - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search)
+    - [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options)
+        - [Ttles Only](https://github.com/gsoules/AvantSearch#titles-only)
+        - [Private Elements](https://github.com/gsoules/AvantSearch#private-elements)
+        - [Columns](https://github.com/gsoules/AvantSearch#columns)
+- [Improving Search Results](https://github.com/gsoules/AvantSearch#improving-search-results)
+- [License](https://github.com/gsoules/AvantSearch#license)
+- [Copyright](https://github.com/gsoules/AvantSearch#copyright)
+        
 
 ## Dependencies
 The AvantSearch plugin requires that the [AvantCommon](https://github.com/gsoules/AvantCommon) plugin be installed and activated.
@@ -72,7 +93,7 @@ automatically appears in the third column. The screen shot below is truncated af
 
 <hr/>
 
-#### Table View Custom Layout - Type / Subject
+#### Table View Custom Layouts
 This is an example of a custom layout showing the item's Type and Subject elements. The red triangle next to 'Type'
 in the header indicates that the results are sorted ascending by Type. The screen shot below is truncated after the first 10 results.
 
@@ -80,7 +101,6 @@ in the header indicates that the results are sorted ascending by Type. The scree
 
 <hr/>
 
-#### Table View Custom Layout - Creator / Publisher
 This is another example of a custom layout, but this one shows the item's Creator and Publisher elements.
 Note the asterisk on item 2636. When you are logged in as an administrator, the astersisk indicates that the item
 is not public. When not logged in, the item does not appear in the results. You can also define layouts that can
