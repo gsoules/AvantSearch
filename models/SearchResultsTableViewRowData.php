@@ -2,14 +2,34 @@
 
 class SearchResultsTableViewRowData
 {
-    public $columnsData;
+    protected $columnsData;
     public $elementValue;
+    protected $hierarchyElements;
     public $itemThumbnailHtml;
 
     public function __construct($item, SearchResultsTableView $searchResults)
     {
         $this->columnsData = $searchResults->getColumnsData();
+        $this->hierarchyElements = SearchOptions::getOptionDataForHierarchy();
         $this->initializeData($item, $searchResults);
+    }
+
+    protected function filterHierarchicalElementText(ElementText $elementText)
+    {
+        $text = $elementText['text'];
+        $elementId = $elementText['element_id'];
+        $isHierarchyElement = array_key_exists($elementId, $this->hierarchyElements);
+        if ($isHierarchyElement)
+        {
+            $index = strrpos($text, ',', -1);
+
+            if ($index !== false)
+            {
+                // Filter out the ancestry to leave just the leaf text.
+                $text = trim(substr($text, $index + 1));
+            }
+        }
+        return $text;
     }
 
     protected function generateDateRange()
@@ -94,25 +114,26 @@ class SearchResultsTableViewRowData
         return $data->elementValue[$elementName]['detail'];
     }
 
-    protected static function getElementTextsAsHtml($item, $elementName)
+    protected function getElementTextsAsHtml($item, $elementId, $elementName)
     {
         try
         {
-            $values = $item->getElementTexts('Dublin Core', $elementName);
+            $elementTexts = $item->getElementTexts('Dublin Core', $elementName);
         }
         catch (Omeka_Record_Exception $e)
         {
-            $values = $item->getElementTexts('Item Type Metadata', $elementName);
+            $elementTexts = $item->getElementTexts('Item Type Metadata', $elementName);
         }
 
         $texts = '';
-        foreach ($values as $key => $value)
+        foreach ($elementTexts as $key => $elementText)
         {
             if ($key != 0)
             {
                 $texts .= '<br/>';
             }
-            $texts .= html_escape($value);
+            $text = $this->filterHierarchicalElementText($elementText);
+            $texts .= html_escape($text);
         }
 
         return $texts;
@@ -132,14 +153,14 @@ class SearchResultsTableViewRowData
 
     protected function readMetadata($item)
     {
-        foreach ($this->columnsData as $column)
+        foreach ($this->columnsData as $elementId => $column)
         {
             $text = '';
             $columnName = $column['name'];
 
             if ($columnName != 'Title')
             {
-                $text = $this->getElementTextsAsHtml($item, $columnName);
+                $text = $this->getElementTextsAsHtml($item, $elementId, $columnName);
 
                 if ($columnName == ItemMetadata::getIdentifierElementName())
                 {
