@@ -1,30 +1,30 @@
 # AvantSearch
 
+> **This plugin is under development**. Please wait for the 2.0 release. 
+
 The AvantSearch plugin provides extended searching and search results capabilities for the public interface of an
-Omeka site. User documentation describing this plugin's extensive functionality is located in the Digital
-Archive topic [Searching the Digital Archive](http://swhplibrary.net/searching/).
+Omeka site.
 
-> **This plugin is under development**. Please wait for the 2.0 release before using with your own installation. 
+This plugin was originally developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
 
-This plugin was originally developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Southwest Harbor, Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
+## Dependencies
+The AvantSearch plugin requires that the [AvantCommon](https://github.com/gsoules/AvantCommon) plugin be installed and activated.
+AvantCommon contains common logic used by [AvantSearch](https://github.com/gsoules/AvantSearch) and
+[AvantRelationships](https://github.com/gsoules/AvantRelationships).
 
-The screen shots that follow show the same AvantSearch results in three different Table View layouts.
+## Installation
 
-<hr/>
+To install the AvantSearch plugin, follow these steps:
 
-### Detail Layout
-![Summary Layout](readme/table-view-summary.jpg)
+1. First install and activate the [AvantCommon](https://github.com/gsoules/AvantCommon) plugin.
+1. Unzip the AvantSearch-master file into your Omeka installation's plugin directory.
+1. Rename the folder to AvantSearch.
+1. Activate the plugin from the Admin → Settings → Plugins page.
+1. Configure the AvantCommon plugin to specify your item identifier and title elements.
+1. Configure the AvantSearch plugin as decribed in the Configuration Options section below.
 
-<hr/>
-
-### Type / Subject Layout
-![Type Subject Layout](readme/table-view-type-subject.jpg)
-
-<hr/>
-
-### Creator / Publisher Layout
-![Creator Publisher Layout](readme/table-view-creator-publisher.jpg)
-
+When this plugin is activated, it dynamically overrides the native Omeka search box (located in the page
+header) with the version used by AvantSearch.
 
 ## Differences from Omeka search:
 
@@ -55,24 +55,37 @@ Private data | Private elements of public items can be hidden from pubic users. 
 [Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/) | Yes | No
 Search by File, Collection, Features | Not in the current release. | Yes
 
-## Dependencies
-The AvantSearch plugin requires that the [AvantCommon](https://github.com/gsoules/AvantCommon) plugin be installed and activated.
-AvantCommon contains common logic used by [AvantSearch](https://github.com/gsoules/AvantSearch) and
-[AvantRelationships](https://github.com/gsoules/AvantRelationships).
+## Table View
+One of the most powerful features of AvantSearch is its ability to display search results in many different ways
+which you can customize to meet your needs. In addition to the Index View and Tree View presentations described later,
+the Table View lets you specify any number of different layouts to display results in rows and sortable columns.
+The screen shots that follow show the same AvantSearch results in three different Table View layouts.
 
-## Installation
+### Table View Detail Layout
+The Detail Layout provides a compact presentation of key information about an item including a thumbnail image.
+You specify which elements appear in the two columns to the right of the thumbnail. The item's description
+automatically appears in the third column.
 
-To install the AvantSearch plugin, follow these steps:
+![Summary Layout](readme/table-view-detail.jpg)
 
-1. First install and activate the [AvantCommon](https://github.com/gsoules/AvantCommon) plugin.
-1. Unzip the AvantSearch-master file into your Omeka installation's plugin directory.
-1. Rename the folder to AvantSearch.
-1. Activate the plugin from the Admin → Settings → Plugins page.
-1. Configure the AvantCommon plugin to specify your item identifier and title elements.
-1. Configure the AvantSearch plugin as decribed in the Configuration Options section below.
+<hr/>
 
-When this plugin is activated, it dynamically overrides the native Omeka search box (located in the page
-header) with the version used by AvantSearch.
+### Table View Custom Layout - Type / Subject
+This is an example of a custom layout showing the item's Type and Subject elements. The red triangle next to 'Type'
+in the header indicates that the results are sorted ascending by Type.
+
+![Type Subject Layout](readme/table-view-type-subject.jpg)
+
+<hr/>
+
+### Table View Custom Layout - Creator / Publisher
+This is another example of a custom layout, but this one shows the item's Creator and Publisher elements.
+Note the asterisk on item 2636. When you are logged in as an administrator, the astersisk indicates that the item
+is not public. When not logged in, the item does not appear in the results. You can also define layouts that can
+only be chosen when logged in. These layout can be used to show data that is normally hidden from public users.
+
+![Creator Publisher Layout](readme/table-view-creator-publisher.jpg)
+
 
 ## Improving Search Results
 
