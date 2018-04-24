@@ -8,10 +8,10 @@ Archive topic [Searching the Digital Archive](http://swhplibrary.net/searching/)
 
 This plugin was originally developed for the [Southwest Harbor Public Library](http://www.swhplibrary.org/), in Southwest Harbor, Maine. Funding was provided in part by the [John S. and James L. Knight Foundation](https://knightfoundation.org/).
 
-A screen shot of the search results produced by AvantSearch appears below.
+A screen shot of Table View search results produced by AvantSearch appears below.
 <hr/>
 
-![Example](http://swhplibrary.net/wp/wp-content/uploads/2017/05/simple-search-results.jpg)
+![Example](readme/table-view.jpg)
 
 <hr/>
 
@@ -40,9 +40,8 @@ Private data | Private elements of public items can be hidden from pubic users. 
 [Address sorting](https://github.com/gsoules/AvantSearch#address-sorting) | Sorts first on street name, then on street number | Can only sort on Title, Creator, and Date Added.
 [Image View](http://swhplibrary.net/searching/search-results-image-view/) | Yes| No
 [Index View](http://swhplibrary.net/searching/search-results-index-view/) | Yes| No
-[Tree View](http://swhplibrary.net/searching/search-results-tree-view/) | Yes | No
+[Tree View](http://swhplibrary.net/searching/search-results-tree-view/) | Yes, for hierarchical data | No support for hierarchical data
 [Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/) | Yes | No
-[Hierarchical data support](https://github.com/gsoules/AvantSearch#hierarchy)|Yes|No
 Search by File, Collection, Features | Not in the current release. | Yes
 
 ## Dependencies
@@ -112,8 +111,7 @@ Layouts | Layout definitions.
 Layout Selector Width | Specifies the width of the layout selector dropdown that appears on search results pages.
 Detail Layout | Detail layout elements.
 Index View | Elements that can be used as the Index View field.
-Tree View | Elements that can be used as the Tree View field.
-Hierarchy | Elements that contain hierarchical data.
+Tree View | Elements containing hierarchical data that can be used as the Tree View field.
 Integer Sorting | Columns that should be sorted as integers.
 Address Sorting | Sort street addresses first by street name, then by street number.
 Date Range | Show the Advanced Search option to search within a range of years.
@@ -293,10 +291,11 @@ If you prefer to have only one detail column plus the Description column, specif
 <hr/>
 
 #### Index View
-
 The Index View option lets you specify a list of elements that can be used as the Index Field when choosing Index View from
 the Advanced Search page. If you leave this option blank, Index View will not appear as an option on the Advanced
-Search page.
+Search page. A screen shot showing Index View results appears below.
+
+![Example](readme/index-view.jpg)
 
 Below is an example specification of the Index View option.
 
@@ -322,9 +321,18 @@ following CSS in your theme's style.css file. To show three columns, specify 3 i
 
 #### Treeview
 
-The Tree View option lets you specify a list of elements that can used as the Tree Field when choosing Tree View from
-the Advanced Search page. If you leave this option blank, Tree View will not appear as an option on the Advanced
-Search page.
+The Tree View option lets you specify a list of elements that contain hierarchical data. In these elements, the
+hierarchy must be represented by a comma-separated list for example `United States, Maine, Bangor`.
+A screen shot showing Tree View results appears below.
+                                                                                                   
+![Example](readme/tree-view.jpg)
+ 
+The elements listed using the Tree View option will appear as Tree View fields on the Advanced Search page.
+If you leave this option blank, Tree View will not appear as an option on the Advanced Search page.
+
+In Table View, columns that display elements listed here will show only the *leaf* value of the hierarchical data.
+For example, only `Bangor` instead of `United States, Maine, Bangor`. This allows you to sort these columns on the
+most meaningful part of the data, e.g. the city rather than the country.
 
 Below is an example specification of the Tree View option.
 
@@ -334,16 +342,6 @@ Type
 ```
 
 [Learn more about Tree View.](http://swhplibrary.net/searching/search-results-tree-view/)
-
-<hr/>
-
-#### Hierarchy
-
-The Hierarchy option lets you specify a list of elements that contain hierarchical data. In these elements, the
-hierarchy is represented by a comma-separated list for example `United States, Maine, Bangor`.
-
-In Table View, columns containing hierarchical content are sorted based on the leaf value in the hierarchy e.g.
-`Bangor` instead of `United States`.
 
 <hr/>
 
@@ -390,9 +388,6 @@ With address sorting:
 * 9 Main Street
 * 10 Main Street
 * 72 Pleasant Lane
-
-NOTE: If your installation does not support Address Sorting, you might consider using the Integer Sort option
-so that addresses are sorted numerically.
 
 ##  License
 
@@ -447,7 +442,9 @@ you'll need to install and activate the [AvantRelationships](https://github.com/
 * Copyright George Soules, 2016-2018.
 * See [LICENSE](https://github.com/gsoules/AvantRelationships/blob/master/LICENSE) for more information.
 
-Inspiration for the [Index View](http://swhplibrary.net/searching/search-results-index-view/) and [Tree View](http://swhplibrary.net/searching/search-results-tree-view/) search results came from the alphabetized index and hierarchical list features in the [Daniel-KM / Reference](https://github.com/Daniel-KM/Reference) plugin.
+Inspiration for the [Index View](http://swhplibrary.net/searching/search-results-index-view/) and
+[Tree View](http://swhplibrary.net/searching/search-results-tree-view/) search results came from the alphabetized
+index and hierarchical list features in the [Daniel-KM / Reference](https://github.com/Daniel-KM/Reference) plugin.
 
 
 
