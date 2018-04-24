@@ -49,9 +49,11 @@ class SearchResultsTreeView extends SearchResultsView
         return array('levels' => $levels, 'nodes' => $nodes);
     }
 
-    public function generateLocationsTree()
+    public function generateTree()
     {
         $elementId = $this->getTreeFieldElementId();
+        $this->treeFieldName = ItemMetadata::getElementNameFromId($elementId);
+
         $tableName =  $this->db->ElementText;
         $sql = "SELECT DISTINCT `text` from `$tableName` WHERE `element_id` = $elementId order by text";
         $hierarchy =  $this->db->fetchCol($sql);
@@ -61,26 +63,8 @@ class SearchResultsTreeView extends SearchResultsView
         // hand-coded hierarchies that are created using Simple Vocab.
         $hierarchy = $this->resortHierarchy($hierarchy);
 
-        return $this->generateTreeFromHierarchy($hierarchy);
-    }
+        $tree = $this->generateTreeFromHierarchy($hierarchy);
 
-    public function generateTree()
-    {
-        if ($this->treeFieldElementId == ItemMetadata::getElementIdForElementName('Location'))
-        {
-            $tree = $this->generateLocationsTree();
-            $this->treeFieldName = __('Location');
-        }
-        elseif ($this->treeFieldElementId == ItemMetadata::getElementIdForElementName('Type'))
-        {
-            $tree = $this->generateTreeFromSimpleVocabHierarchy();
-            $this->treeFieldName = __('Type');
-        }
-        else
-        {
-            $tree = $this->generateTreeFromSimpleVocabHierarchy();
-            $this->treeFieldName = __('Subject');
-        }
         return $tree;
     }
 
@@ -103,12 +87,6 @@ class SearchResultsTreeView extends SearchResultsView
         }
 
         return array('levels' => $levels, 'html' => $html);
-    }
-
-    protected function generateTreeFromSimpleVocabHierarchy()
-    {
-        $hierarchy = $this->simpleVocabHierarchy();
-        return $this->generateTreeFromHierarchy($hierarchy);
     }
 
     protected function generateTreeNodeHtml($hierarchy, $nodes)
@@ -255,7 +233,7 @@ class SearchResultsTreeView extends SearchResultsView
             $parentName = implode(', ', $parentNodes);
 
             // Determine if one or more of this row's ancestors are missing from the hierarchy.
-            if (!$this->ancestorExistsInHierarchy($extendedHierarchy, $parentName, $nodes))
+            if (!$this->ancestorExistsInHierarchy($extendedHierarchy, $parentName))
             {
                 $ancestorName = "";
                 $depth = count($nodes) - 1;
@@ -306,32 +284,5 @@ class SearchResultsTreeView extends SearchResultsView
             $hierarchy[$key] = $value;
         }
         return $hierarchy;
-    }
-
-    protected function simpleVocabHierarchy()
-    {
-        // Get hierarchy information from the Simple Vocab's plugin's table.
-        if (plugin_is_active('SimpleVocab'))
-        {
-            $simpleVocabTable = $this->db->getTable('SimpleVocabTerm');
-            $simpleVocabTerm = $simpleVocabTable->findByElementId($this->treeFieldElementId);
-
-            if ($simpleVocabTerm)
-            {
-                $hierarchy = $simpleVocabTerm->terms;
-            }
-            else
-            {
-                $elementId = $this->treeFieldElementId;
-                $hierarchy = "Simple Vocab for element Id $elementId is empty";
-            }
-        }
-        else
-        {
-            $hierarchy = "Simple Vocab plugin is not activated";
-        }
-
-        $tree = explode("\n", $hierarchy);
-        return $tree;
     }
 }
