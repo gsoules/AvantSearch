@@ -16,7 +16,7 @@ Provides extended searching and search results capabilities for an Omeka Classic
     - [Image View](https://github.com/gsoules/AvantSearch#image-view)
     - [Tree View](https://github.com/gsoules/AvantSearch#tree-view)
     - [Index View](https://github.com/gsoules/AvantSearch#index-view)
-- [Lightbox Feature]((https://github.com/gsoules/AvantSearch#lightbox-feature))
+- [Lightbox Feature](https://github.com/gsoules/AvantSearch#lightbox-feature)
 - [Usage](https://github.com/gsoules/AvantSearch#usage)
     - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search-page)
     - [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options)
@@ -58,33 +58,41 @@ header) with the version used by AvantSearch. When you deactivate the plugin, th
 ## Differences from Omeka's Native Search
 
 AvantSearch completely overrides Omeka's public search features. It provides its own
-[Advanced Search](http://swhplibrary.net/searching/advanced-search/) page
-and presents search results in an entirely different way. It does not affect Omeka's admin search other than
-by controlling which content gets stored in the search_texts table as explained later in the sections 
-for the Titles Only and Private Elements configuration options.
-
-Here are some of the basic differences between AvantSearch and Omeka's native search.
+[Advanced Search](https://github.com/gsoules/AvantSearch#tadvanced-search-page) page
+and presents search results in a wide variety of ways. It does not affect Omeka's admin search.
+The table below highlights the differences between AvantSearch and Omeka's native search.
 
 Feature | AvantSearch | Omeka Search
 --------|------------ | ------------
-Quick search |  Displays an item (instead of search results) when its Identifier value is typed in the public Simple search box. | Displays search results for all items containing the identifier.
-Simple search |  Looks for all keywords to return more relevant results. | Looks for any of the keywords.
-[Search in Titles only](https://github.com/gsoules/AvantSearch#titles-only) | Yes | No
-Search only items with images or files | Yes | No
-[Date range search](http://swhplibrary.net/searching/advanced-search/) | Yes | No
-User can specify number of results | Yes, from the Advanced Search page. | No. Set by the administrator.
-[Tabular results](http://swhplibrary.net/searching/search-results-table-view/) | Results are presented in Excel-like tables with sortable columns. | Results are returned as a list with options to sort by Title, Creator, or Date Added.
-Customize results | Admin can configure custom result layouts. | No configuration.
-Private data | Private elements of public items can be hidden from pubic users. | No hiding of private data.
-[Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting) | Sorts integer element values numerically instead of alphabetically. | No. All data is sorted alphabetically.
-[Address sorting](https://github.com/gsoules/AvantSearch#address-sorting) | Sorts first on street name, then on street number | Can only sort on Title, Creator, and Date Added.
-[Image View](http://swhplibrary.net/searching/search-results-image-view/) | Yes| No
-[Index View](http://swhplibrary.net/searching/search-results-index-view/) | Yes| No
-[Tree View](http://swhplibrary.net/searching/search-results-tree-view/) | Yes, for hierarchical data | No support for hierarchical data
-[Image View](https://github.com/gsoules/AvantSearch#image-view) | Displays results as a grid of thumbnail images | No
-[Relationships View](http://swhplibrary.net/searching/search-results-relationships-view/) | Yes | No
-[Lightbox Feature](https://github.com/gsoules/AvantSearch#lightbox-feature) | Displays a large version of a thumbnail image in a popup | No. Images open in a browser window.
-Search by File, Collection, Featured | Not in the current release. | Yes
+[Quick search](https://github.com/gsoules/AvantSearch#quick-search) |  **Yes** - Feature | No
+[Simple search for All Words](https://github.com/gsoules/AvantSearch#simple-search) |  **Yes** - Feature | No
+[Search in Titles only](https://github.com/gsoules/AvantSearch#titles-only) | **Yes** - Advanced Search page option | No
+[Search only items with images or files](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
+[Date range search](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
+[User can specify number of results](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
+[Tabular results](https://github.com/gsoules/AvantSearch#table-view) | **Yes** - Feature | No
+[Custom Results Layouts](https://github.com/gsoules/AvantSearch#table-view-custom-layouts) | **Yes** - Congfiguration option | No
+[Private Elements](https://github.com/gsoules/AvantSearch#private-elements-option) | **Yes** - Congfiguration option | No
+[Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting) | **Yes** - Congfiguration option | No
+[Address sorting](https://github.com/gsoules/AvantSearch#address-sorting) | **Yes** - Congfiguration option | No
+[Image View](https://github.com/gsoules/AvantSearch#image-view/) | **Yes** - Feature | No
+[Index View](https://github.com/gsoules/AvantSearch#index-view/) | **Yes** - Congfiguration option| No
+[Tree View (Hierarchical Data)](https://github.com/gsoules/AvantSearch#tree-view/) | **Yes** - Congfiguration option | No
+[Relationships View](https://github.com/gsoules/AvantSearch#relationships-view/) | **Yes** - Congfiguration option | No
+[Lightbox](https://github.com/gsoules/AvantSearch#lightbox) | **Yes** - Feature | No
+Search by File, Collection, Featured | No | Yes
+
+### Quick Search
+Quick Search is a feature of Simple Search that allows you to immediately go to the page for an item by typing the
+item's Identifier value in the simple search box. This is much faster than getting back search results for every item
+that contains that value and then having to locate and click on the item of interest.
+
+### Simple Search
+The AvantSearch version of simple search improves on the native Omeka simple search by only returning results that
+contain *all* of the matching keywords instead of any of the keywords. Items that contain some, but not all of the
+keywords will not appear in the results. Searching for all keywords tends to provide much more relevant results.
+If you need to search for any of the keywords, you can enter the keywords
+on the Advanced Search page and choose the Boolean condition.
 
 ## Search Results Views
 One of the most powerful features of AvantSearch is its ability to display search results in many different ways
@@ -138,7 +146,7 @@ full hierarchy (the places on Mount Desert Island a.k.a. MDI).
                                                                                                    
 ![Tree View Example](readme/tree-view.jpg)
 
-## Lightbox Feature
+## Lightbox
 Both the Table View Detail Layout and the Image View display thumbnails for an item's image if it has one. If the item
 has no image, a placeholder image is displayed. When you click on a thumbnail, the AvantSearch plugin displays a large
 version of the image in a popup. You can close the popup by clicking on the red X above its top right corner,
@@ -212,6 +220,8 @@ search_texts table and therefore be found via a keyword search. To hide the elem
 must reindex your Omeka database to force the search_texts table to be rebuilt without the private element text.
 You do this by clicking the Index Records button on the Omeka
 [Search Settings](https://omeka.org/classic/docs/Admin/Settings/Search_Settings/) page.
+* If you uninstall AvantSearch and want to make private elements searchable again, reindex your Omeka database as
+described in the previous bullet.
  
 This features solves a problem in Omeka's native search whereby the text of all elements are searched, including
 information that is hidden from public users by the [Hide Elements](http://omeka.org/classic/plugins/HideElements/)
