@@ -72,13 +72,13 @@ Feature | AvantSearch | Omeka Search
 [User can specify number of results](https://github.com/gsoules/AvantSearch#advanced-search-page) | **Yes** - Advanced Search page option | No
 [Tabular results](https://github.com/gsoules/AvantSearch#table-view) | **Yes** - Feature | No
 [Custom Results Layouts](https://github.com/gsoules/AvantSearch#table-view-custom-layouts) | **Yes** - Congfiguration option | No
-[Private Elements](https://github.com/gsoules/AvantSearch#private-elements-option) | **Yes** - Congfiguration option | No
-[Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting-option) | **Yes** - Congfiguration option | No
-[Address sorting](https://github.com/gsoules/AvantSearch#address-sorting-option) | **Yes** - Congfiguration option | No
 [Image View](https://github.com/gsoules/AvantSearch#image-view) | **Yes** - Feature | No
 [Index View](https://github.com/gsoules/AvantSearch#index-view) | **Yes** - Congfiguration option| No
 [Tree View (Hierarchical Data)](https://github.com/gsoules/AvantSearch#tree-view) | **Yes** - Congfiguration option | No
 [Relationships View](https://github.com/gsoules/AvantSearch#relationships-view-option) | **Yes** - Congfiguration option | No
+[Private Elements](https://github.com/gsoules/AvantSearch#private-elements-option) | **Yes** - Congfiguration option | No
+[Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting-option) | **Yes** - Congfiguration option | No
+[Address sorting](https://github.com/gsoules/AvantSearch#address-sorting-option) | **Yes** - Congfiguration option | No
 [Lightbox](https://github.com/gsoules/AvantSearch#lightbox) | **Yes** - Feature | No
 Search by File, Collection, Featured | No | Yes
 
@@ -247,12 +247,19 @@ Use the Columns option specify:
 * The width of a column
 * The alignment of column text (left, center, or right)
 
-###### Format:
-* Specify each element on a separate row.
-* To specify an alias, follow the element name with a colon and then the alias name e.g. `Identifier: ID`.
-* To specify a width in pixels, follow the element name and optional alias with a comma and then a number
-e.g. `Identifier: ID, 120` to specify a width of 120px. 
-* To specify alignment, follow the width with a comma and then the alignment e.g. `Identifier: ID, 120, right`. 
+###### Syntax:
+
+The syntax for each row of the Columns options is
+
+    <element-name> [ "," <alias>] [ ":" <width> [ "," <alignment>] ] ]
+
+Where:
+
+* `<element-name>` is the name of an Omeka element.
+* `<alias>` is an optional parameter preceded by a comma to provide another name for element e.g. 'ID' for 'Identifier'.
+* `<width>` is an optional parameter preceded by a colon to indicate the width of the element's column in pixels.
+* `<alignment>` is an optional parameter preceded by a comma that can only be specified if `width` is provided. It
+specifies the alignment of the column's text as `right`, `center`, or `left`.
 
 ###### Column Order:
 
@@ -270,11 +277,11 @@ columns are made visible. This is what allows instantaneous switching between la
 Below is an example specification for the Columns option.
 
 ```
-Identifier: ID, 120, right
+Identifier, ID: 120, right
 Title, 300, center
 Type, 250, right
 Subject,
-Archive Volume: Volume
+Archive Volume, Volume
 ```
 
 <hr/>
