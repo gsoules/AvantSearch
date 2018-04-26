@@ -1,5 +1,5 @@
 <?php
-class SearchOptions
+class SearchOptions extends ConfigurationOptions
 {
     const OPTION_COLUMNS = 'avantsearch_columns';
     const OPTION_HIERARCHY = 'avantsearch_hierarchy';
@@ -10,12 +10,6 @@ class SearchOptions
     const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
     const OPTION_PRIVATE_ELEMENTS = 'avantsearch_private_elements';
     const OPTION_TITLES_ONLY = 'avantsearch_filters_show_titles_option';
-    const OPTION_TREE_VIEW = 'avantsearch_tree_view_elements';
-
-    protected static function configurationErrorsDetected()
-    {
-        return $_SERVER['REQUEST_METHOD'] == 'POST';
-    }
 
     public static function emitInnoDbMessage($engine)
     {
@@ -30,30 +24,6 @@ class SearchOptions
         echo "<p class='explanation learn-more'>" . __('Not available for this installation. ');
         echo "<a class='avantsearch-help' href='https://github.com/gsoules/AvantSearch#$hash' target='_blank'>" . __('Learn more.') . "</a>";
         echo "</p>";
-    }
-
-    public static function getOptionData($optionName)
-    {
-        $rawData = json_decode(get_option($optionName), true);
-        if (empty($rawData))
-        {
-            $rawData = array();
-        }
-
-        $data = array();
-
-        foreach ($rawData as $elementId)
-        {
-            $elementName = ItemMetadata::getElementNameFromId($elementId);
-            if (empty($elementName))
-            {
-                // This element must have been deleted since the AvantSearch configuration was last saved.
-                continue;
-            }
-            $data[$elementId] = $elementName;
-        }
-
-        return $data;
     }
 
     public static function getOptionDataForColumns()
@@ -239,56 +209,38 @@ class SearchOptions
         return $supported;
     }
 
-    public static function getOptionText($optionName)
+    public static function getOptionTextForColumns()
     {
         if (self::configurationErrorsDetected())
         {
-            $text = $_POST[$optionName];
+            $text = $_POST[self::OPTION_COLUMNS];
         }
         else
         {
-            $data = self::getOptionData($optionName);
+            $data = self::getOptionDataForColumns();
             $text = '';
-            foreach ($data as $elementName)
+
+            foreach ($data as $elementId => $column)
             {
                 if (!empty($text))
                 {
                     $text .= PHP_EOL;
                 }
-                $text .= $elementName;
+                $name = $column['name'];
+                $text .= $name;
+                if ($column['alias'] != $name)
+                    $text .= ', ' . $column['alias'];
+                $text .= ': ';
+                if ($column['width'] > 0)
+                    $text .= $column['width'] . ', ';
+                if (!empty($column['align']))
+                    $text .= $column['align'] . ', ';
+
+                // Remove the trailing comma.
+                $text = substr($text, 0, strlen($text) - 2);
             }
         }
         return $text;
-    }
-
-    public static function getOptionTextForColumns()
-    {
-        if (self::configurationErrorsDetected())
-        {
-            $columnsOption = $_POST[self::OPTION_COLUMNS];
-        }
-        else
-        {
-            $columnsData = self::getOptionDataForColumns();
-            $columnsOption = '';
-
-            foreach ($columnsData as $elementId => $column)
-            {
-                if (!empty($columnsOption))
-                {
-                    $columnsOption .= PHP_EOL;
-                }
-                $name = $column['name'];
-                $columnsOption .= $name;
-                if ($column['alias'] != $name)
-                    $columnsOption .= ': ' . $column['alias'];
-                if ($column['width'] > 0)
-                    $columnsOption .= ', ' . $column['width'];
-                if (!empty($column['align']))
-                    $columnsOption .= ', ' . $column['align'];
-            }
-        }
-        return $columnsOption;
     }
 
     public static function getOptionTextForDetailLayout()
@@ -419,61 +371,50 @@ class SearchOptions
         set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
     }
 
-    public static function saveOptionData($optionName, $optionLabel)
-    {
-        $elements = array();
-        $names = array_map('trim', explode(PHP_EOL, $_POST[$optionName]));
-        foreach ($names as $name)
-        {
-            if (empty($name))
-                continue;
-            $elementId = ItemMetadata::getElementIdForElementName($name);
-            if ($elementId == 0)
-            {
-                throw new Omeka_Validate_Exception($optionLabel . ': ' . __('\'%s\' is not an element.', $name));
-            }
-            $elements[] = $elementId;
-        }
-
-        set_option($optionName, json_encode($elements));
-    }
-
     public static function saveOptionDataForColumns()
     {
-        $columns = array();
-        $columnDefinitions = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_COLUMNS]));
-        foreach ($columnDefinitions as $columnDefinition)
+        $data = array();
+        $definitions = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_COLUMNS]));
+        foreach ($definitions as $definition)
         {
-            if (empty($columnDefinition))
+            if (empty($definition))
                 continue;
 
-            // Column definitions are of the form: <element-name>:<alias>,<width>,<alignment>
-            // The <alias>, <width>, and <alignment> parameters are optional.
+            // Column definitions are of the form: <element-name> [ "," <alias>] [ ":" <width> [ "," <alignment>] ] ]
 
-            $parts = array_map('trim', explode(',', $columnDefinition));
+            $parts = array_map('trim', explode(':', $definition));
 
-            $nameParts = array_map('trim', explode(':', $parts[0]));
-            $name = $nameParts[0];
-            $alias = isset($nameParts[1]) ? $nameParts[1] : $name;
+            $nameParts = array_map('trim', explode(',', $parts[0]));
 
-            $width = isset($parts[1]) ? intval($parts[1]) : 0;
-            $align = isset($parts[2]) ? strtolower($parts[2]) : '';
+            $elementName = $nameParts[0];
 
-            if (!empty($align) && !($align == 'left' || $align == 'center' || $align == 'right'))
-            {
-                throw new Omeka_Validate_Exception(__('Columns (\'%s\'): \'%s\' is not valid for alignment. Use \'left\', \'center\' , or \'right\'.', $name, $align));
-            }
-
-            $elementId = ItemMetadata::getElementIdForElementName($name);
+            $elementId = ItemMetadata::getElementIdForElementName($elementName);
             if ($elementId == 0)
             {
-                throw new Omeka_Validate_Exception(__('Columns: \'%s\' is not an element.', $name));
+                throw new Omeka_Validate_Exception(__('Columns: \'%s\' is not an element.', $elementName));
             }
 
-            $columns[$elementId] = SearchResultsTableView::createColumn($alias, $width, $align);
+            $alias = isset($nameParts[1]) ? $nameParts[1] : $elementName;
+
+            $width = 0;
+            $align = '';
+            if (isset($parts[1]))
+            {
+                $argParts = array_map('trim', explode(',', $parts[1]));
+
+                $width = intval($argParts[0]);
+                $align = isset($argParts[1]) ? strtolower($argParts[1]) : '';
+
+                if (!empty($align) && !($align == 'left' || $align == 'center' || $align == 'right'))
+                {
+                    throw new Omeka_Validate_Exception(__('Columns (\'%s\'): \'%s\' is not valid for alignment. Use \'left\', \'center\' , or \'right\'.', $elementName, $align));
+                }
+            }
+
+            $data[$elementId] = SearchResultsTableView::createColumn($alias, $width, $align);
         }
 
-        set_option(self::OPTION_COLUMNS, json_encode($columns));
+        set_option(self::OPTION_COLUMNS, json_encode($data));
     }
 
     public static function saveOptionDataForDetailLayout()
@@ -514,17 +455,17 @@ class SearchOptions
 
     public static function saveOptionDataForHierarchy()
     {
-        self::saveOptionData(self::OPTION_HIERARCHY, 'Hierarchy');
+        self::saveOptionData(self::OPTION_HIERARCHY, __('Hierarchy'));
     }
 
     public static function saveOptionDataForIndexView()
     {
-        self::saveOptionData(self::OPTION_INDEX_VIEW, 'Index View');
+        self::saveOptionData(self::OPTION_INDEX_VIEW, __('Index View'));
     }
 
     public static function saveOptionDataForIntegerSorting()
     {
-        self::saveOptionData(self::OPTION_INTEGER_SORTING, 'Integer Sorting');
+        self::saveOptionData(self::OPTION_INTEGER_SORTING, __('Integer Sorting'));
     }
 
     public static function saveOptionDataForLayouts()
@@ -613,7 +554,7 @@ class SearchOptions
 
     public static function saveOptionDataForPrivateElements()
     {
-        self::saveOptionData(self::OPTION_PRIVATE_ELEMENTS, 'Private Elements');
+        self::saveOptionData(self::OPTION_PRIVATE_ELEMENTS, __('Private Elements'));
     }
 
     public static function saveOptionDataForTitlesOnly()
