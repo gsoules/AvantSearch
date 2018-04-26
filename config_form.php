@@ -8,29 +8,26 @@ $dateRangeSupported = SearchOptions::getOptionSupportedDateRange();
 $relationshipsViewSupported = SearchOptions::getOptionSupportedRelationshipsView();
 
 $privateElementsOption = SearchOptions::getOptionTextForPrivateElements();
-$privateElementOptionRows = max(3, count(explode(PHP_EOL, $privateElementsOption)) - 1);
+$privateElementOptionRows = max(3, count(explode(PHP_EOL, $privateElementsOption)));
 
 $columnsOption = SearchOptions::getOptionTextForColumns();
-$columnsOptionRows = max(3, count(explode(PHP_EOL, $columnsOption)) - 1);
+$columnsOptionRows = max(3, count(explode(PHP_EOL, $columnsOption)));
 
 $layoutsOption = SearchOptions::getOptionTextForLayouts();
-$layoutsOptionRows = max(3, count(explode(PHP_EOL, $layoutsOption)) - 1);
+$layoutsOptionRows = max(3, count(explode(PHP_EOL, $layoutsOption)));
 
-$indexViewOption = SearchOptions::getOptionTextForIndexView();
-$indexViewOptionRows = max(3, count(explode(PHP_EOL, $indexViewOption)) - 1);
-
-$treeViewOption = SearchOptions::getOptionTextForHierarchy();
-$treeViewOptionRows = max(3, count(explode(PHP_EOL, $treeViewOption)) - 1);
+$layoutSelectorWidth = SearchOptions::getOptionTextForLayoutSelectorWidth();
 
 $detailLayoutOption = SearchOptions::getOptionTextForDetailLayout();
 
-$layoutSelectorWidth = SearchOptions::getOptionTextForLayoutSelectorWidth();
+$indexViewOption = SearchOptions::getOptionTextForIndexView();
+$indexViewOptionRows = max(3, count(explode(PHP_EOL, $indexViewOption)));
 
 $hierarchyOption = SearchOptions::getOptionTextForHierarchy();
 $hierarchyOptionRows = max(3, count(explode(PHP_EOL, $hierarchyOption)) - 1);
 
 $integerSortingOption = SearchOptions::getOptionTextForIntegerSorting();
-$integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)) - 1);
+$integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)));
 
 ?>
 
@@ -68,7 +65,7 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Elements that should not be searched by public users."); ?></p>
-        <?php echo $view->formTextarea(SearchOptions::OPTION_PRIVATE_ELEMENTS, $privateElementsOption, array('rows' => $privateElementOptionRows, 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_PRIVATE_ELEMENTS, $privateElementsOption, array('rows' => $privateElementOptionRows)); ?>
     </div>
 </div>
 
@@ -78,7 +75,7 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Customization of columns in Table View search results."); ?></p>
-        <?php echo $view->formTextarea(SearchOptions::OPTION_COLUMNS, $columnsOption, array('rows' => $columnsOptionRows, 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_COLUMNS, $columnsOption, array('rows' => $columnsOptionRows)); ?>
     </div>
 </div>
 
@@ -88,7 +85,7 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Layout definitions."); ?></p>
-        <?php echo $view->formTextarea(SearchOptions::OPTION_LAYOUTS, $layoutsOption, array('rows' => $layoutsOptionRows, 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_LAYOUTS, $layoutsOption, array('rows' => $layoutsOptionRows)); ?>
     </div>
 </div>
 
@@ -98,7 +95,7 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __('The width of the layout selector dropdown.'); ?></p>
-        <?php echo $view->formText(SearchOptions::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth, array('style' => 'width: 50px;')); ?>
+        <?php echo $view->formText(SearchOptions::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth); ?>
     </div>
 </div>
 
@@ -109,7 +106,7 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Detail layout elements."); ?></p>
-        <?php echo $view->formTextarea(SearchOptions::OPTION_DETAIL_LAYOUT, $detailLayoutOption, array('rows' => '2', 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_DETAIL_LAYOUT, $detailLayoutOption, array('rows' => '2')); ?>
     </div>
 </div>
 
@@ -119,7 +116,7 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Elements that can be used as the Index View field."); ?></p>
-        <?php echo $view->formTextarea(SearchOptions::OPTION_INDEX_VIEW, $indexViewOption, array('rows' => $indexViewOptionRows, 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_INDEX_VIEW, $indexViewOption, array('rows' => $indexViewOptionRows)); ?>
     </div>
 </div>
 
@@ -129,7 +126,21 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Elements that can be used as the Tree View field."); ?></p>
-        <?php echo $view->formTextarea(SearchOptions::OPTION_HIERARCHY, $hierarchyOption, array('rows' => $hierarchyOptionRows, 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_HIERARCHY, $hierarchyOption, array('rows' => $hierarchyOptionRows)); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
+        <label><?php echo __('Relationships View'); ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <?php if ($relationshipsViewSupported): ?>
+            <p class="explanation"><?php echo __('Show the option to display results in Relationships View.'); ?></p>
+            <?php echo $view->formCheckbox('avantsearch_filters_enable_relationships', true, array('checked' => (boolean)get_option('avantsearch_filters_enable_relationships'))); ?>
+        <?php else: ?>
+            <?php SearchOptions::emitOptionNotSupported('relationships-view'); ?>
+        <?php endif; ?>
     </div>
 </div>
 
@@ -139,7 +150,7 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Columns that should be sorted as integers."); ?></p>
-        <?php echo $view->formTextarea(SearchOptions::OPTION_INTEGER_SORTING, $integerSortingOption, array('rows' => $integerSortingOptionRows, 'cols' => '40')); ?>
+        <?php echo $view->formTextarea(SearchOptions::OPTION_INTEGER_SORTING, $integerSortingOption, array('rows' => $integerSortingOptionRows)); ?>
     </div>
 </div>
 
@@ -167,20 +178,6 @@ $integerSortingOptionRows = max(3, count(explode(PHP_EOL, $integerSortingOption)
             <?php echo $view->formCheckbox('avantsearch_filters_show_date_range_option', true, array('checked' => (boolean)get_option('avantsearch_filters_show_date_range_option'))); ?>
         <?php else: ?>
             <?php SearchOptions::emitOptionNotSupported('date-range'); ?>
-        <?php endif; ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo __('Relationships View'); ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <?php if ($relationshipsViewSupported): ?>
-            <p class="explanation"><?php echo __('Show the option to display results in Relationships View.'); ?></p>
-            <?php echo $view->formCheckbox('avantsearch_filters_enable_relationships', true, array('checked' => (boolean)get_option('avantsearch_filters_enable_relationships'))); ?>
-        <?php else: ?>
-            <?php SearchOptions::emitOptionNotSupported('relationships-view'); ?>
         <?php endif; ?>
     </div>
 </div>
