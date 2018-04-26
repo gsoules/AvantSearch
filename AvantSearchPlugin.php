@@ -3,6 +3,7 @@
 class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 {
     protected $_hooks = array(
+        'admin_head',
         'admin_settings_search_form',
         'config',
         'config_form',
@@ -11,8 +12,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         'install',
         'items_browse_sql',
         'public_head',
-        'public_footer',
-        'uninstall'
+        'public_footer'
     );
 
     protected $_filters = array(
@@ -97,6 +97,11 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         return $elementTexts;
     }
 
+    public function hookAdminHead($args)
+    {
+        queue_css_file('avantsearch-admin');
+    }
+
     public function hookAdminSettingsSearchForm($args)
     {
         // Show a warning at the bottom of the Settings page Search tab.
@@ -115,16 +120,6 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         SearchOptions::saveConfiguration();
     }
 
-    public function hookInstall()
-    {
-        SearchOptions::setDefaultOptionValues();
-    }
-
-    public function hookUninstall()
-    {
-        return;
-    }
-
     public function hookConfigForm()
     {
         require dirname(__FILE__) . '/config_form.php';
@@ -140,6 +135,11 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         // Register the dispatch filter controller plugin.
         $front = Zend_Controller_Front::getInstance();
         $front->registerPlugin(new AvantSearch_Controller_Plugin_DispatchFilter);
+    }
+
+    public function hookInstall()
+    {
+        SearchOptions::setDefaultOptionValues();
     }
 
     public function hookItemsBrowseSql($args)
