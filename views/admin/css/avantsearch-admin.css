@@ -1,0 +1,25 @@
+#avantsearch_layout_selector_width
+{
+    width: 50px;
+}
+
+#avantsearch_private_elements,
+#avantsearch_index_view_elements,
+#avantsearch_hierarchy,
+#avantsearch_integer_sorting
+{
+    width: 40%;
+}
+
+#avantsearch_columns
+{
+    width: 60%;
+}
+
+#avantsearch_detail_layout {
+    width: 100%;
+}
+
+#avantsearch_layouts {
+    width: 165%;
+}
