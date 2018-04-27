@@ -88,7 +88,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         if (empty($elementTexts))
             return $elementTexts;
 
-        $privateElementsData = SearchOptions::getOptionDataForPrivateElements();
+        $privateElementsData = SearchConfig::getOptionDataForPrivateElements();
         foreach ($privateElementsData as $elementId => $name)
         {
             $elementTexts = AvantSearch::removeFromSearchElementTexts($elementTexts, $elementId);
@@ -117,7 +117,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookConfig()
     {
-        SearchOptions::saveConfiguration();
+        SearchConfig::saveConfiguration();
     }
 
     public function hookConfigForm()
@@ -139,7 +139,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookInstall()
     {
-        SearchOptions::setDefaultOptionValues();
+        SearchConfig::setDefaultOptionValues();
     }
 
     public function hookItemsBrowseSql($args)

@@ -28,7 +28,7 @@ class SearchResultsIndexView extends SearchResultsView
 
     public static function getIndexFieldOptions()
     {
-        $indexViewData = SearchOptions::getOptionDataForIndexView();
+        $indexViewData = SearchConfig::getOptionDataForIndexView();
         $options = array();
         foreach ($indexViewData as $elementId => $elementName)
         {

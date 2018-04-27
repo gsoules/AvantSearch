@@ -19,8 +19,8 @@ class SearchQueryBuilder
     {
         $this->select = $args['select'];
         $this->smartSortingEnabled = get_option('avantsearch_filters_smart_sorting') == true;
-        $this->integerSortElements = SearchOptions::getOptionDataForIntegerSorting();
-        $this->hierarchyElements = SearchOptions::getOptionDataForHierarchy();
+        $this->integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
+        $this->hierarchyElements = SearchConfig::getOptionDataForHierarchy();
 
         /* @var $searchResults SearchResultsView */
         $searchResults = $args['params']['results'];

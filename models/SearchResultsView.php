@@ -162,7 +162,7 @@ class SearchResultsView
     public function getAdvancedSearchFields()
     {
         // Get the names of the private elements that the admin configured.
-        $privateElementsData = SearchOptions::getOptionDataForPrivateElements();
+        $privateElementsData = SearchConfig::getOptionDataForPrivateElements();
         $privateFields = array();
         foreach ($privateElementsData as $elementId => $name)
         {

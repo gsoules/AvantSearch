@@ -122,7 +122,7 @@ function flattenResults($results, $indexFieldElementId)
     // e.g. 'Schoodic, Acadia National Park' and "MDI, Acadia National Park'. Create a unique entry
     // with a count representing the total of all the results with the same leaf text.
 
-    $hierarchyElements = SearchOptions::getOptionDataForHierarchy();
+    $hierarchyElements = SearchConfig::getOptionDataForHierarchy();
     $entries = array();
     foreach ($results as $result)
     {

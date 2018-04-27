@@ -15,9 +15,9 @@ class SearchResultsTableView extends SearchResultsView
     {
         parent::__construct();
 
-        $this->columnsData = SearchOptions::getOptionDataForColumns();
-        $this->layoutsData = SearchOptions::getOptionDataForLayouts();
-        $this->detailLayoutData = SearchOptions::getOptionDataForDetailLayout();
+        $this->columnsData = SearchConfig::getOptionDataForColumns();
+        $this->layoutsData = SearchConfig::getOptionDataForLayouts();
+        $this->detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
         $this->addLayoutIdsToColumns();
         $this->addDetailLayoutIdsToColumns();
         $this->addDescriptionColumn();
@@ -73,7 +73,7 @@ class SearchResultsTableView extends SearchResultsView
         {
             foreach ($layout['columns'] as $elementId => $columnName)
             {
-                if (!SearchOptions::userHasAccessToLayout($layout))
+                if (!SearchConfig::userHasAccessToLayout($layout))
                 {
                     // Don't add admin layouts for non-admin users.
                     continue;
@@ -168,7 +168,7 @@ class SearchResultsTableView extends SearchResultsView
         $layoutSelectOptions = array();
         foreach ($layoutsData as $idNumber => $layout)
         {
-            if (!SearchOptions::userHasAccessToLayout($layout))
+            if (!SearchConfig::userHasAccessToLayout($layout))
             {
                 // Omit admin layouts for non-admin users.
                 continue;

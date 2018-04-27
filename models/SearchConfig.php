@@ -1,5 +1,5 @@
 <?php
-class SearchOptions extends ConfigurationOptions
+class SearchConfig extends ConfigurationOptions
 {
     const OPTION_COLUMNS = 'avantsearch_columns';
     const OPTION_HIERARCHY = 'avantsearch_hierarchy';

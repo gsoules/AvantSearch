@@ -3,7 +3,7 @@ class AvantSearch
 {
     public static function emitSearchResultsTableCss()
     {
-        $columnsData = SearchOptions::getOptionDataForColumns();
+        $columnsData = SearchConfig::getOptionDataForColumns();
 
         $css = array();
 
