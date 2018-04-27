@@ -297,26 +297,29 @@ class SearchQueryBuilder
 
     protected function buildWhereDateRange()
     {
-        if (!empty($_GET['date_start']))
+        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
+        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
+
+        if (!empty($_GET['year_start']))
         {
-            $dateStart = intval(trim($_GET['date_start']));
+            $yearStart = intval(trim($_GET['year_start']));
 
-            $element = $this->db->getTable('Element')->findByElementSetNameAndElementName('Item Type Metadata', 'Date Start');
-            $this->select->joinLeft(array('_date_start' => $this->db->ElementText),
-                "_date_start.record_id = items.id AND _date_start.record_type = 'Item' AND _date_start.element_id = $element->id", array());
+            $element = $this->db->getTable('Element')->findByElementSetNameAndElementName('Item Type Metadata', $yearStartElementName);
+            $this->select->joinLeft(array('_year_start' => $this->db->ElementText),
+                "_year_start.record_id = items.id AND _year_start.record_type = 'Item' AND _year_start.element_id = $element->id", array());
 
-            $this->select->where("_date_start.text >= '$dateStart'");
+            $this->select->where("_year_start.text >= '$yearStart'");
         }
 
-        if (!empty($_GET['date_end']))
+        if (!empty($_GET['year_end']))
         {
-            $dateEnd = intval(trim($_GET['date_end']));
+            $yearEnd = intval(trim($_GET['year_end']));
 
-            $element = $this->db->getTable('Element')->findByElementSetNameAndElementName('Item Type Metadata', 'Date End');
-            $this->select->joinLeft(array('_date_end' => $this->db->ElementText),
-                "_date_end.record_id = items.id AND _date_end.record_type = 'Item' AND _date_end.element_id = $element->id", array());
+            $element = $this->db->getTable('Element')->findByElementSetNameAndElementName('Item Type Metadata', $yearEndElementName);
+            $this->select->joinLeft(array('_year_end' => $this->db->ElementText),
+                "_year_end.record_id = items.id AND _year_end.record_type = 'Item' AND _year_end.element_id = $element->id", array());
 
-            $this->select->where("_date_end.text <= '$dateEnd'");
+            $this->select->where("_year_end.text <= '$yearEnd'");
         }
     }
 

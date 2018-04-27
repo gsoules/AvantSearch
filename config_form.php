@@ -4,7 +4,6 @@ $view = get_view();
 $storageEngine = AvantSearch::getStorageEngineForSearchTextsTable();
 $titlesOnlySupported = SearchConfig::getOptionsSupportedTitlesOnly();
 $addressSortingSupported = SearchConfig::getOptionSupportedAddressSorting();
-$dateRangeSupported = SearchConfig::getOptionSupportedDateRange();
 $relationshipsViewSupported = SearchConfig::getOptionSupportedRelationshipsView();
 
 $privateElementsOption = SearchConfig::getOptionTextForPrivateElements();
@@ -164,20 +163,6 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
             <?php echo $view->formCheckbox('avantsearch_filters_smart_sorting', true, array('checked' => (boolean)get_option('avantsearch_filters_smart_sorting'))); ?>
         <?php else: ?>
             <?php SearchConfig::emitOptionNotSupported('address-sorting'); ?>
-        <?php endif; ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo __('Date Range'); ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <?php if ($dateRangeSupported): ?>
-            <p class="explanation"><?php echo __('Show the option to search within a range of years.'); ?></p>
-            <?php echo $view->formCheckbox('avantsearch_filters_show_date_range_option', true, array('checked' => (boolean)get_option('avantsearch_filters_show_date_range_option'))); ?>
-        <?php else: ?>
-            <?php SearchConfig::emitOptionNotSupported('date-range'); ?>
         <?php endif; ?>
     </div>
 </div>

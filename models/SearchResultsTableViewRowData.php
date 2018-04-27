@@ -36,20 +36,23 @@ class SearchResultsTableViewRowData
 
     protected function generateDateRange()
     {
-        if (!(isset($this->elementValue['Date']) && isset($this->elementValue['Date Start']) && isset($this->elementValue['Date End'])))
+        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
+        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
+
+        if (empty($yearStartElementName) || empty($yearEndElementName) || !isset($this->elementValue['Date']))
         {
             // This feature is only support for installations that have all three date elements.
             return;
         }
 
         $date = $this->elementValue['Date']['text'];
-        $dateStart = $this->elementValue['Date Start']['text'];
-        $dateEnd = $this->elementValue['Date End']['text'];
+        $yearStartText = $this->elementValue[$yearStartElementName]['text'];
+        $yearEndText = $this->elementValue[$yearEndElementName]['text'];
 
-        if (empty($date) && !empty($dateStart))
+        if (empty($date) && !empty($yearStartText))
         {
-            // The date is empty so show the date start/end range.
-            $this->elementValue['Date']['text'] = "$dateStart - $dateEnd";
+            // The date is empty so show the year start/end range.
+            $this->elementValue['Date']['text'] = "$yearStartText - $yearEndText";
         }
     }
 

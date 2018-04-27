@@ -107,10 +107,10 @@ class SearchResultsFilters
             $displayArray['Tags'] = $tags;
         }
 
-        if (!empty($_GET['date_start']) || !empty($_GET['date_end']))
+        if (!empty($_GET['year_start']) || !empty($_GET['year_end']))
         {
-            $dateStart = empty($_GET['date_start']) ? '0' : intval(trim($_GET['date_start']));
-            $dateEnd = empty($_GET['date_end']) ? '0' : intval(trim($_GET['date_end']));
+            $dateStart = empty($_GET['year_start']) ? '0' : intval(trim($_GET['year_start']));
+            $dateEnd = empty($_GET['year_end']) ? '0' : intval(trim($_GET['year_end']));
 
             if ($dateStart && $dateEnd)
                 $displayArray[__('Date Range')] = "$dateStart to $dateEnd";

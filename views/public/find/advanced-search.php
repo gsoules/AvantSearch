@@ -18,7 +18,7 @@ $searchFilesOnly = $searchResultsTable->getSearchFiles();
 $condition = $searchResults->getKeywordsCondition();
 
 $showTitlesOption = get_option('avantsearch_filters_show_titles_option') == true;
-$showDateRangeOption = get_option('avantsearch_filters_show_date_range_option') == true;;
+$showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
 $pageTitle = __('Advanced Search');
 
@@ -160,19 +160,19 @@ echo "<div id='avantsearch-container'>";
         <div class="search-form-section">
 			<div>
 				<div class="avantsearch-label-column">
-					<?php echo $this->formLabel('date-start', __('Date Start')); ?>
+					<?php echo $this->formLabel('year-start', CommonConfig::getOptionTextForYearStart()); ?>
 				</div>
 				<div class="avantsearch-option-column inputs">
-					<?php echo $this->formText('date_start', @$_REQUEST['date_start'], array('size' => '40', 'id' => 'date-start', 'title' => 'Four digit start year'));	?>
+					<?php echo $this->formText('year_start', @$_REQUEST['year_start'], array('size' => '40', 'id' => 'year-start', 'title' => 'Four digit start year'));	?>
 				</div>
 			</div>
 
 			<div>
 				<div class="avantsearch-label-column">
-					<?php echo $this->formLabel('date-end', __('Date End')); ?>
+					<?php echo $this->formLabel('year-end', CommonConfig::getOptionTextForYearEnd()); ?>
 				</div>
 				<div class="avantsearch-option-column inputs">
-					<?php echo $this->formText('date_end', @$_REQUEST['date_end'], array('size' => '40', 'id' => 'date-end', 'title' => 'Four digit end year'));	?>
+					<?php echo $this->formText('year_end', @$_REQUEST['year_end'], array('size' => '40', 'id' => 'year-end', 'title' => 'Four digit end year'));	?>
 				</div>
 			</div>
 		</div>
@@ -407,8 +407,8 @@ echo "<div id='avantsearch-container'>";
 
             disableEmptyField('#keywords');
             disableEmptyField('#tags');
-            disableEmptyField('#date-start');
-            disableEmptyField('#date-end');
+            disableEmptyField('#year-start');
+            disableEmptyField('#year-end');
 
             disableDefaultRadioButton('files', '<?php echo SearchResultsView::DEFAULT_SEARCH_FILES; ?>');
             disableDefaultRadioButton('titles', '<?php echo SearchResultsView::DEFAULT_SEARCH_TITLES; ?>');

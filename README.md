@@ -19,6 +19,7 @@ Provides extended searching and search results capabilities for an Omeka Classic
 - [Lightbox](https://github.com/gsoules/AvantSearch#lightbox)
 - [Usage](https://github.com/gsoules/AvantSearch#usage)
     - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search-page)
+        - [Date Range Feature](https://github.com/gsoules/AvantSearch#date-range-feature)
     - [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options)
         - [Ttles Only Option](https://github.com/gsoules/AvantSearch#titles-only-option)
         - [Private Elements Option](https://github.com/gsoules/AvantSearch#private-elements-option)
@@ -30,7 +31,6 @@ Provides extended searching and search results capabilities for an Omeka Classic
         - [Tree View Option](https://github.com/gsoules/AvantSearch#tree-view-option)
         - [Integer Sorting Option](https://github.com/gsoules/AvantSearch#integer-sorting-option)
         - [Address Sorting Option](https://github.com/gsoules/AvantSearch#address-sorting-option)
-        - [Date Range Option](https://github.com/gsoules/AvantSearch#date-range-option)
         - [Relationships View Option](https://github.com/gsoules/AvantSearch#relationships-view-option)
 - [Improving Search Results](https://github.com/gsoules/AvantSearch#improving-search-results)
 - [License](https://github.com/gsoules/AvantSearch#license)
@@ -172,7 +172,16 @@ that appears on search result pages.
 The screen shot below shows the search conditions that were
 specified to generate the Table View Custom Layout - Type / Subject screen shot shown earlier.
 
-![Summary Layout](readme/advanced-search.jpg)
+![Advanced Search Page](readme/advanced-search.jpg)
+
+#### Date Range Feature
+When AvantCommon is configured to provide Start and End years, year start and end text boxes will appear as
+filters at the bottom of the Advanced Search page. A user can provide values for both the start and end years to
+limit search results to items in that range inclusive. For example if you specify 1900 for the start year and
+1940 for end year, search will find items with start year greater than or equal to 1900 and less than or equal to 1940.
+If you only provide a value for the start year, the search will find items where the start year is that date
+or more recent. If you only provide a value for the end year, the filter will find items where the end year is that
+date or older.
 
 ### Configuration Options
 The sections that follow describe each of the options on the AvantSearch plugin configuration page.
@@ -445,21 +454,6 @@ With address sorting:
 * 9 Main Street
 * 10 Main Street
 * 72 Pleasant Lane
-
-<hr/>
-
-#### Date Range Option
-When this option is checked, Date Start and Date End text boxes will appear as filters at the bottom of the
-Advanced Search page.
-
-A user can provide values for both Date Start and Date End to limit search results to
-items in that range inclusive. For example if you specify 1900 for Date Start and 1940 for Date End, the
-search will find items with Date Start greater than or equal to 1900 and less than or equal to 1940. If you only
-provide a value for Date Start, the search will find items where Date Start is that date or more recent.
-If you only provide a value for End, the filter will find items where Date End is that date or older.
-
-**NOTE:** If you want to use this option, but the configuration page says it's not available for your installation,
-you'll need to add `Date Start` and `Date End` elements and use them exclusively to store four digit years.
 
 <hr/>
 

@@ -140,11 +140,13 @@ class SearchConfig extends CommonConfig
 
     public static function getOptionSupportedDateRange()
     {
-        $dateStartElementId = ItemMetadata::getElementIdForElementName('Date Start');
-        $dateEndElementId = ItemMetadata::getElementIdForElementName('Date End');
+        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
+        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
+        $yearStartElementId = ItemMetadata::getElementIdForElementName($yearStartElementName);
+        $yearEndElementId = ItemMetadata::getElementIdForElementName($yearEndElementName);
         $dateElementId = ItemMetadata::getElementIdForElementName('Date');
 
-        return ($dateStartElementId != 0 && $dateEndElementId != 0 && $dateElementId != 0);
+        return ($yearStartElementId != 0 && $yearEndElementId != 0 && $dateElementId != 0);
     }
 
     public static function getOptionSupportedRelationshipsView()
@@ -366,7 +368,6 @@ class SearchConfig extends CommonConfig
         self::saveOptionDataForTitlesOnly();
         self::saveOptionDataForIntegerSorting();
 
-        set_option('avantsearch_filters_show_date_range_option', $_POST['avantsearch_filters_show_date_range_option']);
         set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
         set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
     }
