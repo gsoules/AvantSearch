@@ -6,7 +6,6 @@
 
 #################################################
 
-
 Provides extended searching and search results capabilities for an Omeka Classic installation.
 
 ## Table of Contents
