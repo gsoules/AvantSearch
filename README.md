@@ -1,9 +1,11 @@
 # AvantSearch
 
+#############################################################
 
----
-`This plugin is under development. Please wait for the 2.0 release. `
----
+> **This plugin is under development. Please wait for Release 2.0.**
+
+#############################################################
+
 
 Provides extended searching and search results capabilities for an Omeka Classic installation.
 
