@@ -408,7 +408,7 @@ class SearchConfig extends CommonConfig
 
                 if (!empty($align) && !($align == 'left' || $align == 'center' || $align == 'right'))
                 {
-                    throw new Omeka_Validate_Exception(__('Columns (\'%s\'): \'%s\' is not valid for alignment. Use \'left\', \'center\' , or \'right\'.', $elementName, $align));
+                    throw new Omeka_Validate_Exception(__('Columns (%s): \'%s\' is not valid for alignment. Use \'left\', \'center\' , or \'right\'.', $elementName, $align));
                 }
             }
 
