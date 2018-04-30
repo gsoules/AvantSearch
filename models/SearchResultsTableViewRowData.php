@@ -12,7 +12,7 @@ class SearchResultsTableViewRowData
     {
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
-        $this->hierarchyElements = SearchConfig::getOptionDataForHierarchy();
+        $this->hierarchyElements = SearchConfig::getOptionDataForTreeView();
         $this->initializeData($item);
     }
 

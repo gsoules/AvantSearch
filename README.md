@@ -329,7 +329,7 @@ Below is an example specification of Layouts.
 L1, Summary
 L2, Creator/Publisher: Identifier, Title, Creator, Publisher, Date
 L3, Type/Subject: Identifier, Title, Subject, Type
-L6, Confidential, admin: Identifier, Title, Status, Notes;
+L6, Confidential, admin: Identifier, Title, Status, Notes
 ```
 
 Notes about the example above:

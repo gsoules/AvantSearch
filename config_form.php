@@ -22,8 +22,8 @@ $detailLayoutOption = SearchConfig::getOptionTextForDetailLayout();
 $indexViewOption = SearchConfig::getOptionTextForIndexView();
 $indexViewOptionRows = max(3, count(explode(PHP_EOL, $indexViewOption)));
 
-$hierarchyOption = SearchConfig::getOptionTextForHierarchy();
-$hierarchyOptionRows = max(3, count(explode(PHP_EOL, $hierarchyOption)) - 1);
+$treeViewOption = SearchConfig::getOptionTextForTreeView();
+$treeViewOptionRows = max(3, count(explode(PHP_EOL, $treeViewOption)) - 1);
 
 $integerSortingOption = SearchConfig::getOptionTextForIntegerSorting();
 $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)));
@@ -46,7 +46,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Titles Only'); ?></label>
+        <label><?php echo CONFIG_LABEL_TITLES_ONLY ?></label>
     </div>
     <div class="inputs five columns omega">
         <?php if ($titlesOnlySupported): ?>
@@ -60,7 +60,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Private Elements'); ?></label>
+        <label><?php echo CONFIG_LABEL_PRIVATE_ELEMENTS; ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Elements that should not be searched by public users."); ?></p>
@@ -70,7 +70,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Columns'); ?></label>
+        <label><?php echo CONFIG_LABEL_COLUMNS; ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Customization of columns in Table View search results."); ?></p>
@@ -80,7 +80,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Layouts'); ?></label>
+        <label><?php echo CONFIG_LABEL_LAYOUTS; ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Layout definitions."); ?></p>
@@ -90,7 +90,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Layout Selector Width'); ?></label>
+        <label><?php echo CONFIG_LABEL_LAYOUT_SELECTOR_WIDTH; ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __('The width of the layout selector dropdown.'); ?></p>
@@ -101,7 +101,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Detail Layout'); ?></label>
+        <label><?php echo CONFIG_LABEL_DETAIL_LAYOUT; ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Detail layout elements."); ?></p>
@@ -111,7 +111,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Index View'); ?></label>
+        <label><?php echo CONFIG_LABEL_INDEX_VIEW; ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Elements that can be used as the Index View field."); ?></p>
@@ -121,22 +121,22 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Tree View'); ?></label>
+        <label><?php echo CONFIG_LABEL_TREE_VIEW; ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Elements that can be used as the Tree View field."); ?></p>
-        <?php echo $view->formTextarea(SearchConfig::OPTION_HIERARCHY, $hierarchyOption, array('rows' => $hierarchyOptionRows)); ?>
+        <?php echo $view->formTextarea(SearchConfig::OPTION_TREE_VIEW, $treeViewOption, array('rows' => $treeViewOptionRows)); ?>
     </div>
 </div>
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Relationships View'); ?></label>
+        <label><?php echo CONFIG_LABEL_RELATIONSHIPS_VIEW; ?></label>
     </div>
     <div class="inputs five columns omega">
         <?php if ($relationshipsViewSupported): ?>
             <p class="explanation"><?php echo __('Show the option to display results in Relationships View.'); ?></p>
-            <?php echo $view->formCheckbox('avantsearch_filters_enable_relationships', true, array('checked' => (boolean)get_option('avantsearch_filters_enable_relationships'))); ?>
+            <?php echo $view->formCheckbox(SearchConfig::OPTION_RELATIONSHIPS_VIEW, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_RELATIONSHIPS_VIEW))); ?>
         <?php else: ?>
             <?php SearchConfig::emitOptionNotSupported('relationships-view'); ?>
         <?php endif; ?>
@@ -145,7 +145,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Integer Sorting'); ?></label>
+        <label><?php echo CONFIG_LABEL_INTEGER_SORTING; ?></label>
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Columns that should be sorted as integers."); ?></p>
@@ -155,12 +155,12 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo __('Address Sorting'); ?></label>
+        <label><?php echo CONFIG_LABEL_ADDRESS_SORTING; ?></label>
     </div>
     <div class="inputs five columns omega">
         <?php if ($addressSortingSupported): ?>
             <p class="explanation"><?php echo __('Sort street addresses by street name, then by street number.'); ?></p>
-            <?php echo $view->formCheckbox('avantsearch_filters_smart_sorting', true, array('checked' => (boolean)get_option('avantsearch_filters_smart_sorting'))); ?>
+            <?php echo $view->formCheckbox(SearchConfig::OPTION_ADDRESS_SORTING, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_ADDRESS_SORTING))); ?>
         <?php else: ?>
             <?php SearchConfig::emitOptionNotSupported('address-sorting'); ?>
         <?php endif; ?>

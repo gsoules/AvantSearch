@@ -1,15 +1,30 @@
 <?php
-class SearchConfig extends CommonConfig
+
+define('CONFIG_LABEL_ADDRESS_SORTING', __('Address Sorting'));
+define('CONFIG_LABEL_COLUMNS', __('Columns'));
+define('CONFIG_LABEL_DETAIL_LAYOUT', __('Detail Layout'));
+define('CONFIG_LABEL_INDEX_VIEW', __('Index View'));
+define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
+define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
+define('CONFIG_LABEL_LAYOUT_SELECTOR_WIDTH', __('Layout Selector Width'));
+define('CONFIG_LABEL_PRIVATE_ELEMENTS', __('Private Elements'));
+define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
+define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
+define('CONFIG_LABEL_TREE_VIEW', __('Tree View'));
+
+class SearchConfig extends ConfigOptions
 {
+    const OPTION_ADDRESS_SORTING = 'avantsearch_address_sorting';
     const OPTION_COLUMNS = 'avantsearch_columns';
-    const OPTION_HIERARCHY = 'avantsearch_hierarchy';
     const OPTION_DETAIL_LAYOUT = 'avantsearch_detail_layout';
-    const OPTION_INDEX_VIEW = 'avantsearch_index_view_elements';
+    const OPTION_INDEX_VIEW = 'avantsearch_index_view';
     const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
     const OPTION_LAYOUTS = 'avantsearch_layouts';
     const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
     const OPTION_PRIVATE_ELEMENTS = 'avantsearch_private_elements';
-    const OPTION_TITLES_ONLY = 'avantsearch_filters_show_titles_option';
+    const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
+    const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
+    const OPTION_TREE_VIEW = 'avantsearch_tree_view';
 
     public static function emitInnoDbMessage($engine)
     {
@@ -21,19 +36,14 @@ class SearchConfig extends CommonConfig
 
     public static function emitOptionNotSupported($hash)
     {
-        echo "<p class='explanation learn-more'>" . __('Not available for this installation. ');
+        echo "<p class='explanation learn-more'>" . __('Option not available for this installation. ');
         echo "<a class='avantsearch-help' href='https://github.com/gsoules/AvantSearch#$hash' target='_blank'>" . __('Learn more.') . "</a>";
         echo "</p>";
     }
 
     public static function getOptionDataForColumns()
     {
-        $rawData = json_decode(get_option(self::OPTION_COLUMNS), true);
-        if (empty($rawData))
-        {
-            $rawData = array();
-        }
-
+        $rawData = self::getRawData(self::OPTION_COLUMNS);
         $data = array();
 
         foreach ($rawData as $elementId => $columnData)
@@ -53,12 +63,7 @@ class SearchConfig extends CommonConfig
 
     public static function getOptionDataForDetailLayout()
     {
-        $rawData = json_decode(get_option(self::OPTION_DETAIL_LAYOUT), true);
-        if (empty($rawData))
-        {
-            $rawData = array();
-        }
-
+        $rawData = self::getRawData(self::OPTION_DETAIL_LAYOUT);
         $data = array();
 
         $rowId = 0;
@@ -88,11 +93,6 @@ class SearchConfig extends CommonConfig
         return $data;
     }
 
-    public static function getOptionDataForHierarchy()
-    {
-        return self::getOptionData(self::OPTION_HIERARCHY);
-    }
-
     public static function getOptionDataForIndexView()
     {
         return self::getOptionData(self::OPTION_INDEX_VIEW);
@@ -105,11 +105,11 @@ class SearchConfig extends CommonConfig
 
     public static function getOptionDataForLayouts()
     {
-        $data = json_decode(get_option(self::OPTION_LAYOUTS), true);
+        $data = self::getRawData(self::OPTION_LAYOUTS);
+
         if (empty($data))
         {
             // Provide a default L1 layout in case the admin removed all layouts.
-            $data = array();
             $data[1] = array('name' => 'Details', 'admin' => false);
         }
 
@@ -136,6 +136,11 @@ class SearchConfig extends CommonConfig
     public static function getOptionDataForPrivateElements()
     {
         return self::getOptionData(self::OPTION_PRIVATE_ELEMENTS);
+    }
+
+    public static function getOptionDataForTreeView()
+    {
+        return self::getOptionData(self::OPTION_TREE_VIEW);
     }
 
     public static function getOptionSupportedDateRange()
@@ -278,11 +283,6 @@ class SearchConfig extends CommonConfig
         return $detailLayoutOption;
     }
 
-    public static function getOptionTextForHierarchy()
-    {
-        return self::getOptionText(self::OPTION_HIERARCHY);
-    }
-
     public static function getOptionTextForIndexView()
     {
         return self::getOptionText(self::OPTION_INDEX_VIEW);
@@ -356,6 +356,11 @@ class SearchConfig extends CommonConfig
         return self::getOptionText(self::OPTION_PRIVATE_ELEMENTS);
     }
 
+    public static function getOptionTextForTreeView()
+    {
+        return self::getOptionText(self::OPTION_TREE_VIEW);
+    }
+
     public static function saveConfiguration()
     {
         self::saveOptionDataForPrivateElements();
@@ -364,12 +369,12 @@ class SearchConfig extends CommonConfig
         self::saveOptionDataForColumns();
         self::saveOptionDataForDetailLayout();
         self::saveOptionDataForIndexView();
-        self::saveOptionDataForHierarchy();
-        self::saveOptionDataForTitlesOnly();
+        self::saveOptionDataForTreeView();
         self::saveOptionDataForIntegerSorting();
 
-        set_option('avantsearch_filters_enable_relationships', $_POST['avantsearch_filters_enable_relationships']);
-        set_option('avantsearch_filters_smart_sorting', $_POST['avantsearch_filters_smart_sorting']);
+        set_option(self::OPTION_TITLES_ONLY, intval($_POST[self::OPTION_TITLES_ONLY]));
+        set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
+        set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
     }
 
     public static function saveOptionDataForColumns()
@@ -390,10 +395,7 @@ class SearchConfig extends CommonConfig
             $elementName = $nameParts[0];
 
             $elementId = ItemMetadata::getElementIdForElementName($elementName);
-            if ($elementId == 0)
-            {
-                throw new Omeka_Validate_Exception(__('Columns: \'%s\' is not an element.', $elementName));
-            }
+            self::errorIf($elementId == 0, CONFIG_LABEL_COLUMNS, __("Columns: '%s' is not an element.", $elementName));
 
             $alias = isset($nameParts[1]) ? $nameParts[1] : $elementName;
 
@@ -406,9 +408,11 @@ class SearchConfig extends CommonConfig
                 $width = intval($argParts[0]);
                 $align = isset($argParts[1]) ? strtolower($argParts[1]) : '';
 
-                if (!empty($align) && !($align == 'left' || $align == 'center' || $align == 'right'))
+                $alignments = array('left', 'center', 'right');
+                if (!empty($align) && !in_array($align, $alignments))
                 {
-                    throw new Omeka_Validate_Exception(__('Columns (%s): \'%s\' is not valid for alignment. Use \'left\', \'center\' , or \'right\'.', $elementName, $align));
+                    $allowed = implode(', ', $alignments);
+                    self::errorRowIf(true, CONFIG_LABEL_LAYOUTS, $elementName, __("'%s' is not a valid alignment. Options: %s.", $align, $allowed));
                 }
             }
 
@@ -428,23 +432,20 @@ class SearchConfig extends CommonConfig
             if (empty($detailLayout))
                 continue;
 
-            $columnNames = array_map('trim', explode(',', $detailLayout));
-            foreach ($columnNames as $columnName)
+            $elementNames = array_map('trim', explode(',', $detailLayout));
+            foreach ($elementNames as $elementName)
             {
-                if (empty($columnName))
+                if (empty($elementName))
                     continue;
 
-                if ($columnName == '<tags>')
+                if ($elementName == '<tags>')
                 {
                     $elementId = '<tags>';
                 }
                 else
                 {
-                    $elementId = ItemMetadata::getElementIdForElementName($columnName);
-                    if ($elementId == 0)
-                    {
-                        throw new Omeka_Validate_Exception(__('Detail Layout: \'%s\' is not an element.', $columnName));
-                    }
+                    $elementId = ItemMetadata::getElementIdForElementName($elementName);
+                    self::errorIf($elementId == 0, CONFIG_LABEL_DETAIL_LAYOUT,__("'%s' is not an element.", $elementName));
                 }
                 $detailRows[$row][] = $elementId;
             }
@@ -454,19 +455,14 @@ class SearchConfig extends CommonConfig
         set_option(self::OPTION_DETAIL_LAYOUT, json_encode($detailRows));
     }
 
-    public static function saveOptionDataForHierarchy()
-    {
-        self::saveOptionData(self::OPTION_HIERARCHY, __('Hierarchy'));
-    }
-
     public static function saveOptionDataForIndexView()
     {
-        self::saveOptionData(self::OPTION_INDEX_VIEW, __('Index View'));
+        self::saveOptionData(self::OPTION_INDEX_VIEW, CONFIG_LABEL_INDEX_VIEW);
     }
 
     public static function saveOptionDataForIntegerSorting()
     {
-        self::saveOptionData(self::OPTION_INTEGER_SORTING, __('Integer Sorting'));
+        self::saveOptionData(self::OPTION_INTEGER_SORTING, CONFIG_LABEL_INTEGER_SORTING);
     }
 
     public static function saveOptionDataForLayouts()
@@ -499,42 +495,31 @@ class SearchConfig extends CommonConfig
                 if ($idNumber <= 0)
                     $isValidId = false;
             }
-            if (!$isValidId)
-            {
-                throw new Omeka_Validate_Exception(__('Layouts: \'%s\' is not a valid layout Id. Specify \'L\' followed by an integer greater than 0.', $id));
-            }
+            self::errorIf(!$isValidId, CONFIG_LABEL_LAYOUTS, __("'%s' is not a valid layout Id. Specify 'L' followed by an integer greater than 0.", $id));
 
             // Make sure the ID is unique.
             foreach ($layouts as $existingIdNumber => $layout)
             {
-                if ($idNumber == $existingIdNumber)
-                {
-                    throw new Omeka_Validate_Exception(__('Layouts: \'L%s\' is specified twice.', $idNumber));
-                }
+                self::errorIf($idNumber == $existingIdNumber, CONFIG_LABEL_LAYOUTS, __("Layouts: 'L%s' is specified twice.", $idNumber));
             }
 
             $name = isset($declarationParts[1]) ? $declarationParts[1] : '$id';
             $layouts[$idNumber]['name'] = $name;
 
             $rights = isset($declarationParts[2]) ? strtolower($declarationParts[2]) : '';
-            if (!empty($rights) && $rights != 'admin')
-            {
-                throw new Omeka_Validate_Exception(__('Layouts (%s): Syntax error at \'%s\'. Only \'admin\' is allowed after the layout name.', $id, $rights));
-            }
+            self::errorRowIf(!empty($rights) && $rights != 'admin', CONFIG_LABEL_LAYOUTS, $id, __("Syntax error at '%s'. Only 'admin' is allowed after the layout name.", $rights));
             $layouts[$idNumber]['admin'] = $rights == 'admin';
 
             $columnString = isset($parts[1]) ? $parts[1] : '';
             $columns = array_map('trim', explode(',', $columnString));
-            foreach ($columns as $columnName)
+            foreach ($columns as $elementName)
             {
-                if (empty($columnName))
+                if (empty($elementName))
                     continue;
 
-                $elementId = ItemMetadata::getElementIdForElementName($columnName);
-                if ($elementId == 0)
-                {
-                    throw new Omeka_Validate_Exception(__('Layouts (%s): \'%s\' is not an element.', $id, $columnName));
-                }
+                $elementId = ItemMetadata::getElementIdForElementName($elementName);
+                self::errorRowIf($elementId == 0, CONFIG_LABEL_LAYOUTS, $id, __("'%s' is not an element.", $elementName));
+
                 $layouts[$idNumber]['columns'][] = $elementId ;
             }
         }
@@ -545,10 +530,7 @@ class SearchConfig extends CommonConfig
     public static function saveOptionDataForLayoutSelectorWidth()
     {
         $layoutSelectorWidth = intval($_POST[self::OPTION_LAYOUT_SELECTOR_WIDTH]);
-        if ($layoutSelectorWidth < 100)
-        {
-            throw new Omeka_Validate_Exception(__('Layout Selector Width must be an integer value of 100 or greater.'));
-        }
+        self::errorIf($layoutSelectorWidth < 100, null, __('Layout Selector Width must be an integer value of 100 or greater.'));
 
         set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth);
     }
@@ -558,30 +540,9 @@ class SearchConfig extends CommonConfig
         self::saveOptionData(self::OPTION_PRIVATE_ELEMENTS, __('Private Elements'));
     }
 
-    public static function saveOptionDataForTitlesOnly()
+    public static function saveOptionDataForTreeView()
     {
-        $titlesOnly = $_POST[self::OPTION_TITLES_ONLY];
-
-
-        if ($titlesOnly)
-        {
-            $db = get_db();
-            $select = $db->select()
-                ->from($db->SearchTexts)
-                ->where("MATCH (text) AGAINST ('test' IN BOOLEAN MODE)");
-
-            try
-            {
-                $results = $db->getTable('ElementText')->fetchObjects($select);
-            }
-            catch (Zend_Db_Statement_Mysqli_Exception $e)
-            {
-                $titlesOnly = false;
-                throw new Omeka_Validate_Exception(__('Titles Only option not supported.'));
-            }
-        }
-
-        set_option(self::OPTION_TITLES_ONLY, $titlesOnly);
+        self::saveOptionData(self::OPTION_TREE_VIEW, CONFIG_LABEL_TREE_VIEW);
     }
 
     public static function setDefaultOptionValues()
