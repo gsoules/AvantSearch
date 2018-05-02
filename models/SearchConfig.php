@@ -43,22 +43,7 @@ class SearchConfig extends ConfigOptions
 
     public static function getOptionDataForColumns()
     {
-        $rawData = self::getRawData(self::OPTION_COLUMNS);
-        $data = array();
-
-        foreach ($rawData as $elementId => $columnData)
-        {
-            $elementName = ItemMetadata::getElementNameFromId($elementId);
-            if (empty($elementName))
-            {
-                // This element must have been deleted since the AvantSearch configuration was last saved.
-                continue;
-            }
-            $columnData['name'] = $elementName;
-            $data[$elementId] = $columnData;
-        }
-
-        return $data;
+        return self::getOptionDefinitionData(self::OPTION_COLUMNS);
     }
 
     public static function getOptionDataForDetailLayout()
@@ -95,12 +80,12 @@ class SearchConfig extends ConfigOptions
 
     public static function getOptionDataForIndexView()
     {
-        return self::getOptionData(self::OPTION_INDEX_VIEW);
+        return self::getOptionListData(self::OPTION_INDEX_VIEW);
     }
 
     public static function getOptionDataForIntegerSorting()
     {
-        return self::getOptionData(self::OPTION_INTEGER_SORTING);
+        return self::getOptionListData(self::OPTION_INTEGER_SORTING);
     }
 
     public static function getOptionDataForLayouts()
@@ -135,12 +120,12 @@ class SearchConfig extends ConfigOptions
 
     public static function getOptionDataForPrivateElements()
     {
-        return self::getOptionData(self::OPTION_PRIVATE_ELEMENTS);
+        return self::getOptionListData(self::OPTION_PRIVATE_ELEMENTS);
     }
 
     public static function getOptionDataForTreeView()
     {
-        return self::getOptionData(self::OPTION_TREE_VIEW);
+        return self::getOptionListData(self::OPTION_TREE_VIEW);
     }
 
     public static function getOptionSupportedDateRange()
@@ -227,21 +212,21 @@ class SearchConfig extends ConfigOptions
             $data = self::getOptionDataForColumns();
             $text = '';
 
-            foreach ($data as $elementId => $column)
+            foreach ($data as $elementId => $definition)
             {
                 if (!empty($text))
                 {
                     $text .= PHP_EOL;
                 }
-                $name = $column['name'];
+                $name = $definition['name'];
                 $text .= $name;
-                if ($column['alias'] != $name)
-                    $text .= ', ' . $column['alias'];
+                if ($definition['alias'] != $name)
+                    $text .= ', ' . $definition['alias'];
                 $text .= ': ';
-                if ($column['width'] > 0)
-                    $text .= $column['width'] . ', ';
-                if (!empty($column['align']))
-                    $text .= $column['align'] . ', ';
+                if ($definition['width'] > 0)
+                    $text .= $definition['width'] . ', ';
+                if (!empty($definition['align']))
+                    $text .= $definition['align'] . ', ';
 
                 // Remove the trailing comma.
                 $text = substr($text, 0, strlen($text) - 2);
@@ -285,12 +270,12 @@ class SearchConfig extends ConfigOptions
 
     public static function getOptionTextForIndexView()
     {
-        return self::getOptionText(self::OPTION_INDEX_VIEW);
+        return self::getOptionListText(self::OPTION_INDEX_VIEW);
     }
 
     public static function getOptionTextForIntegerSorting()
     {
-        return self::getOptionText(self::OPTION_INTEGER_SORTING);
+        return self::getOptionListText(self::OPTION_INTEGER_SORTING);
     }
 
     public static function getOptionTextForLayouts()
@@ -353,12 +338,12 @@ class SearchConfig extends ConfigOptions
 
     public static function getOptionTextForPrivateElements()
     {
-        return self::getOptionText(self::OPTION_PRIVATE_ELEMENTS);
+        return self::getOptionListText(self::OPTION_PRIVATE_ELEMENTS);
     }
 
     public static function getOptionTextForTreeView()
     {
-        return self::getOptionText(self::OPTION_TREE_VIEW);
+        return self::getOptionListText(self::OPTION_TREE_VIEW);
     }
 
     public static function saveConfiguration()
@@ -395,7 +380,7 @@ class SearchConfig extends ConfigOptions
             $elementName = $nameParts[0];
 
             $elementId = ItemMetadata::getElementIdForElementName($elementName);
-            self::errorIf($elementId == 0, CONFIG_LABEL_COLUMNS, __("Columns: '%s' is not an element.", $elementName));
+            self::errorIfNotElement($elementId, CONFIG_LABEL_COLUMNS, $elementName);
 
             $alias = isset($nameParts[1]) ? $nameParts[1] : $elementName;
 
@@ -445,7 +430,7 @@ class SearchConfig extends ConfigOptions
                 else
                 {
                     $elementId = ItemMetadata::getElementIdForElementName($elementName);
-                    self::errorIf($elementId == 0, CONFIG_LABEL_DETAIL_LAYOUT,__("'%s' is not an element.", $elementName));
+                    self::errorIfNotElement($elementId, CONFIG_LABEL_DETAIL_LAYOUT, $elementName);
                 }
                 $detailRows[$row][] = $elementId;
             }
@@ -457,12 +442,12 @@ class SearchConfig extends ConfigOptions
 
     public static function saveOptionDataForIndexView()
     {
-        self::saveOptionData(self::OPTION_INDEX_VIEW, CONFIG_LABEL_INDEX_VIEW);
+        self::saveOptionListData(self::OPTION_INDEX_VIEW, CONFIG_LABEL_INDEX_VIEW);
     }
 
     public static function saveOptionDataForIntegerSorting()
     {
-        self::saveOptionData(self::OPTION_INTEGER_SORTING, CONFIG_LABEL_INTEGER_SORTING);
+        self::saveOptionListData(self::OPTION_INTEGER_SORTING, CONFIG_LABEL_INTEGER_SORTING);
     }
 
     public static function saveOptionDataForLayouts()
@@ -537,12 +522,12 @@ class SearchConfig extends ConfigOptions
 
     public static function saveOptionDataForPrivateElements()
     {
-        self::saveOptionData(self::OPTION_PRIVATE_ELEMENTS, __('Private Elements'));
+        self::saveOptionListData(self::OPTION_PRIVATE_ELEMENTS, __('Private Elements'));
     }
 
     public static function saveOptionDataForTreeView()
     {
-        self::saveOptionData(self::OPTION_TREE_VIEW, CONFIG_LABEL_TREE_VIEW);
+        self::saveOptionListData(self::OPTION_TREE_VIEW, CONFIG_LABEL_TREE_VIEW);
     }
 
     public static function setDefaultOptionValues()
