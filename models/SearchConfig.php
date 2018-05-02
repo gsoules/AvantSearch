@@ -34,13 +34,6 @@ class SearchConfig extends ConfigOptions
         echo "</p>";
     }
 
-    public static function emitOptionNotSupported($hash)
-    {
-        echo "<p class='explanation learn-more'>" . __('Option not available for this installation. ');
-        echo "<a class='avantsearch-help' href='https://github.com/gsoules/AvantSearch#$hash' target='_blank'>" . __('Learn more.') . "</a>";
-        echo "</p>";
-    }
-
     public static function getOptionDataForColumns()
     {
         return self::getOptionDefinitionData(self::OPTION_COLUMNS);

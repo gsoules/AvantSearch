@@ -7,23 +7,23 @@ $addressSortingSupported = SearchConfig::getOptionSupportedAddressSorting();
 $relationshipsViewSupported = SearchConfig::getOptionSupportedRelationshipsView();
 
 $privateElementsOption = SearchConfig::getOptionTextForPrivateElements();
-$privateElementOptionRows = max(3, count(explode(PHP_EOL, $privateElementsOption)));
+$privateElementOptionRows = max(2, count(explode(PHP_EOL, $privateElementsOption)));
 
 $columnsOption = SearchConfig::getOptionTextForColumns();
-$columnsOptionRows = max(3, count(explode(PHP_EOL, $columnsOption)));
+$columnsOptionRows = max(2, count(explode(PHP_EOL, $columnsOption)));
 
 $layoutsOption = SearchConfig::getOptionTextForLayouts();
-$layoutsOptionRows = max(3, count(explode(PHP_EOL, $layoutsOption)));
+$layoutsOptionRows = max(2, count(explode(PHP_EOL, $layoutsOption)));
 
 $layoutSelectorWidth = SearchConfig::getOptionTextForLayoutSelectorWidth();
 
 $detailLayoutOption = SearchConfig::getOptionTextForDetailLayout();
 
 $indexViewOption = SearchConfig::getOptionTextForIndexView();
-$indexViewOptionRows = max(3, count(explode(PHP_EOL, $indexViewOption)));
+$indexViewOptionRows = max(2, count(explode(PHP_EOL, $indexViewOption)));
 
 $treeViewOption = SearchConfig::getOptionTextForTreeView();
-$treeViewOptionRows = max(3, count(explode(PHP_EOL, $treeViewOption)) - 1);
+$treeViewOptionRows = max(2, count(explode(PHP_EOL, $treeViewOption)) - 1);
 
 $integerSortingOption = SearchConfig::getOptionTextForIntegerSorting();
 $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)));
@@ -53,7 +53,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
             <p class="explanation"><?php echo __('Show the option to limit keyword searching to Title text.'); ?></p>
             <?php echo $view->formCheckbox('avantsearch_filters_show_titles_option', true, array('checked' => (boolean)get_option('avantsearch_filters_show_titles_option'))); ?>
         <?php else: ?>
-            <?php SearchConfig::emitOptionNotSupported('titles-only'); ?>
+            <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'titles-only'); ?>
         <?php endif; ?>
     </div>
 </div>
@@ -138,7 +138,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
             <p class="explanation"><?php echo __('Show the option to display results in Relationships View.'); ?></p>
             <?php echo $view->formCheckbox(SearchConfig::OPTION_RELATIONSHIPS_VIEW, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_RELATIONSHIPS_VIEW))); ?>
         <?php else: ?>
-            <?php SearchConfig::emitOptionNotSupported('relationships-view'); ?>
+            <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'relationships-view'); ?>
         <?php endif; ?>
     </div>
 </div>
@@ -162,7 +162,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
             <p class="explanation"><?php echo __('Sort street addresses by street name, then by street number.'); ?></p>
             <?php echo $view->formCheckbox(SearchConfig::OPTION_ADDRESS_SORTING, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_ADDRESS_SORTING))); ?>
         <?php else: ?>
-            <?php SearchConfig::emitOptionNotSupported('address-sorting'); ?>
+            <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'address-sorting'); ?>
         <?php endif; ?>
     </div>
 </div>
