@@ -19,10 +19,27 @@ class SearchResultsTableView extends SearchResultsView
         $this->layoutsData = SearchConfig::getOptionDataForLayouts();
         $this->detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
         $this->addLayoutIdsToColumns();
-        $this->addDetailLayoutIdsToColumns();
+        $this->addDetailLayoutColumns();
         $this->addDescriptionColumn();
+        $this->addYearColumns();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
+    }
+
+    protected function addYearColumns()
+    {
+        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
+        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
+
+        if (empty($yearStartElementName) || empty($yearEndElementName))
+        {
+            // This feature is only support for installations that have all three date elements.
+            return;
+        }
+        $yearStartElementId = ItemMetadata::getElementIdForElementName($yearStartElementName);
+        $yearEndElementId = ItemMetadata::getElementIdForElementName($yearEndElementName);
+        $this->columnsData[$yearStartElementId] = self::createColumn($yearStartElementName, 0);
+        $this->columnsData[$yearEndElementId] = self::createColumn($yearEndElementName, 0);
     }
 
     protected function addDescriptionColumn()
@@ -47,7 +64,7 @@ class SearchResultsTableView extends SearchResultsView
         }
     }
 
-    protected function addDetailLayoutIdsToColumns()
+    protected function addDetailLayoutColumns()
     {
         foreach ($this->detailLayoutData as $row)
         {
