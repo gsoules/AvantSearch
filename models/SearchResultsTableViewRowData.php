@@ -16,10 +16,8 @@ class SearchResultsTableViewRowData
         $this->initializeData($item);
     }
 
-    protected function filterHierarchicalElementText(ElementText $elementText)
+    protected function filterHierarchicalElementText($elementId, $text)
     {
-        $text = $elementText['text'];
-        $elementId = $elementText['element_id'];
         $isHierarchyElement = array_key_exists($elementId, $this->hierarchyElements);
         if ($isHierarchyElement)
         {
@@ -90,7 +88,7 @@ class SearchResultsTableViewRowData
         $titleLink = link_to_item(ItemMetadata::getItemTitle($item));
         $this->elementValue['Title']['text'] = $titleLink;
 
-        $titles = $item->getElementTexts('Dublin Core', 'Title');
+        $titles = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
         foreach ($titles as $key => $title)
         {
             if ($key == 0)
@@ -106,20 +104,7 @@ class SearchResultsTableViewRowData
         return $data->elementValue[$elementName]['detail'];
     }
 
-
-    protected function getElementTexts($item, $elementName)
-    {
-        try
-        {
-            $elementTexts = $item->getElementTexts('Dublin Core', $elementName);
-        } catch (Omeka_Record_Exception $e)
-        {
-            $elementTexts = $item->getElementTexts('Item Type Metadata', $elementName);
-        }
-        return $elementTexts;
-    }
-
-    protected function getElementTextsAsHtml($elementTexts, $filtered)
+    protected function getElementTextsAsHtml($elementId, $elementTexts, $filtered)
     {
         $texts = '';
         foreach ($elementTexts as $key => $elementText)
@@ -129,7 +114,7 @@ class SearchResultsTableViewRowData
                 $texts .= '<br/>';
             }
 
-            $text = $filtered ? $this->filterHierarchicalElementText($elementText) : $elementText;
+            $text = $filtered ? $this->filterHierarchicalElementText($elementId, $elementText) : $elementText;
             $texts .= html_escape($text);
         }
 
@@ -155,9 +140,9 @@ class SearchResultsTableViewRowData
 
             if ($elementName != 'Title')
             {
-                $elementTexts = $this->getElementTexts($item, $elementName);
-                $fullText = $this->getElementTextsAsHtml($elementTexts, false);
-                $filteredText =  $this->getElementTextsAsHtml($elementTexts, true);
+                $elementTexts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
+                $fullText = $this->getElementTextsAsHtml($elementId, $elementTexts, false);
+                $filteredText =  $this->getElementTextsAsHtml($elementId, $elementTexts, true);
 
                 if ( $elementName != 'Description')
                 {

@@ -17,7 +17,7 @@ $searchTitlesOnly = $searchResultsTable->getSearchTitles();
 $searchFilesOnly = $searchResultsTable->getSearchFiles();
 $condition = $searchResults->getKeywordsCondition();
 
-$showTitlesOption = get_option('avantsearch_filters_show_titles_option') == true;
+$showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
 $showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
 $pageTitle = __('Advanced Search');

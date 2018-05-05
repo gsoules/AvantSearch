@@ -51,7 +51,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
     <div class="inputs five columns omega">
         <?php if ($titlesOnlySupported): ?>
             <p class="explanation"><?php echo __('Show the option to limit keyword searching to Title text.'); ?></p>
-            <?php echo $view->formCheckbox('avantsearch_filters_show_titles_option', true, array('checked' => (boolean)get_option('avantsearch_filters_show_titles_option'))); ?>
+            <?php echo $view->formCheckbox(SearchConfig::OPTION_TITLES_ONLY, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_TITLES_ONLY))); ?>
         <?php else: ?>
             <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'titles-only'); ?>
         <?php endif; ?>
