@@ -139,11 +139,11 @@ class AvantSearch
         // one title. This is necessary so that a Titles Only search works on multi-title items. Note that this
         // filter is getting called from ElementText::afterSave right after that method has set the item's title.
         // The code below is setting the title again, but only for items with multiple titles. It separates each
-        // title with '||' to that other code, specifically auto-suggest logic, can identify the individual titles.
+        // title with '||' so that other code can identify the individual titles in necessary.
         $titleTexts = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
         if (count($titleTexts) > 1)
         {
-            $title = implode('||', $titleTexts);
+            $title = implode(' || ', $titleTexts);
             $item->setSearchTextTitle($title);
         }
 
