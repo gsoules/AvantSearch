@@ -2,9 +2,12 @@
 
 class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 {
+    protected $item;
+
     protected $_hooks = array(
         'admin_head',
         'admin_settings_search_form',
+        'before_save_item',
         'config',
         'config_form',
         'define_routes',
@@ -81,7 +84,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     public function filterSearchElementTexts($elementTexts)
     {
         // Prevent elements that the admin has configured to be private from being saved to the
-        // Search Text table. That's the table that's queried for simple searches (advanced
+        // Search Texts table. That's the table that's queried for simple searches (advanced
         // search queries individual elements). If we didn't do this, users would get hits on
         // items that contain matching text in elements that are not displayed on public pages.
 
@@ -92,6 +95,17 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         foreach ($privateElementsData as $elementId => $name)
         {
             $elementTexts = AvantSearch::removeFromSearchElementTexts($elementTexts, $elementId);
+        }
+
+        // Update the Search Texts table's title column to include all of the titles for item's that have more than
+        // one title. This is necessary so that a Titles Only search works on multi-title items. Note that this
+        // filter is getting called from ElementText::afterSave right after that method has set the item's title.
+        // The code below is setting the title again, but only for items with multiple titles.
+        $titleTexts = ItemMetadata::getAllElementTextsForElementName($this->item, 'Title');
+        if (count($titleTexts) > 1)
+        {
+            $title = implode(' ', $titleTexts);
+            $this->item->setSearchTextTitle($title);
         }
 
         return $elementTexts;
@@ -113,6 +127,11 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         The reindex is complete when the number of rows in the search_index table is
         the same as the items table. The reindex for 11,000 items make take 2 or 3 minutes.
         </p></div></div>';
+    }
+
+    public function hookBeforeSaveItem($args)
+    {
+        $this->item = $args['record'];
     }
 
     public function hookConfig()
