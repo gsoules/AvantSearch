@@ -1,6 +1,33 @@
 <?php
 class AvantSearch
 {
+    public static function buildSearchQuery($args)
+    {
+        $params = $args['params'];
+
+        $isSearchQuery = isset($params['module']) && $params['module'] == 'avant-search';
+        if (!$isSearchQuery)
+        {
+            return;
+        }
+
+        $simpleSearch = isset($params['query']);
+
+        if ($simpleSearch)
+        {
+            $query = $params['query'];
+            $id = ItemMetadata::getItemIdFromIdentifier($query);
+            if ($id)
+            {
+                // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
+                AvantSearch::redirectToShowPageForItem($id);
+            }
+        }
+
+        $queryBuilder = new SearchQueryBuilder();
+        $queryBuilder->buildAdvancedSearchQuery($args);
+    }
+
     public static function emitSearchResultsTableCss()
     {
         $columnsData = SearchConfig::getOptionDataForColumns();
@@ -43,6 +70,84 @@ class AvantSearch
         }
 
         echo '</style>' . PHP_EOL;
+    }
+
+    public static function filterAdvancedSearchParams($params)
+    {
+        if (is_admin_theme())
+            return $params;
+
+        if (!array_key_exists('advanced', $params))
+            return $params;
+
+        $terms = $params['advanced'];
+
+        // Protect against improperly hand-edited search terms in the query string.
+        foreach ($terms as $key => $term)
+        {
+            if (empty($type['element_id']) || empty($type['type']))
+                continue;
+
+            $type = $term['type'];
+            switch ($type)
+            {
+                case 'does not contain':
+                case 'contains':
+                case 'is not exactly':
+                case 'is exactly':
+                case 'is empty':
+                case 'is not empty':
+                case 'starts with':
+                case 'ends with':
+                case 'does not match':
+                case 'matches':
+                    break;
+                default:
+                    $params['advanced'][$key]['type'] = 'contains';
+            }
+        }
+
+        foreach ($terms as $key => $advanced)
+        {
+            if (isset($advanced['type']) && $advanced['type'] == 'contains')
+            {
+                // Prevent an inadvertent leading or trailing space from limiting the search results.
+                $params['advanced'][$key]['terms'] = trim($advanced['terms']);
+            }
+        }
+
+        return $params;
+    }
+
+    public static function filterSearchElementTexts($item, $elementTexts)
+    {
+        // Prevent elements that the admin has configured to be private from being saved to the
+        // Search Texts table. That's the table that's queried for simple searches (advanced
+        // search queries individual elements). If we didn't do this, users would get hits on
+        // items that contain matching text in elements that are not displayed on public pages.
+
+        if (empty($elementTexts))
+            return $elementTexts;
+
+        $privateElementsData = SearchConfig::getOptionDataForPrivateElements();
+        foreach ($privateElementsData as $elementId => $name)
+        {
+            $elementTexts = AvantSearch::removeFromSearchElementTexts($elementTexts, $elementId);
+        }
+
+        // Update the Search Texts table's title column to include all of the titles for item's that have more than
+        // one title. This is necessary so that a Titles Only search works on multi-title items. Note that this
+        // filter is getting called from ElementText::afterSave right after that method has set the item's title.
+        // The code below is setting the title again, but only for items with multiple titles. It separates each
+        // title with '||' to that other code, specifically auto-suggest logic, can identify the individual titles.
+        $titleTexts = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
+        if (count($titleTexts) > 1)
+        {
+            $title = implode('||', $titleTexts);
+            $item->setSearchTextTitle($title);
+        }
+
+        return $elementTexts;
     }
 
     public static function getSearchFormHtml()
