@@ -37,6 +37,7 @@ Provides extended searching and search results capabilities for an Omeka Classic
         - [Address Sorting Option](https://github.com/gsoules/AvantSearch#address-sorting-option)
         - [Relationships View Option](https://github.com/gsoules/AvantSearch#relationships-view-option)
 - [Improving Search Results](https://github.com/gsoules/AvantSearch#improving-search-results)
+- [Warning](https://github.com/gsoules/AvantSearch#warning)
 - [License](https://github.com/gsoules/AvantSearch#license)
 - [Copyright](https://github.com/gsoules/AvantSearch#copyright)
 - [Credits](https://github.com/gsoules/AvantSearch#credits)
@@ -54,7 +55,7 @@ To install the AvantSearch plugin, follow these steps:
 1. Rename the folder to AvantSearch.
 1. Activate the plugin from the Admin → Settings → Plugins page.
 1. Configure the AvantCommon plugin to specify your item identifier and title elements.
-1. Configure the AvantSearch plugin as decribed in the [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options) section below.
+1. Configure the AvantSearch plugin as described in the [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options) section below.
 
 When this plugin is activated, it dynamically overrides the native Omeka search box (located in the page
 header) with the version used by AvantSearch. When you deactivate the plugin, the Omeka search box returns.
@@ -498,6 +499,10 @@ Follow these steps to change your search_texts table from MyISAM to InnoDB:
 * In the Table options section, change Storage Engine from MyISAM to InnoDB
 * Click Go
 
+## Warning
+
+Use it at your own risk.
+
 ##  License
 
 This plugin is published under [GNU/GPL].
@@ -520,7 +525,7 @@ this program; if not, write to the Free Software Foundation, Inc.,
 
 * Created by [gsoules](https://github.com/gsoules) 
 * Copyright George Soules, 2016-2018.
-* See [LICENSE](https://github.com/gsoules/AvantRelationships/blob/master/LICENSE) for more information.
+* See [LICENSE](https://github.com/gsoules/AvantSearch/blob/master/LICENSE) for more information.
 
 
 ## Credits
