@@ -7,7 +7,6 @@ define('CONFIG_LABEL_INDEX_VIEW', __('Index View'));
 define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
 define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
 define('CONFIG_LABEL_LAYOUT_SELECTOR_WIDTH', __('Layout Selector Width'));
-define('CONFIG_LABEL_PRIVATE_ELEMENTS', __('Private Elements'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
 define('CONFIG_LABEL_TREE_VIEW', __('Tree View'));
@@ -21,7 +20,6 @@ class SearchConfig extends ConfigOptions
     const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
     const OPTION_LAYOUTS = 'avantsearch_layouts';
     const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
-    const OPTION_PRIVATE_ELEMENTS = 'avantsearch_private_elements';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
     const OPTION_TREE_VIEW = 'avantsearch_tree_view';
@@ -109,11 +107,6 @@ class SearchConfig extends ConfigOptions
         }
 
         return $data;
-    }
-
-    public static function getOptionDataForPrivateElements()
-    {
-        return self::getOptionListData(self::OPTION_PRIVATE_ELEMENTS);
     }
 
     public static function getOptionDataForTreeView()
@@ -329,11 +322,6 @@ class SearchConfig extends ConfigOptions
         return $layoutSelectorWidth;
     }
 
-    public static function getOptionTextForPrivateElements()
-    {
-        return self::getOptionListText(self::OPTION_PRIVATE_ELEMENTS);
-    }
-
     public static function getOptionTextForTreeView()
     {
         return self::getOptionListText(self::OPTION_TREE_VIEW);
@@ -341,7 +329,6 @@ class SearchConfig extends ConfigOptions
 
     public static function saveConfiguration()
     {
-        self::saveOptionDataForPrivateElements();
         self::saveOptionDataForLayouts();
         self::saveOptionDataForLayoutSelectorWidth();
         self::saveOptionDataForColumns();
@@ -513,11 +500,6 @@ class SearchConfig extends ConfigOptions
         set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth);
     }
 
-    public static function saveOptionDataForPrivateElements()
-    {
-        self::saveOptionListData(self::OPTION_PRIVATE_ELEMENTS, __('Private Elements'));
-    }
-
     public static function saveOptionDataForTreeView()
     {
         self::saveOptionListData(self::OPTION_TREE_VIEW, CONFIG_LABEL_TREE_VIEW);
@@ -528,9 +510,11 @@ class SearchConfig extends ConfigOptions
         set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, 175);
 
         // Create default L1 and L2 layouts.
+        $identifierElementId = ItemMetadata::getElementIdForElementName('Identifier');
+        $titleElementId = ItemMetadata::getElementIdForElementName('Title');
         $typeElementId = ItemMetadata::getElementIdForElementName('Type');
         $subjectElementId = ItemMetadata::getElementIdForElementName('Subject');
-        $columns = "[$typeElementId,$subjectElementId]";
+        $columns = "[$identifierElementId,$titleElementId,$typeElementId,$subjectElementId]";
         $layoutsData = '{"1":{"name":"Details","admin":false},"2":{"name":"Type / Subject ","admin":false,"columns":' . $columns . '}}';
         set_option(self::OPTION_LAYOUTS, $layoutsData);
 

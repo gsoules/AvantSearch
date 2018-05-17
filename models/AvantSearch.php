@@ -121,15 +121,15 @@ class AvantSearch
 
     public static function filterSearchElementTexts($item, $elementTexts)
     {
-        // Prevent elements that the admin has configured to be private from being saved to the
-        // Search Texts table. That's the table that's queried for simple searches (advanced
-        // search queries individual elements). If we didn't do this, users would get hits on
-        // items that contain matching text in elements that are not displayed on public pages.
+        // Prevent elements that the admin has configured with AvantCommon to be private from being saved to the
+        // Search Texts table. That's the table that's queried for simple searches (advanced search queries individual
+        // elements). If we didn't do this, users would get hits on items that contain matching text in elements that
+        // are not displayed on public pages.
 
         if (empty($elementTexts))
             return $elementTexts;
 
-        $privateElementsData = SearchConfig::getOptionDataForPrivateElements();
+        $privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         foreach ($privateElementsData as $elementId => $name)
         {
             $elementTexts = AvantSearch::removeFromSearchElementTexts($elementTexts, $elementId);

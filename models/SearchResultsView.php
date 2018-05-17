@@ -161,8 +161,8 @@ class SearchResultsView
 
     public function getAdvancedSearchFields()
     {
-        // Get the names of the private elements that the admin configured.
-        $privateElementsData = SearchConfig::getOptionDataForPrivateElements();
+        // Get the names of the private elements that the admin configured for AvantCommon.
+        $privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         $privateFields = array();
         foreach ($privateElementsData as $elementId => $name)
         {
@@ -212,9 +212,17 @@ class SearchResultsView
         $select->order('name');
         $elements = $table->fetchAll($select);
 
+        // Get the Ids of the unused elements that the admin configured for AvantCommon.
+        $unusedElementsData = CommonConfig::getOptionDataForUnusedElements();
+
         foreach ($elements as $element)
         {
-            $fields[$element['id']] = $element['name'];
+            $elementId = $element['id'];
+            if (array_key_exists($elementId, $unusedElementsData))
+            {
+                continue;
+            }
+            $fields[$elementId] = $element['name'];
         }
 
         return $fields;

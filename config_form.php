@@ -6,9 +6,6 @@ $titlesOnlySupported = SearchConfig::getOptionsSupportedTitlesOnly();
 $addressSortingSupported = SearchConfig::getOptionSupportedAddressSorting();
 $relationshipsViewSupported = SearchConfig::getOptionSupportedRelationshipsView();
 
-$privateElementsOption = SearchConfig::getOptionTextForPrivateElements();
-$privateElementOptionRows = max(2, count(explode(PHP_EOL, $privateElementsOption)));
-
 $columnsOption = SearchConfig::getOptionTextForColumns();
 $columnsOptionRows = max(2, count(explode(PHP_EOL, $columnsOption)));
 
@@ -55,16 +52,6 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
         <?php else: ?>
             <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'titles-only'); ?>
         <?php endif; ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo CONFIG_LABEL_PRIVATE_ELEMENTS; ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __("Elements that should not be searched by public users."); ?></p>
-        <?php echo $view->formTextarea(SearchConfig::OPTION_PRIVATE_ELEMENTS, $privateElementsOption, array('rows' => $privateElementOptionRows)); ?>
     </div>
 </div>
 
