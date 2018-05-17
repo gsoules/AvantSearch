@@ -140,7 +140,11 @@ most important for identifying items of interest. The screen shot below is trunc
 
 ### Index View
 Index View displays information like the index in a book. It consolidates values into unique groups having the same
-value. The screen shot below is truncated midway through the B's. 
+value. The screen shot below is truncated midway through the B's.
+
+When the index field contains hierarchical data, Index View shows only the leaf (lowest level) values in the
+hierarchhy. For non-hierarchical data, Index View shows the entire value. The data is considered to be
+hierarchical if the index field element is also configured for use as a Tree View field.
 
 ![Index View Example](readme/index-view.jpg)
 

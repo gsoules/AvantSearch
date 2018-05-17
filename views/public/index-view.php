@@ -45,6 +45,9 @@ function emitEntries($entries, $indexFieldElementId, $searchResults)
             // Emit a link to produce search results showing all items for this entry.
             if ($indexFieldElementId != 0)
             {
+                // If the index element is for hierarchical data, set the search condition to be only for the leaf
+                // (ends with) otherwise set the search for the exact string. The data is hierarchical if the element
+                // is also configured for use as a Tree View field.
                 $searchCondition = $entry['hierarchy'] ? 'ends with' : 'is exactly';
                 $url = $searchResults->emitIndexEntryUrl($entryText, $indexFieldElementId, $searchCondition);
                 echo "<a href=\"$url\">$entryText</a>";
