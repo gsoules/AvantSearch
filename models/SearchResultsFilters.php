@@ -127,7 +127,7 @@ class SearchResultsFilters
             $layoutDetails .= __('Sorted by %s', $this->searchResults->getSortFieldName());
         }
 
-        if ($this->searchResults->getSearchFiles())
+        if ($this->searchResults->getSearchFiles() && $this->searchResults->getTotalResults() > 0)
         {
             $layoutDetails .= ' ' .  ' <span class="search-files-only">' . __('(only showing items with images or files)') . '</span>';
         }
@@ -159,7 +159,7 @@ class SearchResultsFilters
 
         if ($filtersExpected && $this->filterCount == 0)
         {
-            $message = __('No search filters were provided');
+            $message = __('No search filters');
             $this->addFilterMessageCriteria(html_escape($message));
         }
 

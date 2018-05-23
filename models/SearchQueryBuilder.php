@@ -79,7 +79,8 @@ class SearchQueryBuilder
             $this->select->group('items.id');
         }
 
-        if (!$searchHasFilters && !$isIndexQuery)
+        $preventUnfilteredSearch = false;
+        if ($preventUnfilteredSearch && !$searchHasFilters && !$isIndexQuery)
         {
             // The user did not specify any filters. Force the query to return zero results.
             $this->select->where("items.id = 0");
