@@ -75,6 +75,13 @@ class SearchResultsTableViewRowData
         $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetail('Description', $this->elementValue['Description']['text']);
     }
 
+    protected function generateIdentifierLink($item)
+    {
+        // Create a link for the identifier.
+        $idLink = link_to_item(ItemMetadata::getItemIdentifierAlias($item));
+        $this->elementValue[ItemMetadata::getIdentifierAliasElementName()]['text'] = $idLink;
+    }
+
     protected function generateThumbnailHtml($item)
     {
         $itemPreview = new ItemPreview($item);
@@ -128,6 +135,7 @@ class SearchResultsTableViewRowData
         $this->readMetadata($item);
         $this->generateDescription();
         $this->generateDateRange();
+        $this->generateIdentifierLink($item);
         $this->generateTitles($item);
         $this->generateThumbnailHtml($item);
     }
