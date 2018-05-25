@@ -13,8 +13,8 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         'initialize',
         'install',
         'items_browse_sql',
-        'public_head',
-        'public_footer'
+        'public_footer',
+        'public_head'
     );
 
     protected $_filters = array(
@@ -86,15 +86,15 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         AvantSearch::buildSearchQuery($args);
     }
 
+    public function hookPublicFooter($args)
+    {
+        echo get_view()->partial('avantsearch-script.php');
+    }
+
     public function hookPublicHead($args)
     {
         queue_css_file('avantsearch');
 
         AvantSearch::emitSearchResultsTableCss();
-    }
-
-    public function hookPublicFooter($args)
-    {
-        echo get_view()->partial('avantsearch-script.php');
     }
 }
