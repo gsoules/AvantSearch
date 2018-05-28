@@ -267,7 +267,7 @@ Use the Columns option specify:
 
 ###### Syntax:
 
-The syntax for each row of the Columns options is
+The syntax for each row of the Columns option is
 
     <element-name> [ "," <alias>] [ ":" <width> [ "," <alignment>] ] ]
 
@@ -317,16 +317,24 @@ makes the selector just wide enough to accommodate the longest layout you define
 The Layouts option lets you specify different ways to present search results in Table Vew. The layouts you define
 here will appear in the Layout Selector and on the Advanced Search page.
 
-###### Format:
-* Specify each layout on a separate row
-* On each row specify: *ID*, *Name*, *'admin'* (optional), a colon, comma-separated list of columns
-* The *ID* must start with 'L' followed by an integer e.g. 'L3'.  The numbers do not have to be consecutive.
-* The ID 'L1' is reserved for the Detail layout described in the next section.
-* Specify `admin` after the *Name* to indicate that only a logged in administrator can see and use the layout.
+###### Syntax:
 
-The purpose of the ID is to uniquely identify a layout in the query string for Table View page. You can use this query string as a link
-on web pages to display search results in a specific layout. The ID ensures that those results will appear using the correct
-layout even if you change the layout's *Name* or its position in the Layouts list.
+The syntax for each row of the Layouts option is
+
+    <layout-id> "," <layout-name> [ "," <admin> [ ":" <column-name> [ "," <column-name>]* ] ]
+
+Where:
+
+* `<layout-id>` is 'L' followed by an integer e.g. 'L3'. The numbers do not have to be consecutive. 'L1' is reserved
+ for the Detail Layout described in the next section.
+* `<layout-name>` is a short descripion of the layout. It will appear in the Layout Selector lest.
+* `<admin>` is an optional instance of the word "admin" (without quotes) to indicate that only a logged in user can
+see and choose this layout in the Layout Selector.
+* `column-name>` is the name of an element that will appear as a column in the layout.
+
+The purpose of the layout Id is to uniquely identify a layout in the query string for Table View page. You can use this
+query string as a link on web pages to display search results in a specific layout. The ID ensures that those results
+will appear using the correct layout even if you change the layout's name or its position in the Layouts list.
 
 Below is an example specification of Layouts.
 
@@ -338,7 +346,7 @@ L6, Confidential, admin: Identifier, Title, Status, Notes
 ```
 
 Notes about the example above:
-* Each layout begins with an *ID* and *Name*
+* Each layout begins with an *Id* and *Name*
 * The fourth row also specifies *'admin'*
 * You don't specify columns for the L1 Layout (described in the next section), but you do specify its *Name*.
 * In the example, the columns for the other layouts always begin with "Identifier, Title" so that users see those
