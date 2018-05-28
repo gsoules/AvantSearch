@@ -325,16 +325,16 @@ The syntax for each row of the Layouts option is
 
 Where:
 
-* `<layout-id>` is 'L' followed by an integer e.g. 'L3'. The numbers do not have to be consecutive. 'L1' is reserved
- for the Detail Layout described in the next section.
-* `<layout-name>` is a short descripion of the layout. It will appear in the Layout Selector lest.
+* `<layout-id>` is 'L' followed by an integer e.g. 'L3'. The numbers do not have to be consecutive from layout to layout.
+'L1' is reserved for the Detail Layout described in the next section.
+* `<layout-name>` is a short descripion of the layout. It will appear in the Layout Selector list.
 * `<admin>` is an optional instance of the word "admin" (without quotes) to indicate that only a logged in user can
 see and choose this layout in the Layout Selector.
-* `column-name>` is the name of an element that will appear as a column in the layout.
+* `<column-name>` is the name of an element that will appear as a column in the layout. Use a comma between column names.
 
 The purpose of the layout Id is to uniquely identify a layout in the query string for Table View page. You can use this
-query string as a link on web pages to display search results in a specific layout. The ID ensures that those results
-will appear using the correct layout even if you change the layout's name or its position in the Layouts list.
+query string as a link on web pages to display search results in a specific layout. The Id ensures that those results
+will appear using the correct layout even if you change the layout's name or its position in the Layouts option list.
 
 Below is an example specification of Layouts.
 
