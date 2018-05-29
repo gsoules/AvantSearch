@@ -198,6 +198,8 @@ The sections that follow describe each of the options on the AvantSearch plugin 
 Many options require that you specify a formatted list of information using commas or other characters as separators.
 For these options, spaces before and after the separators are ignored.
 
+Syntax for some options is shown using [BNF notation](https://en.wikipedia.org/wiki/Backus%E2%80%93Naur_form).
+
 <hr/>
 
 #### Titles Only Option
@@ -214,49 +216,7 @@ index to the `title` column of the `search_text` table. This is easily done usin
 1. The `title` column will now appear in the Indexes section showing its type as FULLTEXT (expand the Indexes
 section if it's not visible)
 
-<hr/>
-
-#### Private Elements Option
-This option lets you specify a list of element names, one per row, that:
-* Should not be searchable via a keyword search
-* Don't appear to public uses in the Fields dropdown on the Advanced Search page (they will appear to a logged in administrator)
-
-For example, you might have elements used to record internal information such as notes and item status that
-contain information meant only for administrators. You can specify "Notes" and "Status" in the Private Elements text box to
-prevent this information from being searched by the public.
-
-Here are key points regarding private elements:
-
-* Private elements will not appear as field selections on the Advanced Search page unless you are logged
-in as an administrator.
-* The text of private elements will not be recorded in the search_texts table, and therefore will not be searched when
-performing a keyword search. This is true whether or not you are logged in as an administrator.
-* To search for text in private elements, an administrator can do a field search in those fields, either through the public
-Advanced Search page or using the native Omeka Advanced Search page.
-* If you add an existing element to the private elements list, that element's text will still be contained in the
-search_texts table and therefore be found via a keyword search. To hide the element's content, you
-must reindex your Omeka database to force the search_texts table to be rebuilt without the private element text.
-You do this by clicking the Index Records button on the Omeka
-[Search Settings](https://omeka.org/classic/docs/Admin/Settings/Search_Settings/) page.
-* If you uninstall AvantSearch and want to make private elements searchable again, reindex your Omeka database as
-described in the previous bullet.
- 
-This features solves a problem in Omeka's native search whereby the text of all elements are searched, including
-information that is hidden from public users by the [Hide Elements](http://omeka.org/classic/plugins/HideElements/)
-plugin. This can produce keyword search results containing items that match the
-search criteria, but that don't display the elements that resulted in the hit. For example, the search might
-find keywords that appear in an item's hidden Notes element, but in no other public elements for that item. The user
-then gets a search result that appears to contain none of the keywords they were looking for.
-
-Below is an example specification of the Private Elements option.
-
-```
-Notes
-Status
-```
-
-<hr/>
-
+---
 #### Columns Option
 
 Use the Columns option specify:
