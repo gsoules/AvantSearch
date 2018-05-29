@@ -26,7 +26,6 @@ Provides extended searching and search results capabilities for an Omeka Classic
         - [Date Range Feature](https://github.com/gsoules/AvantSearch#date-range-feature)
     - [Configuration Options](https://github.com/gsoules/AvantSearch#configuration-options)
         - [Ttles Only Option](https://github.com/gsoules/AvantSearch#titles-only-option)
-        - [Private Elements Option](https://github.com/gsoules/AvantSearch#private-elements-option)
         - [Columns Option](https://github.com/gsoules/AvantSearch#columns-option)
         - [Layout Selector Width Option](https://github.com/gsoules/AvantSearch#layout-selector-width-option)
         - [Layouts Option](https://github.com/gsoules/AvantSearch#layouts-option)
