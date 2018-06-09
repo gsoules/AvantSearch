@@ -21,6 +21,7 @@ Provides extended searching and search results capabilities for an Omeka Classic
     - [Tree View](https://github.com/gsoules/AvantSearch#tree-view)
     - [Index View](https://github.com/gsoules/AvantSearch#index-view)
 - [Lightbox](https://github.com/gsoules/AvantSearch#lightbox)
+- [Private Elements](https://github.com/gsoules/AvantSearch#private-elements)
 - [Usage](https://github.com/gsoules/AvantSearch#usage)
     - [Advanced Search Page](https://github.com/gsoules/AvantSearch#advanced-search-page)
         - [Date Range Feature](https://github.com/gsoules/AvantSearch#date-range-feature)
@@ -80,7 +81,6 @@ Feature | AvantSearch | Omeka Search
 [Index View](https://github.com/gsoules/AvantSearch#index-view) | **Yes** - Congfiguration option| No
 [Tree View (Hierarchical Data)](https://github.com/gsoules/AvantSearch#tree-view) | **Yes** - Congfiguration option | No
 [Relationships View](https://github.com/gsoules/AvantSearch#relationships-view-option) | **Yes** - Congfiguration option | No
-[Private Elements](https://github.com/gsoules/AvantSearch#private-elements-option) | **Yes** - Congfiguration option | No
 [Integer sorting](https://github.com/gsoules/AvantSearch#integer-sorting-option) | **Yes** - Congfiguration option | No
 [Address sorting](https://github.com/gsoules/AvantSearch#address-sorting-option) | **Yes** - Congfiguration option | No
 [Lightbox](https://github.com/gsoules/AvantSearch#lightbox) | **Yes** - Feature | No
@@ -143,7 +143,9 @@ value. The screen shot below is truncated midway through the B's.
 
 When the index field contains hierarchical data, Index View shows only the leaf (lowest level) values in the
 hierarchhy. For non-hierarchical data, Index View shows the entire value. The data is considered to be
-hierarchical if the index field element is also configured for use as a Tree View field.
+hierarchical if the index field element is also configured for use as a Tree View field. Note that Index View treats
+an element's data as hierarchical only if that element's name is also specified using the Tree View option below,
+otherwise Index View displays it as flat data.
 
 ![Index View Example](readme/index-view.jpg)
 
@@ -157,15 +159,14 @@ full hierarchy (the places on Mount Desert Island a.k.a. MDI).
 ## Lightbox
 Both the Table View Detail Layout and the Image View display thumbnails for an item's image if it has one. If the item
 has no image, a placeholder image is displayed. When you click on a thumbnail, the AvantSearch plugin displays a large
-version of the image in a popup. You can close the popup by clicking on the red X above its top right corner,
-or by clicking anywere outside the popop, or by pressing the ESC key.
+version of the image. You can have the image display in a popup by using the
+[Lightbox feature](https://github.com/gsoules/AvantCommon#lightbox-feature) of the
+[AvantCommon](https://github.com/gsoules/AvantCommon) plugin.
 
-You can click on the popup to see the next image, or click on the left or right arrows on either side of the image
-to navigate forward or backward through the image. The lightbox will display every thumbnail that appears on the page.
-
-In the screens shot below, the popup appeared when the user clicked on the thumbnail for item 2602
-                                                                                                   
-![Lightbox Example](readme/lightbox.jpg)
+## Private Elements
+You can specify that certain elements are private to administrators and not visible to or searchable by public users.
+You specify which elements are private using the [Private Elements](https://github.com/gsoules/AvantCommon#private-elements-option) feature of the
+[AvantCommon](https://github.com/gsoules/AvantCommon) plugin.
 
 ## Usage
 Once installed, AvantSearch entirely overrides Omeka's native user interface for public search (Omeka's native admin
