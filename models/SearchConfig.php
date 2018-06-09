@@ -525,6 +525,6 @@ class SearchConfig extends ConfigOptions
 
     public static function userHasAccessToLayout($layout)
     {
-        return $layout['admin'] == false || is_allowed('Items', 'edit');
+        return $layout['admin'] == false || !empty(current_user());
     }
 }

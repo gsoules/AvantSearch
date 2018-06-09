@@ -17,7 +17,6 @@ class SearchResultsView
     protected $conditionName;
     protected $error;
     protected $files;
-    protected $isAdmin;
     protected $keywords;
     protected $results;
     protected $titles;
@@ -33,7 +32,6 @@ class SearchResultsView
     function __construct()
     {
         $this->searchFilters = new SearchResultsFilters($this);
-        $this->isAdmin = is_allowed('Users', 'edit');
         $this->error = '';
     }
 
@@ -174,9 +172,9 @@ class SearchResultsView
 
         $options = array('' => __('Select Below'));
 
-        if ($this->isAdmin && !empty($privateFields))
+        if (!empty(current_user()) && !empty($privateFields))
         {
-            // When an admin is logged in, display the public fields first, then the private fields.
+            // When a user is logged in, display the public fields first, then the private fields.
             // We do this so that commonly used public fields like Title don't end up at the very
             // bottom of the list and require scrolling to select.
             foreach ($publicFields as $elementId => $fieldName)
