@@ -56,6 +56,11 @@ if (!$searchResults->hasLayoutL1())
                     $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
                     echo "<div>$text</div>";
                 }
+
+                if (is_allowed($item, 'edit'))
+                {
+                    echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $item->id) . '">' . __('Edit') . '</a></div>';
+                }
                 ?>
             </td>
             <?php endif; ?>

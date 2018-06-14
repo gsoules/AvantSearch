@@ -317,6 +317,11 @@ input[type="checkbox"] {
 	width: 30%;
 }
 
+.search-results-edit {
+	margin-top: 4px;
+	font-size: 14px;
+}
+
 /* The text that describes the current set of filters */
 
 /* Item filters display */
