@@ -70,7 +70,7 @@ class SearchResultsViewFactory
             $views[SearchResultsViewFactory::TREE_VIEW_ID] = __('Tree View');
 
         // Check if this plugin is configured to work with the AvantRelationships plugin. If yes, allow Relationships layout.
-        $relationshipsAreEnabled = get_option('avantsearch_filters_enable_relationships') == true;
+        $relationshipsAreEnabled = get_option(SearchConfig::OPTION_RELATIONSHIPS_VIEW) == true;
 
         if ($relationshipsAreEnabled)
             $views[SearchResultsViewFactory::RELATIONSHIPS_VIEW_ID] = __('Relationships View');
@@ -87,7 +87,7 @@ class SearchResultsViewFactory
             SearchResultsViewFactory::TREE_VIEW_ID => 'tree');
 
         // Check if this plugin is configured to work with the AvantRelationships plugin. If yes, allow Relationships layout.
-        $relationshipsAreEnabled = get_option('avantsearch_filters_enable_relationships') == true;
+        $relationshipsAreEnabled = get_option(SearchConfig::OPTION_RELATIONSHIPS_VIEW) == true;
 
         if ($relationshipsAreEnabled)
             $shortNames[SearchResultsViewFactory::RELATIONSHIPS_VIEW_ID] = 'relationships';

@@ -4,7 +4,6 @@ class SearchResultsTableView extends SearchResultsView
     const DEFAULT_LAYOUT = 1;
     const RELATIONSHIPS_LAYOUT = 6;
 
-    protected $columnsData;
     protected $detailLayoutData;
     protected $layoutId;
     protected $layoutsData;
@@ -15,7 +14,6 @@ class SearchResultsTableView extends SearchResultsView
     {
         parent::__construct();
 
-        $this->columnsData = SearchConfig::getOptionDataForColumns();
         $this->layoutsData = SearchConfig::getOptionDataForLayouts();
         $this->detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
         $this->addLayoutIdsToColumns();
@@ -132,11 +130,6 @@ class SearchResultsTableView extends SearchResultsView
         }
 
         return trim($classes);
-    }
-
-    public function getColumnsData()
-    {
-        return $this->columnsData;
     }
 
     public function getDetailLayoutData()

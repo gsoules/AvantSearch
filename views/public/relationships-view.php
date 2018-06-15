@@ -5,18 +5,14 @@ $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 
-// Get the name of the element that this installation uses for the item identifier and title.
-// Normally these are Dublin Core Identifier and Title, but the admin can use other elements.
-$identifierElementName = ItemMetadata::getIdentifierElementName();
 $titleElementName = ItemMetadata::getTitleElementName();
+$columnsData = $searchResults->getColumnsData();
+$identifierElementId = ItemMetadata::getIdentifierElementId();
+$titleElementId = ItemMetadata::getElementIdForElementName($titleElementName);
 
-// Get the label that the admin configured to show for the identifier element.
-$layoutDefinitions = SearchResultsTableView::getLayoutDefinitions();
-$identifierNameLabel = $layoutDefinitions['columns'][ItemMetadata::getIdentifierAliasElementName()];
-
-$headerColumns[$identifierElementName] = array('label' => $identifierNameLabel, 'classes' => 'search-th-identifier', 'sortable' => true);
-$headerColumns[$titleElementName] = array('label' => $titleElementName, 'classes' =>  'search-th-title', 'sortable' => true);
-$headerColumns[__('<related-items>')] = array('label' => __('Related Items'), 'classes' => 'search-th-relationship', 'sortable' => false);
+$headerColumns[$identifierElementId] = array('label' => $columnsData[$identifierElementId]['alias'], 'classes' => '', 'sortable' => true);
+$headerColumns[$titleElementId] = array('label' => $titleElementName, 'classes' => '', 'sortable' => true);
+$headerColumns['<related-items>'] = array('label' => __('Related Items'), 'classes' => '', 'sortable' => false);
 
 echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";
@@ -40,6 +36,7 @@ echo "<div class='search-results-title'>$pageTitle</div>";
         </thead>
         <tbody>
         <?php
+        $listViewIndex = 0;
         foreach ($results as $item)
         {
             set_current_record('Item', $item);
@@ -49,7 +46,8 @@ echo "<div class='search-results-title'>$pageTitle</div>";
             $typeText = metadata($item, array('Dublin Core', 'Type'), array('no_filter' => true));
             $typeDetail = $searchResults->emitFieldDetail('Type', $typeText);
             $relatedItemsModel = apply_filters('related_items_model', null, array('item' => $item, 'view' => $this));
-            $relatedItemsListHtml = empty($relatedItemsModel) ? '' : $relatedItemsModel->emitRelatedItemsListView();
+            $listViewIndex++;
+            $relatedItemsListHtml = empty($relatedItemsModel) ? '' : $relatedItemsModel->emitRelatedItemsListView($listViewIndex, $item->id);
             ?>
             <tr>
                 <td class="search-result search-td-identifier">
@@ -68,9 +66,10 @@ echo "<div class='search-results-title'>$pageTitle</div>";
         ?>
         </tbody>
     </table>
-
-    <?php echo pagination_links(); ?>
-    <?php echo '</div>'; ?>
+    <?php
+        echo pagination_links();
+        echo '</div>';
+    ?>
 <?php else: ?>
     <div id="no-results">
         <p><?php echo __('Your search returned no results.'); ?></p>

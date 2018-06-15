@@ -13,6 +13,7 @@ class SearchResultsView
     const DEFAULT_LIMIT = 25;
     const MAX_LIMIT = 200;
 
+    protected $columnsData;
     protected $condition;
     protected $conditionName;
     protected $error;
@@ -31,6 +32,7 @@ class SearchResultsView
 
     function __construct()
     {
+        $this->columnsData = SearchConfig::getOptionDataForColumns();
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
     }
@@ -43,6 +45,11 @@ class SearchResultsView
         $columnClass = str_replace('#', '', $columnClass);
         $columnClass = "search-$tag-$columnClass";
         return $columnClass;
+    }
+
+    public function getColumnsData()
+    {
+        return $this->columnsData;
     }
 
     public function emitClassAttribute($className1, $className2 = '')
