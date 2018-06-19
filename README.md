@@ -321,7 +321,7 @@ including a thumbnail, in a single row. Use the Detail Columns option to specify
 first two columns of this layout. The third column is reserved for the Description element. A screen shot
 of the detail layout appears at the top of this documentation.
 
-In the screen shot, the last row shows Type and Subject in column one, and Address and Location in column two.
+In the screen shot, the last row shows Type and Subject in column one, and Address and Place in column two.
 If an element has no text, it will not appear in the Detail layout. In the screen shot, the first row shows Date in
 column one, but Date does not appear in the other rows because those items have no date information.
 
