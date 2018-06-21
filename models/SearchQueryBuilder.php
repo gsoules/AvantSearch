@@ -198,7 +198,8 @@ class SearchQueryBuilder
                         $query .= "$word";
                     }
                 }
-                $where = "MATCH (`search_texts`.`$searchColumn`) AGAINST " . '(? IN BOOLEAN MODE)';
+                $where = "`search_texts`.`record_type` = 'Item' AND ";
+                $where .= "MATCH (`search_texts`.`$searchColumn`) AGAINST " . '(? IN BOOLEAN MODE)';
                 break;
         }
 

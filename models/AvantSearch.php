@@ -121,6 +121,12 @@ class AvantSearch
 
     public static function filterSearchElementTexts($item, $elementTexts)
     {
+        if (empty($item))
+        {
+            // This filter is not for an item. It's probably for file metadata that's being saved.
+            return $elementTexts;
+        }
+
         // Prevent elements that the admin has configured with AvantCommon to be private from being saved to the
         // Search Texts table. That's the table that's queried for simple searches (advanced search queries individual
         // elements). If we didn't do this, users would get hits on items that contain matching text in elements that
