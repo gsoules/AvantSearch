@@ -18,17 +18,23 @@ class SearchResultsTableViewRowData
 
     protected function filterHierarchicalElementText($elementId, $text)
     {
-        $isHierarchyElement = array_key_exists($elementId, $this->hierarchyElements);
-        if ($isHierarchyElement)
-        {
-            $index = strrpos($text, ',', -1);
+        $showOnlyHierarchyLeaf = (boolean)get_option(SearchConfig::OPTION_SHOW_HIERARCHIES) == false;
 
-            if ($index !== false)
+        if ($showOnlyHierarchyLeaf)
+        {
+            $isHierarchyElement = array_key_exists($elementId, $this->hierarchyElements);
+            if ($isHierarchyElement)
             {
-                // Filter out the ancestry to leave just the leaf text.
-                $text = trim(substr($text, $index + 1));
+                $index = strrpos($text, ',', -1);
+
+                if ($index !== false)
+                {
+                    // Filter out the ancestry to leave just the leaf text.
+                    $text = trim(substr($text, $index + 1));
+                }
             }
         }
+
         return $text;
     }
 

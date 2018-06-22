@@ -8,6 +8,7 @@ define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
 define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
 define('CONFIG_LABEL_LAYOUT_SELECTOR_WIDTH', __('Layout Selector Width'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
+define('CONFIG_LABEL_SHOW_HIERARCIES', __('Show Hierarcies'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
 define('CONFIG_LABEL_TREE_VIEW', __('Tree View'));
 
@@ -21,6 +22,7 @@ class SearchConfig extends ConfigOptions
     const OPTION_LAYOUTS = 'avantsearch_layouts';
     const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
+    const OPTION_SHOW_HIERARCHIES = 'avantsearch_show_hierarchies';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
     const OPTION_TREE_VIEW = 'avantsearch_tree_view';
 
@@ -339,6 +341,7 @@ class SearchConfig extends ConfigOptions
 
         set_option(self::OPTION_TITLES_ONLY, intval($_POST[self::OPTION_TITLES_ONLY]));
         set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
+        set_option(self::OPTION_SHOW_HIERARCHIES, intval($_POST[self::OPTION_SHOW_HIERARCHIES]));
         set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
     }
 

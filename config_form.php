@@ -118,6 +118,16 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
+        <label><?php echo CONFIG_LABEL_SHOW_HIERARCIES; ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __('Show entire hierarchy values in search results.'); ?></p>
+        <?php echo $view->formCheckbox(SearchConfig::OPTION_SHOW_HIERARCHIES, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_SHOW_HIERARCHIES))); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
         <label><?php echo CONFIG_LABEL_RELATIONSHIPS_VIEW; ?></label>
     </div>
     <div class="inputs five columns omega">

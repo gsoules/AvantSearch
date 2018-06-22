@@ -388,6 +388,29 @@ Type
 
 <hr/>
 
+#### Show Hierarchies Option
+
+When this option is checked, Table View search results, except for the Detail Layout, will display the entire hierarchy value
+for hierarchical data. When it is unchecked, only the leaf value appears. For example, in the hierarchy
+`Structures, Commercial, Lodging, Hotel`, only `Hotel` appears when this option is unchecked whereas the entire
+value appears when the option is checked. In the Detail Layout, the entire hierarchy value always appears. In Index
+View, only the leaf value ever appears.
+
+As a general rule, the leaf value in a hierarchy should be descriptive enough to be meaningful on its own.
+For instance, the word "Hotel" alone implies a commercial structure for lodging.
+
+<hr/>
+
+#### Relationships View Option
+
+When this option is checked, an option to show search results in Relationships View will appear on the Advanced
+Search page.
+
+**NOTE:** If you want to use this option, but the configuration page says it's not available for your installation,
+you'll need to install and activate the [AvantRelationships](https://github.com/gsoules/AvantRelationships) plugin.
+
+<hr/>
+
 #### Integer Sorting Option
 
 The Integer Sorting option lets you specify a list of elements for columns that should be sorted as integers instead
@@ -431,16 +454,6 @@ With address sorting:
 * 9 Main Street
 * 10 Main Street
 * 72 Pleasant Lane
-
-<hr/>
-
-#### Relationships View Option
-
-When this option is checked, an option to show search results in Relationships View will appear on the Advanced
-Search page.
-
-**NOTE:** If you want to use this option, but the configuration page says it's not available for your installation,
-you'll need to install and activate the [AvantRelationships](https://github.com/gsoules/AvantRelationships) plugin.
 
 ## Improving Search Results
 
