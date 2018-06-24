@@ -19,6 +19,7 @@ class SearchResultsView
     protected $error;
     protected $files;
     protected $keywords;
+    protected $privateElements;
     protected $results;
     protected $titles;
     protected $totalResults;
@@ -33,6 +34,7 @@ class SearchResultsView
     function __construct()
     {
         $this->columnsData = SearchConfig::getOptionDataForColumns();
+        $this->privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
     }
@@ -68,9 +70,11 @@ class SearchResultsView
         return $classAttribute;
     }
 
-    public static function emitFieldDetail($elementName, $text)
+    public function emitFieldDetail($elementName, $text)
     {
-        return $text ? "<span class=\"search-results-detail-element\">$elementName</span>:<span class=\"search-results-detail-text\">$text</span>" : '';
+        $class = 'search-results-detail-element';
+        $class .= in_array($elementName, $this->privateElementsData) ? ' private-element' : '';
+        return $text ? "<span class='$class'>$elementName</span>:<span class=\"search-results-detail-text\">$text</span>" : '';
     }
 
     public function emitHeaderRow($headerColumns)
@@ -167,9 +171,8 @@ class SearchResultsView
     public function getAdvancedSearchFields()
     {
         // Get the names of the private elements that the admin configured for AvantCommon.
-        $privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         $privateFields = array();
-        foreach ($privateElementsData as $elementId => $name)
+        foreach ($this->privateElementsData as $elementId => $name)
         {
             $privateFields[$elementId] = $name;
         }
