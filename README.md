@@ -388,19 +388,6 @@ Type
 
 <hr/>
 
-#### Show Hierarchies Option
-
-When this option is checked, Table View search results, except for the Detail Layout, will display the entire hierarchy value
-for hierarchical data. When it is unchecked, only the leaf value appears. For example, in the hierarchy
-`Structures, Commercial, Lodging, Hotel`, only `Hotel` appears when this option is unchecked whereas the entire
-value appears when the option is checked. In the Detail Layout, the entire hierarchy value always appears. In Index
-View, only the leaf value ever appears.
-
-As a general rule, the leaf value in a hierarchy should be descriptive enough to be meaningful on its own.
-For instance, the word "Hotel" alone implies a commercial structure for lodging.
-
-<hr/>
-
 #### Relationships View Option
 
 When this option is checked, an option to show search results in Relationships View will appear on the Advanced
@@ -408,6 +395,42 @@ Search page.
 
 **NOTE:** If you want to use this option, but the configuration page says it's not available for your installation,
 you'll need to install and activate the [AvantRelationships](https://github.com/gsoules/AvantRelationships) plugin.
+
+<hr/>
+
+#### Hierarchies Option
+
+The Hierarchies option lets you specify elements that contain hierarchical data, and for each element, indicate
+how you want that data displayed in search results. An example of hierarchical data for the Subject
+element is:
+
+    `Structures, Commercial, Lodging, Hotel`
+
+The Hierarchies option lets you indicate whether this value displays as shown above (from its root) or as `Hotel`
+which is the leaf value.
+
+As a general rule, the leaf value in a hierarchy should be descriptive enough to be meaningful on its own.
+For instance, the word "Hotel" alone implies a commercial structure for lodging. However, in some hierarchies,
+it may be important to show the full value.
+
+###### Syntax:
+
+The syntax for each row of the Hierarchies option is
+
+    <element-name> ":" <display-option>
+
+Where:
+
+* `<element-name>` is the name of an Omeka element.
+* `<display-option>` is either `root` or `leaf`
+
+###### Option Example:
+```
+Type: root
+Subject: leaf
+```
+
+Note that this option does not affect how hierarchical data displays on Show pages.
 
 <hr/>
 
