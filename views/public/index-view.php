@@ -153,8 +153,7 @@ $indexFieldElementId = $searchResults->getIndexFieldElementId();
 $showLetterIndex = $totalResults > 50;
 $element = get_db()->getTable('Element')->find($indexFieldElementId);
 $indexFieldName = empty($element) ? '' : $element['name'];
-$pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
-
+$pageTitle = __('Search Results');
 
 echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";

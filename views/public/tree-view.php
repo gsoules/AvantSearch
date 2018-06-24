@@ -57,7 +57,7 @@ $treeFieldElementId = $searchResults->getTreeFieldElementId();
 $totalResults = count($results);
 $tree = $searchResults->generateTree();
 $treeFieldName = $searchResults->getTreeFieldName();
-$pageTitle = "Search Results";
+$pageTitle = __('Search Results');
 
 echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";
