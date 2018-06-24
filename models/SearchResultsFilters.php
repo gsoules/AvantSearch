@@ -163,9 +163,14 @@ class SearchResultsFilters
             $this->addFilterMessageCriteria(html_escape($message));
         }
 
+        $class = 'search-filter-bar-layout';
+        if (empty($layoutDetails))
+        {
+            $class .= ' no-details';
+        }
         $html = "<div id='search-filter-bar'>";
         $html .= $this->filterCount> 0 ? "<div class='search-filter-bar-message'>$this->filterMessage</div>" : '';
-        $html .= "<div class='search-filter-bar-layout'>{$layoutMessage}{$paginationNav}</div>";
+        $html .= "<div class='$class'>{$layoutMessage}{$paginationNav}</div>";
         $html .= '</div>';
 
         return $html;

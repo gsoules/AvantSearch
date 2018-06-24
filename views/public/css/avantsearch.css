@@ -349,6 +349,12 @@ input[type="checkbox"] {
 	height: 30px;
 }
 
+.search-filter-bar-layout.no-details {
+	font-weight: bold;
+	font-size: 22px;
+	color: #5F780C;
+}
+
 .search-filter-bar-layout-details {
 	display: inline-block;
 	height: 100%;
