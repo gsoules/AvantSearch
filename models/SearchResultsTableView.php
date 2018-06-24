@@ -16,6 +16,7 @@ class SearchResultsTableView extends SearchResultsView
 
         $this->layoutsData = SearchConfig::getOptionDataForLayouts();
         $this->detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
+        self::filterDetailLayoutData();
         $this->addLayoutIdsToColumns();
         $this->addDetailLayoutColumns();
         $this->addDescriptionColumn();
@@ -130,6 +131,23 @@ class SearchResultsTableView extends SearchResultsView
         }
 
         return trim($classes);
+    }
+
+    protected function filterDetailLayoutData()
+    {
+        $privateElementsData = CommonConfig::getOptionDataForPrivateElements();
+
+        foreach ($this->detailLayoutData as $key => $row)
+        {
+            foreach ($row as $elementId => $elementName)
+            {
+                if (in_array($elementName, $privateElementsData) && empty(current_user()))
+                {
+                    // This element is private and no user is logged in. Remove it from the layout.
+                    unset($this->detailLayoutData[$key][$elementId]);
+                }
+            }
+        }
     }
 
     public function getDetailLayoutData()
