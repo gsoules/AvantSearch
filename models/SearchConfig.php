@@ -8,7 +8,7 @@ define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
 define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
 define('CONFIG_LABEL_LAYOUT_SELECTOR_WIDTH', __('Layout Selector Width'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
-define('CONFIG_LABEL_SHOW_HIERARCIES', __('Show Hierarcies'));
+define('CONFIG_LABEL_HIERARCHIES', __('Hierarchies'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
 define('CONFIG_LABEL_TREE_VIEW', __('Tree View'));
 
@@ -22,7 +22,7 @@ class SearchConfig extends ConfigOptions
     const OPTION_LAYOUTS = 'avantsearch_layouts';
     const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
-    const OPTION_SHOW_HIERARCHIES = 'avantsearch_show_hierarchies';
+    const OPTION_HIERARCHIES = 'avantsearch_hierarchies';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
     const OPTION_TREE_VIEW = 'avantsearch_tree_view';
 
@@ -69,6 +69,11 @@ class SearchConfig extends ConfigOptions
         }
 
         return $data;
+    }
+
+    public static function getOptionDataForHierarchies()
+    {
+        return self::getOptionDefinitionData(self::OPTION_HIERARCHIES);
     }
 
     public static function getOptionDataForIndexView()
@@ -256,6 +261,31 @@ class SearchConfig extends ConfigOptions
         return $detailLayoutOption;
     }
 
+    public static function getOptionTextForHierarchies()
+    {
+        if (self::configurationErrorsDetected())
+        {
+            $text = $_POST[self::OPTION_HIERARCHIES];
+        }
+        else
+        {
+            $data = self::getOptionDataForHierarchies();
+            $text = '';
+
+            foreach ($data as $elementId => $definition)
+            {
+                if (!empty($text))
+                {
+                    $text .= PHP_EOL;
+                }
+                $name = $definition['name'];
+                $display = $definition['display'];
+                $text .= "$name: $display";
+            }
+        }
+        return $text;
+    }
+
     public static function getOptionTextForIndexView()
     {
         return self::getOptionListText(self::OPTION_INDEX_VIEW);
@@ -329,6 +359,13 @@ class SearchConfig extends ConfigOptions
         return self::getOptionListText(self::OPTION_TREE_VIEW);
     }
 
+    public static function isHierarchyElementThatDisplaysAs($elementId, $display)
+    {
+        $hierarchyElements = SearchConfig::getOptionDataForHierarchies();
+        $isHierarchyElement = array_key_exists($elementId, $hierarchyElements);
+        return $isHierarchyElement && $hierarchyElements[$elementId]['display'] == $display;
+    }
+
     public static function saveConfiguration()
     {
         self::saveOptionDataForLayouts();
@@ -337,11 +374,11 @@ class SearchConfig extends ConfigOptions
         self::saveOptionDataForDetailLayout();
         self::saveOptionDataForIndexView();
         self::saveOptionDataForTreeView();
+        self::saveOptionDataForHierarchies();
         self::saveOptionDataForIntegerSorting();
 
         set_option(self::OPTION_TITLES_ONLY, intval($_POST[self::OPTION_TITLES_ONLY]));
         set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
-        set_option(self::OPTION_SHOW_HIERARCHIES, intval($_POST[self::OPTION_SHOW_HIERARCHIES]));
         set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
     }
 
@@ -421,6 +458,38 @@ class SearchConfig extends ConfigOptions
         }
 
         set_option(self::OPTION_DETAIL_LAYOUT, json_encode($detailRows));
+    }
+
+    public static function saveOptionDataForHierarchies()
+    {
+        $data = array();
+        $definitions = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_HIERARCHIES]));
+        foreach ($definitions as $definition)
+        {
+            if (empty($definition))
+                continue;
+
+            // Text Field definitions are of the form: <element-name> ":" <display-option>
+            $parts = array_map('trim', explode(':', $definition));
+
+            $elementName = $parts[0];
+            $display = isset($parts[1]) ? trim($parts[1]) : '';
+            self::errorRowIf(strlen($display) == 0, CONFIG_LABEL_HIERARCHIES, $elementName, __("No display option specified."));
+
+            $options = array('root', 'leaf');
+            if (!empty($display) && !in_array($display, $options))
+            {
+                $allowed = implode(', ', $options);
+                self::errorRowIf(true, CONFIG_LABEL_HIERARCHIES, $elementName, __("'%s' is not a valid display option. Options: %s.", $display, $allowed));
+            }
+
+            $elementId = ItemMetadata::getElementIdForElementName($elementName);
+            self::errorIfNotElement($elementId, CONFIG_LABEL_HIERARCHIES, $elementName);
+
+            $data[$elementId] = array('display' => $display);
+        }
+
+        set_option(self::OPTION_HIERARCHIES, json_encode($data));
     }
 
     public static function saveOptionDataForIndexView()

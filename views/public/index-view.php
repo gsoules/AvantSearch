@@ -125,14 +125,14 @@ function flattenResults($results, $indexFieldElementId)
     // e.g. 'Schoodic, Acadia National Park' and "MDI, Acadia National Park'. Create a unique entry
     // with a count representing the total of all the results with the same leaf text.
 
-    $hierarchyElements = SearchConfig::getOptionDataForTreeView();
+    $displayHierarchyElementLeaf = SearchConfig::isHierarchyElementThatDisplaysAs($indexFieldElementId, 'leaf');
+
     $entries = array();
     foreach ($results as $result)
     {
-        $isHierarchyElement = array_key_exists($indexFieldElementId, $hierarchyElements);
-
-        // For hierarchy elements, get the text from the pseudo column text_exp emitted by the SQL query for index views.
-        $text = $isHierarchyElement ? $result['text_exp'] : $result['text'];
+        // For hierarchy elements that display only their leaf values, get the leaf text from the pseudo column text_exp
+        // emitted by the SQL query for index views.
+        $text = $displayHierarchyElementLeaf ? $result['text_exp'] : $result['text'];
 
         $count = $result['count'];
 
@@ -142,7 +142,7 @@ function flattenResults($results, $indexFieldElementId)
         }
         $entries[$text]['count'] = $count;
         $entries[$text]['id'] = $result['id'];
-        $entries[$text]['hierarchy'] = $isHierarchyElement;
+        $entries[$text]['hierarchy'] = $displayHierarchyElementLeaf;
     }
     return $entries;
 }

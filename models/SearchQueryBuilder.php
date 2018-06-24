@@ -5,7 +5,6 @@ class SearchQueryBuilder
     const MIN_KEYWORD_LENGTH = 3;
 
     protected $db;
-    protected $hierarchyElements;
     protected $integerSortElements;
     protected $select;
     protected $smartSortingEnabled;
@@ -18,9 +17,8 @@ class SearchQueryBuilder
     public function buildAdvancedSearchQuery($args)
     {
         $this->select = $args['select'];
-        $this->smartSortingEnabled = get_option('avantsearch_filters_smart_sorting') == true;
+        $this->smartSortingEnabled = get_option(SearchConfig::OPTION_ADDRESS_SORTING) == true;
         $this->integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
-        $this->hierarchyElements = SearchConfig::getOptionDataForTreeView();
 
         /* @var $searchResults SearchResultsView */
         $searchResults = $args['params']['results'];
@@ -225,7 +223,8 @@ class SearchQueryBuilder
         $titleFieldElementId = ItemMetadata::getTitleElementId();
 
         $sortByAddress = $sortField == $addressFieldElementId;
-        $sortAsHierarchy = array_key_exists($sortField, $this->hierarchyElements);
+        $sortAsHierarchy = SearchConfig::isHierarchyElementThatDisplaysAs($sortField, 'leaf');
+
         $sortByTitle = $sortField == $titleFieldElementId;
 
         $performSecondarySort = !$isIndexQuery && !$sortByTitle;

@@ -22,6 +22,9 @@ $indexViewOptionRows = max(2, count(explode(PHP_EOL, $indexViewOption)));
 $treeViewOption = SearchConfig::getOptionTextForTreeView();
 $treeViewOptionRows = max(2, count(explode(PHP_EOL, $treeViewOption)) - 1);
 
+$hierarchiesOption = SearchConfig::getOptionTextForHierarchies();
+$hierarchiesOptionRows = max(2, count(explode(PHP_EOL, $hierarchiesOption)));
+
 $integerSortingOption = SearchConfig::getOptionTextForIntegerSorting();
 $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)));
 
@@ -118,16 +121,6 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
-        <label><?php echo CONFIG_LABEL_SHOW_HIERARCIES; ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __('Show entire hierarchy values in search results.'); ?></p>
-        <?php echo $view->formCheckbox(SearchConfig::OPTION_SHOW_HIERARCHIES, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_SHOW_HIERARCHIES))); ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
         <label><?php echo CONFIG_LABEL_RELATIONSHIPS_VIEW; ?></label>
     </div>
     <div class="inputs five columns omega">
@@ -137,6 +130,16 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
         <?php else: ?>
             <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'relationships-view'); ?>
         <?php endif; ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
+        <label><?php echo CONFIG_LABEL_HIERARCHIES; ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __('Elements that contain hierarchical values.'); ?></p>
+        <?php echo $view->formTextarea(SearchConfig::OPTION_HIERARCHIES, $hierarchiesOption, array('rows' => $hierarchiesOptionRows)); ?>
     </div>
 </div>
 

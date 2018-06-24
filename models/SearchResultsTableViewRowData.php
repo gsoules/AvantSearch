@@ -18,20 +18,14 @@ class SearchResultsTableViewRowData
 
     protected function filterHierarchicalElementText($elementId, $text)
     {
-        $showOnlyHierarchyLeaf = (boolean)get_option(SearchConfig::OPTION_SHOW_HIERARCHIES) == false;
-
-        if ($showOnlyHierarchyLeaf)
+        if (SearchConfig::isHierarchyElementThatDisplaysAs($elementId, 'leaf'))
         {
-            $isHierarchyElement = array_key_exists($elementId, $this->hierarchyElements);
-            if ($isHierarchyElement)
-            {
-                $index = strrpos($text, ',', -1);
+            $index = strrpos($text, ',', -1);
 
-                if ($index !== false)
-                {
-                    // Filter out the ancestry to leave just the leaf text.
-                    $text = trim(substr($text, $index + 1));
-                }
+            if ($index !== false)
+            {
+                // Filter out the ancestry to leave just the leaf text.
+                $text = trim(substr($text, $index + 1));
             }
         }
 
@@ -85,6 +79,11 @@ class SearchResultsTableViewRowData
     {
         // Create a link for the identifier.
         $idLink = link_to_item(ItemMetadata::getItemIdentifierAlias($item));
+        if ($item->public == 0)
+        {
+            // Indicate that this item is private.
+            $idLink = '* ' . $idLink;
+        }
         $this->elementValue[ItemMetadata::getIdentifierAliasElementName()]['text'] = $idLink;
     }
 
@@ -155,18 +154,11 @@ class SearchResultsTableViewRowData
             if ($elementName != 'Title')
             {
                 $elementTexts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
-                $fullText = $this->getElementTextsAsHtml($elementId, $elementTexts, false);
                 $filteredText =  $this->getElementTextsAsHtml($elementId, $elementTexts, true);
 
-                if ( $elementName != 'Description')
+                if ($elementName != 'Description')
                 {
-                    $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetail($column['alias'], $fullText);
-                }
-
-                if ($item->public == 0 && $elementName == ItemMetadata::getIdentifierElementName())
-                {
-                    // Indicate that this item is private.
-                    $filteredText .= '*';
+                    $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetail($column['alias'], $filteredText);
                 }
             }
 
