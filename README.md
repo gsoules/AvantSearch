@@ -143,8 +143,7 @@ value. The screen shot below is truncated midway through the B's.
 
 When the index field contains hierarchical data, Index View shows only the leaf (lowest level) values in the
 hierarchhy. For non-hierarchical data, Index View shows the entire value. The data is considered to be
-hierarchical if the index field element is also configured for use as a Tree View field. Note that Index View treats
-an element's data as hierarchical only if that element's name is also specified using the Tree View option below,
+hierarchical only if the index field element is specified using the Hierarchies option, 
 otherwise Index View displays it as flat data.
 
 ![Index View Example](readme/index-view.jpg)
