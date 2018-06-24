@@ -118,6 +118,19 @@ class SearchResultsTableViewRowData
 
     protected function getElementTextsAsHtml($elementId, $elementTexts, $filtered)
     {
+        if (plugin_is_active('AvantElements'))
+        {
+            // If the element is specified as a checkbox using AvantElements, then return its display value for true.
+            // By virtue of the element being displayed, its value must be true. By virtue of being a checkbox, there's
+            // no meaning to having multiple instance of the value, so simply return the value for true e.g. "Yes".
+            $checkboxFieldsData = ElementsConfig::getOptionDataForCheckboxField();
+            if (array_key_exists($elementId, $checkboxFieldsData))
+            {
+                $definition = $checkboxFieldsData[$elementId];
+                return $definition['checked'];
+            }
+        }
+
         $texts = '';
         foreach ($elementTexts as $key => $elementText)
         {
