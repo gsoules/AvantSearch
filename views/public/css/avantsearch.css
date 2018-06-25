@@ -451,7 +451,6 @@ input[type="checkbox"] {
 --------------------------------------------------------- */
 .search-pagination-nav {
 	float: right;
-	xclear: both;
 	position: relative;
 }
 
@@ -478,6 +477,8 @@ input[type="checkbox"] {
 	color: #666666;
 	float: left;
 	font-family: "Roboto Condensed", sans-serif;
+	font-size: 16px;
+	font-weight: normal;
 	height: 25px;
 	line-height: 22px;
 	list-style-type: none;
