@@ -254,11 +254,13 @@ columns are made visible. This is what allows instantaneous switching between la
 Below is an example specification for the Columns option.
 
 ```
-Identifier, ID: 120, right
-Title, 300, center
-Type, 250, right
-Subject,
-Archive Volume, Volume
+Identifier, Item: 65, right
+Title
+Type
+Subject
+Creator
+Publisher
+Status: 90
 ```
 
 <hr/>
