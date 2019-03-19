@@ -116,7 +116,7 @@ class SearchResultsTableViewRowData
         return $data->elementValue[$elementName]['detail'];
     }
 
-    protected function getElementTextsAsHtml($elementId, $elementTexts, $filtered)
+    protected function getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, $filtered)
     {
         if (!empty($elementTexts) && plugin_is_active('AvantElements'))
         {
@@ -132,6 +132,13 @@ class SearchResultsTableViewRowData
         }
 
         $texts = '';
+
+        // Determine whether HTML characters within the text should be escaped. Don't escape them if the element
+        // allows HTML and the element's HTML checkbox is checked. Note that the getElementTexts function returns
+        // an ElementTexts object which is different than the $elementTexts array passed to this function.
+        $elementSetName = ItemMetadata::getElementSetNameForElementName($elementName);
+        $isHtmlElement = count($elementTexts) > 0 && $item->getElementTexts($elementSetName, $elementName)[0]->isHtml();
+
         foreach ($elementTexts as $key => $elementText)
         {
             if ($key != 0)
@@ -140,7 +147,7 @@ class SearchResultsTableViewRowData
             }
 
             $text = $filtered ? $this->filterHierarchicalElementText($elementId, $elementText) : $elementText;
-            $texts .= html_escape($text);
+            $texts .= $isHtmlElement ? $text : html_escape($text);
         }
 
         return $texts;
@@ -167,7 +174,7 @@ class SearchResultsTableViewRowData
             if ($elementName != 'Title')
             {
                 $elementTexts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
-                $filteredText =  $this->getElementTextsAsHtml($elementId, $elementTexts, true);
+                $filteredText =  $this->getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, true);
 
                 if ($elementName != 'Description')
                 {
