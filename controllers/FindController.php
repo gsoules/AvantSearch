@@ -19,7 +19,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     protected function find()
     {
-        $useES = get_option(SearchConfig::OPTION_ELASTICSEARCH) == true;
+        $useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH) == true;
 
         $this->getRequest()->setParamSources(array('_GET'));
         $params = $this->getAllParams();
@@ -43,15 +43,14 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         {
             $currentPage = $this->getParam('page', 1);
 
-            if ($useES)
+            if ($useElasticsearch)
             {
-//                $limit = get_option('per_page_public');
-//                $limit = isset($limit) ? $limit : 20;
                 $page = $this->_request->page ? $this->_request->page : 1;
                 $start = ($page - 1) * $recordsPerPage;
                 $user = $this->getCurrentUser();
-                $query = $this->_getSearchParams($params['query']);
-                $sort = $this->_getSortParams();
+                $queryArg = isset($params['query']) ? $params['query'] : $params['q'];
+                $query = $this->getSearchParams($queryArg);
+                $sort = $this->getSortParams();
 
                 $results = Elasticsearch_Helper_Index::search([
                     'query'             => $query,
@@ -71,6 +70,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                    $records[] = ItemMetadata::getItemFromId($itemId);
                 }
 
+                $searchResults->setQuery($query);
                 $searchResults->setFacets($results['aggregations']);
             }
             else
@@ -107,7 +107,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->view->assign(array('searchResults' => $searchResults));
     }
 
-    private function _getSearchParams($query) {
+    private function getSearchParams($query) {
         $query = [
             'q'      => $query, // search terms
             'facets' => []                  // facets to filter the search results
@@ -120,7 +120,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         return $query;
     }
 
-    private function _getSortParams() {
+    private function getSortParams() {
         $sort = [];
         if($this->_request->sort_field) {
             $sort['field'] = $this->_request->sort_field;
