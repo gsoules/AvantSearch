@@ -17,6 +17,7 @@ class SearchResultsView
     protected $condition;
     protected $conditionName;
     protected $error;
+    protected $facets;
     protected $files;
     protected $keywords;
     protected $privateElements;
@@ -241,6 +242,11 @@ class SearchResultsView
         return $this->error;
     }
 
+    public function getFacets()
+    {
+        return $this->facets;
+    }
+
     public function getFilesOnlyOptions()
     {
         return array(
@@ -444,6 +450,11 @@ class SearchResultsView
     public function setError($message)
     {
         $this->error = $message;
+    }
+
+    public function setFacets($facets)
+    {
+        $this->facets = $facets;
     }
 
     public function setResults($results)

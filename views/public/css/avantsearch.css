@@ -566,6 +566,25 @@ input[type="checkbox"] {
 
 /* === Search Results - Table View ===
 --------------------------------------------------------- */
+#search-table-elasticsearch-sidebar {
+	float: left;
+	width: 200px;
+	margin: 0;
+	padding: 0px;
+	font-size: 90%;
+}
+#search-table-elasticsearch-results {
+	float: left;
+	clear: right;
+	width: calc(100% - 200px);
+	margin: 0;
+	padding-left: 10px;
+}
+
+#elasticsearch-filters > ul {
+	padding-left: 15px;
+}
+
 #search-table-view tr {
 	width: 100%;
 }

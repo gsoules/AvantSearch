@@ -59,22 +59,37 @@ if ($totalResults)
 <?php echo $searchResults->emitSearchFilters($layoutButtonHtml, $totalResults ? pagination_links() : ''); ?>
 
 <?php if ($totalResults): ?>
-    <table id="search-table-view">
-        <thead>
-        <tr>
-            <?php echo $this->partial('/table-view-header.php', array('searchResults' => $searchResults)); ?>
-        </tr>
-        </thead>
-        <tbody>
+    <section id="search-table-elasticsearch-sidebar">
         <?php
-        foreach ($results as $result)
-        {
-            set_current_record('Item', $result);
-            echo $this->partial('/table-view-row.php', array('item'=> $result, 'searchResults' => $searchResults, 'column1' => $column1, 'column2' => $column2));
-        }
+            $query = 'xxx';
+            $facets = $searchResults->getFacets();
+            echo $this->partial('search/partials/aggregations.php', array(
+                    'query'        => $query,
+                    'aggregations' => $facets
+                )
+            );
         ?>
-        </tbody>
-    </table>
+    </section>
+
+    <section id="search-table-elasticsearch-results">
+        <table id="search-table-view">
+            <thead>
+            <tr>
+                <?php echo $this->partial('/table-view-header.php', array('searchResults' => $searchResults)); ?>
+            </tr>
+            </thead>
+            <tbody>
+            <?php
+            foreach ($results as $result)
+            {
+                set_current_record('Item', $result);
+                echo $this->partial('/table-view-row.php', array('item'=> $result, 'searchResults' => $searchResults, 'column1' => $column1, 'column2' => $column2));
+            }
+            ?>
+            </tbody>
+        </table>
+    </section>
+
     <?php echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId, 'layoutIdFirst' => $layoutIdFirst, 'layoutIdLast' => $layoutIdLast)); ?>
     <?php echo pagination_links(); ?>
     <?php echo '</div>'; ?>

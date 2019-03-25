@@ -3,6 +3,7 @@
 define('CONFIG_LABEL_ADDRESS_SORTING', __('Address Sorting'));
 define('CONFIG_LABEL_COLUMNS', __('Columns'));
 define('CONFIG_LABEL_DETAIL_LAYOUT', __('Detail Layout'));
+define('CONFIG_LABEL_ELASTICSEARCH', __('Elasticsearch'));
 define('CONFIG_LABEL_INDEX_VIEW', __('Index View'));
 define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
 define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
@@ -17,6 +18,7 @@ class SearchConfig extends ConfigOptions
     const OPTION_ADDRESS_SORTING = 'avantsearch_address_sorting';
     const OPTION_COLUMNS = 'avantsearch_columns';
     const OPTION_DETAIL_LAYOUT = 'avantsearch_detail_layout';
+    const OPTION_ELASTICSEARCH = 'avantsearch_elasticsearch';
     const OPTION_INDEX_VIEW = 'avantsearch_index_view';
     const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
     const OPTION_LAYOUTS = 'avantsearch_layouts';
