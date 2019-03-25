@@ -21,6 +21,7 @@ class SearchResultsView
     protected $files;
     protected $keywords;
     protected $privateElements;
+    protected $query;
     protected $results;
     protected $titles;
     protected $totalResults;
@@ -313,6 +314,11 @@ class SearchResultsView
         );
     }
 
+    public function getQuery()
+    {
+        return $this->query;
+    }
+
     public function getResults()
     {
         return $this->results;
@@ -455,6 +461,11 @@ class SearchResultsView
     public function setFacets($facets)
     {
         $this->facets = $facets;
+    }
+
+    public function setQuery($query)
+    {
+        $this->query = $query;
     }
 
     public function setResults($results)
