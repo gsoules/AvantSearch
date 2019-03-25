@@ -569,20 +569,42 @@ input[type="checkbox"] {
 #search-table-elasticsearch-sidebar {
 	float: left;
 	width: 200px;
-	margin: 0;
-	padding: 0px;
-	font-size: 90%;
+	margin-top: 19px;
+	padding: 4px 4px 0 6px;
+	background-color: #e4e4e4;
 }
 #search-table-elasticsearch-results {
 	float: left;
 	clear: right;
 	width: calc(100% - 200px);
 	margin: 0;
-	padding-left: 10px;
+	padding-left: 8px;
+}
+
+#elasticsearch-filters-active > ul {
+	padding-left: 15px;
+	font-size:14px;
+	margin-top: 0;
 }
 
 #elasticsearch-filters > ul {
 	padding-left: 15px;
+	font-size:14px;
+	margin-top: 0;
+	list-style-type:none;
+}
+
+.elasticsearchFacetSection {
+	color: #1a77bd;
+	font-size:20px;
+	padding-top: 8px;
+	padding-bottom: 8px;
+}
+
+.elasticsearchFacetName {
+	color: #666;
+	font-size:14px;
+	font-weight: bold;
 }
 
 #search-table-view tr {
