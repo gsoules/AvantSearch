@@ -167,6 +167,11 @@ class SearchConfig extends ConfigOptions
         return $supported;
     }
 
+    public static function getOptionSupportedElasticsearch()
+    {
+        return plugin_is_active('Elasticsearch');
+    }
+
     public static function getOptionsSupportedTitlesOnly()
     {
         // Determine if this database allows a full text search on the search_texts table's title column.
@@ -382,6 +387,7 @@ class SearchConfig extends ConfigOptions
         set_option(self::OPTION_TITLES_ONLY, intval($_POST[self::OPTION_TITLES_ONLY]));
         set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
         set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
+        set_option(self::OPTION_ELASTICSEARCH, intval($_POST[self::OPTION_ELASTICSEARCH]));
     }
 
     public static function saveOptionDataForColumns()
