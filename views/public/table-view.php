@@ -1,7 +1,7 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
-$useES = get_option(SearchConfig::OPTION_ELASTICSEARCH) == true;
+$useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH) == true;
 
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
@@ -61,12 +61,12 @@ if ($totalResults)
 <?php echo $searchResults->emitSearchFilters($layoutButtonHtml, $totalResults ? pagination_links() : ''); ?>
 
 <?php if ($totalResults): ?>
-    <?php if ($useES): ?>
+    <?php if ($useElasticsearch): ?>
         <section id="search-table-elasticsearch-sidebar">
             <?php
-            $query = 'xxx';
+            $query = $searchResults->getQuery();
             $facets = $searchResults->getFacets();
-            echo $this->partial('search/partials/aggregations.php', array(
+            echo $this->partial('/elasticsearch-facets.php', array(
                     'query' => $query,
                     'aggregations' => $facets
                 )
@@ -90,7 +90,7 @@ if ($totalResults)
         ?>
         </tbody>
     </table>
-    <?php if ($useES): ?>
+    <?php if ($useElasticsearch): ?>
         </section>
     <?php endif; ?>
     <?php echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId, 'layoutIdFirst' => $layoutIdFirst, 'layoutIdLast' => $layoutIdLast)); ?>
