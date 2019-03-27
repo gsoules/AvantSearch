@@ -19,13 +19,16 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     protected function find()
     {
-        $useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH) == true;
 
         $this->getRequest()->setParamSources(array('_GET'));
         $params = $this->getAllParams();
 
         $searchResults = SearchResultsViewFactory::createSearchResultsView();
         $params['results'] = $searchResults;
+
+        $isSimpleSearch = isset($params['query']) || isset($params['q']);
+        $useElasticsearch = $isSimpleSearch && (get_option(SearchConfig::OPTION_ELASTICSEARCH) == true);
+        $searchResults->setUseElasticsearch($useElasticsearch);
 
         $viewId = $searchResults->getViewId();
         if (SearchResultsViewFactory::viewUsesResultsLimit($viewId))

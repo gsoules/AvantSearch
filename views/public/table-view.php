@@ -1,8 +1,6 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
-$useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH) == true;
-
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 $showRelationships = $searchResults->getShowRelationships();
@@ -16,6 +14,8 @@ $layoutIdLast = $searchResults->getLayoutIdLast();;
 $detailLayoutData = $searchResults->getDetailLayoutData();
 $column1 =  isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
 $column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
+
+$useElasticsearch = $searchResults->getUseElasticsearch();
 
 echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";

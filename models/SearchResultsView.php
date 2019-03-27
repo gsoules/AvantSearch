@@ -30,6 +30,7 @@ class SearchResultsView
     protected $sortFieldName;
     protected $sortOrder;
     protected $subjectSearch;
+    protected $useElasticsearch;
     protected $viewId;
     protected $viewName;
 
@@ -49,11 +50,6 @@ class SearchResultsView
         $columnClass = str_replace('#', '', $columnClass);
         $columnClass = "search-$tag-$columnClass";
         return $columnClass;
-    }
-
-    public function getColumnsData()
-    {
-        return $this->columnsData;
     }
 
     public function emitClassAttribute($className1, $className2 = '')
@@ -238,6 +234,11 @@ class SearchResultsView
         return $fields;
     }
 
+    public function getColumnsData()
+    {
+        return $this->columnsData;
+    }
+
     public function getError()
     {
         return $this->error;
@@ -417,6 +418,11 @@ class SearchResultsView
         return $this->totalResults;
     }
 
+    public function getUseElasticsearch()
+    {
+        return $this->useElasticsearch;
+    }
+
     public function getViewId()
     {
         if (isset($this->viewId))
@@ -476,6 +482,11 @@ class SearchResultsView
     public function setTotalResults($totalResults)
     {
         $this->totalResults = $totalResults;
+    }
+
+    public function setUseElasticsearch($useElasticsearch)
+    {
+        $this->useElasticsearch = $useElasticsearch;
     }
 
     public function setViewId($viewId)
