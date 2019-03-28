@@ -124,7 +124,8 @@ class SearchResultsFilters
 
         if ($this->searchResults->getTotalResults() && $this->searchResults->getViewId() == SearchResultsViewFactory::TABLE_VIEW_ID)
         {
-            $layoutDetails .= __('Sorted by %s', $this->searchResults->getSortFieldName());
+            $sortedBy = $this->searchResults->getUseElasticsearch() ? __('Relevance') : $this->searchResults->getSortFieldName();
+            $layoutDetails .= __('Sorted by %s', $sortedBy);
         }
 
         if ($this->searchResults->getSearchFiles() && $this->searchResults->getTotalResults() > 0)
