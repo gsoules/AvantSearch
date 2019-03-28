@@ -16,6 +16,7 @@ class SearchResultsView
     protected $columnsData;
     protected $condition;
     protected $conditionName;
+    protected $elasticsearchHits;
     protected $error;
     protected $facets;
     protected $files;
@@ -239,6 +240,11 @@ class SearchResultsView
         return $this->columnsData;
     }
 
+    public function getElasticsearchHits()
+    {
+        return $this->elasticsearchHits;
+    }
+
     public function getError()
     {
         return $this->error;
@@ -457,6 +463,12 @@ class SearchResultsView
     public function getViewShortName()
     {
         return SearchResultsViewFactory::getViewShortName($this->getViewId());
+    }
+
+    public function setElasticsearchHits($itemId, $itemUrl, $elements)
+    {
+        $this->elasticsearchHits[$itemId]['elements'] = $elements;
+        $this->elasticsearchHits[$itemId]['itemUrl'] = $itemUrl;
     }
 
     public function setError($message)

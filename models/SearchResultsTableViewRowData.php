@@ -7,12 +7,14 @@ class SearchResultsTableViewRowData
     protected $hierarchyElements;
     public $itemThumbnailHtml;
     protected $searchResults;
+    protected $useElasticsearch;
 
     public function __construct($item, SearchResultsTableView $searchResults)
     {
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
         $this->hierarchyElements = SearchConfig::getOptionDataForTreeView();
+        $this->useElasticsearch = $searchResults->getUseElasticsearch();
         $this->initializeData($item);
     }
 
@@ -78,7 +80,16 @@ class SearchResultsTableViewRowData
     protected function generateIdentifierLink($item)
     {
         // Create a link for the identifier.
-        $idLink = link_to_item(ItemMetadata::getItemIdentifierAlias($item));
+        if ($this->useElasticsearch)
+        {
+            $elasticsearchHit = $this->searchResults->getElasticsearchHits()[$item->id];
+            $idLink = $elasticsearchHit['itemUrl'];
+        }
+        else
+        {
+            $idLink = link_to_item(ItemMetadata::getItemIdentifierAlias($item));
+        }
+
         if ($item->public == 0)
         {
             // Indicate that this item is private.
@@ -97,10 +108,32 @@ class SearchResultsTableViewRowData
     protected function generateTitles($item)
     {
         // Create a link for the Title followed by a list of AKA (Also Known As) titles.
-        $titleLink = link_to_item(ItemMetadata::getItemTitle($item));
-        $this->elementValue['Title']['text'] = $titleLink;
 
-        $titles = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
+        if ($this->useElasticsearch)
+        {
+            $elasticsearchHit = $this->searchResults->getElasticsearchHits()[$item->id];
+            $elasticSearchElementTexts = $elasticsearchHit['elements'];
+            if (isset($elasticSearchElementTexts['title']))
+            {
+                $texts = $elasticSearchElementTexts['title'];
+                if (is_array($texts))
+                {
+                    $titles = $texts;
+                }
+                else
+                {
+                    $titles[0] = $texts;
+                }
+            }
+            $titleLink = $elasticsearchHit['itemUrl'];
+            $this->elementValue['Title']['text'] = $titleLink;
+        }
+        else
+        {
+            $titleLink = link_to_item(ItemMetadata::getItemTitle($item));
+            $this->elementValue['Title']['text'] = $titleLink;
+            $titles = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
+        }
         foreach ($titles as $key => $title)
         {
             if ($key == 0)
@@ -137,7 +170,8 @@ class SearchResultsTableViewRowData
         // allows HTML and the element's HTML checkbox is checked. Note that the getElementTexts function returns
         // an ElementTexts object which is different than the $elementTexts array passed to this function.
         $elementSetName = ItemMetadata::getElementSetNameForElementName($elementName);
-        $isHtmlElement = count($elementTexts) > 0 && $item->getElementTexts($elementSetName, $elementName)[0]->isHtml();
+        //$isHtmlElement = count($elementTexts) > 0 && $item->getElementTexts($elementSetName, $elementName)[0]->isHtml();
+        $isHtmlElement = false;
 
         foreach ($elementTexts as $key => $elementText)
         {
@@ -167,13 +201,36 @@ class SearchResultsTableViewRowData
 
     protected function readMetadata($item)
     {
+        $elasticSearchElementTexts = $this->useElasticsearch ? $this->searchResults->getElasticsearchHits()[$item->id]['elements'] : null;
+
         foreach ($this->columnsData as $elementId => $column)
         {
             $elementName = $column['name'];
 
             if ($elementName != 'Title')
             {
-                $elementTexts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
+                $elementTexts = array();
+
+                if ($this->useElasticsearch)
+                {
+                    $elasticSearchFieldName = strtolower($elementName);
+                    if (isset($elasticSearchElementTexts[$elasticSearchFieldName]))
+                    {
+                        $texts = $elasticSearchElementTexts[$elasticSearchFieldName];
+                        if (is_array($texts))
+                        {
+                            $elementTexts = $texts;
+                        }
+                        else
+                        {
+                            $elementTexts[0] = $texts;
+                        }
+                    }
+                }
+                else
+                {
+                    $elementTexts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
+                }
                 $filteredText =  $this->getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, true);
 
                 if ($elementName != 'Description')

@@ -77,7 +77,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 foreach ($hits as $hit)
                 {
                    $itemId = $hit['_source']['itemid'];
+                   $itemUrl = $hit['_source']['itemUrl'];
                    $records[] = ItemMetadata::getItemFromId($itemId);
+                   $searchResults->setElasticsearchHits($itemId, $itemUrl, $hit['_source']['element']);
                 }
 
                 $searchResults->setQuery($query);
