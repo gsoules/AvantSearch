@@ -69,7 +69,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 $hits = $results['hits']['hits'];
                 foreach ($hits as $hit)
                 {
-                   $itemId = $hit['_source']['modelid'];
+                   $itemId = $hit['_source']['itemid'];
                    $records[] = ItemMetadata::getItemFromId($itemId);
                 }
 
