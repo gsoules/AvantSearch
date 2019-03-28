@@ -165,7 +165,7 @@ class AvantSearch
         $html .= '<form id="search-form" name="search-form" action="' . $url. '" method="get">';
         $html .= '<input type="text" name="query" id="query" value="" title="Search">';
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button></form>';
-        $html .= '<a class="simple-search-advanced-link" href="' . WEB_ROOT . '/find/advanced">Advanced Search</a>';
+        $html .= '<a class="simple-search-advanced-link" href="' . WEB_ROOT . '/find/advanced">' . $pageTitle = __('Advanced Search') . '</a>';
         $html .= '</div>';
 
         return $html;
