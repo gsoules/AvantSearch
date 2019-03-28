@@ -153,7 +153,7 @@ class SearchResultsView
         if (!isset($this->subjectSearch))
             $this->subjectSearch = isset($_GET['subjects']);
 
-        $text = __('Modify Search');
+        $text = $this->useElasticsearch ? __('Advanced Search') : __('Modify Search');
         $uri = url('find/' . ($this->subjectSearch ? 'subject' : 'advanced'));
         $action = $uri . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
         $form = "<form id='modify-form' name='modify-form' action='$action' method='post' class='modify-search-button'>";
