@@ -26,7 +26,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $searchResults = SearchResultsViewFactory::createSearchResultsView();
         $params['results'] = $searchResults;
 
-        $isSimpleSearch = isset($params['query']) || isset($params['q']);
+        $isSimpleSearch = isset($params['query']);
         $useElasticsearch = $isSimpleSearch && (get_option(SearchConfig::OPTION_ELASTICSEARCH) == true);
         $searchResults->setUseElasticsearch($useElasticsearch);
 
@@ -51,7 +51,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 $page = $this->_request->page ? $this->_request->page : 1;
                 $start = ($page - 1) * $recordsPerPage;
                 $user = $this->getCurrentUser();
-                $queryArg = isset($params['query']) ? $params['query'] : $params['q'];
+                $queryArg = $params['query'];
                 $query = $this->getSearchParams($queryArg);
                 $sort = $this->getSortParams();
 
@@ -138,7 +138,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     private function getSearchParams($query) {
         $query = [
-            'q'      => $query, // search terms
+            'query' => $query, // search terms
             'facets' => []                  // facets to filter the search results
         ];
         foreach($this->_request->getQuery() as $k => $v) {

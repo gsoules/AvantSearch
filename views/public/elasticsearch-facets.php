@@ -6,13 +6,13 @@ $applied_facets = $query['facets'];
 
 <?php if(count($applied_facets) > 0): ?>
 <div id="elasticsearch-filters-active">
-    <div class="elasticsearchFacetSection">Applied Filters <a style="font-size: 80%" href="<?php echo get_view()->url('/find').'?q='.urlencode($query['q']); ?>">[Reset]</a></div>
+    <div class="elasticsearchFacetSection">Applied Filters <a style="font-size: 80%" href="<?php echo get_view()->url('/find').'?query='.urlencode($query['query']); ?>">[Reset]</a></div>
 <ul>
     <?php foreach($applied_facets as $facet_name => $facet_values): ?>
         <?php $facet_label = htmlspecialchars($aggregation_labels[$facet_name]); ?>
         <?php $facet_value = htmlspecialchars(Elasticsearch_Utils::facetVal2Str($facet_values)); ?>
         <li>
-            <?php echo "$facet_label = <i>$facet_value</i>"; ?>
+            <?php echo "$facet_label</br><i>$facet_value</i>"; ?>
             <a href="<?php echo get_view()->url('/find') . '?' . Elasticsearch_Utils::removeFacetFromQuery($querystr, $facet_name); ?>">[&#10006;]</a>
         </li>
     <?php endforeach ?>
