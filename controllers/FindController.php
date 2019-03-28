@@ -19,7 +19,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     protected function find()
     {
-
         $this->getRequest()->setParamSources(array('_GET'));
         $params = $this->getAllParams();
 
@@ -48,11 +47,19 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
             if ($useElasticsearch)
             {
+                $queryArg = $params['query'];
+                $query = $this->getSearchParams($queryArg);
+
+                $id = ItemMetadata::getItemIdFromIdentifier($query['query']);
+                if ($id)
+                {
+                    // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
+                    AvantSearch::redirectToShowPageForItem($id);
+                }
+
                 $page = $this->_request->page ? $this->_request->page : 1;
                 $start = ($page - 1) * $recordsPerPage;
                 $user = $this->getCurrentUser();
-                $queryArg = $params['query'];
-                $query = $this->getSearchParams($queryArg);
                 $sort = $this->getSortParams();
 
                 $results = Elasticsearch_Helper_Index::search([
