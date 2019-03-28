@@ -160,10 +160,12 @@ class AvantSearch
     {
         $url = url('find');
 
+        $query = isset($_GET['query']) ? $_GET['query'] : '';
+
         // Construct the HTML that will replace the native Omeka search form with the one for AvantSearch.
         $html = '<div id="search-container" role="search">';
         $html .= '<form id="search-form" name="search-form" action="' . $url. '" method="get">';
-        $html .= '<input type="text" name="query" id="query" value="" title="Search">';
+        $html .= '<input type="text" name="query" id="query" value="' . $query . '" title="Search">';
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button></form>';
         $html .= '<a class="simple-search-advanced-link" href="' . WEB_ROOT . '/find/advanced">' . $pageTitle = __('Advanced Search') . '</a>';
         $html .= '</div>';
