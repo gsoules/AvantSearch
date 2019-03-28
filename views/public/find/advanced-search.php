@@ -20,6 +20,8 @@ $condition = $searchResults->getKeywordsCondition();
 $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
 $showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
+$useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH);
+
 $pageTitle = __('Advanced Search');
 
 queue_js_file('js.cookie');
@@ -32,7 +34,8 @@ echo "<div id='avantsearch-container'>";
 
 	<!-- Left Panel -->
 	<div id="avantsearch-primary">
-		<div class="search-form-section">
+        <?php if (!$useElasticsearch): ?>
+        <div class="search-form-section">
 			<div class="search-field">
 				<div class="avantsearch-label-column">
 					<?php echo $this->formLabel('keywords', __('Keywords')); ?><br>
@@ -64,6 +67,7 @@ echo "<div id='avantsearch-container'>";
 				</div>
 			</div>
 		</div>
+        <?php endif; ?>
 
 		<div  id="search-narrow-by-fields" class="search-form-section">
 			<div>
