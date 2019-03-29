@@ -76,7 +76,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 $records = $hits;
                 $searchResults->setQuery($query);
 
-                $facets = $this->sortDateFacet($results);
+                $facets = $results['aggregations'];
                 $searchResults->setFacets($facets);
             }
             else
@@ -111,15 +111,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         // Display the results.
         $this->view->assign(array('searchResults' => $searchResults));
-    }
-
-    protected function sortDateFacet($results)
-    {
-        $facets = $results['aggregations'];
-        $dates = $facets['dates']['buckets'];
-        usort($dates, (array($this, "compareYear")));
-        $facets['dates']['buckets'] = $dates;
-        return $facets;
     }
 
     private function compareYear($year1, $year2)
