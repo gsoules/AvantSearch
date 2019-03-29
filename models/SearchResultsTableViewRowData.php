@@ -114,10 +114,18 @@ class SearchResultsTableViewRowData
 
         if ($this->useElasticsearch)
         {
-            $texts = $item['_source']['element']['title'];
-            $titles = is_array($texts) ? $texts : array($texts);
-            $itemUrl =  $item['_source']['url'];
-            $titleLink = "<a href='$itemUrl'>$titles[0]</a>";
+            if (isset($item['_source']['element']['title']))
+            {
+                $texts = $item['_source']['element']['title'];
+                $titles = is_array($texts) ? $texts : array($texts);
+                $itemUrl =  $item['_source']['url'];
+                $titleLink = "<a href='$itemUrl'>$titles[0]</a>";
+            }
+            else
+            {
+                $titles = [];
+                $titleLink = __('[Untitled]');
+            }
             $this->elementValue['Title']['text'] = $titleLink;
         }
         else
@@ -126,6 +134,7 @@ class SearchResultsTableViewRowData
             $this->elementValue['Title']['text'] = $titleLink;
             $titles = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
         }
+
         foreach ($titles as $key => $title)
         {
             if ($key == 0)
@@ -161,9 +170,16 @@ class SearchResultsTableViewRowData
         // Determine whether HTML characters within the text should be escaped. Don't escape them if the element
         // allows HTML and the element's HTML checkbox is checked. Note that the getElementTexts function returns
         // an ElementTexts object which is different than the $elementTexts array passed to this function.
-        $elementSetName = ItemMetadata::getElementSetNameForElementName($elementName);
-        //$isHtmlElement = count($elementTexts) > 0 && $item->getElementTexts($elementSetName, $elementName)[0]->isHtml();
-        $isHtmlElement = false;
+        if ($this->useElasticsearch)
+        {
+            $htmlFields = $item['_source']['html'];
+            $isHtmlElement = in_array(strtolower($elementName), $htmlFields);
+        }
+        else
+        {
+            $elementSetName = ItemMetadata::getElementSetNameForElementName($elementName);
+            $isHtmlElement = count($elementTexts) > 0 && $item->getElementTexts($elementSetName, $elementName)[0]->isHtml();
+        }
 
         foreach ($elementTexts as $key => $elementText)
         {
