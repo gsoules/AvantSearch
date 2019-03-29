@@ -82,15 +82,18 @@ class SearchResultsTableViewRowData
         // Create a link for the identifier.
         if ($this->useElasticsearch)
         {
-            $elasticsearchHit = $this->searchResults->getElasticsearchHits()[$item->id];
-            $idLink = $elasticsearchHit['itemUrl'];
+            $identifier = $item['_source']['element']['identifier'];
+            $itemUrl = $item['_source']['url'];
+            $idLink = "<a href='$itemUrl'>$identifier</a>";
+            $public = $item['_source']['public'];
         }
         else
         {
             $idLink = link_to_item(ItemMetadata::getItemIdentifierAlias($item));
+            $public = $item->public == 0;
         }
 
-        if ($item->public == 0)
+        if (!$public)
         {
             // Indicate that this item is private.
             $idLink = '* ' . $idLink;
@@ -100,9 +103,9 @@ class SearchResultsTableViewRowData
 
     protected function generateThumbnailHtml($item)
     {
-        $itemPreview = new ItemPreview($item);
+        $itemPreview = new ItemPreview($item, $this->useElasticsearch);
         $this->itemThumbnailHtml = $itemPreview->emitItemHeader();
-        $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
+        //$this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
 
     protected function generateTitles($item)
@@ -111,21 +114,10 @@ class SearchResultsTableViewRowData
 
         if ($this->useElasticsearch)
         {
-            $elasticsearchHit = $this->searchResults->getElasticsearchHits()[$item->id];
-            $elasticSearchElementTexts = $elasticsearchHit['elements'];
-            if (isset($elasticSearchElementTexts['title']))
-            {
-                $texts = $elasticSearchElementTexts['title'];
-                if (is_array($texts))
-                {
-                    $titles = $texts;
-                }
-                else
-                {
-                    $titles[0] = $texts;
-                }
-            }
-            $titleLink = $elasticsearchHit['itemUrl'];
+            $texts = $item['_source']['element']['title'];
+            $titles = is_array($texts) ? $texts : array($texts);
+            $itemUrl =  $item['_source']['url'];
+            $titleLink = "<a href='$itemUrl'>$titles[0]</a>";
             $this->elementValue['Title']['text'] = $titleLink;
         }
         else
@@ -201,7 +193,7 @@ class SearchResultsTableViewRowData
 
     protected function readMetadata($item)
     {
-        $elasticSearchElementTexts = $this->useElasticsearch ? $this->searchResults->getElasticsearchHits()[$item->id]['elements'] : null;
+        $elasticSearchElementTexts = $this->useElasticsearch ? $item['_source']['element'] : null;
 
         foreach ($this->columnsData as $elementId => $column)
         {
@@ -243,7 +235,14 @@ class SearchResultsTableViewRowData
         }
 
         // Create a psuedo element value for tags since there is no actual tags element.
-        $tags = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+        if ($this->useElasticsearch)
+        {
+            $tags = $item['_source']['tags'];
+        }
+        else
+        {
+            $tags = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+        }
         $this->elementValue['<tags>']['text'] = '';
         $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetail(__('Tags'),  $tags);
     }
