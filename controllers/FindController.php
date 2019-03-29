@@ -72,16 +72,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
                 $totalRecords = $results["hits"]["total"];
 
-                $records = array();
                 $hits = $results['hits']['hits'];
-                foreach ($hits as $hit)
-                {
-                   $itemId = $hit['_source']['itemid'];
-                   $itemUrl = $hit['_source']['itemUrl'];
-                   $records[] = ItemMetadata::getItemFromId($itemId);
-                   $searchResults->setElasticsearchHits($itemId, $itemUrl, $hit['_source']['element']);
-                }
-
+                $records = $hits;
                 $searchResults->setQuery($query);
 
                 $facets = $this->sortDateFacet($results);
