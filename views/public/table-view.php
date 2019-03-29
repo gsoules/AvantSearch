@@ -85,8 +85,18 @@ if ($totalResults)
         <?php
         foreach ($results as $result)
         {
-            set_current_record('Item', $result);
-            echo $this->partial('/table-view-row.php', array('item' => $result, 'searchResults' => $searchResults, 'column1' => $column1, 'column2' => $column2));
+            if (!$useElasticsearch)
+            {
+                set_current_record('Item', $result);
+            }
+            echo $this->partial(
+                '/table-view-row.php',
+                array(
+                    'item' => $result,
+                    'searchResults' => $searchResults,
+                    'column1' => $column1,
+                    'column2' => $column2)
+            );
         }
         ?>
         </tbody>
