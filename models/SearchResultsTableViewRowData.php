@@ -105,7 +105,7 @@ class SearchResultsTableViewRowData
     {
         $itemPreview = new ItemPreview($item, $this->useElasticsearch);
         $this->itemThumbnailHtml = $itemPreview->emitItemHeader();
-        //$this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
+        $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
 
     protected function generateTitles($item)
@@ -238,6 +238,7 @@ class SearchResultsTableViewRowData
         if ($this->useElasticsearch)
         {
             $tags = $item['_source']['tags'];
+            $tags = implode(', ', $tags);
         }
         else
         {
