@@ -58,16 +58,31 @@ class SearchResultsTableViewRowData
         }
     }
 
-    protected function generateDescription()
+    protected function generateDescription($item)
     {
-        // Get the description text, making sure that the Description element is defined.
-        $descriptionText = isset($this->elementValue['Description']['text']) ? $this->elementValue['Description']['text'] : '';
+        $hasHighlights = false;
+        if ($this->useElasticsearch && isset($item['highlight']['element.description']))
+        {
+            $hasHighlights = true;
+            $descriptionText = '';
+            $highlights = $item['highlight']['element.description'];
+            foreach ($highlights as $highlight)
+            {
+
+                $descriptionText .= $highlight;
+            }
+        }
+        else
+        {
+            // Get the description text, making sure that the Description element is defined.
+            $descriptionText = isset($this->elementValue['Description']['text']) ? $this->elementValue['Description']['text'] : '';
+        }
 
         // Shorten the description text if it's too long.
         $maxLength = 250;
         $this->elementValue['Description']['text'] = str_replace('<br />', '', $descriptionText);
         $descriptionText = $this->elementValue['Description']['text'];
-        if (strlen($descriptionText) > $maxLength)
+        if (!$hasHighlights && strlen($descriptionText) > $maxLength)
         {
             // Truncate the description at whitespace and add an elipsis at the end.
             $shortText = preg_replace("/^(.{1,$maxLength})(\\s.*|$)/s", '\\1', $descriptionText);
@@ -213,7 +228,7 @@ class SearchResultsTableViewRowData
         $this->elementValue = array();
 
         $this->readMetadata($item);
-        $this->generateDescription();
+        $this->generateDescription($item);
         $this->generateDateRange();
         $this->generateIdentifierLink($item);
         $this->generateTitles($item);
