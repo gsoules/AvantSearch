@@ -80,9 +80,16 @@ class SearchResultsTableViewRowData
 
         // Shorten the description text if it's too long.
         $maxLength = 250;
+        if ($hasHighlights)
+        {
+            // Increase the length to include the last highlight plus another few words
+            $maxLength = strrpos($descriptionText, '</span>') + strlen('</span>') + 15;
+        }
+        $maxLength = max(250, $maxLength);
+
         $this->elementValue['Description']['text'] = str_replace('<br />', '', $descriptionText);
         $descriptionText = $this->elementValue['Description']['text'];
-        if (!$hasHighlights && strlen($descriptionText) > $maxLength)
+        if (strlen($descriptionText) > $maxLength)
         {
             // Truncate the description at whitespace and add an elipsis at the end.
             $shortText = preg_replace("/^(.{1,$maxLength})(\\s.*|$)/s", '\\1', $descriptionText);
