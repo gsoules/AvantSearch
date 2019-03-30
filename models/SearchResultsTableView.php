@@ -69,9 +69,9 @@ class SearchResultsTableView extends SearchResultsView
         {
             foreach ($row as $elementId => $elementName)
             {
-                if ($elementName == '<tags>')
+                if ($elementName == '<tags>' || $elementName == '<score>')
                 {
-                    // Tags are special cased elsewhere as a pseudo element.
+                    // Tags abd Score are special cased elsewhere as pseudo elements.
                     continue;
                 }
                 if (!isset($this->columnsData[$elementId]))
