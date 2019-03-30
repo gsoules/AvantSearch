@@ -36,11 +36,12 @@ if (!$searchResults->hasLayoutL1())
 }
 
 // The code that follows emits the L1 Detail layout which is a table a column of the overall layout table.
-?>
 
-<td class="search-td-image L1">
-    <?php echo $data->itemThumbnailHtml; ?>
-</td>
+$class = strpos($data->itemThumbnailHtml, 'fallback') === false ? 'search-td-image ' : 'search-td-image-fallback';
+echo '<td class="' . $class . ' L1">';
+echo $data->itemThumbnailHtml;
+echo '</td>';
+?>
 
 <td class="search-td-title-detail L1">
     <div class="search-result-title">
@@ -57,7 +58,7 @@ if (!$searchResults->hasLayoutL1())
                     echo "<div>$text</div>";
                 }
 
-                if (is_allowed($item, 'edit'))
+                if (!$searchResults->getUseElasticsearch() && is_allowed($item, 'edit'))
                 {
                     echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $item->id) . '">' . __('Edit') . '</a></div>';
                 }
