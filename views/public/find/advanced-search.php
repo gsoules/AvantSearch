@@ -22,7 +22,7 @@ $showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
 $useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH);
 
-$pageTitle = __('Advanced Search');
+$pageTitle = $useElasticsearch ? __('Search Options') : __('Advanced Search');
 
 queue_js_file('js.cookie');
 echo head(array('title' => $pageTitle, 'bodyclass' => 'avantsearch-advanced'));
