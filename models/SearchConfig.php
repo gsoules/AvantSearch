@@ -55,6 +55,10 @@ class SearchConfig extends ConfigOptions
                 {
                     $elementName = '<tags>';
                 }
+                else if ($elementId == '<score>')
+                {
+                    $elementName = '<score>';
+                }
                 else
                 {
                     $elementName = ItemMetadata::getElementNameFromId($elementId);
@@ -454,6 +458,10 @@ class SearchConfig extends ConfigOptions
                 if ($elementName == '<tags>')
                 {
                     $elementId = '<tags>';
+                }
+                else if ($elementName == '<score>')
+                {
+                    $elementId = '<score>';
                 }
                 else
                 {
