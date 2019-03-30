@@ -54,7 +54,10 @@ if ($totalResults)
 
 <div class="search-results-buttons">
     <?php
-    echo $searchResults->emitModifySearchButton();
+    if (!$useElasticsearch)
+    {
+        echo $searchResults->emitModifySearchButton();
+    }
     ?>
 </div>
 
