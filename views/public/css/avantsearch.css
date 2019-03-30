@@ -642,12 +642,18 @@ input[type="checkbox"] {
 	color: var(--link-hover-color);
 }
 
-.search-td-image img {
+.search-td-image img,
+.search-td-image-fallback img
+{
 	margin: 2px 12px 4px 4px;
 	width: 140px;
 	border: 1px solid #ccc;
 	padding: 3px;
 	background-color: #fff;
+}
+
+.search-td-image-fallback img {
+	width: 100px;
 }
 
 .search-td-image .item-preview-header {
