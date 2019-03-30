@@ -7,6 +7,7 @@ class SearchResultsTableViewRowData
     protected $hierarchyElements;
     public $itemThumbnailHtml;
     protected $searchResults;
+    protected $showComingledResults;
     protected $useElasticsearch;
 
     public function __construct($item, SearchResultsTableView $searchResults)
@@ -15,6 +16,7 @@ class SearchResultsTableViewRowData
         $this->columnsData = $searchResults->getColumnsData();
         $this->hierarchyElements = SearchConfig::getOptionDataForTreeView();
         $this->useElasticsearch = $searchResults->getUseElasticsearch();
+        $this->showComingledResults = $searchResults->getShowComingledResults();
         $this->initializeData($item);
     }
 
@@ -83,6 +85,11 @@ class SearchResultsTableViewRowData
         if ($this->useElasticsearch)
         {
             $identifier = $item['_source']['element']['identifier'];
+            if ($this->showComingledResults)
+            {
+                $ownerId = $item['_source']['ownerid'];
+                $identifier = $ownerId . '-' . $identifier;
+            }
             $itemUrl = $item['_source']['url'];
             $idLink = "<a href='$itemUrl'>$identifier</a>";
             $public = $item['_source']['public'];
@@ -103,7 +110,7 @@ class SearchResultsTableViewRowData
 
     protected function generateThumbnailHtml($item)
     {
-        $itemPreview = new ItemPreview($item, $this->useElasticsearch);
+        $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->showComingledResults);
         $this->itemThumbnailHtml = $itemPreview->emitItemHeader();
         $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
@@ -142,6 +149,12 @@ class SearchResultsTableViewRowData
                 continue;
             }
             $this->elementValue['Title']['text'] .= '<div class="search-title-aka">' . html_escape($title) . '</div>';
+        }
+
+        if ($this->showComingledResults)
+        {
+            $ownerSite = $item['_source']['ownersite'];
+            $this->elementValue['Title']['text'] .= "<div class='search-owner-site'>$ownerSite</div>";
         }
     }
 
@@ -255,12 +268,29 @@ class SearchResultsTableViewRowData
         {
             $tags = $item['_source']['tags'];
             $tags = implode(', ', $tags);
+            $score =  $this->userIsAdmin() ? $item['_score'] : '';
         }
         else
         {
             $tags = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
+            $score = '';
         }
         $this->elementValue['<tags>']['text'] = '';
         $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetail(__('Tags'),  $tags);
+        $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetail(__('Score'),  $score);;
     }
+
+    protected function userIsAdmin()
+    {
+        $user = current_user();
+
+        if (empty($user))
+            return false;
+
+        if ($user->role == 'researcher')
+            return false;
+
+        return true;
+    }
+
 }
