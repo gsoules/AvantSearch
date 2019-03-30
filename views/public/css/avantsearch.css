@@ -599,16 +599,22 @@ input[type="checkbox"] {
 	list-style-type:none;
 }
 
-.elasticsearchFacetSection {
+.elasticsearch-facet-section {
 	color: #1a77bd;
 	font-size:20px;
 	padding-top: 8px;
 	padding-bottom: 8px;
 }
 
-.elasticsearchFacetName {
+.elasticsearch-facet-name {
 	color: #666;
 	font-size:14px;
+	font-weight: bold;
+}
+
+.elasticsearch-highlight {
+	color: #0693ff;
+	font-style: normal;
 	font-weight: bold;
 }
 
