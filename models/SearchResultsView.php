@@ -29,6 +29,7 @@ class SearchResultsView
     protected $sortField;
     protected $sortFieldName;
     protected $sortOrder;
+    protected $showComingledResults;
     protected $subjectSearch;
     protected $useElasticsearch;
     protected $viewId;
@@ -40,6 +41,7 @@ class SearchResultsView
         $this->privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
+        $this->showComingledResults = false;
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -153,7 +155,7 @@ class SearchResultsView
         if (!isset($this->subjectSearch))
             $this->subjectSearch = isset($_GET['subjects']);
 
-        $text = $this->useElasticsearch ? __('Advanced Search') : __('Modify Search');
+        $text = __('Modify Search');
         $uri = url('find/' . ($this->subjectSearch ? 'subject' : 'advanced'));
         $action = $uri . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
         $form = "<form id='modify-form' name='modify-form' action='$action' method='post' class='modify-search-button'>";
@@ -375,6 +377,11 @@ class SearchResultsView
         return $this->titles;
     }
 
+    public function getShowComingledResults()
+    {
+        return $this->showComingledResults;
+    }
+
     public function getSortField()
     {
         if (isset($this->sortField))
@@ -482,6 +489,11 @@ class SearchResultsView
     public function setTotalResults($totalResults)
     {
         $this->totalResults = $totalResults;
+    }
+
+    public function setShowComingledResults($show)
+    {
+        $this->showComingledResults = $show;
     }
 
     public function setUseElasticsearch($useElasticsearch)
