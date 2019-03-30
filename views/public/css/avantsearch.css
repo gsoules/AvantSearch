@@ -278,6 +278,11 @@ input[type="checkbox"] {
 	width: 55%;
 }
 
+.search-owner-site {
+	color: #777777;
+	font-size:12px;
+}
+
 .search-title-aka,
 .search-relationship,
 .search-related-item {
