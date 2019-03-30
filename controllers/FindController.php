@@ -28,6 +28,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $isSimpleSearch = isset($params['query']);
         $useElasticsearch = $isSimpleSearch && (get_option(SearchConfig::OPTION_ELASTICSEARCH) == true);
         $searchResults->setUseElasticsearch($useElasticsearch);
+        $searchResults->setShowComingledResults(true);
 
         $viewId = $searchResults->getViewId();
         if (SearchResultsViewFactory::viewUsesResultsLimit($viewId))
