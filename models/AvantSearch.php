@@ -162,6 +162,7 @@ class AvantSearch
         $linkText = $useElasticsearch ? __('Search Options') : __('Advanced Search');
         $url = url('find');
         $query = isset($_GET['query']) ? $_GET['query'] : '';
+        $query = htmlspecialchars($query, ENT_QUOTES);
 
         // Construct the HTML that will replace the native Omeka search form with the one for AvantSearch.
         $html = '<div id="search-container" role="search">';
