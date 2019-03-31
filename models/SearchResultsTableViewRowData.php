@@ -78,26 +78,57 @@ class SearchResultsTableViewRowData
             $descriptionText = isset($this->elementValue['Description']['text']) ? $this->elementValue['Description']['text'] : '';
         }
 
+        // Strip away line breaks;
+        $descriptionText = str_replace('<br />', ' ', $descriptionText);
+        $descriptionText = str_replace(array("\r", "\n", "\t"), ' ', $descriptionText);
+
         // Shorten the description text if it's too long.
         $maxLength = 250;
+        $truncatedLength = 0;
+
         if ($hasHighlights)
         {
-            // Increase the length to include the last highlight plus another few words
-            $maxLength = strrpos($descriptionText, '</span>') + strlen('</span>') + 15;
+            // Allow a little more context for descriptions with highlighting. Also take into account
+            // the fact that the <span> tags add length that is not part of the content.
+            $maxLength = 300;
+            $text = $descriptionText;
+            $start = 0;
+            while (true)
+            {
+                $start = strpos($text, '<span', $start);
+                $end = strpos($text, 'span>', $start) + strlen('span>');
+                if ($start === false || $end === false)
+                {
+                    break;
+                }
+                $x = substr($text, $start, $end - $start);
+                if ($start > $maxLength)
+                {
+                    break;
+                }
+                if ($end > $maxLength)
+                {
+                    $truncatedLength = $end + 1;
+                    break;
+                }
+                $start = $end;
+            }
         }
-        $maxLength = max(250, $maxLength);
+        $truncatedLength = max($truncatedLength, $maxLength);
 
-        $this->elementValue['Description']['text'] = str_replace('<br />', '', $descriptionText);
+        $this->elementValue['Description']['text'] = $descriptionText;
         $descriptionText = $this->elementValue['Description']['text'];
-        if (strlen($descriptionText) > $maxLength)
+
+        if (strlen($descriptionText) > $truncatedLength)
         {
             // Truncate the description at whitespace and add an elipsis at the end.
-            $shortText = preg_replace("/^(.{1,$maxLength})(\\s.*|$)/s", '\\1', $descriptionText);
+            $shortText = preg_replace("/^(.{1,$truncatedLength})(\\s.*|$)/s", '\\1', $descriptionText);
             $shortTextLength = strlen($shortText);
             $remainingText = '<span class="search-more-text">' . substr($descriptionText, $shortTextLength) . '</span>';
             $remainingText .= '<span class="search-show-more"> ['. __('show more') . ']</span>';
             $this->elementValue['Description']['text'] = $shortText . $remainingText;
         }
+
         $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetail('Description', $this->elementValue['Description']['text']);
     }
 
