@@ -63,6 +63,7 @@ class SearchResultsTableViewRowData
         $hasHighlights = false;
         if ($this->useElasticsearch && isset($item['highlight']['element.description']))
         {
+            // Replace the original description text with the highlighted text from Elasticsearch.
             $hasHighlights = true;
             $descriptionText = '';
             $highlights = $item['highlight']['element.description'];
@@ -81,27 +82,29 @@ class SearchResultsTableViewRowData
         // Strip away line breaks;
         $descriptionText = str_replace('<br />', ' ', $descriptionText);
         $descriptionText = str_replace(array("\r", "\n", "\t"), ' ', $descriptionText);
+        $this->elementValue['Description']['text'] = $descriptionText;
 
-        // Shorten the description text if it's too long.
+        // Specify how much of the description to show.
         $maxLength = 250;
         $truncatedLength = 0;
 
         if ($hasHighlights)
         {
-            // Allow a little more context for descriptions with highlighting. Also take into account
-            // the fact that the <span> tags add length that is not part of the content.
-            $maxLength = 300;
-            $text = $descriptionText;
+            // This description has highlighting. Bump the max length a little to more context and
+            // adjust for the fact that the <span> tags add length that is not part of the content.
+            $maxLength += 50;
             $start = 0;
             while (true)
             {
-                $start = strpos($text, '<span', $start);
-                $end = strpos($text, 'span>', $start) + strlen('span>');
+                // Find the end of the last highlighting <span> tag that fits within the max length.
+                // Truncation can safely occur immediately after the closing tag. If making adjustments
+                // to this logic, be sure not to truncate within a tag.
+                $start = strpos($descriptionText, '<span', $start);
+                $end = strpos($descriptionText, 'span>', $start) + strlen('span>');
                 if ($start === false || $end === false)
                 {
                     break;
                 }
-                $x = substr($text, $start, $end - $start);
                 if ($start > $maxLength)
                 {
                     break;
@@ -114,22 +117,28 @@ class SearchResultsTableViewRowData
                 $start = $end;
             }
         }
+
+        // Truncate the text if it exceeds the max length by at least a few sentences. This avoids
+        // the disappointment of clicking [show more] only to see a few extra words.
         $truncatedLength = max($truncatedLength, $maxLength);
+        $descriptionTextLength = strlen(strip_tags($descriptionText));
+        $textTooLong = $descriptionTextLength > ($truncatedLength + 100);
 
-        $this->elementValue['Description']['text'] = $descriptionText;
-        $descriptionText = $this->elementValue['Description']['text'];
-
-        if (strlen($descriptionText) > $truncatedLength)
+        if ($textTooLong)
         {
-            // Truncate the description at whitespace and add an elipsis at the end.
+            // Truncate the description at a whitespace character so that a whole word does not get split.
             $shortText = preg_replace("/^(.{1,$truncatedLength})(\\s.*|$)/s", '\\1', $descriptionText);
             $shortTextLength = strlen($shortText);
+
+            // Insert the [show more] link.
             $remainingText = '<span class="search-more-text">' . substr($descriptionText, $shortTextLength) . '</span>';
             $remainingText .= '<span class="search-show-more"> ['. __('show more') . ']</span>';
-            $this->elementValue['Description']['text'] = $shortText . $remainingText;
+
+            // Combine the showing and truncated text.
+            $descriptionText = $shortText . $remainingText;
         }
 
-        $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetail('Description', $this->elementValue['Description']['text']);
+        $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetail('Description', $descriptionText);
     }
 
     protected function generateIdentifierLink($item)
