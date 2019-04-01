@@ -9,7 +9,7 @@ $headerColumns = array();
 if ($searchResults->hasLayoutL1())
 {
     // Set the Image column which only appears in the L1 Detail layout.
-    $headerColumns['<image>'] = array('label' => '', 'classes' => 'L1', 'sortable' => false);
+    $headerColumns['<image>'] = array('name' => '', 'label' => '', 'classes' => 'L1', 'sortable' => false);
 }
 
 foreach ($columnsData as $elementId => $column)
@@ -30,7 +30,7 @@ foreach ($columnsData as $elementId => $column)
     // Form the special class name e.g. 'search-th-title' that is unique to this header column.
     $classes .= ' ' . SearchResultsView::createColumnClass($column['name'], 'th');
 
-    $headerColumns[$elementId] = array('label' => $column['alias'], 'classes' => $classes, 'sortable' => true);
+    $headerColumns[$elementId] = array('name' => $column['name'], 'label' => $column['alias'], 'classes' => $classes, 'sortable' => true);
 }
 
 echo $searchResults->emitHeaderRow($headerColumns);
