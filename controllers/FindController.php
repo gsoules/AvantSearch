@@ -28,7 +28,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $isSimpleSearch = isset($params['query']);
         $useElasticsearch = $isSimpleSearch && (get_option(SearchConfig::OPTION_ELASTICSEARCH) == true);
         $searchResults->setUseElasticsearch($useElasticsearch);
-        $searchResults->setShowComingledResults(true);
+        $searchResults->setShowCommingledResults(false);
 
         $viewId = $searchResults->getViewId();
         if (SearchResultsViewFactory::viewUsesResultsLimit($viewId))
@@ -144,12 +144,18 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     private function getSortParams() {
         $sort = [];
-        if($this->_request->sort_field) {
-            $sort['field'] = $this->_request->sort_field;
-            if($this->_request->sort_dir) {
-                $sort['dir'] = $this->_request->sort_dir;
-            }
-        }
+//        if($this->_request->sort_field) {
+//            $sort['field'] = $this->_request->sort_field;
+//            if($this->_request->sort_dir) {
+//                $sort['dir'] = $this->_request->sort_dir;
+//            }
+//        }
+
+        $direction = $this->_request->sort_dir ? $this->_request->sort_dir : 'asc';
+        $sort[] = ['element.address-street.keyword' => $direction];
+        $sort[] = ['element.address-number' => $direction];
+        $sort[] = '_score';
+
         return $sort;
     }
 }
