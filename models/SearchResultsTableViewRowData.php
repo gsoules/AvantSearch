@@ -7,7 +7,7 @@ class SearchResultsTableViewRowData
     protected $hierarchyElements;
     public $itemThumbnailHtml;
     protected $searchResults;
-    protected $showComingledResults;
+    protected $showCommingledResults;
     protected $useElasticsearch;
 
     public function __construct($item, SearchResultsTableView $searchResults)
@@ -16,7 +16,7 @@ class SearchResultsTableViewRowData
         $this->columnsData = $searchResults->getColumnsData();
         $this->hierarchyElements = SearchConfig::getOptionDataForTreeView();
         $this->useElasticsearch = $searchResults->getUseElasticsearch();
-        $this->showComingledResults = $searchResults->getShowComingledResults();
+        $this->showCommingledResults = $searchResults->getShowCommingledResults();
         $this->initializeData($item);
     }
 
@@ -147,7 +147,7 @@ class SearchResultsTableViewRowData
         if ($this->useElasticsearch)
         {
             $identifier = $item['_source']['element']['identifier'];
-            if ($this->showComingledResults)
+            if ($this->showCommingledResults)
             {
                 $ownerId = $item['_source']['ownerid'];
                 $identifier = $ownerId . '-' . $identifier;
@@ -172,7 +172,7 @@ class SearchResultsTableViewRowData
 
     protected function generateThumbnailHtml($item)
     {
-        $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->showComingledResults);
+        $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->showCommingledResults);
         $this->itemThumbnailHtml = $itemPreview->emitItemHeader();
         $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
@@ -186,7 +186,7 @@ class SearchResultsTableViewRowData
             if (isset($item['_source']['element']['title']))
             {
                 $texts = $item['_source']['element']['title'];
-                $titles = is_array($texts) ? $texts : array($texts);
+                $titles = explode(PHP_EOL, $texts);
                 $itemUrl =  $item['_source']['url'];
                 $titleLink = "<a href='$itemUrl'>$titles[0]</a>";
             }
@@ -213,7 +213,7 @@ class SearchResultsTableViewRowData
             $this->elementValue['Title']['text'] .= '<div class="search-title-aka">' . html_escape($title) . '</div>';
         }
 
-        if ($this->showComingledResults)
+        if ($this->showCommingledResults)
         {
             $ownerSite = $item['_source']['ownersite'];
             $this->elementValue['Title']['text'] .= "<div class='search-owner-site'>$ownerSite</div>";
@@ -300,14 +300,7 @@ class SearchResultsTableViewRowData
                     if (isset($elasticSearchElementTexts[$elasticSearchFieldName]))
                     {
                         $texts = $elasticSearchElementTexts[$elasticSearchFieldName];
-                        if (is_array($texts))
-                        {
-                            $elementTexts = $texts;
-                        }
-                        else
-                        {
-                            $elementTexts[0] = $texts;
-                        }
+                        $elementTexts = explode(PHP_EOL, $texts);
                     }
                 }
                 else
