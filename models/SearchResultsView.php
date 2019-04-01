@@ -94,21 +94,14 @@ class SearchResultsView
             {
                 $params = $_GET;
 
-                // Emit the column to sort on. Elasticserch requires the name, SQL requires the element Id.
-                $params['sort'] = $this->useElasticsearch ? $headerColumn['label'] : $elementId;
+                // Emit the column to sort on. Elasticserch requires the actual element name, SQL requires the element Id.
+                $params['sort'] = $this->useElasticsearch ? $headerColumn['name'] : $elementId;
 
                 $sortDirection = 'a';
 
-                if ($this->useElasticsearch)
-                {
-                    $isCurentlySortedColumn = $sortFieldName == $params['sort'];
-                }
-                else
-                {
-                    $isCurentlySortedColumn = $sortField == $elementId;
-                }
+                $isTheSortedColumn = $this->useElasticsearch ? $sortFieldName == $params['sort'] : $sortField == $elementId;
 
-                if ($isCurentlySortedColumn)
+                if ($isTheSortedColumn)
                 {
                     if ($sortOrder == 'd')
                     {
@@ -432,7 +425,7 @@ class SearchResultsView
 
             if (empty($this->sortFieldName))
             {
-                // No sort field was speicified for the sort field Id is invalid. Use the Title as a default.
+                // Either no sort field was specified or the sort field Id is invalid. Use the Title as a default.
                 $this->sortField = ItemMetadata::getTitleElementId();
                 $this->sortFieldName = ItemMetadata::getTitleElementName();
             }
