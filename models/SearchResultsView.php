@@ -29,7 +29,7 @@ class SearchResultsView
     protected $sortField;
     protected $sortFieldName;
     protected $sortOrder;
-    protected $showComingledResults;
+    protected $showCommingledResults;
     protected $subjectSearch;
     protected $useElasticsearch;
     protected $viewId;
@@ -41,7 +41,7 @@ class SearchResultsView
         $this->privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
-        $this->showComingledResults = false;
+        $this->showCommingledResults = false;
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -80,6 +80,7 @@ class SearchResultsView
     public function emitHeaderRow($headerColumns)
     {
         $sortField = $this->getSortField();
+        $sortFieldName = $this->getSortFieldName();
         $sortOrder = $this->getSortOrder();
 
         $headerRow = '';
@@ -92,10 +93,22 @@ class SearchResultsView
             if ($headerColumn['sortable'])
             {
                 $params = $_GET;
-                $params['sort'] = $elementId;
+
+                // Emit the column to sort on. Elasticserch requires the name, SQL requires the element Id.
+                $params['sort'] = $this->useElasticsearch ? $headerColumn['label'] : $elementId;
+
                 $sortDirection = 'a';
 
-                if ($sortField == $elementId)
+                if ($this->useElasticsearch)
+                {
+                    $isCurentlySortedColumn = $sortFieldName == $params['sort'];
+                }
+                else
+                {
+                    $isCurentlySortedColumn = $sortField == $elementId;
+                }
+
+                if ($isCurentlySortedColumn)
                 {
                     if ($sortOrder == 'd')
                     {
@@ -377,9 +390,9 @@ class SearchResultsView
         return $this->titles;
     }
 
-    public function getShowComingledResults()
+    public function getShowCommingledResults()
     {
-        return $this->showComingledResults;
+        return $this->showCommingledResults;
     }
 
     public function getSortField()
@@ -387,17 +400,44 @@ class SearchResultsView
         if (isset($this->sortField))
             return $this->sortField;
 
-        $this->sortField = isset($_GET['sort']) ? intval($_GET['sort']) : 0;
-
-        // Validate the sort field Id by attempting to get the field's name.
-        $this->sortFieldName = ItemMetadata::getElementNameFromId($this->sortField);
-        if (empty($this->sortFieldName))
+        if ($this->useElasticsearch)
         {
-            // The Id is not valid. Use the Title as a default.
-            $this->sortField = ItemMetadata::getTitleElementId();
-            $this->sortFieldName = ItemMetadata::getTitleElementName();
+            $this->sortFieldName = isset($_GET['sort']) ? ($_GET['sort']) : '';
+
+            if (!empty($this->sortFieldName) && !$this->showCommingledResults)
+            {
+                // Validate the sort field name by attempting to get the field's element Id.
+                $this->sortField = ItemMetadata::getElementIdForElementName($this->sortFieldName);
+                if ($this->sortField == 0)
+                {
+                    // The field name is not valid. Ignore the name and sort by relevance.
+                    $this->sortField = 0;
+                    $this->sortFieldName = '';
+                }
+            }
+            else
+            {
+                // Either the sort field was not specified or we are showing commingled results.
+                // If it was specified, we can't validate it because we don't know the element Ids for other sites.
+                $this->sortField = 0;
+            }
+            return $this->sortFieldName;
         }
-        return $this->sortField;
+        else
+        {
+            $this->sortField = isset($_GET['sort']) ? intval($_GET['sort']) : 0;
+
+            // Validate a non -zero sort field Id by attempting to get the field's name.
+            $this->sortFieldName = $this->sortField == 0 ? '' : ItemMetadata::getElementNameFromId($this->sortField);
+
+            if (empty($this->sortFieldName))
+            {
+                // No sort field was speicified for the sort field Id is invalid. Use the Title as a default.
+                $this->sortField = ItemMetadata::getTitleElementId();
+                $this->sortFieldName = ItemMetadata::getTitleElementName();
+            }
+            return $this->sortField;
+        }
     }
 
     public function getSortFieldName()
@@ -491,9 +531,9 @@ class SearchResultsView
         $this->totalResults = $totalResults;
     }
 
-    public function setShowComingledResults($show)
+    public function setShowCommingledResults($show)
     {
-        $this->showComingledResults = $show;
+        $this->showCommingledResults = $show;
     }
 
     public function setUseElasticsearch($useElasticsearch)
