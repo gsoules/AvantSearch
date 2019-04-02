@@ -395,15 +395,16 @@ class SearchResultsView
 
         if ($this->useElasticsearch)
         {
+            // Expecting an element name as the sort field.
             $this->sortFieldName = isset($_GET['sort']) ? ($_GET['sort']) : '';
 
             if (!empty($this->sortFieldName) && !$this->showCommingledResults)
             {
-                // Validate the sort field name by attempting to get the field's element Id.
+                // Validate the element name by attempting to get the its element Id.
                 $this->sortField = ItemMetadata::getElementIdForElementName($this->sortFieldName);
                 if ($this->sortField == 0)
                 {
-                    // The field name is not valid. Ignore the name and sort by relevance.
+                    // The element name is not valid. Ignore the name and sort by relevance.
                     $this->sortField = 0;
                     $this->sortFieldName = '';
                 }
@@ -411,21 +412,28 @@ class SearchResultsView
             else
             {
                 // Either the sort field was not specified or we are showing commingled results.
-                // If it was specified, we can't validate it because we don't know the element Ids for other sites.
+                // If it was specified and showing commingled results, we can't validate the element name
+                // because we don't know the element name/Id mapping for other sites. In other words, this
+                // element might be defined somewhere else, or is also defined on this site, but with a different Id.
+                // If the name is invalid, the FindController will catch and handle the exception that will
+                // get raised and handled when attempting to perform the sort using a bad Elasticsearch field name.
+                // This should only happen if someone modified the query string to change the name.
                 $this->sortField = 0;
             }
             return $this->sortFieldName;
         }
         else
         {
+            // Expecting an element Id as the sort field.
             $this->sortField = isset($_GET['sort']) ? intval($_GET['sort']) : 0;
 
-            // Validate a non -zero sort field Id by attempting to get the field's name.
+            // Validate a non-zero sort field element Id by attempting to get the element's name.
             $this->sortFieldName = $this->sortField == 0 ? '' : ItemMetadata::getElementNameFromId($this->sortField);
 
             if (empty($this->sortFieldName))
             {
-                // Either no sort field was specified or the sort field Id is invalid. Use the Title as a default.
+                // Either no sort field was specified or the element Id is invalid. Use the Title as a default.
+                // This should only happen if someone modified the query string to change the element Id.
                 $this->sortField = ItemMetadata::getTitleElementId();
                 $this->sortFieldName = ItemMetadata::getTitleElementName();
             }

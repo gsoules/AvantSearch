@@ -61,7 +61,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 $page = $this->_request->page ? $this->_request->page : 1;
                 $start = ($page - 1) * $recordsPerPage;
                 $user = $this->getCurrentUser();
-                $sort = $this->getSortParams();
+                $sort = $this->getSortParams($params);
 
                 $results = Elasticsearch_Helper_Index::search([
                     'query'             => $query,
@@ -72,13 +72,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 ]);
 
                 $totalRecords = $results["hits"]["total"];
-
-                $hits = $results['hits']['hits'];
-                $records = $hits;
+                $records = $results['hits']['hits'];
                 $searchResults->setQuery($query);
-
-                $facets = $results['aggregations'];
-                $searchResults->setFacets($facets);
+                $searchResults->setFacets($results['aggregations']);
             }
             else
             {
@@ -90,11 +86,21 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             }
 
         }
-        catch (Zend_Db_Statement_Mysqli_Exception $e)
+        //catch (Zend_Db_Statement_Mysqli_Exception $e)
+        catch (Exception $e)
         {
             $totalRecords = 0;
             $records = array();
-            $searchResults->setError($e->getMessage());
+
+            $message = $e->getMessage();
+
+            if ($useElasticsearch)
+            {
+                $message = json_decode($message);
+                $message = $message->error->root_cause[0]->reason;
+            }
+
+            $searchResults->setError($message);
         }
 
         if ($recordsPerPage)
@@ -114,46 +120,60 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->view->assign(array('searchResults' => $searchResults));
     }
 
-    private function compareYear($year1, $year2)
+    private function getSearchParams($query)
     {
-        $y1 = $year1['key'];
-        $y2 = $year2['key'];
-        if ($y1 == $y2)
-        {
-            $result = 0;
-        }
-        else
-        {
-            $result = $y1 < $y2 ? -1 : 1;
-        }
-        return $result;
-    }
-
-    private function getSearchParams($query) {
         $query = [
-            'query' => $query, // search terms
-            'facets' => []                  // facets to filter the search results
+            'query' => $query,
+            'facets' => []
         ];
-        foreach($this->_request->getQuery() as $k => $v) {
-            if(strpos($k, 'facet_') === 0) {
-                $query['facets'][substr($k, strlen('facet_'))] = $v;
+
+        $keywords = $this->_request->getQuery();
+
+        foreach ($keywords as $keyword => $value)
+        {
+            if (strpos($keyword, 'facet_') === 0)
+            {
+                $query['facets'][substr($keyword, strlen('facet_'))] = $value;
             }
         }
+
         return $query;
     }
 
-    private function getSortParams() {
+    private function getSortParams($params)
+    {
         $sort = [];
-//        if($this->_request->sort_field) {
-//            $sort['field'] = $this->_request->sort_field;
-//            if($this->_request->sort_dir) {
-//                $sort['dir'] = $this->_request->sort_dir;
-//            }
-//        }
 
-        $direction = $this->_request->sort_dir ? $this->_request->sort_dir : 'asc';
-        $sort[] = ['element.address-street.keyword' => $direction];
-        $sort[] = ['element.address-number' => $direction];
+        if (!(isset($params['sort']) && isset($params['order'])))
+        {
+            return $sort;
+        }
+
+        $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
+
+        $sortElementName = $params['sort'];
+        $sortFieldName = AvantElasticsearch::elasticsearchFieldName($sortElementName);
+
+        $sortOrder = $params['order'] == 'd' ? 'desc' : 'asc';
+
+        if ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
+        {
+            $sort[] = ['element.address-street.keyword' => $sortOrder];
+            $sort[] = ['element.address-number' => $sortOrder];
+        }
+        else if (in_array($sortElementName, $integerSortElements))
+        {
+            $sort[] = ["element.$sortFieldName" => $sortOrder];
+        }
+        else if ($sortElementName == 'Type' || $sortElementName == 'Subject' || $sortElementName == 'Place')
+        {
+            $sort[] = ["element.$sortFieldName-sort.keyword" => $sortOrder];
+        }
+        else
+        {
+            $sort[] = ["element.$sortFieldName.keyword" => $sortOrder];
+        }
+
         $sort[] = '_score';
 
         return $sort;

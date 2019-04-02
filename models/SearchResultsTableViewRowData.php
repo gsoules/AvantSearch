@@ -296,10 +296,11 @@ class SearchResultsTableViewRowData
 
                 if ($this->useElasticsearch)
                 {
-                    $elasticSearchFieldName = strtolower($elementName);
-                    if (isset($elasticSearchElementTexts[$elasticSearchFieldName]))
+                    $elasticsearchFieldName = AvantElasticsearch::elasticsearchFieldName($elementName);
+
+                    if (isset($elasticSearchElementTexts[$elasticsearchFieldName]))
                     {
-                        $texts = $elasticSearchElementTexts[$elasticSearchFieldName];
+                        $texts = $elasticSearchElementTexts[$elasticsearchFieldName];
                         $elementTexts = explode(PHP_EOL, $texts);
                     }
                 }
