@@ -286,6 +286,8 @@ class SearchResultsTableViewRowData
     {
         $elasticSearchElementTexts = $this->useElasticsearch ? $item['_source']['element'] : null;
 
+        $avantElasticsearch = new AvantElasticsearch();
+
         foreach ($this->columnsData as $elementId => $column)
         {
             $elementName = $column['name'];
@@ -296,7 +298,7 @@ class SearchResultsTableViewRowData
 
                 if ($this->useElasticsearch)
                 {
-                    $elasticsearchFieldName = AvantElasticsearch::elasticsearchFieldName($elementName);
+                    $elasticsearchFieldName = $avantElasticsearch->elasticsearchFieldName($elementName);
 
                     if (isset($elasticSearchElementTexts[$elasticsearchFieldName]))
                     {
