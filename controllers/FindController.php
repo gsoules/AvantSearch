@@ -2,6 +2,8 @@
 
 class AvantSearch_FindController extends Omeka_Controller_AbstractActionController
 {
+    private $avantElasticsearch;
+
     public function advancedSearchAction()
     {
         return;
@@ -48,6 +50,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
             if ($useElasticsearch)
             {
+                $this->avantElasticsearch = new AvantElasticsearch();
+
                 $queryArg = $params['query'];
                 $query = $this->getSearchParams($queryArg);
 
@@ -63,7 +67,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 $user = $this->getCurrentUser();
                 $sort = $this->getSortParams($params);
 
-                $results = Elasticsearch_Helper_Index::search([
+                $results = $this->avantElasticsearch->constructQuery([
                     'query'             => $query,
                     'offset'            => $start,
                     'limit'             => $recordsPerPage,
@@ -152,18 +156,18 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
 
         $sortElementName = $params['sort'];
-        $sortFieldName = AvantElasticsearch::elasticsearchFieldName($sortElementName);
+        $sortFieldName = $this->avantElasticsearch->elasticsearchFieldName($sortElementName);
 
         $sortOrder = $params['order'] == 'd' ? 'desc' : 'asc';
 
         if ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
         {
             $sort[] = ['element.address-street.keyword' => $sortOrder];
-            $sort[] = ['element.address-number' => $sortOrder];
+            $sort[] = ['element.address-number.keyword' => $sortOrder];
         }
         else if (in_array($sortElementName, $integerSortElements))
         {
-            $sort[] = ["element.$sortFieldName" => $sortOrder];
+            $sort[] = ["element.$sortFieldName-sort.keyword" => $sortOrder];
         }
         else if ($sortElementName == 'Type' || $sortElementName == 'Subject' || $sortElementName == 'Place')
         {
