@@ -1,5 +1,6 @@
 <?php
-$aggregation_labels = Elasticsearch_Helper_index::getAggregationLabels();
+$avantElasticsearch = new AvantElasticsearch();
+$aggregation_labels = $avantElasticsearch->getAggregationLabels();
 $querystr = Elasticsearch_Utils::getQueryString($query);
 $applied_facets = $query['facets'];
 ?>
