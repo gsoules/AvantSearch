@@ -7,54 +7,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         parent::__construct();
     }
 
-    public function constructElasticsearchMapping()
-    {
-        // Force the Date field to be of type text so that ES does not infer that it's a date field and then get an error
-        // when indexing a non-conformming date like '1929 c.'. Also add the keyword version of date so it can be used
-        // for aggregation. Normally fields are both text and keyword, but since we are setting the type we also have
-        // to set it to keyword. See https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-fields.html
-
-        $mapping =
-            [
-                '_doc' => [
-                    'properties' => [
-                        'title' => [
-                            'type' => 'text',
-                            'analyzer' => 'english'
-                        ],
-                        'element.description' => [
-                            'type' => 'text',
-                            'analyzer' => 'english'
-                        ],
-                        'element.date' => [
-                            'type' => 'text',
-                            'fields' => [
-                                'keyword' => [
-                                    'type' => 'keyword'
-                                ]
-                            ]
-                        ]
-                    ]
-                ]
-            ];
-
-        return $mapping;
-    }
-
-    protected function fetchObjects($className)
-    {
-        if (!class_exists($className))
-        {
-            return null;
-        }
-        $db = get_db();
-        $table = $db->getTable($className);
-        $select = $table->getSelect();
-        $table->applySorting($select, 'id', 'ASC');
-        return $table->fetchObjects($select);
-    }
-
-    protected function catentateValues($texts)
+    protected function catentateElementTexts($texts)
     {
         $elementTexts = '';
         foreach ($texts as $text) {
@@ -67,23 +20,74 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $elementTexts;
     }
 
-    public function getBulkParams(array $docs,$offset=0, $length=null) {
-        if($offset < 0 || $length < 0) {
+    public function constructElasticsearchMapping()
+    {
+        // Force the Date field to be of type text so that ES does not infer that it's a date field and then get an error
+        // when indexing a non-conformming date like '1929 c.'. Also add the keyword version of date so it can be used
+        // for aggregation. Normally fields are both text and keyword, but since we are setting the type we also have
+        // to set it to keyword. See https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-fields.html
+
+        $mapping = [
+            '_doc' => [
+                'properties' => [
+                    'title' => [
+                        'type' => 'text',
+                        'analyzer' => 'english'
+                    ],
+                    'element.description' => [
+                        'type' => 'text',
+                        'analyzer' => 'english'
+                    ],
+                    'element.date' => [
+                        'type' => 'text',
+                        'fields' => [
+                            'keyword' => [
+                                'type' => 'keyword'
+                            ]
+                        ]
+                    ]
+                ]
+            ]
+        ];
+
+        return $mapping;
+    }
+
+    protected function fetchObjects()
+    {
+        $db = get_db();
+        $table = $db->getTable('Item');
+        $select = $table->getSelect();
+
+        return $table->fetchObjects($select);
+    }
+
+    public function getBulkParams(array $docs,$offset=0, $length=null)
+    {
+        if ($offset < 0 || $length < 0)
+        {
             throw new Exception("offset less than zero");
         }
 
-        if(isset($length)) {
-            if($offset + $length > count($docs)) {
+        if (isset($length))
+        {
+            if ($offset + $length > count($docs))
+            {
                 $end = count($docs);
-            } else {
+            }
+            else
+            {
                 $end = $offset + $length;
             }
-        } else {
+        }
+        else
+        {
             $end = count($docs);
         }
 
         $params = ['body' => []];
-        for($i = $offset; $i < $end; $i++) {
+        for ($i = $offset; $i < $end; $i++)
+        {
             $doc = $docs[$i];
             $action_and_metadata = [
                 'index' => [
@@ -91,7 +95,8 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                     '_type'  => $doc->type,
                 ]
             ];
-            if(isset($doc->id)) {
+            if(isset($doc->id))
+            {
                 $action_and_metadata['index']['_id'] = $doc->id;
             }
             $params['body'][] = $action_and_metadata;
@@ -104,7 +109,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
     {
         $docs = array();
         $limit = count($items);
-        $limit = 25;
+        $limit = 50;
         for ($index = 0; $index < $limit; $index++)
         {
             $item = $items[$index];
@@ -129,7 +134,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         set_current_record('Item', $item);
 
         $texts = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
-        $title = $this->catentateValues($texts);
+        $title = $this->catentateElementTexts($texts);
         if (strlen($title) == 0)
         {
             $title = __('Untitled');
@@ -201,7 +206,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 // sorting based on the first value as is required by AvantSearch when a user sorts by column.
                 // By catenating the values, sorting will work as desired.
                 $texts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
-                $elementTexts = $this->catentateValues($texts);
+                $elementTexts = $this->catentateElementTexts($texts);
 
                 // Change Description content to plain text for two reasons:
                 // 1. Prevent searches from finding HTML tag names like span or strong.
