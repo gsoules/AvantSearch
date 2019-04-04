@@ -88,12 +88,12 @@ class AvantElasticsearchQueryBuilder extends AvantElasticsearch
         }
 
         $params = [
-            'index' => $this->getDocIndex(),
+            'index' => $this->getElasticsearchIndexName(),
             'from' => $offset,
             'size' => $limit,
             'body' => $body
         ];
 
-        return $this->client()->search($params);
+        return $this->createElasticsearchClient()->search($params);
     }
 }

@@ -178,7 +178,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 // Elasticsearch field. Note that Elasticsearch only allows lowercase field names.
                 $element = $item->getElementById($elementText->element_id);
                 $elementName = $element->name;
-                $elasticsearchFieldName = $avantElasticsearch->elasticsearchFieldName($elementName);
+                $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
 
                 // Skip private elements.
                 if (array_key_exists($element->id, $privateElementsData))

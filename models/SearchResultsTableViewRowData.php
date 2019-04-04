@@ -298,7 +298,7 @@ class SearchResultsTableViewRowData
 
                 if ($this->useElasticsearch)
                 {
-                    $elasticsearchFieldName = $avantElasticsearch->elasticsearchFieldName($elementName);
+                    $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
 
                     if (isset($elasticSearchElementTexts[$elasticsearchFieldName]))
                     {
