@@ -38,7 +38,7 @@ class AvantElasticsearchQueryBuilder extends AvantElasticsearch
             '_source' => ['itemid', 'ownerid', 'ownersite', 'public', 'url', 'thumb', 'image', 'files', 'element.*', 'html', 'tags'],
             'highlight' => $highlight,
             'query' => ['bool' => []],
-            'aggregations' => $this->facets->getAggregations()
+            'aggregations' => $this->facets->createAggregationsForElasticsearchQuery()
         ];
 
         // Tuning Tests
@@ -73,7 +73,7 @@ class AvantElasticsearchQueryBuilder extends AvantElasticsearch
         $body['query']['bool']['should'] = $shouldQuery;
 
         // Add filters
-        $filters = $this->facets->getFacetFilters($facets);
+        $filters = $this->facets->getFacetFiltersForElasticsearchQuery($facets);
         if(count($filters) > 0) {
             $body['query']['bool']['filter'] = $filters;
         }
