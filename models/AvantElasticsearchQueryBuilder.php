@@ -12,7 +12,7 @@ class AvantElasticsearchQueryBuilder extends AvantElasticsearch
 
     public function constructQuery($options)
     {
-        if(!isset($options['query']) || !is_array($options['query']))
+        if (!isset($options['query']) || !is_array($options['query']))
         {
             throw new Exception("Query parameter is required to execute elasticsearch query.");
         }
@@ -23,29 +23,34 @@ class AvantElasticsearchQueryBuilder extends AvantElasticsearch
         $facets = isset($options['query']['facets']) ? $options['query']['facets'] : [];
         $sort = isset($options['sort']) ? $options['sort'] : null;
 
-        $highlight = ['fields' =>
-            ['element.description' =>
-                (object)[
-                    'number_of_fragments' => 0,
-                    'pre_tags' => ['<span class="elasticsearch-highlight">'],
-                    'post_tags' => ['</span>']
+        $aggregations = $this->facets->createAggregationsForElasticsearchQuery();
+
+        // Fields that the query will return.
+        $source = [
+            'itemid',
+            'ownerid',
+            'ownersite',
+            'public',
+            'url',
+            'thumb',
+            'image',
+            'files',
+            'element.*',
+            'html',
+            'tags'
+        ];
+
+        // Highlighting the query will return.        $highlight = ['fields' =>
+        $highlight =
+            ['fields' =>
+                ['element.description' =>
+                    (object)[
+                        'number_of_fragments' => 0,
+                        'pre_tags' => ['<span class="elasticsearch-highlight">'],
+                        'post_tags' => ['</span>']
+                    ]
                 ]
-            ]
         ];
-
-        // Main body of query
-        $body = [
-            '_source' => ['itemid', 'ownerid', 'ownersite', 'public', 'url', 'thumb', 'image', 'files', 'element.*', 'html', 'tags'],
-            'highlight' => $highlight,
-            'query' => ['bool' => []],
-            'aggregations' => $this->facets->createAggregationsForElasticsearchQuery()
-        ];
-
-        // Tuning Tests
-        // ann's point - should return item 6601 first
-        // sawyers - should return titles with sawyers before titles with sawyer
-        // ralph stanly - should return his reference in first few results
-        // stanley cranberry and variations - should return item 15377 first
 
         $mustQuery = [
             "multi_match" => [
@@ -69,21 +74,24 @@ class AvantElasticsearchQueryBuilder extends AvantElasticsearch
                 ]
             ]];
 
+        $body = [
+            '_source' => $source,
+            'highlight' => $highlight,
+            'aggregations' => $aggregations
+        ];
+
         $body['query']['bool']['must'] = $mustQuery;
         $body['query']['bool']['should'] = $shouldQuery;
 
-        // Add filters
         $filters = $this->facets->getFacetFiltersForElasticsearchQuery($facets);
-        if(count($filters) > 0) {
+        if (count($filters) > 0)
+        {
             $body['query']['bool']['filter'] = $filters;
         }
 
-        // Add sorting
         if (isset($sort))
         {
             $body['sort'] = $sort;
-
-
             $body['track_scores'] = true; // otherwise scores won't be computed
         }
 
