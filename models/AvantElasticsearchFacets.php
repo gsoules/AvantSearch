@@ -6,65 +6,58 @@ class AvantElasticsearchFacets extends AvantElasticsearch
         parent::__construct();
     }
 
-    public function getAggregations() {
-        $aggregations = [
-            'types' => [
+    public function createAggregationsForElasticsearchQuery()
+    {
+        $facetNames = $this->getFacetNames();
+
+        // Create an array of aggregation terms.
+        foreach ($facetNames as $aggregationName => $facetName)
+        {
+            $terms[$aggregationName] = [
                 'terms' => [
-                    'field' => 'facets.type.keyword',
+                    'field' => "facets.$aggregationName.keyword",
                     'size' => 50,
                     'order' => ['_key' => 'asc']
                 ]
-            ],
-            'subjects' => [
-                'terms' => [
-                    'field' => 'facets.subject.keyword',
-                    'size' => 50,
-                    'order' => ['_key' => 'asc']
-                ]
-            ],
-            'places' => [
-                'terms' => [
-                    'field' => 'facets.place.keyword',
-                    'size' => 50,
-                    'order' => ['_key' => 'asc']
-                ]
-            ],
-            'dates' => [
-                'terms' => [
-                    'field' => 'facets.date.keyword',
-                    'size' => 50,
-                    'order' => ['_key' => 'asc']
-                ]
-            ]
-        ];
+            ];
+        }
+
+        // Convert the array into a nested object for the aggregation as required by Elasticsearch.
+        $aggregations = (object)json_decode(json_encode($terms));
+
         return $aggregations;
     }
 
-    public function getAggregationLabels()
+    protected function createFacetFilter($filters, $facets, $facetName, $aggregationName)
     {
-        $aggregation_labels = array(
-            'types' => 'Item Types',
-            'subjects' => 'Subjects',
-            'places' => 'Places',
-            'dates' => 'Dates'
-        );
-        return $aggregation_labels;
-    }
-
-    public function getFacetFilters($facets) {
-        $filters = array();
-        if(isset($facets['types'])) {
-            $filters[] = ['terms' => ['facets.type.keyword' => $facets['types']]];
-        }
-        if(isset($facets['subjects'])) {
-            $filters[] = ['terms' => ['facets.subject.keyword' => $facets['subjects']]];
-        }
-        if(isset($facets['places'])) {
-            $filters[] = ['terms' => ['facets.place.keyword' => $facets['places']]];
-        }
-        if(isset($facets['dates'])) {
-            $filters[] = ['terms' => ['facets.date.keyword' => $facets['dates']]];
+        if (isset($facets[$aggregationName]))
+        {
+            $filters[] = ['terms' => [$facetName => $facets[$aggregationName]]];
         }
         return $filters;
+    }
+
+    public function getFacetFiltersForElasticsearchQuery($facets)
+    {
+        $filters = array();
+        $facetNames = $this->getFacetNames();
+
+        foreach ($facetNames as $aggregationName => $facetName)
+        {
+            $filters = $this->createFacetFilter($filters, $facets, "facets.$aggregationName.keyword", $aggregationName);
+        }
+
+        return $filters;
+    }
+
+    public function getFacetNames()
+    {
+        $facetNames = array(
+            'type' => 'Item Types',
+            'subject' => 'Subjects',
+            'place' => 'Places',
+            'date' => 'Dates'
+        );
+        return $facetNames;
     }
 }
