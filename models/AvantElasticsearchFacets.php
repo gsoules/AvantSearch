@@ -6,6 +6,23 @@ class AvantElasticsearchFacets extends AvantElasticsearch
         parent::__construct();
     }
 
+    public function addFacetToQuery($queryString, $facetToAdd, $value)
+    {
+        $arg = urlencode("facet_{$facetToAdd}[]") . "=" . urlencode($value);
+
+        if (strpos($queryString, $arg) === FALSE)
+        {
+            return "$queryString&$arg";
+        }
+
+        return $queryString;
+    }
+
+    public function convertFacetValuesToString($value)
+    {
+        return is_array($value) ? implode(', ', $value) : $value;
+    }
+
     public function createAggregationsForElasticsearchQuery()
     {
         $facetNames = $this->getFacetNames();
@@ -37,6 +54,30 @@ class AvantElasticsearchFacets extends AvantElasticsearch
         return $filters;
     }
 
+    public function createQueryStringWithFacets($query)
+    {
+        $terms = isset($query['query']) ? $query['query'] : '';
+        $facets = isset($query['facets']) ? $query['facets'] : array();
+        $queryString = "query=".urlencode($terms);
+
+        foreach ($facets as $facet_name => $facet_values)
+        {
+            if (is_array($facet_values))
+            {
+                foreach($facet_values as $k => $v)
+                {
+                    $queryString .= '&'.urlencode("facet_{$facet_name}[]") . '=' . urlencode($v);
+                }
+            }
+            else
+            {
+                $queryString .= '&'.urlencode("facet_{$facet_name}") . '=' . urlencode($facet_values);
+            }
+        }
+
+        return $queryString;
+    }
+
     public function getFacetFiltersForElasticsearchQuery($facets)
     {
         $filters = array();
@@ -59,5 +100,20 @@ class AvantElasticsearchFacets extends AvantElasticsearch
             'date' => 'Dates'
         );
         return $facetNames;
+    }
+
+    public function removeFacetFromQuery($queryString, $facetToRemove)
+    {
+        $beforeArgs = explode('&', $queryString);
+        $afterArgs = array();
+
+        foreach ($beforeArgs as $arg)
+        {
+            if (strpos($arg, $facetToRemove) === FALSE)
+            {
+                $afterArgs[] = $arg;
+            }
+        }
+        return implode('&', $afterArgs);
     }
 }
