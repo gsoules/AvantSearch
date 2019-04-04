@@ -72,14 +72,12 @@ class AvantElasticsearchQueryBuilder extends AvantElasticsearch
                     "query" => "reference",
                     "boost" => 10
                 ]
-            ]];
-
-        $body = [
-            '_source' => $source,
-            'highlight' => $highlight,
-            'aggregations' => $aggregations
+            ]
         ];
 
+        $body['_source'] = $source;
+        $body['highlight'] = $highlight;
+        $body['aggregations'] = $aggregations;
         $body['query']['bool']['must'] = $mustQuery;
         $body['query']['bool']['should'] = $shouldQuery;
 
@@ -91,8 +89,9 @@ class AvantElasticsearchQueryBuilder extends AvantElasticsearch
 
         if (isset($sort))
         {
+            // Specify sort criteria and also compute scores to be used as the final sort criteria.
             $body['sort'] = $sort;
-            $body['track_scores'] = true; // otherwise scores won't be computed
+            $body['track_scores'] = true;
         }
 
         $params = [
