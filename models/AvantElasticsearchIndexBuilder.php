@@ -20,6 +20,24 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $elementTexts;
     }
 
+    protected function constructAddressElement($elementName, $elasticsearchFieldName, $texts, &$elementData)
+    {
+        if ($elementName == 'Address')
+        {
+            $text = $texts[0];
+
+            if (preg_match('/([^a-zA-Z]+)?(.*)/', $text, $matches))
+            {
+                // Try to get a number from the number portion. If there is none, intval return 0 which is good for sorting.
+                $numberMatch = $matches[1];
+                $number = intval($numberMatch);
+
+                $elementData[$elasticsearchFieldName . '-number'] = sprintf('%010d', $number);
+                $elementData[$elasticsearchFieldName . '-street'] = $matches[2];
+            }
+        }
+    }
+
     public function constructElasticsearchMapping()
     {
         // Force the Date field to be of type text so that ES does not infer that it's a date field and then get an error
@@ -53,7 +71,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $mapping;
     }
 
-    protected function constructFacets($texts, &$facets, $elementName, $elasticsearchFieldName)
+    protected function constructFacets($elementName, $elasticsearchFieldName, $texts, &$facets)
     {
         $facetValues = array();
         foreach ($texts as $text)
@@ -302,23 +320,10 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 $this->constructHierarchies($elementName, $elasticsearchFieldName, $hierarchyFields, $texts, $elementData);
 
                 // SPECIAL logic for addresses
-                if ($elementName == 'Address')
-                {
-                    $text = $texts[0];
-
-                    if (preg_match('/([^a-zA-Z]+)?(.*)/', $text, $matches))
-                    {
-                        // Try to get a number from the number portion. If there is none, intval return 0 which is good for sorting.
-                        $numberMatch = $matches[1];
-                        $number = intval($numberMatch);
-
-                        $elementData[$elasticsearchFieldName . '-number'] = sprintf('%010d', $number);
-                        $elementData[$elasticsearchFieldName . '-street'] = $matches[2];
-                    }
-                }
+                $this->constructAddressElement($elementName, $elasticsearchFieldName, $texts, $elementData);
 
                 // Create facets for this element.
-                $facets = $this->constructFacets($texts, $facets, $elementName, $elasticsearchFieldName);
+                $facets = $this->constructFacets($elementName, $elasticsearchFieldName, $texts, $facets);
             }
 
             $doc->setField('element', $elementData);
@@ -332,7 +337,8 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
 
         $tags = [];
-        foreach ($item->getTags() as $tag) {
+        foreach ($item->getTags() as $tag)
+        {
             $tags[] = $tag->name;
         }
         $doc->setField('tags', $tags);
