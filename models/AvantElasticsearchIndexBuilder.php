@@ -71,6 +71,26 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $mapping;
     }
 
+    protected function constructElementTextsString($texts, $elementName, $isHtmlElement)
+    {
+        // Get the element's text and catentate them into a single string separate by EOL breaks.
+        // Though Elasticsearch supports mulitple field values stored in arrays, it does not support
+        // sorting based on the first value as is required by AvantSearch when a user sorts by column.
+        // By catenating the values, sorting will work as desired.
+
+        $elementTexts = $this->catentateElementTexts($texts);
+
+        // Change Description content to plain text for two reasons:
+        // 1. Prevent searches from finding HTML tag names like span or strong.
+        // 2. Allow proper hit highlighting in search results with showing highlighted HTML tags.
+        if ($elementName == 'Description' && $isHtmlElement)
+        {
+            $elementTexts = strip_tags($texts[0]);
+        }
+
+        return $elementTexts;
+    }
+
     protected function constructFacets($elementName, $elasticsearchFieldName, $texts, &$facets)
     {
         $facetValues = array();
@@ -305,22 +325,8 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 }
 
                 $isHtmlElement = $this->constructHtmlElement($elementName, $elasticsearchFieldName, $item, $htmlFields);
-
-
-                // Get the element's text and catentate them into a single string separate by EOL breaks.
-                // Though Elasticsearch supports mulitple field values stored in arrays, it does not support
-                // sorting based on the first value as is required by AvantSearch when a user sorts by column.
-                // By catenating the values, sorting will work as desired.
                 $texts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
-                $elementTexts = $this->catentateElementTexts($texts);
-
-                // Change Description content to plain text for two reasons:
-                // 1. Prevent searches from finding HTML tag names like span or strong.
-                // 2. Allow proper hit highlighting in search results with showing highlighted HTML tags.
-                if ($elementName == 'Description' && $isHtmlElement)
-                {
-                    $elementTexts = strip_tags($texts[0]);
-                }
+                $elementTexts = $this->constructElementTextsString($texts, $elementName, $isHtmlElement);
 
                 // Save the element's text.
                 $elementData[$elasticsearchFieldName] = $elementTexts;
