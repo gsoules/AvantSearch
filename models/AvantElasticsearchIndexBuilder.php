@@ -53,7 +53,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $mapping;
     }
 
-    protected function constructFacets($texts, $facets, $elementName, $elasticsearchFieldName)
+    protected function constructFacets($texts, &$facets, $elementName, $elasticsearchFieldName)
     {
         $facetValues = array();
         foreach ($texts as $text)
@@ -109,6 +109,24 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
 
         return $facets;
+    }
+
+    protected function constructHierarchies($elementName, $elasticsearchFieldName, &$hierarchyFields, $texts, &$elementData)
+    {
+        if ($elementName == 'Place' || $elementName == 'Type' || $elementName == 'Subject')
+        {
+            $hierarchyFields[] = $elasticsearchFieldName;
+            $text = $texts[0];
+
+            // Find the last comma.
+            $index = strrpos($text, ',', -1);
+            if ($index !== false)
+            {
+                // Filter out the ancestry to leave just the leaf text.
+                $text = trim(substr($text, $index + 1));
+            }
+            $elementData[$elasticsearchFieldName . '-sort'] = $text;
+        }
     }
 
     protected function fetchObjects()
@@ -281,20 +299,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 }
 
                 // SPECIAL logic for hierarchies
-                if ($elementName == 'Place' || $elementName == 'Type' || $elementName == 'Subject')
-                {
-                    $hierarchyFields[] = $elasticsearchFieldName;
-                    $text = $texts[0];
-
-                    // Find the last comma.
-                    $index = strrpos($text, ',', -1);
-                    if ($index !== false)
-                    {
-                        // Filter out the ancestry to leave just the leaf text.
-                        $text = trim(substr($text, $index + 1));
-                    }
-                    $elementData[$elasticsearchFieldName . '-sort'] = $text;
-                }
+                $this->constructHierarchies($elementName, $elasticsearchFieldName, $hierarchyFields, $texts, $elementData);
 
                 // SPECIAL logic for addresses
                 if ($elementName == 'Address')
