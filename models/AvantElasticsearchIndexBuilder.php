@@ -331,27 +331,28 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
 
             foreach ($elementTexts as $elementText)
             {
-                // Get the element's name and create a lowercase version of it to match the corresponding
-                // Elasticsearch field. Note that Elasticsearch only allows lowercase field names.
                 $element = $item->getElementById($elementText->element_id);
-                $elementName = $element->name;
-                $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
 
-                // Skip private elements.
                 if (array_key_exists($element->id, $privateElementsData))
                 {
+                    // Skip private elements.
                     continue;
                 }
 
+                // Get the element name and create the corresponding Elasticsearch field name.
+                $elementName = $element->name;
+                $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
+
+                // Get the element's text values as a single string with the values catenated.
                 $isHtmlElement = $this->constructHtmlElement($elementName, $elasticsearchFieldName, $item, $htmlFields);
                 $texts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
-                $elementTexts = $this->constructElementTextsString($texts, $elementName, $isHtmlElement);
+                $elementTextsString = $this->constructElementTextsString($texts, $elementName, $isHtmlElement);
 
                 // Save the element's text.
-                $elementData[$elasticsearchFieldName] = $elementTexts;
+                $elementData[$elasticsearchFieldName] = $elementTextsString;
 
-                // Construct special cases.
-                $this->constructIntegerElement($elementName, $elasticsearchFieldName, $elementTexts, $elementData);
+                // Process special cases.
+                $this->constructIntegerElement($elementName, $elasticsearchFieldName, $elementTextsString, $elementData);
                 $this->constructHierarchy($elementName, $elasticsearchFieldName, $texts, $elementData);
                 $this->constructAddressElement($elementName, $elasticsearchFieldName, $texts, $elementData);
                 $this->constructFacets($elementName, $elasticsearchFieldName, $texts, $facets);
@@ -446,7 +447,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         $filename = 'C:/Users/gsoules/Desktop/public-17.json';
 
         $export = false;
-        $limit = 40;
+        $limit = 200;
 
         if ($export)
         {
