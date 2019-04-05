@@ -125,8 +125,6 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 $facets[$elasticsearchFieldName] = $facetValuesCount > 1 ? $facetValues : $facetValues[0];
             }
         }
-
-        return $facets;
     }
 
     protected function constructHierarchies($elementName, $elasticsearchFieldName, &$hierarchyFields, $texts, &$elementData)
@@ -144,6 +142,15 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 $text = trim(substr($text, $index + 1));
             }
             $elementData[$elasticsearchFieldName . '-sort'] = $text;
+        }
+    }
+
+    protected function constructIntegerElements($elementName, $elasticsearchFieldName, $elementTexts, &$elementData)
+    {
+        $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
+        if (in_array($elementName, $integerSortElements))
+        {
+            $elementData[$elasticsearchFieldName . '-sort'] = sprintf('%010d', $elementTexts);
         }
     }
 
@@ -309,21 +316,11 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 // Save the element's text.
                 $elementData[$elasticsearchFieldName] = $elementTexts;
 
-                // SPECIAL logic for integers
-                $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
-                if (in_array($elementName, $integerSortElements))
-                {
-                    $elementData[$elasticsearchFieldName . '-sort'] = sprintf('%010d', $elementTexts);
-                }
-
-                // SPECIAL logic for hierarchies
+                // Construct special cases.
+                $this->constructIntegerElements($elementName, $elasticsearchFieldName, $elementTexts, $elementData);
                 $this->constructHierarchies($elementName, $elasticsearchFieldName, $hierarchyFields, $texts, $elementData);
-
-                // SPECIAL logic for addresses
                 $this->constructAddressElement($elementName, $elasticsearchFieldName, $texts, $elementData);
-
-                // Create facets for this element.
-                $facets = $this->constructFacets($elementName, $elasticsearchFieldName, $texts, $facets);
+                $this->constructFacets($elementName, $elasticsearchFieldName, $texts, $facets);
             }
 
             $doc->setField('element', $elementData);
