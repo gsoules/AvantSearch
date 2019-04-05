@@ -48,7 +48,8 @@ class AvantElasticsearchDocument extends AvantElasticsearch
 
         try
         {
-            $client->delete($this->constructDocumentParameters());
+            $response = $client->delete($this->constructDocumentParameters());
+            return $response;
         }
         catch (Elasticsearch\Common\Exceptions\Missing404Exception $e)
         {
@@ -60,12 +61,7 @@ class AvantElasticsearchDocument extends AvantElasticsearch
     {
         $client = $this->createElasticsearchClient();
 
-        if (!isset($this->id))
-        {
-            throw new Exception("Document ID must be specified");
-        }
-
-        // Get the document from the index.
+        // Get the document from the index and return it.
         return $client->get($this->constructDocumentParameters());
     }
 
