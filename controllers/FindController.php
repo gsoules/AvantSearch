@@ -50,6 +50,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
             if ($useElasticsearch)
             {
+                $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
 
                 $queryArg = $params['query'];
                 $query = $this->getSearchParams($queryArg);
@@ -66,7 +67,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 $user = $this->getCurrentUser();
                 $sort = $this->getSortParams($params);
 
-                $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
                 $results = $this->avantElasticsearchQueryBuilder->constructQuery([
                     'query'             => $query,
                     'offset'            => $start,
@@ -156,7 +156,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
 
         $sortElementName = $params['sort'];
-        $sortFieldName = $this->avantElasticsearchQueryBuilder->elasticsearchFieldName($sortElementName);
+        $sortFieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
 
         $sortOrder = $params['order'] == 'd' ? 'desc' : 'asc';
 
