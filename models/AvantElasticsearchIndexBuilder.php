@@ -199,6 +199,49 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         $doc->setField('tags', $tags);
     }
 
+    protected function constructTitle($texts)
+    {
+        $title = $this->catentateElementTexts($texts);
+        if (strlen($title) == 0) {
+            $title = __('Untitled');
+        }
+        return $title;
+    }
+
+    protected function createElasticsearchDocument($item, $texts)
+    {
+        // For now use the Item type e.g. SWHPL or GCIHS as the owner Id.
+        $itemType = $item->getItemType();
+        $ownerId = strtolower($itemType->name);
+
+        $title = $this->constructTitle($texts);
+        $itemPath = public_url('items/show/' . metadata('item', 'id'));
+        $serverUrlHelper = new Zend_View_Helper_ServerUrl;
+        $serverUrl = $serverUrlHelper->serverUrl();
+        $itemPublicUrl = $serverUrl . $itemPath;
+        $itemImageThumbUrl = ItemPreview::getImageUrl($item, false, true);
+        $itemImageOriginalUrl = ItemPreview::getImageUrl($item, false, false);
+        $docId = "$ownerId-$item->id";
+        $ownerSite = get_option('site_title');
+        $itemFiles = $item->Files;
+        $fileCount = count($itemFiles);
+
+        $doc = new Elasticsearch_Document($this->docIndex, $docId);
+
+        $doc->setFields([
+            'itemid' => $item->id,
+            'ownerid' => $ownerId,
+            'ownersite' => $ownerSite,
+            'title' => $title,
+            'public' => $item->public,
+            'url' => $itemPublicUrl,
+            'thumb' => $itemImageThumbUrl,
+            'image' => $itemImageOriginalUrl,
+            'files' => $fileCount
+        ]);
+        return $doc;
+    }
+
     protected function fetchObjects()
     {
         $db = get_db();
@@ -272,41 +315,9 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
 
     public function getItemDocument($item)
     {
-        $itemType = $item->getItemType();
         set_current_record('Item', $item);
-
         $texts = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
-        $title = $this->catentateElementTexts($texts);
-        if (strlen($title) == 0)
-        {
-            $title = __('Untitled');
-        }
-
-        $itemPublicUrl = public_url('items/show/' . metadata('item', 'id'));
-        $serverUrlHelper = new Zend_View_Helper_ServerUrl;
-        $serverUrl = $serverUrlHelper->serverUrl();
-        $itemPublicUrl = $serverUrl . $itemPublicUrl;
-        $itemImageThumbUrl = ItemPreview::getImageUrl($item, false, true);
-        $itemImageOriginalUrl = ItemPreview::getImageUrl($item, false, false);
-        $ownerId = strtolower($itemType->name);
-        $docId = "$ownerId-$item->id";
-        $ownerSite = get_option('site_title');
-        $itemFiles = $item->Files;
-        $fileCount = count($itemFiles);
-
-        $doc = new Elasticsearch_Document($this->docIndex, $docId);
-
-        $doc->setFields([
-            'itemid' => $item->id,
-            'ownerid' => $ownerId,
-            'ownersite' => $ownerSite,
-            'title' => $title,
-            'public' => $item->public,
-            'url' => $itemPublicUrl,
-            'thumb' => $itemImageThumbUrl,
-            'image' => $itemImageOriginalUrl,
-            'files' => $fileCount
-        ]);
+        $doc = $this->createElasticsearchDocument($item, $texts);
 
         try
         {
