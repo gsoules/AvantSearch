@@ -105,18 +105,14 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $params;
     }
 
-    public function getDocuments(array $items)
+    public function getDocuments(array $items, $limit = 0)
     {
         $docs = array();
-        $limit = count($items);
-        $limit = 50;
+        $limit = $limit == 0 ? count($items) : $limit;
+
         for ($index = 0; $index < $limit; $index++)
         {
             $item = $items[$index];
-
-            // TEMP
-//            if ($item->id != 9334 && $item->id != 5860)
-//                continue;
 
             if ($item->public == 0)
             {
@@ -355,51 +351,68 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
     }
 
-    public function performBulkIndex(array $items, $batchSize=500, $timeout=90)
+    protected function preformBulkIndexExport(array $items, $filename, $limit = 0)
     {
-        $client = Elasticsearch_Client::create(['timeout' => $timeout]);
+        $docs = $this->getDocuments($items, $limit);
+        $formattedData = json_encode($docs);
+        $handle = fopen($filename, 'w+');
+        fwrite($handle, $formattedData);
+        fclose($handle);
+        return array();
+    }
 
+    protected function performBulkIndexImport($filename)
+    {
+        $batchSize = 500;
+        $timeout = 90;
         $responses = array();
 
-        $filename = 'C:/Users/gsoules/Desktop/public-16.json';
+        $client = Elasticsearch_Client::create(['timeout' => $timeout]);
+
+        $params = [
+            'index' => 'omeka',
+            'body' => ['mappings' => $this->constructElasticsearchMapping()]
+        ];
+
+        $paramsResponse = $client->indices()->create($params);
+
+        $docs = array();
+        if (file_exists($filename))
+        {
+            $docs = file_get_contents($filename);
+            $docs = json_decode($docs, false);
+        }
+
+        $docsCount = count($docs);
+
+        for ($offset = 0; $offset < $docsCount; $offset += $batchSize)
+        {
+            $params = $this->getBulkParams($docs, $offset, $batchSize);
+            $response = $client->bulk($params);
+
+            if ($response['errors'] == true)
+            {
+                $responses[] = $response["items"][0]["index"];
+            }
+        }
+
+        return $responses;
+    }
+
+    public function performBulkIndex(array $items)
+    {
+        $filename = 'C:/Users/gsoules/Desktop/public-17.json';
+
         $export = false;
+        $limit = 40;
 
         if ($export)
         {
-            $docs = $this->getDocuments($items);
-            $formattedData = json_encode($docs);
-            $handle = fopen($filename,'w+');
-            fwrite($handle,$formattedData);
-            fclose($handle);
+            $responses = $this->preformBulkIndexExport($items, $filename, $limit);
         }
         else
         {
-            $params = [
-                'index' => 'omeka',
-                'body' => ['mappings' => $this->constructElasticsearchMapping()]
-            ];
-
-            $paramsResponse = $client->indices()->create($params);
-
-            $docs = array();
-            if (file_exists($filename))
-            {
-                $docs = file_get_contents($filename);
-                $docs = json_decode($docs, false);
-            }
-
-            $docsCount = count($docs);
-
-            for ($offset = 0; $offset < $docsCount; $offset += $batchSize)
-            {
-                $params = $this->getBulkParams($docs, $offset, $batchSize);
-                $response = $client->bulk($params);
-
-                if ($response['errors'] == true)
-                {
-                    $responses[] = $response["items"][0]["index"];
-                }
-            }
+            $responses = $this->performBulkIndexImport($filename);
         }
 
         return $responses;
