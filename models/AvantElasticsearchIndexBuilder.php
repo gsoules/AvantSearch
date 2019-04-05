@@ -38,6 +38,38 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
     }
 
+    protected function consructElasticsearchDocument($item, $texts)
+    {
+        $title = $this->constructTitle($texts);
+        $itemPath = public_url('items/show/' . metadata('item', 'id'));
+        $serverUrlHelper = new Zend_View_Helper_ServerUrl;
+        $serverUrl = $serverUrlHelper->serverUrl();
+        $itemPublicUrl = $serverUrl . $itemPath;
+        $itemImageThumbUrl = ItemPreview::getImageUrl($item, false, true);
+        $itemImageOriginalUrl = ItemPreview::getImageUrl($item, false, false);
+        $itemFiles = $item->Files;
+        $fileCount = count($itemFiles);
+        $ownerSite = get_option('site_title');
+        $ownerId = $this->getOwnerIdForItem($item);
+        $documentId = $this->getDocumentIdForItem($item);
+
+        $document = new AvantElasticsearchDocument($documentId);
+
+        $document->setFields([
+            'itemid' => $item->id,
+            'ownerid' => $ownerId,
+            'ownersite' => $ownerSite,
+            'title' => $title,
+            'public' => $item->public,
+            'url' => $itemPublicUrl,
+            'thumb' => $itemImageThumbUrl,
+            'image' => $itemImageOriginalUrl,
+            'files' => $fileCount
+        ]);
+
+        return $document;
+    }
+
     public function constructElasticsearchMapping()
     {
         // Force the Date field to be of type text so that ES does not infer that it's a date field and then get an error
@@ -45,8 +77,10 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         // for aggregation. Normally fields are both text and keyword, but since we are setting the type we also have
         // to set it to keyword. See https://www.elastic.co/guide/en/elasticsearch/reference/current/multi-fields.html
 
+        $mappingType = $this->getDocumentMappingType();
+
         $mapping = [
-            '_doc' => [
+            $mappingType => [
                 'properties' => [
                     'title' => [
                         'type' => 'text',
@@ -208,37 +242,62 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $title;
     }
 
-    protected function createElasticsearchDocument($item, $texts)
+    public function createElasticsearchDocumentFromItem($item)
     {
-        // For now use the Item type e.g. SWHPL or GCIHS as the owner Id.
-        $itemType = $item->getItemType();
-        $ownerId = strtolower($itemType->name);
+        set_current_record('Item', $item);
+        $texts = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
+        $doc = $this->consructElasticsearchDocument($item, $texts);
 
-        $title = $this->constructTitle($texts);
-        $itemPath = public_url('items/show/' . metadata('item', 'id'));
-        $serverUrlHelper = new Zend_View_Helper_ServerUrl;
-        $serverUrl = $serverUrlHelper->serverUrl();
-        $itemPublicUrl = $serverUrl . $itemPath;
-        $itemImageThumbUrl = ItemPreview::getImageUrl($item, false, true);
-        $itemImageOriginalUrl = ItemPreview::getImageUrl($item, false, false);
-        $docId = "$ownerId-$item->id";
-        $ownerSite = get_option('site_title');
-        $itemFiles = $item->Files;
-        $fileCount = count($itemFiles);
+        try
+        {
+            $elementData = [];
+            $facets = [];
+            $htmlFields = [];
 
-        $doc = new Elasticsearch_Document($this->docIndex, $docId);
+            $privateElementsData = CommonConfig::getOptionDataForPrivateElements();
+            $elementTexts = $item->getAllElementTexts();
+            $avantElasticsearch = new AvantElasticsearch();
 
-        $doc->setFields([
-            'itemid' => $item->id,
-            'ownerid' => $ownerId,
-            'ownersite' => $ownerSite,
-            'title' => $title,
-            'public' => $item->public,
-            'url' => $itemPublicUrl,
-            'thumb' => $itemImageThumbUrl,
-            'image' => $itemImageOriginalUrl,
-            'files' => $fileCount
-        ]);
+            foreach ($elementTexts as $elementText)
+            {
+                $element = $item->getElementById($elementText->element_id);
+
+                if (array_key_exists($element->id, $privateElementsData))
+                {
+                    // Skip private elements.
+                    continue;
+                }
+
+                // Get the element name and create the corresponding Elasticsearch field name.
+                $elementName = $element->name;
+                $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
+
+                // Get the element's text values as a single string with the values catenated.
+                $isHtmlElement = $this->constructHtmlElement($elementName, $elasticsearchFieldName, $item, $htmlFields);
+                $texts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
+                $elementTextsString = $this->constructElementTextsString($texts, $elementName, $isHtmlElement);
+
+                // Save the element's text.
+                $elementData[$elasticsearchFieldName] = $elementTextsString;
+
+                // Process special cases.
+                $this->constructIntegerElement($elementName, $elasticsearchFieldName, $elementTextsString, $elementData);
+                $this->constructHierarchy($elementName, $elasticsearchFieldName, $texts, $elementData);
+                $this->constructAddressElement($elementName, $elasticsearchFieldName, $texts, $elementData);
+                $this->constructFacets($elementName, $elasticsearchFieldName, $texts, $facets);
+            }
+
+            $doc->setField('element', $elementData);
+            $doc->setField('facets', $facets);
+            $doc->setField('html', $htmlFields);
+        }
+        catch (Omeka_Record_Exception $e)
+        {
+            $this->_log("Error loading elements for item {$item->id}. Error: ".$e->getMessage(), Zend_Log::WARN);
+        }
+
+        $this->constructTags($item, $doc);
+
         return $doc;
     }
 
@@ -251,7 +310,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $table->fetchObjects($select);
     }
 
-    public function getBulkParams(array $docs,$offset=0, $length=null)
+    public function getBulkParams(array $docs, $offset=0, $length=null)
     {
         if ($offset < 0 || $length < 0)
         {
@@ -308,68 +367,9 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 // Skip private items.
                 continue;
             }
-            $docs[] = $this->getItemDocument($item);
+            $docs[] = $this->createElasticsearchDocumentFromItem($item);
         }
         return $docs;
-    }
-
-    public function getItemDocument($item)
-    {
-        set_current_record('Item', $item);
-        $texts = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
-        $doc = $this->createElasticsearchDocument($item, $texts);
-
-        try
-        {
-            $elementData = [];
-            $facets = [];
-            $htmlFields = [];
-
-            $privateElementsData = CommonConfig::getOptionDataForPrivateElements();
-            $elementTexts = $item->getAllElementTexts();
-            $avantElasticsearch = new AvantElasticsearch();
-
-            foreach ($elementTexts as $elementText)
-            {
-                $element = $item->getElementById($elementText->element_id);
-
-                if (array_key_exists($element->id, $privateElementsData))
-                {
-                    // Skip private elements.
-                    continue;
-                }
-
-                // Get the element name and create the corresponding Elasticsearch field name.
-                $elementName = $element->name;
-                $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
-
-                // Get the element's text values as a single string with the values catenated.
-                $isHtmlElement = $this->constructHtmlElement($elementName, $elasticsearchFieldName, $item, $htmlFields);
-                $texts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
-                $elementTextsString = $this->constructElementTextsString($texts, $elementName, $isHtmlElement);
-
-                // Save the element's text.
-                $elementData[$elasticsearchFieldName] = $elementTextsString;
-
-                // Process special cases.
-                $this->constructIntegerElement($elementName, $elasticsearchFieldName, $elementTextsString, $elementData);
-                $this->constructHierarchy($elementName, $elasticsearchFieldName, $texts, $elementData);
-                $this->constructAddressElement($elementName, $elasticsearchFieldName, $texts, $elementData);
-                $this->constructFacets($elementName, $elasticsearchFieldName, $texts, $facets);
-            }
-
-            $doc->setField('element', $elementData);
-            $doc->setField('facets', $facets);
-            $doc->setField('html', $htmlFields);
-        }
-        catch (Omeka_Record_Exception $e)
-        {
-            $this->_log("Error loading elements for item {$item->id}. Error: ".$e->getMessage(), Zend_Log::WARN);
-        }
-
-        $this->constructTags($item, $doc);
-
-        return $doc;
     }
 
     public function indexAll()
@@ -447,7 +447,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         $filename = 'C:/Users/gsoules/Desktop/public-17.json';
 
         $export = false;
-        $limit = 200;
+        $limit = 50;
 
         if ($export)
         {
