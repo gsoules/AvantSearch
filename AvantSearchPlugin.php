@@ -6,6 +6,8 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     protected $_hooks = array(
         'admin_head',
+        'after_save_item',
+        'after_delete_item',
         'before_save_item',
         'config',
         'config_form',
@@ -46,6 +48,24 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookAdminHead($args)
     {
         queue_css_file('avantsearch-admin');
+    }
+
+    public function hookAfterSaveItem($args)
+    {
+        if (get_option(SearchConfig::OPTION_ELASTICSEARCH))
+        {
+            $avantElasticsearchIndexBuilder = new AvantElasticsearchIndexBuilder();
+            $avantElasticsearchIndexBuilder->indexItem($args['record']);
+        }
+    }
+
+    public function hookAfterDeleteItem($args)
+    {
+        if (get_option(SearchConfig::OPTION_ELASTICSEARCH))
+        {
+            $avantElasticsearchIndexBuilder = new AvantElasticsearchIndexBuilder();
+            $avantElasticsearchIndexBuilder->deleteItem($args['record']);
+        }
     }
 
     public function hookBeforeSaveItem($args)
