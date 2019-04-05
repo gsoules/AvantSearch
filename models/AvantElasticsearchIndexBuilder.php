@@ -127,7 +127,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
     }
 
-    protected function constructHierarchies($elementName, $elasticsearchFieldName, &$hierarchyFields, $texts, &$elementData)
+    protected function constructHierarchy($elementName, $elasticsearchFieldName, &$hierarchyFields, $texts, &$elementData)
     {
         if ($elementName == 'Place' || $elementName == 'Type' || $elementName == 'Subject')
         {
@@ -145,7 +145,23 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
     }
 
-    protected function constructIntegerElements($elementName, $elasticsearchFieldName, $elementTexts, &$elementData)
+    protected function constructHtmlElement($elementName, $elasticsearchFieldName, $item, &$htmlFields)
+    {
+        // Determine if this element is from a field that allows HTML and use HTML.
+        // If so, add the element's name to a list of fields that contain HTML content.
+        // This will be needed so that search results will show the content properly and not as raw HTML.
+
+        $elementSetName = ItemMetadata::getElementSetNameForElementName($elementName);
+        $isHtmlElement = $item->getElementTexts($elementSetName, $elementName)[0]->isHtml();
+        if ($isHtmlElement)
+        {
+            $htmlFields[] = $elasticsearchFieldName;
+        }
+
+        return $isHtmlElement;
+    }
+
+    protected function constructIntegerElement($elementName, $elasticsearchFieldName, $elementTexts, &$elementData)
     {
         $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
         if (in_array($elementName, $integerSortElements))
@@ -288,15 +304,8 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                     continue;
                 }
 
-                // Determine if this element is from a field that allows HTML and use HTML.
-                // If so, add the element's name to a list of fields that contain HTML content.
-                // This will be needed so that search results will show the content properly and not as raw HTML.
-                $elementSetName = ItemMetadata::getElementSetNameForElementName($elementName);
-                $isHtmlElement = $item->getElementTexts($elementSetName, $elementName)[0]->isHtml();
-                if ($isHtmlElement)
-                {
-                    $htmlFields[] = $elasticsearchFieldName;
-                }
+                $isHtmlElement = $this->constructHtmlElement($elementName, $elasticsearchFieldName, $item, $htmlFields);
+
 
                 // Get the element's text and catentate them into a single string separate by EOL breaks.
                 // Though Elasticsearch supports mulitple field values stored in arrays, it does not support
@@ -317,8 +326,8 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
                 $elementData[$elasticsearchFieldName] = $elementTexts;
 
                 // Construct special cases.
-                $this->constructIntegerElements($elementName, $elasticsearchFieldName, $elementTexts, $elementData);
-                $this->constructHierarchies($elementName, $elasticsearchFieldName, $hierarchyFields, $texts, $elementData);
+                $this->constructIntegerElement($elementName, $elasticsearchFieldName, $elementTexts, $elementData);
+                $this->constructHierarchy($elementName, $elasticsearchFieldName, $hierarchyFields, $texts, $elementData);
                 $this->constructAddressElement($elementName, $elasticsearchFieldName, $texts, $elementData);
                 $this->constructFacets($elementName, $elasticsearchFieldName, $texts, $facets);
             }
