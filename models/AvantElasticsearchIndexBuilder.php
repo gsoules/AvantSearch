@@ -301,6 +301,26 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $doc;
     }
 
+    public function deleteIndex()
+    {
+        $params = ['index' => $this->docIndex];
+
+        $client = $this->createElasticsearchClient(['nobody' => true]);
+        if ($client->indices()->exists($params))
+        {
+            $client = $this->createElasticsearchClient();
+            $client->indices()->delete($params);
+        }
+    }
+
+    public function deleteItem($item)
+    {
+        $documentId = (new AvantElasticsearch())->getDocumentIdForItem($item);
+        $document = new AvantElasticsearchDocument($documentId);
+        $response = $document->deleteDocumentFromIndex();
+        return $response;
+    }
+
     protected function fetchObjects()
     {
         $db = get_db();
@@ -372,26 +392,13 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $docs;
     }
 
-    public function indexAll()
+    public function indexItem($item)
     {
-        $items = $this->fetchObjects('Item');
-        if (empty($items))
-        {
-            return;
-        }
+        $document = $this->createElasticsearchDocumentFromItem($item);
 
-        $responses = $this->performBulkIndex($items);
-
-        foreach ($responses as $response)
-        {
-            if (isset($response['error']))
-            {
-                $error = $response['error'];
-                $msg = $response['_id'] . ' : ' . $error['type'] . ' - ' . $error['reason'] . ' - ' . $error['caused_by']['reason'];
-                $flash = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
-                $flash->addMessage($msg);
-            }
-        }
+        // Add the document to the index.
+        $response = $document->addDocumentToIndex();
+        return $response;
     }
 
     protected function preformBulkIndexExport(array $items, $filename, $limit = 0)
@@ -442,22 +449,43 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $responses;
     }
 
-    public function performBulkIndex(array $items)
+    public function performBulkIndex($export, $filename, $limit)
     {
-        $filename = 'C:/Users/gsoules/Desktop/public-17.json';
-
-        $export = false;
-        $limit = 50;
-
         if ($export)
         {
+            $items = $this->fetchObjects('Item');
+            if (empty($items))
+            {
+                return;
+            }
             $responses = $this->preformBulkIndexExport($items, $filename, $limit);
         }
         else
         {
+            $this->deleteIndex();
             $responses = $this->performBulkIndexImport($filename);
         }
 
         return $responses;
+    }
+
+    public function indexAll()
+    {
+        $filename = 'C:/Users/gsoules/Desktop/public-17.json';
+        $limit = 70;
+        $export = false;
+
+        $responses = $this->performBulkIndex($export, $filename, $limit);
+
+        foreach ($responses as $response)
+        {
+            if (isset($response['error']))
+            {
+                $error = $response['error'];
+                $msg = $response['_id'] . ' : ' . $error['type'] . ' - ' . $error['reason'] . ' - ' . $error['caused_by']['reason'];
+                $flash = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
+                $flash->addMessage($msg);
+            }
+        }
     }
 }
