@@ -190,6 +190,16 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
     }
 
+    protected function constructTags($item, $doc)
+    {
+        $tags = [];
+        foreach ($item->getTags() as $tag)
+        {
+            $tags[] = $tag->name;
+        }
+        $doc->setField('tags', $tags);
+    }
+
     protected function fetchObjects()
     {
         $db = get_db();
@@ -341,19 +351,14 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
             $doc->setField('element', $elementData);
             $doc->setField('facets', $facets);
             $doc->setField('html', $htmlFields);
-            $doc->setField('hierarcy', $hierarchyFields);
+            $doc->setField('hierarchy', $hierarchyFields);
         }
-        catch(Omeka_Record_Exception $e)
+        catch (Omeka_Record_Exception $e)
         {
             $this->_log("Error loading elements for item {$item->id}. Error: ".$e->getMessage(), Zend_Log::WARN);
         }
 
-        $tags = [];
-        foreach ($item->getTags() as $tag)
-        {
-            $tags[] = $tag->name;
-        }
-        $doc->setField('tags', $tags);
+        $this->constructTags($item, $doc);
 
         return $doc;
     }
