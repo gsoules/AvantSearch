@@ -147,11 +147,10 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
     }
 
-    protected function constructHierarchy($elementName, $elasticsearchFieldName, &$hierarchyFields, $texts, &$elementData)
+    protected function constructHierarchy($elementName, $elasticsearchFieldName, $texts, &$elementData)
     {
         if ($elementName == 'Place' || $elementName == 'Type' || $elementName == 'Subject')
         {
-            $hierarchyFields[] = $elasticsearchFieldName;
             $text = $texts[0];
 
             // Find the last comma.
@@ -314,7 +313,6 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
             $elementData = [];
             $facets = [];
             $htmlFields = [];
-            $hierarchyFields = [];
 
             $privateElementsData = CommonConfig::getOptionDataForPrivateElements();
             $elementTexts = $item->getAllElementTexts();
@@ -343,7 +341,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
 
                 // Construct special cases.
                 $this->constructIntegerElement($elementName, $elasticsearchFieldName, $elementTexts, $elementData);
-                $this->constructHierarchy($elementName, $elasticsearchFieldName, $hierarchyFields, $texts, $elementData);
+                $this->constructHierarchy($elementName, $elasticsearchFieldName, $texts, $elementData);
                 $this->constructAddressElement($elementName, $elasticsearchFieldName, $texts, $elementData);
                 $this->constructFacets($elementName, $elasticsearchFieldName, $texts, $facets);
             }
@@ -351,7 +349,6 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
             $doc->setField('element', $elementData);
             $doc->setField('facets', $facets);
             $doc->setField('html', $htmlFields);
-            $doc->setField('hierarchy', $hierarchyFields);
         }
         catch (Omeka_Record_Exception $e)
         {
