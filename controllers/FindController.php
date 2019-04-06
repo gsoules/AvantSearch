@@ -101,10 +101,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             if ($useElasticsearch)
             {
                 $message = json_decode($message);
-                $message = $message->error->root_cause[0]->reason;
+                //$message = $message->error->root_cause[0]->reason;
             }
 
-            $searchResults->setError($message);
+            $searchResults->setError($message->message);
         }
 
         if ($recordsPerPage)
