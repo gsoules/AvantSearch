@@ -57,13 +57,13 @@ class AvantElasticsearchDocument extends AvantElasticsearch
         }
     }
 
-    public function getDocumentFromIndex()
-    {
-        $client = $this->createElasticsearchClient();
-
-        // Get the document from the index and return it.
-        return $client->get($this->constructDocumentParameters());
-    }
+//    public function getDocumentFromIndex()
+//    {
+//        $client = $this->createElasticsearchClient();
+//
+//        // Get the document from the index and return it.
+//        return $client->get($this->constructDocumentParameters());
+//    }
 
     public function setField($key, $value)
     {
