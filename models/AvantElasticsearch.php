@@ -1,4 +1,8 @@
 <?php
+
+require __DIR__ . '/../vendor/autoload.php';
+use Elasticsearch\ClientBuilder;
+
 class AvantElasticsearch
 {
     protected $docIndex;
@@ -17,7 +21,8 @@ class AvantElasticsearch
 
     public function createElasticsearchClient(array $options = array())
     {
-        return Elasticsearch_Client::create($options);
+        $client = AvantElasticsearchClient::create($options);
+        return $client;
     }
 
     public function getDocumentMappingType()
