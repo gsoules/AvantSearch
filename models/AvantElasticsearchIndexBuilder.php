@@ -436,7 +436,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         $timeout = 90;
         $responses = array();
 
-        $client = Elasticsearch_Client::create(['timeout' => $timeout]);
+        $client = $this->createElasticsearchClient(['timeout' => $timeout]);
 
         $params = [
             'index' => 'omeka',
@@ -475,7 +475,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
             $items = $this->fetchObjects('Item');
             if (empty($items))
             {
-                return;
+                return array();
             }
             $responses = $this->preformBulkIndexExport($items, $filename, $limit);
         }
@@ -490,8 +490,8 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
 
     public function indexAll()
     {
-        $filename = 'C:/Users/gsoules/Desktop/public-17.json';
-        $limit = 100;
+        $filename = 'C:/Users/gsoules/Desktop/public-18.json';
+        $limit = 50;
         $export = false;
 
         $responses = $this->performBulkIndex($export, $filename, $limit);
