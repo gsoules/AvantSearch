@@ -6,9 +6,6 @@ class AvantElasticsearch
     public function __construct()
     {
         $this->docIndex = $this->getElasticsearchIndexName();
-        if (empty($this->docIndex)) {
-            $this->docIndex = Elasticsearch_Config::index();
-        }
     }
 
     public function convertElementNameToElasticsearchFieldName($elementName)
@@ -30,7 +27,7 @@ class AvantElasticsearch
 
     public function getElasticsearchIndexName()
     {
-        return get_option('elasticsearch_index');
+        return get_option('avantsearch_elasticsearch_index');
     }
 
     public function getDocumentIdForItem($item)
