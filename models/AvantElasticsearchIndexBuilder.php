@@ -324,10 +324,14 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
     {
         $params = ['index' => $this->docIndex];
 
-        $client = $this->createElasticsearchClient(['nobody' => true]);
+        // The call below to indices() times out with a "no alive nodes in your cluster" error unless
+        // CURLOPT_NOBODY is set to true. Note that nobody means don't return the body.
+        $nobody = true;
+
+        $client = $this->createElasticsearchClient(['nobody' => $nobody]);
+
         if ($client->indices()->exists($params))
         {
-            $client = $this->createElasticsearchClient();
             $client->indices()->delete($params);
         }
     }
