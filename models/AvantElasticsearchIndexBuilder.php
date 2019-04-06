@@ -242,6 +242,25 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $title;
     }
 
+    public function convertResponsesToMessageString($responses)
+    {
+        $messageString = '';
+
+        foreach ($responses as $response)
+        {
+            if (isset($response['error']))
+            {
+                $error = $response['error'];
+                $reason = isset($error['reason']) ? $error['reason'] : '';
+                $causedBy = isset($error['caused_by']['reason']) ? $error['caused_by']['reason'] : '';
+                $message = $response['_id'] . ' : ' . $error['type'] . ' - ' . $reason . ' - ' . $causedBy;
+                $messageString .= $message .= '<br/>';
+            }
+        }
+
+        return $messageString;
+    }
+
     public function createElasticsearchDocumentFromItem($item)
     {
         set_current_record('Item', $item);
@@ -330,7 +349,7 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         return $table->fetchObjects($select);
     }
 
-    public function getBulkParams(array $docs, $offset=0, $length=null)
+    public function getBulkParams(array $documents, $offset, $length)
     {
         if ($offset < 0 || $length < 0)
         {
@@ -339,9 +358,9 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
 
         if (isset($length))
         {
-            if ($offset + $length > count($docs))
+            if ($offset + $length > count($documents))
             {
-                $end = count($docs);
+                $end = count($documents);
             }
             else
             {
@@ -350,25 +369,25 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
         }
         else
         {
-            $end = count($docs);
+            $end = count($documents);
         }
 
         $params = ['body' => []];
         for ($i = $offset; $i < $end; $i++)
         {
-            $doc = $docs[$i];
-            $action_and_metadata = [
+            $document = $documents[$i];
+            $actionsAndMetadata = [
                 'index' => [
-                    '_index' => $doc->index,
-                    '_type'  => $doc->type,
+                    '_index' => $document->index,
+                    '_type'  => $document->type,
                 ]
             ];
-            if(isset($doc->id))
+            if(isset($document->id))
             {
-                $action_and_metadata['index']['_id'] = $doc->id;
+                $actionsAndMetadata['index']['_id'] = $document->id;
             }
-            $params['body'][] = $action_and_metadata;
-            $params['body'][] = $doc->body;
+            $params['body'][] = $actionsAndMetadata;
+            $params['body'][] = isset($document->body) ? $document->body : '';
         }
         return $params;
     }
@@ -472,20 +491,10 @@ class AvantElasticsearchIndexBuilder extends AvantElasticsearch
     public function indexAll()
     {
         $filename = 'C:/Users/gsoules/Desktop/public-17.json';
-        $limit = 70;
+        $limit = 100;
         $export = false;
 
         $responses = $this->performBulkIndex($export, $filename, $limit);
-
-        foreach ($responses as $response)
-        {
-            if (isset($response['error']))
-            {
-                $error = $response['error'];
-                $msg = $response['_id'] . ' : ' . $error['type'] . ' - ' . $error['reason'] . ' - ' . $error['caused_by']['reason'];
-                $flash = Zend_Controller_Action_HelperBroker::getStaticHelper('FlashMessenger');
-                $flash->addMessage($msg);
-            }
-        }
+        return $responses;
     }
 }
