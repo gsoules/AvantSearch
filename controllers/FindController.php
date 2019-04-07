@@ -3,6 +3,8 @@
 class AvantSearch_FindController extends Omeka_Controller_AbstractActionController
 {
     private $avantElasticsearchQueryBuilder;
+    private $totalRecords = 0;
+    private $records = array();
 
     public function advancedSearchAction()
     {
@@ -37,13 +39,13 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $viewId = $searchResults->getViewId();
         if (SearchResultsViewFactory::viewUsesResultsLimit($viewId))
         {
-            $recordsPerPage = SearchResultsViewFactory::getResultsLimit($viewId, $searchResults);
+            $this->recordsPerPage = SearchResultsViewFactory::getResultsLimit($viewId, $searchResults);
         }
         else
         {
             // Index and Tree view show all results. Since there's no way to prevent Zend_Db_Select
             // from appending LIMIT to the end of the query, set the limit to a  high value.
-            $recordsPerPage = 100000;
+            $this->recordsPerPage = 100000;
         }
 
         try
@@ -52,43 +54,12 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
             if ($useElasticsearch)
             {
-                $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
-
-                $queryArg = $params['query'];
-                $query = $this->getSearchParams($queryArg);
-
-                $id = ItemMetadata::getItemIdFromIdentifier($query['query']);
-                if ($id)
-                {
-                    // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
-                    AvantSearch::redirectToShowPageForItem($id);
-                }
-
-                $page = $this->_request->page ? $this->_request->page : 1;
-                $start = ($page - 1) * $recordsPerPage;
-                $user = $this->getCurrentUser();
-                $sort = $this->getSortParams($params);
-
-                $results = $this->avantElasticsearchQueryBuilder->constructQuery([
-                    'query'             => $query,
-                    'offset'            => $start,
-                    'limit'             => $recordsPerPage,
-                    'sort'              => $sort,
-                    'showNotPublic'     => $user && is_allowed('Items', 'showNotPublic')
-                ]);
-
-                $totalRecords = $results["hits"]["total"];
-                $records = $results['hits']['hits'];
-                $searchResults->setQuery($query);
-                $searchResults->setFacets($results['aggregations']);
+                $this->performQueryUsingElasticsearch($params, $searchResults);
             }
             else
             {
-                // Perform the query using the built-in Omeka mechanism for advanced search.
-                // That code will eventually call this plugin's hookItemsBrowseSql() method.
-                $this->_helper->db->setDefaultModelName('Item');
-                $records = $this->_helper->db->findBy($params, $recordsPerPage, $currentPage);
-                $totalRecords = $this->_helper->db->count($params);
+                $this->performQueryUsingSql($params, $currentPage);
+
             }
 
         }
@@ -100,35 +71,43 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         {
             $exceptionMessage = $e->getMessage();
         }
+        catch (\Elasticsearch\Common\Exceptions\Forbidden403Exception $e)
+        {
+            $exceptionMessage = $e->getMessage();
+            $exceptionMessage = json_decode($exceptionMessage);
+            $exceptionMessage = $exceptionMessage->message;
+        }
+        catch (\Elasticsearch\Common\Exceptions\BadRequest400Exception $e)
+        {
+            $exceptionMessage = $e->getMessage();
+            $exceptionMessage = json_decode($exceptionMessage);
+            $error = $exceptionMessage->error;
+            $exceptionMessage = "Type: $error->type<br/>Reason: $error->reason";
+        }
         catch (Exception $e)
         {
             $exceptionMessage = $e->getMessage();
-//            if ($useElasticsearch)
-//            {
-//                $exceptionMessage = json_decode($exceptionMessage);
-//                //$exceptionMessage = $exceptionMessage->error->root_cause[0]->reason;
-//            }
         }
 
         if (!empty($exceptionMessage))
         {
-            $totalRecords = 0;
-            $records = array();
+            $this->totalRecords = 0;
+            $this->records = array();
             $searchResults->setError($exceptionMessage);
         }
 
-        if ($recordsPerPage)
+        if ($this->recordsPerPage)
         {
             // Add pagination data to the registry. Used by pagination_links().
             Zend_Registry::set('pagination', array(
                 'page' => $currentPage,
-                'per_page' => $recordsPerPage,
-                'total_results' => $totalRecords,
+                'per_page' => $this->recordsPerPage,
+                'total_results' => $this->totalRecords,
             ));
         }
 
-        $searchResults->setResults($records);
-        $searchResults->setTotalResults($totalRecords);
+        $searchResults->setResults($this->records);
+        $searchResults->setTotalResults($this->totalRecords);
 
         // Display the results.
         $this->view->assign(array('searchResults' => $searchResults));
@@ -191,5 +170,46 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $sort[] = '_score';
 
         return $sort;
+    }
+
+    protected function performQueryUsingElasticsearch($params, $searchResults)
+    {
+        $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
+
+        $queryArg = $params['query'];
+        $query = $this->getSearchParams($queryArg);
+
+        $id = ItemMetadata::getItemIdFromIdentifier($query['query']);
+        if ($id) {
+            // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
+            AvantSearch::redirectToShowPageForItem($id);
+        }
+
+        $page = $this->_request->page ? $this->_request->page : 1;
+        $start = ($page - 1) * $this->recordsPerPage;
+        $user = $this->getCurrentUser();
+        $sort = $this->getSortParams($params);
+
+        $results = $this->avantElasticsearchQueryBuilder->constructQuery([
+            'query' => $query,
+            'offset' => $start,
+            'limit' => $this->recordsPerPage,
+            'sort' => $sort,
+            'showNotPublic' => $user && is_allowed('Items', 'showNotPublic')
+        ]);
+
+        $this->totalRecords = $results["hits"]["total"];
+        $this->records = $results['hits']['hits'];
+        $searchResults->setQuery($query);
+        $searchResults->setFacets($results['aggregations']);
+    }
+
+    protected function performQueryUsingSql($params, $currentPage)
+    {
+        // Perform the query using the built-in Omeka mechanism for advanced search.
+        // That code will eventually call this plugin's hookItemsBrowseSql() method.
+        $this->_helper->db->setDefaultModelName('Item');
+        $this->records = $this->_helper->db->findBy($params, $this->recordsPerPage, $currentPage);
+        $this->totalRecords = $this->_helper->db->count($params);
     }
 }
