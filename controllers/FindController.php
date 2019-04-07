@@ -32,6 +32,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $searchResults->setUseElasticsearch($useElasticsearch);
         $searchResults->setShowCommingledResults(true);
 
+        $exceptionMessage = '';
+
         $viewId = $searchResults->getViewId();
         if (SearchResultsViewFactory::viewUsesResultsLimit($viewId))
         {
@@ -90,21 +92,29 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             }
 
         }
-        //catch (Zend_Db_Statement_Mysqli_Exception $e)
+        catch (Zend_Db_Statement_Mysqli_Exception $e)
+        {
+            $exceptionMessage = $e->getMessage();
+        }
+        catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e)
+        {
+            $exceptionMessage = $e->getMessage();
+        }
         catch (Exception $e)
+        {
+            $exceptionMessage = $e->getMessage();
+//            if ($useElasticsearch)
+//            {
+//                $exceptionMessage = json_decode($exceptionMessage);
+//                //$exceptionMessage = $exceptionMessage->error->root_cause[0]->reason;
+//            }
+        }
+
+        if (!empty($exceptionMessage))
         {
             $totalRecords = 0;
             $records = array();
-
-            $message = $e->getMessage();
-
-            if ($useElasticsearch)
-            {
-                $message = json_decode($message);
-                //$message = $message->error->root_cause[0]->reason;
-            }
-
-            $searchResults->setError($message->message);
+            $searchResults->setError($exceptionMessage);
         }
 
         if ($recordsPerPage)
