@@ -190,13 +190,16 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $user = $this->getCurrentUser();
         $sort = $this->getSortParams($params);
 
-        $results = $this->avantElasticsearchQueryBuilder->constructQuery([
+        $queryParams = $this->avantElasticsearchQueryBuilder->constructQuery([
             'query' => $query,
             'offset' => $start,
             'limit' => $this->recordsPerPage,
             'sort' => $sort,
             'showNotPublic' => $user && is_allowed('Items', 'showNotPublic')
         ]);
+
+        $avantElasticsearchClient = new AvantElasticsearchClient();
+        $results = $avantElasticsearchClient->performQuery($queryParams);
 
         $this->totalRecords = $results["hits"]["total"];
         $this->records = $results['hits']['hits'];
