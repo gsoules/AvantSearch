@@ -173,7 +173,7 @@ class SearchConfig extends ConfigOptions
 
     public static function getOptionSupportedElasticsearch()
     {
-        return plugin_is_active('Elasticsearch');
+        return plugin_is_active('AvantElasticsearch');
     }
 
     public static function getOptionsSupportedTitlesOnly()
