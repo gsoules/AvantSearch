@@ -1,6 +1,0 @@
-{
-    "require": {
-        "elasticsearch/elasticsearch": "~6.0",
-        "jsq/amazon-es-php": "^0.2.3"
-    }
-}
