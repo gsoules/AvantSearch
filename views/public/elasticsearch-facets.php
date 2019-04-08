@@ -2,7 +2,7 @@
 $avantElasticsearchFacets = new AvantElasticsearchFacets();
 $facetLabels = $avantElasticsearchFacets->getFacetNames();
 $queryString = $avantElasticsearchFacets->createQueryStringWithFacets($query);
-$appliedFacets = $query['facets'];
+$appliedFacets = $query['facet'];
 ?>
 
 <?php if(count($appliedFacets) > 0): ?>

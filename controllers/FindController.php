@@ -112,7 +112,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     {
         $query = [
             'query' => $query,
-            'facets' => []
+            'facet' => []
         ];
 
         $keywords = $this->_request->getQuery();
@@ -121,7 +121,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         {
             if (strpos($keyword, 'facet_') === 0)
             {
-                $query['facets'][substr($keyword, strlen('facet_'))] = $value;
+                $query['facet'][substr($keyword, strlen('facet_'))] = $value;
             }
         }
 
@@ -151,11 +151,11 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
         else if (in_array($sortElementName, $integerSortElements))
         {
-            $sort[] = ["element.$sortFieldName-sort.keyword" => $sortOrder];
+            $sort[] = ["sort.$sortFieldName-.keyword" => $sortOrder];
         }
         else if ($sortElementName == 'Type' || $sortElementName == 'Subject' || $sortElementName == 'Place')
         {
-            $sort[] = ["element.$sortFieldName-sort.keyword" => $sortOrder];
+            $sort[] = ["sort.$sortFieldName.keyword" => $sortOrder];
         }
         else
         {
