@@ -69,20 +69,15 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
         catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e)
         {
-            $exceptionMessage = $e->getMessage();
+            $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
         }
         catch (\Elasticsearch\Common\Exceptions\Forbidden403Exception $e)
         {
-            $exceptionMessage = $e->getMessage();
-            $exceptionMessage = json_decode($exceptionMessage);
-            $exceptionMessage = $exceptionMessage->message;
+            $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
         }
         catch (\Elasticsearch\Common\Exceptions\BadRequest400Exception $e)
         {
-            $exceptionMessage = $e->getMessage();
-            $exceptionMessage = json_decode($exceptionMessage);
-            $error = $exceptionMessage->error;
-            $exceptionMessage = "Type: $error->type<br/>Reason: $error->reason";
+            $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
         }
         catch (Exception $e)
         {
