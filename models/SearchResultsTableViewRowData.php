@@ -217,8 +217,8 @@ class SearchResultsTableViewRowData
 
         if ($this->showCommingledResults)
         {
-            $ownerSite = $item['_source']['ownersite'];
-            $this->elementValue['Title']['text'] .= "<div class='search-owner-site'>$ownerSite</div>";
+            $owner = $item['_source']['owner'];
+            $this->elementValue['Title']['text'] .= "<div class='search-owner-site'>$owner</div>";
         }
     }
 
