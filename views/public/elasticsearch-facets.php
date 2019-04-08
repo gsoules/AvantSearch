@@ -33,7 +33,7 @@ $appliedFacets = $query['facet'];
             <?php $buckets = $aggregations[$aggregateName]['buckets']; ?>
             <?php foreach ($aggregations[$aggregateName]['buckets'] as $aggregate): ?>
                 <?php
-                $facetUrl = get_view()->url('/find') . '?' . $avantElasticsearchFacets->addFacetToQuery($queryString, $aggregateName, $aggregate['key']);
+                $facetUrl = get_view()->url('/find') . '?' . $avantElasticsearchFacets->createFacetLink($queryString, $aggregateName, $aggregate['key']);
                 $aggregateKey = isset($aggregate['key_as_string']) ? $aggregate['key_as_string'] : $aggregate['key'];
                 $aggregateCount = $aggregate['doc_count'];
                 ?>
