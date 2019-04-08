@@ -76,7 +76,10 @@ class SearchResultsTableViewRowData
         else
         {
             // Get the description text, making sure that the Description element is defined.
+            // Strip away tags in case the element contains HTML that might interfere with placement
+            // of the [show more] link.
             $descriptionText = isset($this->elementValue['Description']['text']) ? $this->elementValue['Description']['text'] : '';
+            $descriptionText = strip_tags($descriptionText);
         }
 
         // Strip away line breaks;
@@ -186,15 +189,14 @@ class SearchResultsTableViewRowData
             if (isset($item['_source']['element']['title']))
             {
                 $texts = $item['_source']['element']['title'];
-                $titles = explode(PHP_EOL, $texts);
-                $itemUrl =  $item['_source']['url'];
-                $titleLink = "<a href='$itemUrl'>$titles[0]</a>";
             }
             else
             {
-                $titles = [];
-                $titleLink = __('[Untitled]');
+                $texts = __('[Untitled]');
             }
+            $titles = explode(PHP_EOL, $texts);
+            $itemUrl =  $item['_source']['url'];
+            $titleLink = "<a href='$itemUrl'>$titles[0]</a>";
             $this->elementValue['Title']['text'] = $titleLink;
         }
         else
