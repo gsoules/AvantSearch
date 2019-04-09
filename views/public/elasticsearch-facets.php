@@ -14,19 +14,26 @@ $findUrl = get_view()->url('/find');
         </div>
         <?php
         $appliedFilters = '';
+
         foreach ($appliedFacets as $facetName => $facetValues)
         {
             $facetLabel = htmlspecialchars($facetLabels[$facetName]);
+
             if (!is_array($facetValues))
             {
                 $facetValues = array($facetValues);
             }
-            $facetValue = htmlspecialchars($avantElasticsearchFacets->convertFacetValuesToString($facetValues));
-            $resetLink = $avantElasticsearchFacets->removeFacetFromQuery($queryString, $facetName);
-            $appliedFilters .= '<li>';
-            $appliedFilters .=  "$facetLabel</br><i>$facetValue</i>";
-            $appliedFilters .= '<a href="' . $findUrl . '?' . $resetLink . '"> [&#10006;]</a>';
-            $appliedFilters .= '</li>';
+
+            $appliedFilters .= "$facetLabel</br>";
+
+            foreach ($facetValues as $facetValue)
+            {
+                $resetLink = $avantElasticsearchFacets->createRemoveFacetLink($queryString, $facetName, $facetValue);
+                $appliedFilters .= '<li>';
+                $appliedFilters .=  "<i>$facetValue</i>";
+                $appliedFilters .= '<a href="' . $findUrl . '?' . $resetLink . '"> [&#10006;]</a>';
+                $appliedFilters .= '</li>';
+            }
         }
         echo "<ul>$appliedFilters</ul>";
         ?>
@@ -42,12 +49,15 @@ $findUrl = get_view()->url('/find');
         {
             continue;
         }
+
         echo '<div class="elasticsearch-facet-name">' . $aggregateLabel . '</div>';
+
         $filters = '';
         $buckets = $aggregations[$aggregateName]['buckets'];
+
         foreach ($aggregations[$aggregateName]['buckets'] as $aggregate)
         {
-            $filterLink = $avantElasticsearchFacets->createFacetLink($queryString, $aggregateName, $aggregate['key']);
+            $filterLink = $avantElasticsearchFacets->createAddFacetLink($queryString, $aggregateName, $aggregate['key']);
             $facetUrl = $findUrl . '?' . $filterLink;
             $aggregateKey = $aggregate['key'];
             $aggregateCount = $aggregate['doc_count'];
@@ -55,6 +65,7 @@ $findUrl = get_view()->url('/find');
             $filters .= '<a href="' . $facetUrl . '">' . htmlspecialchars(__($aggregateKey)) . '</a> (' . $aggregate['doc_count'] . ')';
             $filters .= '</li>';
         }
+
         echo "<ul>$filters</ul>";
     }
     ?>
