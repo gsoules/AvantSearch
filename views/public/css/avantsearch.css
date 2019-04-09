@@ -590,6 +590,7 @@ input[type="checkbox"] {
 	padding-left: 15px;
 	font-size:14px;
 	margin-top: 0;
+	list-style-type:none;
 }
 
 #elasticsearch-filters > ul {
