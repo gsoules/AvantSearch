@@ -24,18 +24,21 @@ $findUrl = get_view()->url('/find');
                 $facetValues = array($facetValues);
             }
 
-            $appliedFilters .= "$facetLabel</br>";
+            $appliedFilters .= '<div class="elasticsearch-facet-name">' . $facetLabel . '</div>';
+            $appliedFilters .= '<ul>';
 
             foreach ($facetValues as $facetValue)
             {
                 $resetLink = $avantElasticsearchFacets->createRemoveFacetLink($queryString, $facetName, $facetValue);
                 $appliedFilters .= '<li>';
-                $appliedFilters .=  "<i>$facetValue</i>";
+                $appliedFilters .= "<i>$facetValue</i>";
                 $appliedFilters .= '<a href="' . $findUrl . '?' . $resetLink . '"> [&#10006;]</a>';
                 $appliedFilters .= '</li>';
             }
+
+            $appliedFilters .= '</ul>';
         }
-        echo "<ul>$appliedFilters</ul>";
+        echo $appliedFilters;
         ?>
     </div>
 <?php endif; ?>
