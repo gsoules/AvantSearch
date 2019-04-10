@@ -1,6 +1,6 @@
 <?php
 $avantElasticsearchFacets = new AvantElasticsearchFacets();
-$facetLabels = $avantElasticsearchFacets->getFacetNames();
+$facetNames = $avantElasticsearchFacets->getFacetNames();
 $queryString = $avantElasticsearchFacets->createQueryStringWithFacets($query);
 $appliedFacets = $query['facet'];
 $findUrl = get_view()->url('/find');
@@ -17,7 +17,7 @@ $findUrl = get_view()->url('/find');
 
         foreach ($appliedFacets as $facetName => $facetValues)
         {
-            $facetLabel = htmlspecialchars($facetLabels[$facetName]);
+            $facetLabel = htmlspecialchars($facetNames[$facetName]);
 
             if (!is_array($facetValues))
             {
@@ -46,21 +46,27 @@ $findUrl = get_view()->url('/find');
 <div id="elasticsearch-filters">
     <div class="elasticsearch-facet-section">Filters</div>
     <?php
-    foreach ($facetLabels as $aggregateName => $aggregateLabel)
+    foreach ($facetNames as $facetName => $facetLabel)
     {
-        if (count($aggregations[$aggregateName]['buckets']) == 0)
+        if ($facetName == 'tag')
+        {
+            // The tag facet is fully supported, but for now simply don't show it.
+            continue;
+        }
+
+        if (count($aggregations[$facetName]['buckets']) == 0)
         {
             continue;
         }
 
-        echo '<div class="elasticsearch-facet-name">' . $aggregateLabel . '</div>';
+        echo '<div class="elasticsearch-facet-name">' . $facetLabel . '</div>';
 
         $filters = '';
-        $buckets = $aggregations[$aggregateName]['buckets'];
+        $buckets = $aggregations[$facetName]['buckets'];
 
-        foreach ($aggregations[$aggregateName]['buckets'] as $aggregate)
+        foreach ($aggregations[$facetName]['buckets'] as $aggregate)
         {
-            $filterLink = $avantElasticsearchFacets->createAddFacetLink($queryString, $aggregateName, $aggregate['key']);
+            $filterLink = $avantElasticsearchFacets->createAddFacetLink($queryString, $facetName, $aggregate['key']);
             $facetUrl = $findUrl . '?' . $filterLink;
             $aggregateKey = $aggregate['key'];
             $aggregateCount = $aggregate['doc_count'];
