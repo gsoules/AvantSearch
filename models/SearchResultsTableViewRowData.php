@@ -2,9 +2,11 @@
 
 class SearchResultsTableViewRowData
 {
+    protected $avantElasticsearch;
     protected $columnsData;
     public $elementValue;
     protected $hierarchyElements;
+    protected $itemFieldTextsHtml = array();
     public $itemThumbnailHtml;
     protected $searchResults;
     protected $showCommingledResults;
@@ -247,15 +249,28 @@ class SearchResultsTableViewRowData
         // Determine whether HTML characters within the text should be escaped. Don't escape them if the element
         // allows HTML and the element's HTML checkbox is checked. Note that the getElementTexts function returns
         // an ElementTexts object which is different than the $elementTexts array passed to this function.
+
+        $htmlTextIndices = array();
+
         if ($this->useElasticsearch)
         {
-            $htmlFields = $item['_source']['html'];
-            $isHtmlElement = in_array(strtolower($elementName), $htmlFields);
+            $fieldName = $this->avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
+            if (isset($this->itemFieldTextsHtml[$fieldName]))
+            {
+                $htmlTextIndices = $this->itemFieldTextsHtml[$fieldName];
+            }
         }
         else
         {
             $elementSetName = ItemMetadata::getElementSetNameForElementName($elementName);
-            $isHtmlElement = count($elementTexts) > 0 && $item->getElementTexts($elementSetName, $elementName)[0]->isHtml();
+            $elementTexts = $item->getElementTexts($elementSetName, $elementName);
+            foreach ($elementTexts as $key => $elementText)
+            {
+                if ($elementTexts->isHtml)
+                {
+                    $htmlTextIndices[] = $key;
+                }
+            }
         }
 
         foreach ($elementTexts as $key => $elementText)
@@ -266,10 +281,32 @@ class SearchResultsTableViewRowData
             }
 
             $text = $filtered ? $this->filterHierarchicalElementText($elementId, $elementText) : $elementText;
-            $texts .= $isHtmlElement ? $text : html_escape($text);
+            $containsHtml = in_array($key, $htmlTextIndices);
+            $texts .= $containsHtml ? $text : html_escape($text);
         }
 
         return $texts;
+    }
+
+    protected function getItemFieldTextsHtml($item)
+    {
+        // Create an array of the names of fields that contain HTML text.
+        // Each element is an array of indices to indicate which of the field's values are HTML.
+        $htmlFields = $item['_source']['html'];
+
+        foreach ($htmlFields as $htmlField)
+        {
+            $htmlData = explode(',', $htmlField);
+            $fieldName = $htmlData[0];
+            foreach ($htmlData as $key => $index)
+            {
+                if ($key == 0)
+                {
+                    continue;
+                }
+                $this->itemFieldTextsHtml[$fieldName][] = $index;
+            }
+        }
     }
 
     protected function initializeData($item)
@@ -288,7 +325,11 @@ class SearchResultsTableViewRowData
     {
         $elasticSearchElementTexts = $this->useElasticsearch ? $item['_source']['element'] : null;
 
-        $avantElasticsearch = new AvantElasticsearch();
+        $this->avantElasticsearch = new AvantElasticsearch();
+        if ($this->useElasticsearch)
+        {
+            $this->getItemFieldTextsHtml($item);
+        }
 
         foreach ($this->columnsData as $elementId => $column)
         {
@@ -300,7 +341,7 @@ class SearchResultsTableViewRowData
 
                 if ($this->useElasticsearch)
                 {
-                    $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
+                    $elasticsearchFieldName = $this->avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
 
                     if (isset($elasticSearchElementTexts[$elasticsearchFieldName]))
                     {
@@ -312,7 +353,8 @@ class SearchResultsTableViewRowData
                 {
                     $elementTexts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
                 }
-                $filteredText =  $this->getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, true);
+
+                $filteredText = $this->getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, true);
 
                 if ($elementName != 'Description')
                 {
@@ -352,5 +394,4 @@ class SearchResultsTableViewRowData
 
         return true;
     }
-
 }
