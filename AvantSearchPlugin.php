@@ -55,7 +55,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         if (get_option(SearchConfig::OPTION_ELASTICSEARCH))
         {
             $avantElasticsearchIndexBuilder = new AvantElasticsearchIndexBuilder();
-            $avantElasticsearchIndexBuilder->indexItem($args['record']);
+            $avantElasticsearchIndexBuilder->indexSingleItem($args['record']);
         }
     }
 
