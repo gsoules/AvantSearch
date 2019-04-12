@@ -246,12 +246,12 @@ class SearchResultsTableViewRowData
 
         $texts = '';
 
-        // Determine whether HTML characters within the text should be escaped. Don't escape them if the element
-        // allows HTML and the element's HTML checkbox is checked. Note that the getElementTexts function returns
-        // an ElementTexts object which is different than the $elementTexts array passed to this function.
-
         $htmlTextIndices = array();
 
+        // Create an array of flags to indicate which if any of the element's text values contain HTML.
+        // The html flag is only true when the user entered text into an Omeka element that displays the HTML checkbox
+        // on the admin Edit page AND they checked the box. Note that an element can have multiple values with some as
+        // HTML and others as plain text, thus the need to have the flag for each value.
         if ($this->useElasticsearch)
         {
             $fieldName = $this->avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
@@ -273,6 +273,9 @@ class SearchResultsTableViewRowData
             }
         }
 
+        // Create a single string containing all of the element's text values. Note that when using Elasticsearch,
+        // $elementTexts is an array of the element's field-texts. When not using Elasticsearch, its an array of
+        // ElementText objects.
         foreach ($elementTexts as $key => $elementText)
         {
             if ($key != 0)
@@ -281,7 +284,21 @@ class SearchResultsTableViewRowData
             }
 
             $text = $filtered ? $this->filterHierarchicalElementText($elementId, $elementText) : $elementText;
+
             $containsHtml = in_array($key, $htmlTextIndices);
+            if ($containsHtml)
+            {
+                if ($this->useElasticsearch)
+                {
+                    // The Elasticsearch index does not contain the original HTML for element values, only an indication
+                    // of which element texts contain HTML. Get the original HTML from the Omeka database.
+                    $itemId = $item['_source']['itemid'];
+                    $omekaItem = ItemMetadata::getItemFromId($itemId);
+                    $elementTexts = ItemMetadata::getAllElementTextsForElementName($omekaItem, $elementName);
+                    $text = $elementTexts[$key];
+                }
+            }
+
             $texts .= $containsHtml ? $text : html_escape($text);
         }
 
