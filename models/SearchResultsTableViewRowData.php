@@ -266,7 +266,7 @@ class SearchResultsTableViewRowData
             $elementTexts = $item->getElementTexts($elementSetName, $elementName);
             foreach ($elementTexts as $key => $elementText)
             {
-                if ($elementTexts->isHtml)
+                if ($elementText['html'] == 1)
                 {
                     $htmlTextIndices[] = $key;
                 }
