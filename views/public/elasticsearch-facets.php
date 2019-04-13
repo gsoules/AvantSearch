@@ -4,6 +4,7 @@ $facetNames = $avantElasticsearchFacets->getFacetNames();
 $queryString = $avantElasticsearchFacets->createQueryStringWithFacets($query);
 $appliedFacets = $query['facet'];
 $findUrl = get_view()->url('/find');
+$appliedFacetValues = array();
 ?>
 
 <?php if (count($appliedFacets) > 0): ?>
@@ -29,6 +30,7 @@ $findUrl = get_view()->url('/find');
 
             foreach ($facetValues as $facetValue)
             {
+                $appliedFacetValues[] = $facetValue;
                 $resetLink = $avantElasticsearchFacets->createRemoveFacetLink($queryString, $facetName, $facetValue);
                 $appliedFilters .= '<li>';
                 $appliedFilters .= "<i>$facetValue</i>";
@@ -70,8 +72,20 @@ $findUrl = get_view()->url('/find');
             $facetUrl = $findUrl . '?' . $filterLink;
             $aggregateKey = $aggregate['key'];
             $aggregateCount = $aggregate['doc_count'];
+            $text = htmlspecialchars($aggregateKey);
+            $count = ' (' . $aggregate['doc_count'] . ')';
+
             $filters .= '<li>';
-            $filters .= '<a href="' . $facetUrl . '">' . htmlspecialchars(__($aggregateKey)) . '</a> (' . $aggregate['doc_count'] . ')';
+            if (in_array($aggregateKey, $appliedFacetValues))
+            {
+                // Don't provide a link for a facet that's already been applied.
+                $filters .= $text . $count;
+            }
+            else
+            {
+                // Create a link to click to apply this facet.
+                $filters .= '<a href="' . $facetUrl . '">' . $text . '</a>' . $count;
+            }
             $filters .= '</li>';
         }
 
