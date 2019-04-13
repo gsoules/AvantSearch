@@ -92,7 +92,15 @@ $appliedFacetValues = array();
                 $filter = '<a href="' . $facetUrl . '">' . $text . '</a>' . $count;
             }
 
-            $class = $isLeaf ? " class='elasticsearch-facet-leaf'" : '';
+            $class = '';
+            $isHierarchyFacet = $facetName == 'type' || $facetName == 'subject';
+            if ($facetsAreApplied && $isHierarchyFacet)
+            {
+                // Add some styling when leafs appear under roots.
+                $level = $isLeaf ? 'leaf' : 'root';
+                $class = " class='elasticsearch-facet-$level'";
+            }
+
             $filters .= "<li$class>$filter</li>";
         }
 
