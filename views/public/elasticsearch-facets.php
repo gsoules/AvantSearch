@@ -19,12 +19,6 @@ $appliedFacetValues = array();
         foreach ($appliedFacets as $facetName => $facetValues)
         {
             $facetLabel = htmlspecialchars($facetNames[$facetName]);
-
-            if (!is_array($facetValues))
-            {
-                $facetValues = array($facetValues);
-            }
-
             $appliedFilters .= '<div class="elasticsearch-facet-name">' . $facetLabel . '</div>';
             $appliedFilters .= '<ul>';
 
@@ -66,27 +60,27 @@ $appliedFacetValues = array();
         $filters = '';
         $buckets = $aggregations[$facetName]['buckets'];
 
-        foreach ($aggregations[$facetName]['buckets'] as $aggregate)
+        foreach ($aggregations[$facetName]['buckets'] as $bucket)
         {
-            $filterLink = $avantElasticsearchFacets->createAddFacetLink($queryString, $facetName, $aggregate['key']);
-            $facetUrl = $findUrl . '?' . $filterLink;
-            $aggregateKey = $aggregate['key'];
-            $aggregateCount = $aggregate['doc_count'];
-            $text = htmlspecialchars($aggregateKey);
-            $count = ' (' . $aggregate['doc_count'] . ')';
+            $bucketValue = $bucket['key'];
+            $applied = in_array($bucketValue, $appliedFacetValues);
+            $text = htmlspecialchars($bucketValue);
+            $count = ' (' . $bucket['doc_count'] . ')';
 
-            $filters .= '<li>';
-            if (in_array($aggregateKey, $appliedFacetValues))
+            if ($applied)
             {
                 // Don't provide a link for a facet that's already been applied.
-                $filters .= $text . $count;
+                $filter = $text . $count;
             }
             else
             {
-                // Create a link to click to apply this facet.
-                $filters .= '<a href="' . $facetUrl . '">' . $text . '</a>' . $count;
+                // Create a link that the user can click to apply this facet.
+                $filterLink = $avantElasticsearchFacets->createAddFacetLink($queryString, $facetName, $bucketValue);
+                $facetUrl = $findUrl . '?' . $filterLink;
+                $filter = '<a href="' . $facetUrl . '">' . $text . '</a>' . $count;
             }
-            $filters .= '</li>';
+
+            $filters .= "<li>$filter</li>";
         }
 
         echo "<ul>$filters</ul>";
