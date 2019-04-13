@@ -19,6 +19,12 @@ $appliedFacetValues = array();
 
         foreach ($appliedFacets as $facetName => $facetValues)
         {
+            if (!isset($facetNames[$facetName]))
+            {
+                // This should only happen if the query string syntax in invalid because someone edited or mistyped it.
+                break;
+            }
+
             $facetLabel = htmlspecialchars($facetNames[$facetName]);
             $appliedFilters .= '<div class="elasticsearch-facet-name">' . $facetLabel . '</div>';
             $appliedFilters .= '<ul>';
