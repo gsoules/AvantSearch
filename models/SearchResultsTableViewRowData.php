@@ -285,18 +285,18 @@ class SearchResultsTableViewRowData
 
             $text = $filtered ? $this->filterHierarchicalElementText($elementId, $elementText) : $elementText;
 
+            // Determine if the element's text needs to be displayed as HTML.
             $containsHtml = in_array($key, $htmlTextIndices);
-            if ($containsHtml)
+
+            if ($containsHtml && $this->useElasticsearch && !$this->showCommingledResults)
             {
-                if ($this->useElasticsearch)
-                {
-                    // The Elasticsearch index does not contain the original HTML for element values, only an indication
-                    // of which element texts contain HTML. Get the original HTML from the Omeka database.
-                    $itemId = $item['_source']['itemid'];
-                    $omekaItem = ItemMetadata::getItemFromId($itemId);
-                    $elementTexts = ItemMetadata::getAllElementTextsForElementName($omekaItem, $elementName);
-                    $text = $elementTexts[$key];
-                }
+                // The Elasticsearch index does not contain the original HTML for element values, only an indication
+                // of which element texts contain HTML. Get the original HTML from the Omeka database. This can't be
+                // done for commingled results because this installation can't access the other databases.
+                $itemId = $item['_source']['itemid'];
+                $omekaItem = ItemMetadata::getItemFromId($itemId);
+                $elementTexts = ItemMetadata::getAllElementTextsForElementName($omekaItem, $elementName);
+                $text = $elementTexts[$key];
             }
 
             $texts .= $containsHtml ? $text : html_escape($text);
