@@ -3,6 +3,7 @@
 class AvantSearch_FindController extends Omeka_Controller_AbstractActionController
 {
     private $avantElasticsearchQueryBuilder;
+    private $facetDefinitions;
     private $totalRecords = 0;
     private $records = array();
 
@@ -141,7 +142,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
 
         $sortElementName = $params['sort'];
-        $sortFieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
+        $sortFieldFacetId = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
 
         $sortOrder = $params['order'] == 'd' ? 'desc' : 'asc';
 
@@ -152,15 +153,15 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
         else if (in_array($sortElementName, $integerSortElements))
         {
-            $sort[] = ["sort.$sortFieldName.keyword" => $sortOrder];
+            $sort[] = ["sort.$sortFieldFacetId.keyword" => $sortOrder];
         }
-        else if ($sortElementName == 'Type' || $sortElementName == 'Subject' || $sortElementName == 'Place')
+        else if ($this->facetDefinitions[$sortFieldFacetId]['is_hierarchy'])
         {
-            $sort[] = ["sort.$sortFieldName.keyword" => $sortOrder];
+            $sort[] = ["sort.$sortFieldFacetId.keyword" => $sortOrder];
         }
         else
         {
-            $sort[] = ["element.$sortFieldName.keyword" => $sortOrder];
+            $sort[] = ["element.$sortFieldFacetId.keyword" => $sortOrder];
         }
 
         $sort[] = '_score';
@@ -171,6 +172,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     protected function performQueryUsingElasticsearch($params, $searchResults)
     {
         $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
+        $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
 
         $queryArg = $params['query'];
         $query = $this->getSearchParams($queryArg);
