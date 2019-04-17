@@ -73,13 +73,10 @@ $findUrl = get_view()->url('/find');
 
             $isLeaf = strpos($bucketValue, ',') !== false;
 
-            if (!$facetsAreApplied)
+            if (!$facetsAreApplied && $isLeaf)
             {
-                if ($isLeaf)
-                {
-                    // Don't show leafs until at least one facet is applied.
-                    continue;
-                }
+                // Don't show leafs until at least one facet is applied.
+                continue;
             }
 
             $applied = in_array($bucketValue, $appliedFacetValues);
