@@ -623,6 +623,11 @@ input[type="checkbox"] {
 	font-size: 14px;
 }
 
+.elasticsearch-facet-indent {
+	padding-left: 12px;
+	font-size: 14px;
+}
+
 .elasticsearch-facet-root {
 	padding-top: 5px;
 }

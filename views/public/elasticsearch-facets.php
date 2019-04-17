@@ -101,6 +101,7 @@ $findUrl = get_view()->url('/find');
                 }
                 else
                 {
+                    //if ($facetDefinition['show_root'] && !$isRoot && $facetId != 'subject')
                     if ($facetDefinition['show_root'] && !$isRoot)
                     {
                         // Don't show leafs until at least one facet is applied.
@@ -124,6 +125,11 @@ $findUrl = get_view()->url('/find');
                 $filterLink = $avantElasticsearchFacets->createAddFacetLink($queryString, $facetId, $bucketValue);
                 $facetUrl = $findUrl . '?' . $filterLink;
                 $filter = '<a href="' . $facetUrl . '">' . $text . '</a>' . $count;
+            }
+
+            if (!$facetsAreApplied)
+            {
+                $class = " class='elasticsearch-facet-indent'";
             }
 
             $filters .= "<li$class>$filter</li>";
