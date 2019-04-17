@@ -620,6 +620,7 @@ input[type="checkbox"] {
 
 .elasticsearch-facet-leaf {
 	padding-left: 12px;
+	font-size: 14px;
 }
 
 .elasticsearch-facet-root {
