@@ -36,18 +36,22 @@ $findUrl = get_view()->url('/find');
 
             foreach ($facetValues as $index => $facetValue)
             {
+                $level = $index == 0 ? 'root' : 'leaf';
+
                 $emitLink = true;
                 $linkText = $facetValue;
 
                 if ($facetDefinition['is_hierarchy'] && $facetDefinition['show_root'])
                 {
-                    $isSubHierarchyValue = $index == 1;
+                    $isLeaf = $level == 'leaf';
 
                     // Only emit the [x] link for a removable facet. That's either a root by itself or a leaf.
-                    $emitLink = count($facetValues) == 1 || $isSubHierarchyValue;
-                    if ($isSubHierarchyValue)
+                    $emitLink = count($facetValues) == 1 || $isLeaf;
+                    if ($isLeaf)
                     {
                         $class = " class='elasticsearch-facet-level2'";
+
+                        // Remove the root value from the leaf text.
                         $prefixLen = strlen($rootValue) + strlen(', ') - strlen('_');
                         $linkText = substr($facetValue, $prefixLen);
                     }
@@ -60,7 +64,8 @@ $findUrl = get_view()->url('/find');
                     }
                 }
 
-                $appliedFacets[$facetId][] = $linkText;
+                $appliedFacets[$facetId][$level] = $linkText;
+                $appliedFacets[$facetId]['facet_value'] = $facetValue;
                 $resetLink = $avantElasticsearchFacets->createRemoveFacetLink($queryString, $facetId, $facetValue);
                 $appliedFilters .= '<li>';
                 $appliedFilters .= "<i$class>$linkText</i>";
@@ -122,7 +127,7 @@ $findUrl = get_view()->url('/find');
                         if ($facetDefinition['multi_value'])
                         {
                             // Determine if this value is part of the same sub-hierarchy as the applied root facet.
-                            $rootValue = $appliedFacets[$facetId][0];
+                            $rootValue = $appliedFacets[$facetId]['root'];
 
                             if (strpos($bucketValue, $rootValue) === 0)
                             {
@@ -148,7 +153,6 @@ $findUrl = get_view()->url('/find');
                 }
                 else
                 {
-                    //if ($facetDefinition['show_root'] && !$isRoot && $facetId != 'subject')
                     if ($facetDefinition['show_root'] && !$isRoot)
                     {
                         // Don't show leafs until at least one facet is applied.
@@ -159,9 +163,35 @@ $findUrl = get_view()->url('/find');
 
             // Determine if this bucket value has already been applied. If the bucket value is a
             // root, strip off the leading underscore before comparing to applied values.
-            $values = isset($appliedFacets[$facetId]) ? $appliedFacets[$facetId] : array();
-            $value = $isRoot ? substr($bucketValue, 1) : $bucketValue;
-            $applied = in_array($value, $values);
+            $applied = false;
+            if (isset($appliedFacets[$facetId]))
+            {
+                $values = $appliedFacets[$facetId];
+                if ($facetDefinition['is_hierarchy'])
+                {
+                    if ($isRoot)
+                    {
+                        $value = $rootValue;
+                    }
+                    else
+                    {
+                        $rootValue = substr($rootValue, 1);
+                        if ($bucketValue == $rootValue)
+                        {
+                            $value = $bucketValue;
+                        }
+                        else
+                        {
+                            $value = $appliedFacets[$facetId]['facet_value'];
+                        }
+                    }
+                }
+                else
+                {
+                    $value = $bucketValue;
+                }
+                $applied = in_array($value, $values);
+            }
 
             if ($applied)
             {
@@ -184,9 +214,11 @@ $findUrl = get_view()->url('/find');
 
         if (!empty($filters))
         {
+            // Determine the section name. When no facets are applied, it's the facet name, other wise the
+            // root name of the applied facet.
             if (isset($appliedFacets[$facetId]))
             {
-                $sectionName = $appliedFacets[$facetId][0];
+                $sectionName = $appliedFacets[$facetId]['root'];
             }
             else
             {
