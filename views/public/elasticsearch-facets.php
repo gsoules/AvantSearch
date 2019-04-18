@@ -3,10 +3,9 @@ $avantElasticsearchFacets = new AvantElasticsearchFacets();
 $facetDefinitions = $avantElasticsearchFacets->getFacetDefinitions();
 $queryString = $avantElasticsearchFacets->createQueryStringWithFacets($query);
 
-$appliedFacets = $query['facet'];
-$appliedFacetIds = array();
-$facetsAreApplied = count($appliedFacets) > 0;
-$appliedFacetValues = array();
+$queryStringFacets = $query['facet'];
+$facetsAreApplied = count($queryStringFacets) > 0;
+$appliedFacets = array();
 
 $findUrl = get_view()->url('/find');
 ?>
@@ -20,15 +19,13 @@ $findUrl = get_view()->url('/find');
         <?php
         $appliedFilters = '';
 
-        foreach ($appliedFacets as $facetId => $facetValues)
+        foreach ($queryStringFacets as $facetId => $facetValues)
         {
             if (!isset($facetDefinitions[$facetId]))
             {
-                // This should only happen if the query string syntax in invalid because someone edited or mistyped it.
+                // This should only happen if the query string syntax is invalid because someone edited or mistyped it.
                 break;
             }
-
-            $appliedFacetIds[$facetId] = true;
 
             $facetName = htmlspecialchars($facetDefinitions[$facetId]['name']);
             $appliedFilters .= '<div class="elasticsearch-facet-name">' . $facetName . '</div>';
@@ -36,7 +33,7 @@ $findUrl = get_view()->url('/find');
 
             foreach ($facetValues as $facetValue)
             {
-                $appliedFacetValues[] = $facetValue;
+                $appliedFacets[$facetId][] = $facetValue;
                 $resetLink = $avantElasticsearchFacets->createRemoveFacetLink($queryString, $facetId, $facetValue);
                 $appliedFilters .= '<li>';
                 $appliedFilters .= "<i>$facetValue</i>";
@@ -65,8 +62,6 @@ $findUrl = get_view()->url('/find');
             continue;
         }
 
-        echo '<div class="elasticsearch-facet-name">' . $facetDefinition['name'] . '</div>';
-
         $filters = '';
         $buckets = $aggregations[$facetId]['buckets'];
 
@@ -89,7 +84,7 @@ $findUrl = get_view()->url('/find');
                     //$text = substr($text, 1);
                 }
 
-                if (isset($appliedFacetIds[$facetId]))
+                if (isset($appliedFacets[$facetId]))
                 {
                     // This facet has been applied. Show it's leaf values indented.
                     if ($facetDefinition['show_root'])
@@ -110,6 +105,7 @@ $findUrl = get_view()->url('/find');
                 }
             }
 
+            $appliedFacetValues = isset($appliedFacets[$facetId]) ? $appliedFacets[$facetId] : array();
             $applied = in_array($bucketValue, $appliedFacetValues);
 
             $count = ' (' . $bucket['doc_count'] . ')';
@@ -117,7 +113,8 @@ $findUrl = get_view()->url('/find');
             if ($applied)
             {
                 // Don't provide a link for a facet that's already been applied.
-                $filter = $text;
+                continue;
+                //$filter = $text;
             }
             else
             {
@@ -135,7 +132,11 @@ $findUrl = get_view()->url('/find');
             $filters .= "<li$class>$filter</li>";
         }
 
-        echo "<ul>$filters</ul>";
+        if (!empty($filters))
+        {
+            echo '<div class="elasticsearch-facet-name">' . $facetDefinition['name'] . '</div>';
+            echo "<ul>$filters</ul>";
+        }
     }
     ?>
 </div>
