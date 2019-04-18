@@ -27,17 +27,45 @@ $findUrl = get_view()->url('/find');
                 break;
             }
 
+            $isHierarchy = $facetDefinitions[$facetId]['is_hierarchy'];
             $facetName = htmlspecialchars($facetDefinitions[$facetId]['name']);
             $appliedFilters .= '<div class="elasticsearch-facet-name">' . $facetName . '</div>';
             $appliedFilters .= '<ul>';
+            $rootValue = '';
+            $class = '';
 
-            foreach ($facetValues as $facetValue)
+            foreach ($facetValues as $index => $facetValue)
             {
+                $emitLink = true;
+                $linkText = $facetValue;
+
+                if ($isHierarchy)
+                {
+                    $isSubHierarchyValue = $index == 1;
+
+                    // Only emit the [x] link for a removable facet. That's either a root by itself
+                    // or a leaf.
+                    $emitLink = count($facetValues) == 1 || $isSubHierarchyValue;
+                    if ($isSubHierarchyValue)
+                    {
+                        $class = " class='elasticsearch-facet-level2'";
+                        $prefixLen = strlen($rootValue) + strlen(', ') - strlen('_');
+                        $linkText = substr($facetValue, $prefixLen);
+                    }
+                    else
+                    {
+                        $rootValue = $facetValue;
+                    }
+                }
+
                 $appliedFacets[$facetId][] = $facetValue;
                 $resetLink = $avantElasticsearchFacets->createRemoveFacetLink($queryString, $facetId, $facetValue);
                 $appliedFilters .= '<li>';
-                $appliedFilters .= "<i>$facetValue</i>";
-                $appliedFilters .= '<a href="' . $findUrl . '?' . $resetLink . '"> [&#10006;]</a>';
+                $appliedFilters .= "<i$class>$linkText</i>";
+                if ($emitLink)
+                {
+                    $appliedFilters .= '<a href="' . $findUrl . '?' . $resetLink . '"> [&#10006;]</a>';
+                }
                 $appliedFilters .= '</li>';
             }
 
