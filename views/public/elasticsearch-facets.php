@@ -27,7 +27,7 @@ $findUrl = get_view()->url('/find');
                 break;
             }
 
-            $isHierarchy = $facetDefinitions[$facetId]['is_hierarchy'];
+            $facetDefinition = $facetDefinitions[$facetId];
             $facetName = htmlspecialchars($facetDefinitions[$facetId]['name']);
             $appliedFilters .= '<div class="elasticsearch-facet-name">' . $facetName . '</div>';
             $appliedFilters .= '<ul>';
@@ -39,12 +39,11 @@ $findUrl = get_view()->url('/find');
                 $emitLink = true;
                 $linkText = $facetValue;
 
-                if ($isHierarchy)
+                if ($facetDefinition['is_hierarchy'] && $facetDefinition['show_root'])
                 {
                     $isSubHierarchyValue = $index == 1;
 
-                    // Only emit the [x] link for a removable facet. That's either a root by itself
-                    // or a leaf.
+                    // Only emit the [x] link for a removable facet. That's either a root by itself or a leaf.
                     $emitLink = count($facetValues) == 1 || $isSubHierarchyValue;
                     if ($isSubHierarchyValue)
                     {
@@ -55,10 +54,13 @@ $findUrl = get_view()->url('/find');
                     else
                     {
                         $rootValue = $facetValue;
+
+                        // Remove the leading underscore that appears as the first character of a root facet value.
+                        $linkText = substr($linkText, 1);
                     }
                 }
 
-                $appliedFacets[$facetId][] = $facetValue;
+                $appliedFacets[$facetId][] = $linkText;
                 $resetLink = $avantElasticsearchFacets->createRemoveFacetLink($queryString, $facetId, $facetValue);
                 $appliedFilters .= '<li>';
                 $appliedFilters .= "<i$class>$linkText</i>";
@@ -109,7 +111,7 @@ $findUrl = get_view()->url('/find');
                     $isRoot = true;
 
                     // Remove the underscore from the beginning of the root value text.
-                    //$text = substr($text, 1);
+                    $filterLinkText = substr($filterLinkText, 1);
                 }
 
                 if (isset($appliedFacets[$facetId]))
@@ -121,7 +123,7 @@ $findUrl = get_view()->url('/find');
                         {
                             // Determine if this value is part of the same sub-hierarchy as the applied root facet.
                             $rootValue = $appliedFacets[$facetId][0];
-                            $rootValue = substr($rootValue, 1); // remove the leading _
+
                             if (strpos($bucketValue, $rootValue) === 0)
                             {
                                 // Remove the root from the leaf unless the root and leaf are the same.
@@ -155,11 +157,11 @@ $findUrl = get_view()->url('/find');
                 }
             }
 
-            // Determine if this bucket value has already been applied.
+            // Determine if this bucket value has already been applied. If the bucket value is a
+            // root, strip off the leading underscore before comparing to applied values.
             $values = isset($appliedFacets[$facetId]) ? $appliedFacets[$facetId] : array();
-            $applied = in_array($bucketValue, $values);
-
-            $count = ' (' . $bucket['doc_count'] . ')';
+            $value = $isRoot ? substr($bucketValue, 1) : $bucketValue;
+            $applied = in_array($value, $values);
 
             if ($applied)
             {
@@ -169,6 +171,7 @@ $findUrl = get_view()->url('/find');
             else
             {
                 // Create a link that the user can click to apply this facet.
+                $count = ' (' . $bucket['doc_count'] . ')';
                 $filterLink = $avantElasticsearchFacets->createAddFacetLink($queryString, $facetId, $bucketValue);
                 $facetUrl = $findUrl . '?' . $filterLink;
                 $filter = '<a href="' . $facetUrl . '">' . $filterLinkText . '</a>' . $count;
