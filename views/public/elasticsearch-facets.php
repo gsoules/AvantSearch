@@ -68,7 +68,7 @@ $findUrl = get_view()->url('/find');
         foreach ($buckets as $bucket)
         {
             $bucketValue = $bucket['key'];
-            $text = htmlspecialchars($bucketValue);
+            $filterLinkText = htmlspecialchars($bucketValue);
             $class = '';
 
             if ($facetDefinition['is_hierarchy'])
@@ -89,9 +89,31 @@ $findUrl = get_view()->url('/find');
                     // This facet has been applied. Show it's leaf values indented.
                     if ($facetDefinition['show_root'])
                     {
+                        if ($facetDefinition['multi_value'])
+                        {
+                            // Determine if this value is part of the same sub-hierarchy as the applied root facet.
+                            $rootValue = $appliedFacets[$facetId][0];
+                            $rootValue = substr($rootValue, 1); // remove the leading _
+                            if (strpos($bucketValue, $rootValue) === 0)
+                            {
+                                // Remove the root from the leaf unless the root and leaf are the same.
+                                // That can happen when the the value has no leaf part.
+                                if (strcmp($rootValue, $filterLinkText) != 0)
+                                {
+                                    $prefixLen = strlen($rootValue) + strlen(', ');
+                                    $filterLinkText = substr($filterLinkText, $prefixLen);
+                                }
+                            }
+                            else
+                            {
+                                // Not part of same sub-hierarchy.
+                                continue;
+                            }
+                        }
+
                         // Add some styling when leafs appear under roots.
-                        $level = $isRoot ? 'root' : 'leaf';
-                        $class = " class='elasticsearch-facet-$level'";
+                        $level = $isRoot ? '1' : '2';
+                        $class = " class='elasticsearch-facet-level$level'";
                     }
                 }
                 else
@@ -105,36 +127,42 @@ $findUrl = get_view()->url('/find');
                 }
             }
 
-            $appliedFacetValues = isset($appliedFacets[$facetId]) ? $appliedFacets[$facetId] : array();
-            $applied = in_array($bucketValue, $appliedFacetValues);
+            // Determine if this bucket value has already been applied.
+            $values = isset($appliedFacets[$facetId]) ? $appliedFacets[$facetId] : array();
+            $applied = in_array($bucketValue, $values);
 
             $count = ' (' . $bucket['doc_count'] . ')';
 
             if ($applied)
             {
-                // Don't provide a link for a facet that's already been applied.
+                // Don't display a facet value that has already been applied.
                 continue;
-                //$filter = $text;
             }
             else
             {
                 // Create a link that the user can click to apply this facet.
                 $filterLink = $avantElasticsearchFacets->createAddFacetLink($queryString, $facetId, $bucketValue);
                 $facetUrl = $findUrl . '?' . $filterLink;
-                $filter = '<a href="' . $facetUrl . '">' . $text . '</a>' . $count;
+                $filter = '<a href="' . $facetUrl . '">' . $filterLinkText . '</a>' . $count;
             }
 
-            if (!$facetsAreApplied)
-            {
-                $class = " class='elasticsearch-facet-indent'";
-            }
-
+            // Indent the filter link text
+            $class = " class='elasticsearch-facet-level2'";
             $filters .= "<li$class>$filter</li>";
         }
 
         if (!empty($filters))
         {
-            echo '<div class="elasticsearch-facet-name">' . $facetDefinition['name'] . '</div>';
+            if (isset($appliedFacets[$facetId]))
+            {
+                $sectionName = $appliedFacets[$facetId][0];
+            }
+            else
+            {
+                $sectionName = $facetDefinition['name'];
+            }
+
+            echo '<div class="elasticsearch-facet-name">' . $sectionName . '</div>';
             echo "<ul>$filters</ul>";
         }
     }
