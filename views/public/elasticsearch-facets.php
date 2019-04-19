@@ -16,7 +16,7 @@ $queryHasFacets = isset($query['root']) || isset($query['facet']);
 <div id="elasticsearch-filters">
     <div class="elasticsearch-facet-section">Refine your search</div>
     <?php
-        $avantElasticsearchFacets->emitHtmlForFilters($aggregations, $query, $findUrl);
+        echo $avantElasticsearchFacets->emitHtmlForFilters($aggregations, $query, $findUrl);
     ?>
 </div>
 
