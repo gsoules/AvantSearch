@@ -1,6 +1,5 @@
 <?php
 $avantElasticsearchFacets = new AvantElasticsearchFacets();
-$appliedFacets = array();
 $findUrl = get_view()->url('/find');
 $queryHasFacets = isset($query['root']) || isset($query['facet']);
 ?>
@@ -11,17 +10,13 @@ $queryHasFacets = isset($query['root']) || isset($query['facet']);
             <a class="elasticsearch-facet-reset"
                href="<?php echo get_view()->url('/find') . '?query=' . urlencode($query['query']); ?>">[Reset]</a>
         </div>
-        <?php
-        $appliedFilters = $avantElasticsearchFacets->emitHtmlForAppliedFilters($query, $findUrl);
-        echo $appliedFilters;
-        ?>
     </div>
 <?php endif; ?>
 
 <div id="elasticsearch-filters">
     <div class="elasticsearch-facet-section">Refine your search</div>
     <?php
-        $avantElasticsearchFacets->emitHtmlForFilters($aggregations, $appliedFacets,$query, $findUrl);
+        $avantElasticsearchFacets->emitHtmlForFilters($aggregations, $query, $findUrl);
     ?>
 </div>
 
