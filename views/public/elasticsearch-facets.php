@@ -17,67 +17,7 @@ $findUrl = get_view()->url('/find');
                href="<?php echo get_view()->url('/find') . '?query=' . urlencode($query['query']); ?>">[Reset]</a>
         </div>
         <?php
-        $appliedFilters = '';
-
-        foreach ($queryStringFacets as $facetId => $facetValues)
-        {
-            if (!isset($facetDefinitions[$facetId]))
-            {
-                // This should only happen if the query string syntax is invalid because someone edited or mistyped it.
-                break;
-            }
-
-            $facetDefinition = $facetDefinitions[$facetId];
-            $facetName = htmlspecialchars($facetDefinitions[$facetId]['name']);
-            $appliedFilters .= '<div class="elasticsearch-facet-name">' . $facetName . '</div>';
-            $appliedFilters .= '<ul>';
-            $rootValue = '';
-            $class = '';
-
-            foreach ($facetValues as $index => $facetValue)
-            {
-                $level = $index == 0 ? 'root' : 'leaf';
-
-                $emitLink = true;
-                $linkText = $facetValue;
-
-                if ($facetDefinition['is_hierarchy'] && $facetDefinition['show_root'])
-                {
-                    $isLeaf = $level == 'leaf';
-
-                    // Only emit the [x] link for a removable facet. That's either a root by itself or a leaf.
-                    $emitLink = count($facetValues) == 1 || $isLeaf;
-                    if ($isLeaf)
-                    {
-                        $class = " class='elasticsearch-facet-level2'";
-
-                        // Remove the root value from the leaf text.
-                        $prefixLen = strlen($rootValue) + strlen(', ') - strlen('_');
-                        $linkText = substr($facetValue, $prefixLen);
-                    }
-                    else
-                    {
-                        $rootValue = $facetValue;
-
-                        // Remove the leading underscore that appears as the first character of a root facet value.
-                        $linkText = substr($linkText, 1);
-                    }
-                }
-
-                $appliedFacets[$facetId][$level] = $linkText;
-                $appliedFacets[$facetId]['facet_value'] = $facetValue;
-                $resetLink = $avantElasticsearchFacets->createRemoveFacetLink($queryString, $facetId, $facetValue);
-                $appliedFilters .= '<li>';
-                $appliedFilters .= "<i$class>$linkText</i>";
-                if ($emitLink)
-                {
-                    $appliedFilters .= '<a href="' . $findUrl . '?' . $resetLink . '"> [&#10006;]</a>';
-                }
-                $appliedFilters .= '</li>';
-            }
-
-            $appliedFilters .= '</ul>';
-        }
+        $appliedFilters = $avantElasticsearchFacets->emitHtmlForAppliedFilters($query, $findUrl);
         echo $appliedFilters;
         ?>
     </div>
