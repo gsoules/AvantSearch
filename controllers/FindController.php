@@ -110,24 +110,27 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->view->assign(array('searchResults' => $searchResults));
     }
 
-    private function getSearchParams($query)
+    private function getQueryParams()
     {
-        $query = [
-            'query' => $query,
-            'facet' => []
+        $parts = $this->_request->getQuery();
+
+        $params = [
+            'query' => $parts['query']
         ];
 
-        $keywords = $this->_request->getQuery();
-
-        foreach ($keywords as $keyword => $value)
+        foreach ($parts as $part => $value)
         {
-            if (strpos($keyword, 'facet_') === 0)
+            if (strpos($part, 'facet_') === 0)
             {
-                $query['facet'][substr($keyword, strlen('facet_'))] = $value;
+                $params['facet'][substr($part, strlen('facet_'))] = $value;
+            }
+            else if (strpos($part, 'root_') === 0)
+            {
+                $params['root'][substr($part, strlen('root_'))] = $value;
             }
         }
 
-        return $query;
+        return $params;
     }
 
     private function getSortParams($params)
@@ -174,10 +177,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
         $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
 
-        $queryArg = $params['query'];
-        $query = $this->getSearchParams($queryArg);
+        $queryParams = $this->getQueryParams();
 
-        $id = ItemMetadata::getItemIdFromIdentifier($query['query']);
+        $id = ItemMetadata::getItemIdFromIdentifier($queryParams['query']);
         if ($id) {
             // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
             AvantSearch::redirectToShowPageForItem($id);
@@ -188,8 +190,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $user = $this->getCurrentUser();
         $sort = $this->getSortParams($params);
 
-        $queryParams = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams([
-            'query' => $query,
+        $options = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams([
+            'query' => $queryParams,
             'offset' => $start,
             'limit' => $this->recordsPerPage,
             'sort' => $sort,
@@ -197,11 +199,11 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         ]);
 
         $avantElasticsearchClient = new AvantElasticsearchClient();
-        $results = $avantElasticsearchClient->search($queryParams);
+        $results = $avantElasticsearchClient->search($options);
 
         $this->totalRecords = $results["hits"]["total"];
         $this->records = $results['hits']['hits'];
-        $searchResults->setQuery($query);
+        $searchResults->setQuery($queryParams);
         $searchResults->setFacets($results['aggregations']);
     }
 
