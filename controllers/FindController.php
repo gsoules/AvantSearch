@@ -114,23 +114,38 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     {
         $parts = $this->_request->getQuery();
 
+        // Set the query parameter and then remove it from the parts since it's not a facet.
         $params = [
             'query' => $parts['query']
         ];
+        unset($parts['query']);
 
-        foreach ($parts as $part => $value)
+        // Update the parameters with each root or leaf facet in the query string.
+        foreach ($parts as $facet => $values)
         {
-            if (strpos($part, 'facet_') === 0)
-            {
-                $params['facet'][substr($part, strlen('facet_'))] = $value;
-            }
-            else if (strpos($part, 'root_') === 0)
-            {
-                $params['root'][substr($part, strlen('root_'))] = $value;
-            }
+            $this->getQueryParamsForFacet($params, $facet, $values, true);
+            $this->getQueryParamsForFacet($params, $facet, $values, false);
         }
 
         return $params;
+    }
+
+    private function getQueryParamsForFacet(&$params, $facet, $values, $isRoot)
+    {
+        $kind = $isRoot ? 'root' : 'facet';
+        $prefix = "{$kind}_";
+        if (strpos($facet, $prefix) === 0)
+        {
+            if (!is_array($values))
+            {
+                // This should only happen if the query string syntax is incorrect such that the facet arg is not an array.
+                // Correct: root_subject[]=Businesses
+                // Incorrect: root_subject[=Businesses
+                return;
+            }
+            $facetId = substr($facet, strlen($prefix));
+            $params[$kind][$facetId] = $values;
+        }
     }
 
     private function getSortParams($params)
