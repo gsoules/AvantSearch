@@ -1,7 +1,7 @@
 <?php
 $avantElasticsearchFacets = new AvantElasticsearchFacets();
 $findUrl = get_view()->url('/find');
-$queryHasFacets = isset($query['root']) || isset($query['facet']);
+$queryHasFacets = isset($query[FACET_KIND_ROOT]) || isset($query[FACET_KIND_LEAF]);
 ?>
 
 <?php if ($queryHasFacets): ?>

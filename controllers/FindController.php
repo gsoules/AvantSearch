@@ -132,7 +132,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     private function getQueryParamsForFacet(&$params, $facet, $values, $isRoot)
     {
-        $kind = $isRoot ? 'root' : 'facet';
+        $kind = $isRoot ? FACET_KIND_ROOT : FACET_KIND_LEAF;
         $prefix = "{$kind}_";
         if (strpos($facet, $prefix) === 0)
         {
