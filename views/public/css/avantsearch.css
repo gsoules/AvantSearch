@@ -618,13 +618,18 @@ input[type="checkbox"] {
 	font-weight: bold;
 }
 
+.elasticsearch-facet-level1 {
+	padding-top: 5px;
+}
+
 .elasticsearch-facet-level2 {
 	padding-left: 12px;
 	font-size: 14px;
 }
 
-.elasticsearch-facet-level1 {
-	padding-top: 5px;
+.elasticsearch-facet-level3 {
+	padding-left: 24px;
+	font-size: 14px;
 }
 
 .elasticsearch-highlight {
