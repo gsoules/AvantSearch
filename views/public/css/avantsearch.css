@@ -607,9 +607,15 @@ input[type="checkbox"] {
 	padding-bottom: 8px;
 }
 
-.facet-section {
+.facet-section,
+.facet-section-applied {
 	color: #1a77bd;
 	font-size:16px;
+}
+
+.facet-section-applied,
+.facet-entry-applied {
+	color: #048817;
 }
 
 .facet-entry-1-root,
