@@ -594,42 +594,42 @@ input[type="checkbox"] {
 }
 
 #elasticsearch-filters > ul {
-	padding-left: 0px;
+	padding-left: 0;
 	font-size:14px;
 	margin-top: 0;
 	list-style-type:none;
 }
 
-.elasticsearch-facet-section,
-.elasticsearch-facet-reset {
+.facet-sections {
 	color: #1a77bd;
 	font-size:20px;
 	padding-top: 8px;
 	padding-bottom: 8px;
 }
 
-.elasticsearch-facet-reset {
+.facet-section {
+	color: #1a77bd;
 	font-size:16px;
 }
 
-.elasticsearch-facet-name {
-	color: #666;
-	font-size:14px;
+.facet-entry-1-root,
+.facet-entry-1-leaf,
+.facet-entry-2 {
+	font-size: 14px;
+	padding-top: 2px;
+}
+
+.facet-entry-1-root {
 	font-weight: bold;
 }
 
-.elasticsearch-facet-level1 {
-	padding-top: 5px;
-}
-
-.elasticsearch-facet-level2 {
+.facet-entry-1-root,
+.facet-entry-1-leaf {
 	padding-left: 12px;
-	font-size: 14px;
 }
 
-.elasticsearch-facet-level3 {
+.facet-entry-2 {
 	padding-left: 24px;
-	font-size: 14px;
 }
 
 .elasticsearch-highlight {
