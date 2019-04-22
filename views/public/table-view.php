@@ -71,7 +71,8 @@ if ($totalResults)
             $facets = $searchResults->getFacets();
             echo $this->partial('/elasticsearch-facets.php', array(
                     'query' => $query,
-                    'aggregations' => $facets
+                    'aggregations' => $facets,
+                    'totalResults' => $totalResults
                 )
             );
             ?>
