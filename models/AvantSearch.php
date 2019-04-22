@@ -163,11 +163,11 @@ class AvantSearch
         $url = url('find');
 
         $query = '';
-        $showLastQuery = false;
+        $showLastQuery = true;
         if ($showLastQuery)
         {
-            // Initialize the search box with the last query submitted. Now that autocomplete is working,
-            // this is not always desirable and so this code is conditional for now.
+            // Initialize the search box with the last query submitted. Now that autocomplete
+            // is working, this might not always desirable and so this code is a switch for now.
             $query = isset($_GET['query']) ? $_GET['query'] : '';
             $query = htmlspecialchars($query, ENT_QUOTES);
         }
