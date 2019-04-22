@@ -15,7 +15,8 @@ class SearchResultsTableView extends SearchResultsView
         parent::__construct();
 
         $this->layoutsData = SearchConfig::getOptionDataForLayouts();
-        $this->detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
+        $this->detailLayoutData = $this->getOptionDataForDetailLayout();
+
         self::filterDetailLayoutData();
         $this->addLayoutIdsToColumns();
         $this->addDetailLayoutColumns();
@@ -221,6 +222,32 @@ class SearchResultsTableView extends SearchResultsView
             '50' => '50',
             '100' => '100',
             '200' => '200');
+    }
+
+    protected function getOptionDataForDetailLayout()
+    {
+        $detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
+        $useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH);
+        if ($useElasticsearch)
+        {
+            // When using Elasticsearch only one metadata element column appears because the search results
+            // area is narrower because of the space taken on the left for filtering by facets.  When not
+            // using Elasticsearch, honor the AvantSearch configuration options that allow 1 or 2 columns.
+            $mergedLayoutData = array();
+            foreach ($detailLayoutData as $elements)
+            {
+                foreach ($elements as $elementId => $element)
+                {
+                    $mergedLayoutData[0][$elementId] = $element;
+                }
+            }
+
+            return $mergedLayoutData;
+        }
+        else
+        {
+            return $detailLayoutData;
+        }
     }
 
     public function getShowRelationships()
