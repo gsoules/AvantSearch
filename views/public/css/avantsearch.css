@@ -337,7 +337,7 @@ input[type="checkbox"] {
 }
 
 #search-filter-bar .search-filter-bar-message {
-	font-size:20px;
+	font-size:16px;
 	margin-bottom: 12px;
 }
 
@@ -345,7 +345,7 @@ input[type="checkbox"] {
 	color: #29536b;
 	content: "\f002";
 	font-family: "FontAwesome";
-	font-size: 22px;
+	font-size: 18px;
 	line-height: 24px;
 	padding: 0 8px 0 0;
 }

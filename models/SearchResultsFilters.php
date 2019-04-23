@@ -2,13 +2,13 @@
 
 class SearchResultsFilters
 {
-    /* @var $searchResults SearchResultsIndexView */
     protected $filterCount;
     protected $filterMessage;
     protected $searchResults;
 
     function __construct($searchResults)
     {
+        /* @var $searchResults SearchResultsView */
         $this->searchResults = $searchResults;
         $this->filterCount = 0;
         $this->filterMessage = '';
@@ -16,7 +16,7 @@ class SearchResultsFilters
 
     protected function addFilterMessageCriteria($criteria)
     {
-        $criteria = trim($criteria);
+        $criteria = html_escape(trim($criteria));
         if (!empty($this->filterMessage))
         {
             if (strpos($criteria, __('AND'), 0) === false && strpos($criteria, __('OR'), 0) === false)
@@ -25,6 +25,22 @@ class SearchResultsFilters
         }
         $this->filterMessage .= "$criteria";
         $this->filterCount++;
+    }
+
+    protected function emitElasticsearchFilters()
+    {
+        $query = $this->searchResults->getQuery();
+
+        $avantElasticsearchFacets = new AvantElasticsearchFacets();
+        $filterBarFacets = $avantElasticsearchFacets->getFilterBarFacets($query);
+
+        foreach ($filterBarFacets as $group => $values)
+        {
+            foreach ($values as $value)
+            {
+                $this->addFilterMessageCriteria("$group = $value");
+            }
+        }
     }
 
     public function emitSearchFilters($layoutIndicator, $paginationNav, $filtersExpected)
@@ -36,7 +52,6 @@ class SearchResultsFilters
         $displayArray = array();
 
         $subjectSearch = empty($_GET['subjects']) ? '0' : intval($_GET['subjects']);
-
 
         $keywords = $this->searchResults->getKeywords();
         if (!empty($keywords))
@@ -148,21 +163,26 @@ class SearchResultsFilters
                 $name .= ' ' . __('in') . ' <span class="search-titles-only">' . __('titles only') . '</span>';
             }
 
-            $this->addFilterMessageCriteria($name . ': ' . html_escape($query));
+            $this->addFilterMessageCriteria($name . ': ' . $query);
         }
 
         if (!empty($advancedArray))
         {
             foreach ($advancedArray as $j => $advanced)
             {
-                $this->addFilterMessageCriteria(html_escape($advanced));
+                $this->addFilterMessageCriteria($advanced);
             }
+        }
+
+        if ($this->searchResults->getUseElasticsearch())
+        {
+            $this->emitElasticsearchFilters();
         }
 
         if ($filtersExpected && $this->filterCount == 0)
         {
             $message = __('No search filters');
-            $this->addFilterMessageCriteria(html_escape($message));
+            $this->addFilterMessageCriteria($message);
         }
 
         $class = 'search-filter-bar-layout';
