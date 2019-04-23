@@ -215,11 +215,18 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $avantElasticsearchClient = new AvantElasticsearchClient();
         $results = $avantElasticsearchClient->search($options);
-
-        $this->totalRecords = $results["hits"]["total"];
-        $this->records = $results['hits']['hits'];
-        $searchResults->setQuery($queryParams);
-        $searchResults->setFacets($results['aggregations']);
+        if ($results == null)
+        {
+            $this->totalRecords = -1;
+            $this->records = null;
+        }
+        else
+        {
+            $this->totalRecords = $results["hits"]["total"];
+            $this->records = $results['hits']['hits'];
+            $searchResults->setQuery($queryParams);
+            $searchResults->setFacets($results['aggregations']);
+        }
     }
 
     protected function performQueryUsingSql($params, $currentPage)
