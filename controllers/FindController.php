@@ -160,7 +160,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
 
         $sortElementName = $params['sort'];
-        $sortFieldFacetId = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
+        $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
 
         $sortOrder = $params['order'] == 'd' ? 'desc' : 'asc';
 
@@ -171,15 +171,15 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
         else if (in_array($sortElementName, $integerSortElements))
         {
-            $sort[] = ["sort.$sortFieldFacetId.keyword" => $sortOrder];
+            $sort[] = ["sort.$fieldName.keyword" => $sortOrder];
         }
-        else if ($this->facetDefinitions[$sortFieldFacetId]['is_hierarchy'])
+        else if ($fieldName == 'type' || $fieldName == 'subject' || $fieldName == 'place')
         {
-            $sort[] = ["sort.$sortFieldFacetId.keyword" => $sortOrder];
+            $sort[] = ["sort.$fieldName.keyword" => $sortOrder];
         }
         else
         {
-            $sort[] = ["element.$sortFieldFacetId.keyword" => $sortOrder];
+            $sort[] = ["element.$fieldName.keyword" => $sortOrder];
         }
 
         $sort[] = '_score';
