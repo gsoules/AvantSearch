@@ -29,24 +29,22 @@ class SearchResultsFilters
 
     protected function emitAlternateSortLink($sortedByRelevance)
     {
-        $params = $_GET;
-
         if ($sortedByRelevance)
         {
-            $params['sort'] = 'Title';
-            $params['order'] = 'a';
-        }
-        else
-        {
-            unset($params['sort']);
-            unset($params['order']);
+            // Don't offer an alternate when sorted by relevance since the user can click a column header for sorting.
+            return '';
         }
 
-        // Create a new URL query string with the added or removed sort args.
+        // Remove column sorting.
+        $params = $_GET;
+        unset($params['sort']);
+        unset($params['order']);
+
+        // Create a new URL query string with the removed sort args.
         $url = html_escape(url(array(), null, $params));
 
         // Create the link a user can click to switch to the alternate sort.
-        $alternateSortLinkText = $sortedByRelevance ? __('Title') : __('Relevance');
+        $alternateSortLinkText =  __('Relevance');
         $alternateSort = ' &mdash; ' . __('Sort by ') . "<a href='$url'>$alternateSortLinkText</a>";
 
         return $alternateSort;
