@@ -221,8 +221,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $results = $avantElasticsearchClient->search($options);
         if ($results == null)
         {
-            $this->totalRecords = -1;
-            $this->records = null;
+            $this->totalRecords = 0;
+            $this->records = array();
+            $searchResults->setError($avantElasticsearchClient->getError());
         }
         else
         {

@@ -63,7 +63,7 @@ if ($totalResults)
 
 <?php echo $searchResults->emitSearchFilters($layoutButtonHtml, $totalResults ? pagination_links() : ''); ?>
 
-<?php if ($totalResults): ?>
+<?php if ($totalResults > 0): ?>
     <?php if ($useElasticsearch): ?>
         <section id="search-table-elasticsearch-sidebar">
             <?php
