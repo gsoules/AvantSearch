@@ -385,9 +385,17 @@ class SearchResultsTableViewRowData
         // Create a psuedo element value for tags since there is no actual tags element.
         if ($this->useElasticsearch)
         {
-            $tags = $item['_source']['tags'];
-            $tags = implode(', ', $tags);
-            $score =  $this->userIsAdmin() ? $item['_score'] : '';
+            if (isset($item['_source']['tags']))
+            {
+                $tags = $item['_source']['tags'];
+                $tags = implode(', ', $tags);
+            }
+            else
+            {
+                $tags = '';
+            }
+
+            $score = $this->userIsAdmin() ? $item['_score'] : '';
         }
         else
         {
