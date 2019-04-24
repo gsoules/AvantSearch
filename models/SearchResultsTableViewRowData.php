@@ -309,7 +309,7 @@ class SearchResultsTableViewRowData
     {
         // Create an array of the names of fields that contain HTML text.
         // Each element is an array of indices to indicate which of the field's values are HTML.
-        $htmlFields = $item['_source']['html'];
+        $htmlFields = isset($item['_source']['html']) ? $item['_source']['html'] : array();
 
         foreach ($htmlFields as $htmlField)
         {
