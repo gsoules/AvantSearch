@@ -98,8 +98,14 @@ class SearchResultsFilters
                 }
             }
 
-            $conditionName = $this->searchResults->getKeywordsConditionName();
-            $displayArray[__('Keywords')] = "\"$keywords\" ($conditionName)";
+            $conditionText = '';
+            $useElasticsearch = $this->searchResults->getUseElasticsearch();
+            if (!$useElasticsearch)
+            {
+                $conditionName = $this->searchResults->getKeywordsConditionName();
+                $conditionText = " ($conditionName)";
+            }
+            $displayArray[__('Keywords')] = "\"$keywords\"$conditionText";
         }
 
         if (array_key_exists('advanced', $requestArray))
