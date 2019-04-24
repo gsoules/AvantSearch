@@ -635,11 +635,11 @@ input[type="checkbox"] {
 
 .facet-entry-1-root,
 .facet-entry-1-leaf {
-	padding-left: 12px;
+	padding-left: 9px;
 }
 
 .facet-entry-2 {
-	padding-left: 24px;
+	padding-left: 20px;
 }
 
 .elasticsearch-highlight {
