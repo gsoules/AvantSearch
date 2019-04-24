@@ -169,16 +169,16 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         if ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
         {
-            $sort[] = ['sort.address-street.keyword' => $sortOrder];
-            $sort[] = ['sort.address-number.keyword' => $sortOrder];
+            $sort[] = ['sort.address-street' => $sortOrder];
+            $sort[] = ['sort.address-number' => $sortOrder];
         }
         else if (in_array($sortElementName, $integerSortElements))
         {
-            $sort[] = ["sort.$fieldName.keyword" => $sortOrder];
+            $sort[] = ["sort.$fieldName" => $sortOrder];
         }
         else if (isset($this->facetDefinitions[$fieldName]) && $this->facetDefinitions[$fieldName]['is_hierarchy'])
         {
-            $sort[] = ["sort.$fieldName.keyword" => $sortOrder];
+            $sort[] = ["sort.$fieldName" => $sortOrder];
         }
         else
         {
