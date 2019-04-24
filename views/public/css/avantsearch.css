@@ -278,7 +278,7 @@ input[type="checkbox"] {
 	width: 55%;
 }
 
-.search-owner-site {
+.search-contributor {
 	color: #777777;
 	font-size:12px;
 }
@@ -1162,6 +1162,13 @@ input[type="checkbox"] {
 		width: 92%;
 	}
 
+	#search-table-elasticsearch-results {
+		width: 100%;
+	}
+
+	#search-table-elasticsearch-sidebar {
+		display: none;
+	}
 }
 
 /* === CSS for Width < 480px ===
@@ -1202,6 +1209,14 @@ input[type="checkbox"] {
 
 	#search-index-view-headings {
 		column-count: 1;
+	}
+
+	#search-table-elasticsearch-results {
+		width: 100%;
+	}
+
+	#search-table-elasticsearch-sidebar {
+		display: none;
 	}
 }
 

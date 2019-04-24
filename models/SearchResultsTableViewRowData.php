@@ -154,8 +154,8 @@ class SearchResultsTableViewRowData
             $identifier = $item['_source']['element']['identifier'];
             if ($this->showCommingledResults)
             {
-                $ownerId = $item['_source']['ownerid'];
-                $identifier = $ownerId . '-' . $identifier;
+                $contributorId = $item['_source']['contributorid'];
+                $identifier = $contributorId . '-' . $identifier;
             }
             $itemUrl = $item['_source']['url'];
             $idLink = "<a href='$itemUrl'>$identifier</a>";
@@ -219,8 +219,8 @@ class SearchResultsTableViewRowData
 
         if ($this->showCommingledResults)
         {
-            $owner = $item['_source']['owner'];
-            $this->elementValue['Title']['text'] .= "<div class='search-owner-site'>$owner</div>";
+            $contributor = $item['_source']['contributor'];
+            $this->elementValue['Title']['text'] .= "<div class='search-contributor'>$contributor</div>";
         }
     }
 
