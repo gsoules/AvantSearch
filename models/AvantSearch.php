@@ -172,12 +172,20 @@ class AvantSearch
             $query = htmlspecialchars($query, ENT_QUOTES);
         }
 
+        $commingledChecked = isset($_GET['commingled']) ? 'checked="checked"' : '';
+        $commingledText = __('Search all sites');
+
         // Construct the HTML that will replace the native Omeka search form with the one for AvantSearch.
         $html = '<div id="search-container" role="search">';
         $html .= '<form id="search-form" name="search-form" action="' . $url. '" method="get">';
-        $html .= '<input type="text" name="query" id="query" value="' . $query . '" title="Search">';
-        $html .= '<button id="submit_search" type="submit" value="Search">Search</button></form>';
-        $html .= '<a class="simple-search-advanced-link" href="' . WEB_ROOT . '/find/advanced">' . $linkText . '</a>';
+        $html .= '<input id="query" type="text" name="query" value="' . $query . '" title="Search">';
+        $html .= '<button id="submit_search" type="submit" value="Search">Search</button>';
+        $html .= '<div>';
+        $html .= '<a href="' . WEB_ROOT . '/find/advanced">' . $linkText . '</a>';
+        $html .= '<input id="commingled" type="checkbox" name="commingled"' . $commingledChecked . '>';
+        $html .= '<span>' . $commingledText . '</span>';
+        $html .= '</div>';
+        $html .= '</form>';
         $html .= '</div>';
 
         return $html;
