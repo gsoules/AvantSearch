@@ -3,6 +3,7 @@
 class AvantSearch_FindController extends Omeka_Controller_AbstractActionController
 {
     private $avantElasticsearchQueryBuilder;
+    private $commingled;
     private $facetDefinitions;
     private $totalRecords = 0;
     private $records = array();
@@ -34,7 +35,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $useElasticsearch = $isSimpleSearch && (get_option(SearchConfig::OPTION_ELASTICSEARCH) == true);
         $searchResults->setUseElasticsearch($useElasticsearch);
 
-        $searchResults->setShowCommingledResults(true);
+        $this->commingled = isset($_GET['commingled']);
+        $searchResults->setShowCommingledResults($this->commingled);
 
         $exceptionMessage = '';
 
@@ -211,7 +213,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             'limit' => $this->recordsPerPage,
             'sort' => $sort,
             'showNotPublic' => $user && is_allowed('Items', 'showNotPublic')
-        ]);
+        ],
+            $this->commingled);
 
         $avantElasticsearchClient = new AvantElasticsearchClient();
         $results = $avantElasticsearchClient->search($options);
