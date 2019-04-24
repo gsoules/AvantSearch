@@ -27,6 +27,31 @@ class SearchResultsFilters
         $this->filterCount++;
     }
 
+    protected function emitAlternateSortLink($sortedByRelevance)
+    {
+        $params = $_GET;
+
+        if ($sortedByRelevance)
+        {
+            $params['sort'] = 'Title';
+            $params['order'] = 'a';
+        }
+        else
+        {
+            unset($params['sort']);
+            unset($params['order']);
+        }
+
+        // Create a new URL query string with the added or removed sort args.
+        $url = html_escape(url(array(), null, $params));
+
+        // Create the link a user can click to switch to the alternate sort.
+        $alternateSortLinkText = $sortedByRelevance ? __('Title') : __('Relevance');
+        $alternateSort = ' &mdash; ' . __('Sort by ') . "<a href='$url'>$alternateSortLinkText</a>";
+
+        return $alternateSort;
+    }
+
     protected function emitElasticsearchFilters()
     {
         $query = $this->searchResults->getQuery();
@@ -139,9 +164,16 @@ class SearchResultsFilters
 
         if ($this->searchResults->getTotalResults() && $this->searchResults->getViewId() == SearchResultsViewFactory::TABLE_VIEW_ID)
         {
+            $useElasticsearch = $this->searchResults->getUseElasticsearch();
             $sortFieldName = $this->searchResults->getSortFieldName();
-            $sortedBy = $this->searchResults->getUseElasticsearch() && empty($sortFieldName) ? __('Relevance') : $sortFieldName;
-            $layoutDetails .= __('Sorted by %s', $sortedBy);
+            $sortedByRelevance = $useElasticsearch && empty($sortFieldName);
+            $sortedBy = $sortedByRelevance ? __('Relevance') : $sortFieldName;
+            $alternateSort = '';
+            if ($useElasticsearch)
+            {
+                $alternateSort = $this->emitAlternateSortLink($sortedByRelevance);
+            }
+            $layoutDetails .= __('Sorted by %s%s', $sortedBy, $alternateSort);
         }
 
         if ($this->searchResults->getSearchFiles() && $this->searchResults->getTotalResults() > 0)
