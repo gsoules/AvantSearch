@@ -173,7 +173,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         {
             $sort[] = ["sort.$fieldName.keyword" => $sortOrder];
         }
-        else if ($fieldName == 'type' || $fieldName == 'subject' || $fieldName == 'place')
+        else if (isset($this->facetDefinitions[$fieldName]) && $this->facetDefinitions[$fieldName]['is_hierarchy'])
         {
             $sort[] = ["sort.$fieldName.keyword" => $sortOrder];
         }
