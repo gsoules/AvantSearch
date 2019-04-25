@@ -4,7 +4,7 @@ $view = get_view();
 $storageEngine = AvantSearch::getStorageEngineForSearchTextsTable();
 $titlesOnlySupported = SearchConfig::getOptionsSupportedTitlesOnly();
 $addressSortingSupported = SearchConfig::getOptionSupportedAddressSorting();
-$elasticsearchSupported = SearchConfig::getOptionSupportedElasticsearch();
+$elasticsearchSupported = plugin_is_active('AvantElasticsearch');
 $relationshipsViewSupported = SearchConfig::getOptionSupportedRelationshipsView();
 
 $columnsOption = SearchConfig::getOptionTextForColumns();
@@ -175,7 +175,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
     <div class="inputs five columns omega">
         <?php if ($elasticsearchSupported): ?>
             <p class="explanation"><?php echo __('Use Elasticsearch.'); ?></p>
-            <?php echo $view->formCheckbox(SearchConfig::OPTION_ELASTICSEARCH, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_ELASTICSEARCH))); ?>
+            <?php echo $view->formCheckbox(SearchConfig::OPTION_ELASTICSEARCH, true, array('checked' => (boolean)AvantSearch::useElasticsearch())); ?>
         <?php else: ?>
             <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'elasticsearch'); ?>
         <?php endif; ?>

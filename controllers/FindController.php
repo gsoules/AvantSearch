@@ -32,7 +32,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $params['results'] = $searchResults;
 
         $isSimpleSearch = isset($params['query']);
-        $useElasticsearch = $isSimpleSearch && (get_option(SearchConfig::OPTION_ELASTICSEARCH) == true);
+        $useElasticsearch = $isSimpleSearch && AvantSearch::useElasticsearch();
         $searchResults->setUseElasticsearch($useElasticsearch);
 
         // See if the user wants to see commingled results or only those for this installation.

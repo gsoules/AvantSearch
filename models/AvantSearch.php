@@ -158,7 +158,7 @@ class AvantSearch
 
     public static function getSearchFormHtml()
     {
-        $useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH);
+        $useElasticsearch = self::useElasticsearch();
         $linkText = $useElasticsearch ? __('Search Options') : __('Advanced Search');
         $url = url('find');
 
@@ -247,5 +247,10 @@ class AvantSearch
         }
 
         return $elementTexts;
+    }
+
+    public static function useElasticsearch()
+    {
+        return get_option(SearchConfig::OPTION_ELASTICSEARCH) && plugin_is_active('AvantElasticsearch');
     }
 }

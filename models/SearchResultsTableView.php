@@ -227,7 +227,7 @@ class SearchResultsTableView extends SearchResultsView
     protected function getOptionDataForDetailLayout()
     {
         $detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
-        $useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH);
+        $useElasticsearch = AvantSearch::useElasticsearch();
         if ($useElasticsearch)
         {
             // When using Elasticsearch only one metadata element column appears because the search results

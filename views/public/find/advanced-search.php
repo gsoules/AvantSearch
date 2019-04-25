@@ -20,7 +20,7 @@ $condition = $searchResults->getKeywordsCondition();
 $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
 $showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
-$useElasticsearch = get_option(SearchConfig::OPTION_ELASTICSEARCH);
+$useElasticsearch = AvantSearch::useElasticsearch();
 
 $pageTitle = $useElasticsearch ? __('Search Options') : __('Advanced Search');
 
