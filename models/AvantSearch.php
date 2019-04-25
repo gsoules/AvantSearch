@@ -182,8 +182,13 @@ class AvantSearch
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button>';
         $html .= '<div>';
         $html .= '<a href="' . WEB_ROOT . '/find/advanced">' . $linkText . '</a>';
-        $html .= '<input id="commingled" type="checkbox" name="commingled"' . $commingledChecked . '>';
-        $html .= '<span>' . $commingledText . '</span>';
+
+        if ($useElasticsearch)
+        {
+            $html .= '<input id="commingled" type="checkbox" name="commingled"' . $commingledChecked . '>';
+            $html .= '<span>' . $commingledText . '</span>';
+        }
+
         $html .= '</div>';
         $html .= '</form>';
         $html .= '</div>';
