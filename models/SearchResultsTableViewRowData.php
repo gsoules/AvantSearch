@@ -342,9 +342,9 @@ class SearchResultsTableViewRowData
     {
         $elasticSearchElementTexts = $this->useElasticsearch ? $item['_source']['element'] : null;
 
-        $this->avantElasticsearch = new AvantElasticsearch();
         if ($this->useElasticsearch)
         {
+            $this->avantElasticsearch = new AvantElasticsearch();
             $this->getItemFieldTextsHtml($item);
         }
 
