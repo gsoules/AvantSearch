@@ -295,8 +295,14 @@ class SearchResultsTableViewRowData
                 // done for commingled results because this installation can't access the other databases.
                 $itemId = $item['_source']['itemid'];
                 $omekaItem = ItemMetadata::getItemFromId($itemId);
-                $elementTexts = ItemMetadata::getAllElementTextsForElementName($omekaItem, $elementName);
-                $text = $elementTexts[$key];
+                if ($omekaItem)
+                {
+                    // Verify that the item Id is ok. It might be invalid if the Elasticsearch index contains
+                    // commingled data even though it's not supposed to, but that can happen during development
+                    // when testing with non-commingled behavior with a commingled index.
+                    $elementTexts = ItemMetadata::getAllElementTextsForElementName($omekaItem, $elementName);
+                    $text = $elementTexts[$key];
+                }
             }
 
             $texts .= $containsHtml ? $text : html_escape($text);
