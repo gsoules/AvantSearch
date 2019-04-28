@@ -36,7 +36,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $searchResults->setUseElasticsearch($useElasticsearch);
 
         // See if the user wants to see commingled results or only those for this installation.
-        $this->commingled = isset($_GET['commingled']);
+        $this->commingled = isset($_GET['all']);
         $searchResults->setShowCommingledResults($this->commingled);
 
         $exceptionMessage = '';
@@ -124,31 +124,40 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         unset($parts['query']);
 
         // Update the parameters with each root or leaf facet in the query string.
-        foreach ($parts as $facet => $values)
+        foreach ($parts as $part => $values)
         {
-            $this->getQueryParamsForFacet($params, $facet, $values, true);
-            $this->getQueryParamsForFacet($params, $facet, $values, false);
+            $isRoot = strpos($part, FACET_KIND_ROOT) === 0;
+            $isLeaf = strpos($part, FACET_KIND_LEAF) === 0;
+
+            if ($isRoot)
+            {
+                $this->getQueryParamsForFacet($params, $part, $values, FACET_KIND_ROOT);
+            }
+            else if ($isLeaf)
+            {
+                $this->getQueryParamsForFacet($params, $part, $values, FACET_KIND_LEAF);
+            }
+            else
+            {
+                $params[$part] = $values;
+            }
         }
 
         return $params;
     }
 
-    private function getQueryParamsForFacet(&$params, $facet, $values, $isRoot)
+    private function getQueryParamsForFacet(&$params, $facet, $values, $kind)
     {
-        $kind = $isRoot ? FACET_KIND_ROOT : FACET_KIND_LEAF;
         $prefix = "{$kind}_";
-        if (strpos($facet, $prefix) === 0)
+        if (!is_array($values))
         {
-            if (!is_array($values))
-            {
-                // This should only happen if the query string syntax is incorrect such that the facet arg is not an array.
-                // Correct: root_subject[]=Businesses
-                // Incorrect: root_subject[=Businesses
-                return;
-            }
-            $facetId = substr($facet, strlen($prefix));
-            $params[$kind][$facetId] = $values;
+            // This should only happen if the query string syntax is incorrect such that the facet arg is not an array.
+            // Correct: root_subject[]=Businesses
+            // Incorrect: root_subject[=Businesses
+            return;
         }
+        $facetId = substr($facet, strlen($prefix));
+        $params[$kind][$facetId] = $values;
     }
 
     private function getSortParams($params)
