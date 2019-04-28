@@ -172,7 +172,7 @@ class AvantSearch
             $query = htmlspecialchars($query, ENT_QUOTES);
         }
 
-        $commingledChecked = isset($_GET['commingled']) ? 'checked="checked"' : '';
+        $commingledChecked = isset($_GET['all']) ? 'checked="checked"' : '';
         $commingledText = __('Search all Digital Archive sites');
 
         // Construct the HTML that will replace the native Omeka search form with the one for AvantSearch.
@@ -185,7 +185,7 @@ class AvantSearch
 
         if ($useElasticsearch)
         {
-            $html .= '<input id="commingled" type="checkbox" name="commingled"' . $commingledChecked . '>';
+            $html .= '<input id="all" type="checkbox" name="all"' . $commingledChecked . '>';
             $html .= '<span>' . $commingledText . '</span>';
         }
 
