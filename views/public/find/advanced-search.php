@@ -366,8 +366,8 @@ echo "<div id='avantsearch-container'>";
         var userChangedOption = false;
         updateRelationshipsOption(userChangedOption);
 
-        limitSelector = jQuery('#limit');
-        limitSelector.val(<?php echo $resultsPerPage; ?>);
+        searchAllCheckbox = jQuery('#limit');
+        searchAllCheckbox.val(<?php echo $resultsPerPage; ?>);
 
         jQuery("[name='view']").change(function (e)
         {
@@ -382,10 +382,10 @@ echo "<div id='avantsearch-container'>";
             updateRelationshipsOption(userChangedOption);
         });
 
-        limitSelector.change(function (e)
+        searchAllCheckbox.change(function (e)
         {
             // The user changed results per page. Save the selection in a cookie.
-            var resultsSelection = jQuery(limitSelector, 'option:selected').val();
+            var resultsSelection = jQuery(searchAllCheckbox, 'option:selected').val();
             jQuery('#simple-results').text(resultsSelection);
             Cookies.set('SEARCH-LIMIT', resultsSelection, {expires: 7});
         });
@@ -429,7 +429,7 @@ echo "<div id='avantsearch-container'>";
             {
                 // When cookies are disabled, pass the limit option on the query string.
                 var limitSelector = jQuery("#limit");
-                limitSelector.prop("disabled", true);
+                searchAllCheckbox.prop("disabled", true);
             }
         });
     });

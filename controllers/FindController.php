@@ -223,7 +223,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             'limit' => $this->recordsPerPage,
             'sort' => $sort,
             'showNotPublic' => $user && is_allowed('Items', 'showNotPublic')
-        ],
+            ],
             $this->commingled);
 
         $avantElasticsearchClient = new AvantElasticsearchClient();
