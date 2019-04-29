@@ -20,7 +20,7 @@ class SearchResultsFilters
         if (!empty($this->filterMessage))
         {
             if (strpos($criteria, __('AND'), 0) === false && strpos($criteria, __('OR'), 0) === false)
-                $this->filterMessage .= ',';
+                $this->filterMessage .= ';';
             $this->filterMessage .= ' ';
         }
         $this->filterMessage .= "$criteria";
