@@ -51,13 +51,9 @@ class SearchConfig extends ConfigOptions
         {
             foreach ($row as $elementId)
             {
-                if ($elementId == '<tags>')
+                if (self::isPseudoElement($elementId))
                 {
-                    $elementName = '<tags>';
-                }
-                else if ($elementId == '<score>')
-                {
-                    $elementName = '<score>';
+                    $elementName = $elementId;
                 }
                 else
                 {
@@ -377,6 +373,12 @@ class SearchConfig extends ConfigOptions
         return $isHierarchyElement && $hierarchyElements[$elementId]['display'] == $display;
     }
 
+    protected static function isPseudoElement($name)
+    {
+        $pseudoElements = array('<tags>', '<score>');
+        return in_array($name, $pseudoElements);
+    }
+
     public static function saveConfiguration()
     {
         self::saveOptionDataForLayouts();
@@ -455,13 +457,9 @@ class SearchConfig extends ConfigOptions
                 if (empty($elementName))
                     continue;
 
-                if ($elementName == '<tags>')
+                if (self::isPseudoElement($elementName))
                 {
-                    $elementId = '<tags>';
-                }
-                else if ($elementName == '<score>')
-                {
-                    $elementId = '<score>';
+                    $elementId = $elementName;
                 }
                 else
                 {
