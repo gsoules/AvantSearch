@@ -642,6 +642,10 @@ input[type="checkbox"] {
 	padding-left: 20px;
 }
 
+#facet-contributor > li {
+	margin-bottom: 8px;
+}
+
 .elasticsearch-highlight {
 	color: #1a77bd;
 	font-style: normal;
