@@ -58,9 +58,27 @@ echo '</td>';
                     echo "<div>$text</div>";
                 }
 
-                if (!$searchResults->getUseElasticsearch() && is_allowed($item, 'edit'))
+                // Determine if it's okay to show the edit link for this item.
+                if ($searchResults->getUseElasticsearch())
                 {
-                    echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $item->id) . '">' . __('Edit') . '</a></div>';
+                    $okayToEdit = false;
+                    if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
+                    {
+                        // This item was contributed by this installation. See if the user has edit rights.
+                        $itemId = $item['_source']['item']['id'];
+                        $omekaItem = ItemMetadata::getItemFromId($itemId);
+                        $okayToEdit = is_allowed($omekaItem, 'edit');
+                    }
+                }
+                else
+                {
+                    $okayToEdit = is_allowed($item, 'edit');
+                    $itemId = $item->id;
+                }
+
+                if ($okayToEdit)
+                {
+                    echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $itemId) . '">' . __('Edit') . '</a></div>';
                 }
                 ?>
             </td>
