@@ -154,12 +154,12 @@ class SearchResultsTableViewRowData
             $identifier = $item['_source']['element']['identifier'];
             if ($this->showCommingledResults)
             {
-                $contributorId = $item['_source']['contributorid'];
+                $contributorId = $item['_source']['item']['contributor-id'];
                 $identifier = $contributorId . '-' . $identifier;
             }
-            $itemUrl = $item['_source']['url'];
+            $itemUrl = $item['_source']['url']['item'];
             $idLink = "<a href='$itemUrl'>$identifier</a>";
-            $public = $item['_source']['public'];
+            $public = $item['_source']['item']['public'];
         }
         else
         {
@@ -197,7 +197,7 @@ class SearchResultsTableViewRowData
                 $texts = __('[Untitled]');
             }
             $titles = explode(PHP_EOL, $texts);
-            $itemUrl =  $item['_source']['url'];
+            $itemUrl =  $item['_source']['url']['item'];
             $titleLink = "<a href='$itemUrl'>$titles[0]</a>";
             $this->elementValue['Title']['text'] = $titleLink;
         }
@@ -219,7 +219,7 @@ class SearchResultsTableViewRowData
 
         if ($this->showCommingledResults)
         {
-            $contributor = $item['_source']['contributor'];
+            $contributor = $item['_source']['item']['contributor'];
             $this->elementValue['Title']['text'] .= "<div class='search-contributor'>$contributor</div>";
         }
     }
@@ -293,7 +293,7 @@ class SearchResultsTableViewRowData
                 // The Elasticsearch index does not contain the original HTML for element values, only an indication
                 // of which element texts contain HTML. Get the original HTML from the Omeka database. This can't be
                 // done for commingled results because this installation can't access the other databases.
-                $itemId = $item['_source']['itemid'];
+                $itemId = $item['_source']['item']['id'];
                 $omekaItem = ItemMetadata::getItemFromId($itemId);
                 if ($omekaItem)
                 {
@@ -315,7 +315,7 @@ class SearchResultsTableViewRowData
     {
         // Create an array of the names of fields that contain HTML text.
         // Each element is an array of indices to indicate which of the field's values are HTML.
-        $htmlFields = isset($item['_source']['html']) ? $item['_source']['html'] : array();
+        $htmlFields = isset($item['_source']['html-fields']) ? $item['_source']['html-fields'] : array();
 
         foreach ($htmlFields as $htmlField)
         {
