@@ -5,6 +5,11 @@ $data = new SearchResultsTableViewRowData($item, $searchResults);
 $columnData = $searchResults->getColumnsData();
 $layoutData = $searchResults->getLayoutsData();
 
+$description = isset($data->elementValue['Description']['detail']) ? $data->elementValue['Description']['detail'] : '';
+$hasDescription = !empty($description);
+$pdfHits = isset($data->elementValue['<pdf>']['detail']) ? $data->elementValue['<pdf>']['detail'] : '';
+$hasPdfHits = !empty($pdfHits);
+
 echo '<tr>';
 
 // Emit the columns for this row's data.
@@ -94,10 +99,23 @@ echo '</td>';
                 ?>
             </td>
             <?php endif; ?>
-            <?php if (isset($data->elementValue['Description']['detail'])): ?>
+            <?php if ($hasDescription || $hasPdfHits): ?>
             <td class="search-results-detail-col3">
                 <div>
-                    <?php echo $text = $data->elementValue['Description']['detail']; ?>
+                    <?php
+                    if ($hasDescription)
+                    {
+                        echo $data->elementValue['Description']['detail'];
+                    }
+                    if ($hasPdfHits)
+                    {
+                        if ($hasDescription)
+                        {
+                            echo '<br/><br/>';
+                        }
+                        echo $data->elementValue['<pdf>']['detail'];
+                    }
+                    ?>
                 </div>
             </td>
             <?php endif; ?>

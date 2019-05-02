@@ -175,6 +175,21 @@ class SearchResultsTableViewRowData
         $this->elementValue[ItemMetadata::getIdentifierAliasElementName()]['text'] = $idLink;
     }
 
+    protected function generatePdfHits($item)
+    {
+        if (!($this->useElasticsearch && isset($item['highlight']['pdf.text'])))
+            return '';
+
+        $highlights = $item['highlight']['pdf.text'];
+        $highlightText = '';
+        foreach ($highlights as $highlight)
+        {
+            $highlightText .= " &hellip;$highlight";
+        }
+
+        return $highlightText;
+    }
+
     protected function generateThumbnailHtml($item)
     {
         $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->showCommingledResults);
@@ -388,7 +403,7 @@ class SearchResultsTableViewRowData
             $this->elementValue[$elementName]['text'] = $filteredText;
         }
 
-        // Create a psuedo element value for tags since there is no actual tags element.
+        // Create a psuedo element values.
         if ($this->useElasticsearch)
         {
             if (isset($item['_source']['tags']))
@@ -402,15 +417,18 @@ class SearchResultsTableViewRowData
             }
 
             $score = $this->userIsAdmin() ? $item['_score'] : '';
+            $pdfHits = $this->generatePdfHits($item);
         }
         else
         {
             $tags = metadata('item', 'has tags') ? tag_string('item', 'find') : '';
             $score = '';
         }
+
         $this->elementValue['<tags>']['text'] = '';
         $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetail(__('Tags'),  $tags);
         $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetail(__('Score'),  $score);;
+        $this->elementValue['<pdf>']['detail'] = $this->searchResults->emitFieldDetail(__('PDF Attachment'),  $pdfHits);;
     }
 
     protected function userIsAdmin()
