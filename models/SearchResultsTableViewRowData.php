@@ -180,10 +180,19 @@ class SearchResultsTableViewRowData
         if (!($this->useElasticsearch && isset($item['highlight']['pdf.text'])))
             return '';
 
+        // This item has hits in the text of an attached PDF file. For items with more than one PDF file, this
+        // logic cannot tell which file the hit(s) occurred in. Although the Elasticsearch index stores the PDF text
+        // for each file in a separate pdf.text array element, and stores the file names is a parallel pdf.file-name
+        // array, the hits all come back in hightlight.pdf.text and so we can't tell which hit is in which file. For
+        // now this seems okay since having multiple PDF files attached to a single item is the exception, not the rule.
+        // And at least the user gets a hit on the item, even though they may have to look in more than one PDF file
+        // to find the one containing the hit.
+
         $highlights = $item['highlight']['pdf.text'];
         $highlightText = '';
         foreach ($highlights as $highlight)
         {
+            // Insert a horizontal ellipsis character in front of the hit.
             $highlightText .= " &hellip;$highlight";
         }
 
