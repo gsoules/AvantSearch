@@ -55,7 +55,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         if (AvantSearch::useElasticsearch())
         {
             $avantElasticsearchIndexBuilder = new AvantElasticsearchIndexBuilder();
-            $avantElasticsearchIndexBuilder->indexSingleItem($args['record']);
+            $avantElasticsearchIndexBuilder->addItemToIndex($args['record']);
         }
     }
 
@@ -64,7 +64,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         if (AvantSearch::useElasticsearch())
         {
             $avantElasticsearchIndexBuilder = new AvantElasticsearchIndexBuilder();
-            $avantElasticsearchIndexBuilder->deleteItem($args['record']);
+            $avantElasticsearchIndexBuilder->deleteItemFromIndex($args['record']);
         }
     }
 
