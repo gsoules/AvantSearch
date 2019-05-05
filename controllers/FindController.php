@@ -229,20 +229,30 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             ],
             $this->commingled);
 
+        $results = null;
+        $this->totalRecords = 0;
+        $this->records = array();
+
         $avantElasticsearchClient = new AvantElasticsearchClient();
-        $results = $avantElasticsearchClient->search($options);
-        if ($results == null)
+
+        if ($avantElasticsearchClient->ready())
         {
-            $this->totalRecords = 0;
-            $this->records = array();
-            $searchResults->setError($avantElasticsearchClient->getError());
+            $results = $avantElasticsearchClient->search($options);
+            if ($results == null)
+            {
+                $searchResults->setError($avantElasticsearchClient->getError());
+            }
+            else
+            {
+                $this->totalRecords = $results["hits"]["total"];
+                $this->records = $results['hits']['hits'];
+                $searchResults->setQuery($queryParams);
+                $searchResults->setFacets($results['aggregations']);
+            }
         }
         else
         {
-            $this->totalRecords = $results["hits"]["total"];
-            $this->records = $results['hits']['hits'];
-            $searchResults->setQuery($queryParams);
-            $searchResults->setFacets($results['aggregations']);
+            $searchResults->setError(__('Unable to communicate with the Elasticsearch server'));
         }
     }
 
