@@ -83,7 +83,7 @@ echo '</td>';
 
                 if ($okayToEdit)
                 {
-                    echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $itemId) . '">' . __('Edit') . '</a></div>';
+                    echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a></div>';
                 }
                 ?>
             </td>

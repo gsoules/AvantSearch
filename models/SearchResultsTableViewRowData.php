@@ -158,7 +158,7 @@ class SearchResultsTableViewRowData
                 $identifier = $contributorId . '-' . $identifier;
             }
             $itemUrl = $item['_source']['url']['item'];
-            $idLink = "<a href='$itemUrl'>$identifier</a>";
+            $idLink = "<a href='$itemUrl' target='_blank'>$identifier</a>";
             $public = $item['_source']['item']['public'];
         }
         else
@@ -177,32 +177,59 @@ class SearchResultsTableViewRowData
 
     protected function generatePdfHits($item)
     {
-        if (!($this->useElasticsearch && isset($item['highlight']['pdf.text'])))
-            return '';
+        $pdfHits = array('count' => 0, 'text' => '');
 
-        // This item has hits in the text of an attached PDF file. For items with more than one PDF file, this
-        // logic cannot tell which file the hit(s) occurred in. Although the Elasticsearch index stores the PDF text
-        // for each file in a separate pdf.text array element, and stores the file names is a parallel pdf.file-name
-        // array, the hits all come back in hightlight.pdf.text and so we can't tell which hit is in which file. For
-        // now this seems okay since having multiple PDF files attached to a single item is the exception, not the rule.
-        // And at least the user gets a hit on the item, even though they may have to look in more than one PDF file
-        // to find the one containing the hit.
-
-        $highlights = $item['highlight']['pdf.text'];
-        $highlightText = '';
-        foreach ($highlights as $highlight)
+        if ($this->useElasticsearch && isset($item['highlight']))
         {
-            // Insert a horizontal ellipsis character in front of the hit.
-            $highlightText .= " &hellip;$highlight";
+            $itemHighlight = $item['highlight'];
+            $hasHit = false;
+            foreach ($itemHighlight as $fieldName => $highlightText)
+            {
+                if (strpos($fieldName, 'pdf.text-') === 0)
+                {
+                    $hasHit = true;
+                    break;
+                }
+            }
+            if (!$hasHit)
+                return $pdfHits;
+        }
+        else
+        {
+            return $pdfHits;
         }
 
-        return $highlightText;
+        // This item has hits in the text of one or more attached PDF file.
+
+        $fileNames = $item['_source']['pdf']['file-name'];
+        $highlightText = '';
+        $itemHighlight = $item['highlight'];
+
+        foreach ($fileNames as $index => $fileName)
+        {
+            if (!isset($itemHighlight["pdf.text-$index"]))
+            {
+                continue;
+            }
+            $url = $item['_source']['pdf']['file-url'][$index];
+            $highlightText .= "<br/><a href='$url' target='_blank'>$fileName</a><br/>";
+            $highlights = $itemHighlight["pdf.text-$index"];
+            foreach ($highlights as $highlight)
+            {
+                // Insert a horizontal ellipsis character in front of the hit.
+                $highlightText .= " &hellip;$highlight";
+            }
+        }
+
+        $pdfHits['count'] = count($fileNames);
+        $pdfHits['text'] = $highlightText;
+        return $pdfHits;
     }
 
     protected function generateThumbnailHtml($item)
     {
         $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->showCommingledResults);
-        $this->itemThumbnailHtml = $itemPreview->emitItemHeader();
+        $this->itemThumbnailHtml = $itemPreview->emitItemHeader(true);
         $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
 
@@ -220,9 +247,10 @@ class SearchResultsTableViewRowData
             {
                 $texts = __('[Untitled]');
             }
+            $tooltip = ItemPreview::getItemLinkTooltip();
             $titles = explode(PHP_EOL, $texts);
             $itemUrl =  $item['_source']['url']['item'];
-            $titleLink = "<a href='$itemUrl'>$titles[0]</a>";
+            $titleLink = "<a href='$itemUrl' title='$tooltip' target='_blank'>$titles[0]</a>";
             $this->elementValue['Title']['text'] = $titleLink;
         }
         else
@@ -436,8 +464,13 @@ class SearchResultsTableViewRowData
 
         $this->elementValue['<tags>']['text'] = '';
         $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetail(__('Tags'),  $tags);
-        $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetail(__('Score'),  $score);;
-        $this->elementValue['<pdf>']['detail'] = $this->searchResults->emitFieldDetail(__('PDF Attachment'),  $pdfHits);;
+        $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetail(__('Score'), $score);;
+
+        if ($this->useElasticsearch && $pdfHits['count'] > 0)
+        {
+            $pdfHeader = __('PDF Attachment%s', $pdfHits['count'] > 1 ? 's' : '');
+            $this->elementValue['<pdf>']['detail'] = $this->searchResults->emitFieldDetail($pdfHeader, $pdfHits['text']);
+        }
     }
 
     protected function userIsAdmin()
