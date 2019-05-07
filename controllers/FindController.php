@@ -202,7 +202,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         return $sort;
     }
 
-    protected function performQueryUsingElasticsearch($params, $searchResults)
+    protected function performQueryUsingElasticsearch($params, $searchResults, $attempt = 1)
     {
         $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
         $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
@@ -240,7 +240,25 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $results = $avantElasticsearchClient->search($options);
             if ($results == null)
             {
-                $searchResults->setError($avantElasticsearchClient->getError());
+                $e = $avantElasticsearchClient->getLastException();
+                //if (get_class($e) == 'Elasticsearch\Common\Exceptions\NoNodesAvailableException')
+                {
+                    // This is the ‘No alive nodes found in your cluster’ exception.
+                    if ($attempt == 3)
+                    {
+                        $searchResults->setError(__('Unable to connect with the server. <a href="">Try Again</a>'));
+                    }
+                    else
+                    {
+                        unset($avantElasticsearchClient);
+                        $avantElasticsearchClient = new AvantElasticsearchClient();
+                        if ($avantElasticsearchClient->ready())
+                        {
+                            $attempt++;
+                            $this->performQueryUsingElasticsearch($params, $searchResults, $attempt);
+                        }
+                    }
+                }
             }
             else
             {
