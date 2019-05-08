@@ -159,7 +159,7 @@ class AvantSearch
     public static function getSearchFormHtml()
     {
         $useElasticsearch = self::useElasticsearch();
-        $linkText = $useElasticsearch ? __('Search Options') : __('Advanced Search');
+        $linkText = $useElasticsearch ? __('Advanced Search') : __('Advanced Search');
         $url = url('find');
 
         $query = '';
