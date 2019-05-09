@@ -36,22 +36,27 @@ if ($useElasticsearch)
         }
         else
         {
-            $total = 0;
+            $totalItems = 0;
+            $totalFiles = 0;
             $buckets = $response["aggregations"]["contributors"]["buckets"];
             $contributorStats .= "<table style='text-align:right'>";
-            $contributorStats .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong></td></tr>';
+            $contributorStats .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong><td><strong>Attachments</strong></td></tr>';
             foreach ($buckets as $bucket)
             {
                 $contributorStats .= '<tr>';
                 $contributor = $bucket['key'];
-                $count = $bucket['doc_count'];
-                $total += $count;
-                $count = number_format($count);
-                $contributorStats .= "<td>$contributor</td><td>$count</td>";
+                $itemCount = $bucket['doc_count'];
+                $fileCount = $bucket['files']['value'];
+                $totalItems += $itemCount;
+                $totalFiles += $fileCount;
+                $itemCount = number_format($itemCount);
+                $fileCount = number_format($fileCount);
+                $contributorStats .= "<td>$contributor</td><td>$itemCount</td><td>$fileCount</td>";
                 $contributorStats .= '</tr>';
             }
-            $total = number_format($total);
-            $contributorStats .= "<tr><td><strong>TOTAL</strong></td><td><strong>$total</strong></td></tr>";
+            $totalItems = number_format($totalItems);
+            $totalFiles = number_format($totalFiles);
+            $contributorStats .= "<tr><td><strong>TOTAL</strong></td><td><strong>$totalItems</strong><td><strong>$totalFiles</strong></td></tr>";
             $contributorStats .= '</table>';
         }
     }
