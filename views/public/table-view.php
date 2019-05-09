@@ -21,34 +21,11 @@ echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";
 echo "<div class='search-results-title'>$pageTitle</div>";
 
-$layoutButtonHtml = '';
+$resultControlsHtml = '';
 if ($totalResults)
 {
-    // Get the width of the layout selector. Because of the fact that this control is a button with a dropdown effect
-    // created from ul and li tags, and because we don't know how wide the contents will be, it's nearly impossible
-    // to properly style the width of button and dropdown using CSS. Instead we let the admin choose its width.
-    $width = intval(SearchConfig::getOptionTextForLayoutSelectorWidth());
-    if ($width == 0)
-        $width = '200';
-
-    $layoutButtonHtml = "<div class='search-results-toggle'>";
-    $layoutButtonHtml .= "<button class='search-results-layout-options-button' style='width:{$width}px;'></button>";
-    $layoutButtonHtml .= "<div class='search-results-layout-options'>";
-    $layoutButtonHtml .= "<ul>";
-    foreach ($layoutsData as $idNumber => $layout)
-    {
-        if (!SearchConfig::userHasAccessToLayout($layout))
-        {
-            // Omit admin layouts for non-admin users.
-            continue;
-        }
-
-        $id = "L$idNumber";
-        $layoutButtonHtml .= "<li><a id='$id' class='button show-layout-button'>{$layout['name']}</a></li>";
-    }
-    $layoutButtonHtml .= " </ul>";
-    $layoutButtonHtml .= "</div>";
-    $layoutButtonHtml .= "</div>";
+    $resultControlsHtml = $searchResults->emitSelectorForLayout($layoutsData);
+    //$resultControlsHtml .= $searchResults->emitSelectorForResultsPerPage();
 }
 ?>
 
@@ -61,7 +38,7 @@ if ($totalResults)
     ?>
 </div>
 
-<?php echo $searchResults->emitSearchFilters($layoutButtonHtml, $totalResults ? pagination_links() : ''); ?>
+<?php echo $searchResults->emitSearchFilters($resultControlsHtml, $totalResults ? pagination_links() : ''); ?>
 
 <?php if ($totalResults > 0): ?>
     <?php if ($useElasticsearch): ?>

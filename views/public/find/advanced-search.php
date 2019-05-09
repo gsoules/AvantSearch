@@ -21,6 +21,41 @@ $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
 $showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
 $useElasticsearch = AvantSearch::useElasticsearch();
+$contributorStats = '';
+if ($useElasticsearch)
+{
+    $avantElasticsearchClient = new AvantElasticsearchClient();
+    if ($avantElasticsearchClient->ready())
+    {
+        $avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
+        $params = $avantElasticsearchQueryBuilder->constructTermAggregationsQueryParams('item.contributor');
+        $response = $avantElasticsearchClient->search($params);
+        if ($response == null)
+        {
+            $contributorStats = $avantElasticsearchClient->getLastError();
+        }
+        else
+        {
+            $total = 0;
+            $buckets = $response["aggregations"]["contributors"]["buckets"];
+            $contributorStats .= "<table style='text-align:right'>";
+            $contributorStats .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong></td></tr>';
+            foreach ($buckets as $bucket)
+            {
+                $contributorStats .= '<tr>';
+                $contributor = $bucket['key'];
+                $count = $bucket['doc_count'];
+                $total += $count;
+                $count = number_format($count);
+                $contributorStats .= "<td>$contributor</td><td>$count</td>";
+                $contributorStats .= '</tr>';
+            }
+            $total = number_format($total);
+            $contributorStats .= "<tr><td><strong>TOTAL</strong></td><td><strong>$total</strong></td></tr>";
+            $contributorStats .= '</table>';
+        }
+    }
+}
 
 $pageTitle = $useElasticsearch ? __('Advanced Search') : __('Advanced Search');
 
@@ -181,7 +216,11 @@ echo "<div id='avantsearch-container'>";
 			</div>
 		</div>
         <?php endif; ?>
-	</div>
+
+        <?php if ($useElasticsearch): ?>
+            <?php echo $contributorStats; ?>
+        <?php endif; ?>
+    </div>
 
 	<!-- Right Panel -->
 	<div id="avantsearch-secondary">
