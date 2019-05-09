@@ -169,9 +169,56 @@ class SearchResultsView
         return $form;
     }
 
-    public function emitSearchFilters($layoutIndicator, $paginationNav, $filtersExpected = true)
+    public function emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected = true)
     {
-        return $this->searchFilters->emitSearchFilters($layoutIndicator, $paginationNav, $filtersExpected);
+        return $this->searchFilters->emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected);
+    }
+
+    public function emitSelectorForLayout($layoutsData)
+    {
+        // Get the width of the layout selector. Because of the fact that this control is a button with a dropdown effect
+        // created from ul and li tags, and because we don't know how wide the contents will be, it's nearly impossible
+        // to properly style the width of button and dropdown using CSS. Instead we let the admin choose its width.
+        $width = intval(SearchConfig::getOptionTextForLayoutSelectorWidth());
+        if ($width == 0)
+            $width = '200';
+
+        $html = "<div class='search-control-layout'>";
+        $html .= "<button class='search-control-layout-button' style='width:{$width}px;'></button>";
+        $html .= "<div class='search-control-layout-options'>";
+        $html .= "<ul>";
+        foreach ($layoutsData as $idNumber => $layout)
+        {
+            if (!SearchConfig::userHasAccessToLayout($layout))
+            {
+                // Omit admin layouts for non-admin users.
+                continue;
+            }
+
+            $id = "L$idNumber";
+            $html .= "<li><a id='$id' class='button show-layout-button'>{$layout['name']}</a></li>";
+        }
+        $html .= " </ul>";
+        $html .= "</div>";
+        $html .= "</div>";
+        return $html;
+    }
+
+    public function emitSelectorForResultsPerPage()
+    {
+        $html = "<div class='search-control-limit'>";
+        $html .= "<button class='search-control-limit-button'></button>";
+        $html .= "<div class='search-control-limit-options'>";
+        $html .= "<ul>";
+        $html .= "<li><a id='x10' class='button show-layout-button'>10</a></li>";
+        $html .= "<li><a id='x25' class='button show-layout-button'>25</a></li>";
+        $html .= "<li><a id='x50' class='button show-layout-button'>50</a></li>";
+        $html .= "<li><a id='x100' class='button show-layout-button'>100</a></li>";
+        $html .= "<li><a id='x200' class='button show-layout-button'>200</a></li>";
+        $html .= " </ul>";
+        $html .= "</div>";
+        $html .= "</div>";
+        return $html;
     }
 
     public function getAdvancedSearchFields()

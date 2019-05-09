@@ -36,11 +36,11 @@
         layout.removeClass('layout-normal');
 
         // Close the layout selector panel.
-        jQuery('.search-results-layout-options').slideUp('fast');
+        jQuery('.search-control-layout-options').slideUp('fast');
 
         // Show the user which layout is selected.
         var layoutName = layout.text();
-        jQuery('.search-results-layout-options-button').text(layoutName + ' Layout');
+        jQuery('.search-control-layout-button').text(layoutName + ' Layout');
 
         if (layoutId !== currentLayoutId)
         {
@@ -81,10 +81,10 @@
         currentLayoutId = '<?php echo $layoutId; ?>';
         setSelectedLayout(currentLayoutId);
 
-        jQuery('.search-results-layout-options-button').click(function (e)
+        jQuery('.search-control-layout-button').click(function (e)
         {
             // Show or hide the layout options panel.
-            jQuery('.search-results-layout-options').slideToggle('fast');
+            jQuery('.search-control-layout-options').slideToggle('fast');
         });
 
         jQuery('.show-layout-button').click(function (e)
@@ -94,9 +94,9 @@
             setSelectedLayout(id.substr(1));
         });
 
-        jQuery('.search-results-toggle').mouseleave(function (e)
+        jQuery('.search-control-layout').mouseleave(function (e)
         {
-            jQuery('.search-results-layout-options').slideUp('fast');
+            jQuery('.search-control-layout-options').slideUp('fast');
         });
 
         jQuery('.search-show-more').click(function (e)

@@ -369,11 +369,43 @@ input[type="checkbox"] {
 
 
 /* Position buttons on search results view */
-.search-results-toggle  {
+.search-control-layout  {
 	float:left;
 	height: 100%;
 	margin: 0;
 }
+
+.search-control-layout-button {
+	background-color: #52690c;
+	border-color: #52690c;
+}
+
+.search-control-layout-button:hover {
+	background-color: #5f780c;
+}
+
+.search-control-layout-options li a {
+	background-color: #52690c;
+}
+
+.search-control-layout-options li a.layout-normal:hover {
+	background-color: #ccc;
+}
+
+.search-control-limit  {
+	float:left;
+	height: 100%;
+	margin-left: 12px;
+}
+.search-control-limit-button {
+	background-color: #f1281a;
+	border-color: #52690c;
+}
+
+.search-control-limit-button:hover {
+	background-color: #5f780c;
+}
+
 
 /* End item filter display */
 
@@ -386,12 +418,12 @@ input[type="checkbox"] {
 	margin-top: 0px;
 }
 
-.search-results-layout-options-button {
+.search-control-layout-button {
 	width: 200px;
 	text-align: left;
 }
 
-.search-results-layout-options-button:after {
+.search-control-layout-button:after {
 	content: "\f0d7";
 	font-family: "FontAwesome";
 	padding-left: 6px;
@@ -399,7 +431,8 @@ input[type="checkbox"] {
 }
 
 /* Change Layout sub menu buttons */
-.search-results-layout-options {
+.search-control-limit-options,
+.search-control-layout-options {
 	position: relative;
 	z-index: 250;
 	-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -407,18 +440,21 @@ input[type="checkbox"] {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
-.search-results-layout-options ul {
+.search-control-limit-options ul,
+.search-control-layout-options ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 }
 
-.search-results-layout-options li {
+.search-control-limit-options li,
+.search-control-layout-options li {
 	border-bottom: 1px solid #666;
 	position: relative;
 }
 
-.search-results-layout-options li a {
+.search-control-limit-options li a,
+.search-control-layout-options li a {
 	-moz-appearance: none;
 	-webkit-appearance: none;
 	border: 0;
@@ -436,17 +472,17 @@ input[type="checkbox"] {
 
 /* Default colors for layout options dropdown items */
 
-.search-results-layout-options li a.layout-normal {
+.search-control-layout-options li a.layout-normal {
 	background-color: #eee;
 	color: #222;
 }
 
-.search-results-layout-options li a.layout-normal:hover {
+.search-control-layout-options li a.layout-normal:hover {
 	background-color: #aaa;
 	color: #222;
 }
 
-.search-results-layout-options li a.layout-selected {
+.search-control-layout-options li a.layout-selected {
 	background-color: #aaa;
 	color: #fff;
 }
@@ -999,9 +1035,9 @@ input[type="checkbox"] {
 		float: left;
 	}
 
-	/* use .search-results-toggle instead */
+	/* use .search-control-layout instead */
 	.search-index-view-column-toggle,
-	.search-results-layout-options-panel {
+	.search-control-layout-options-panel {
 		clear: both;
 		margin-left: 0;
 	}
@@ -1039,7 +1075,7 @@ input[type="checkbox"] {
 		margin-bottom: 6px;
 	}
 
-	.search-results-toggle {
+	.search-control-layout {
 		margin-left: 0;
 	}
 }

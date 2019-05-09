@@ -66,7 +66,7 @@ class SearchResultsFilters
         }
     }
 
-    public function emitSearchFilters($layoutIndicator, $paginationNav, $filtersExpected)
+    public function emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected)
     {
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $requestArray = $request->getParams();
@@ -190,7 +190,7 @@ class SearchResultsFilters
             $layoutDetails = "<div class='search-filter-bar-layout-details'>$layoutDetails</div>";
         }
 
-        $layoutMessage = $layoutIndicator . $layoutDetails;
+        $resultControlsSection = $resultControlsHtml . $layoutDetails;
 
         foreach ($displayArray as $name => $query)
         {
@@ -228,7 +228,7 @@ class SearchResultsFilters
         }
         $html = "<div id='search-filter-bar'>";
         $html .= $this->filterCount> 0 ? "<div class='search-filter-bar-message'>$this->filterMessage</div>" : '';
-        $html .= "<div class='$class'>{$layoutMessage}{$paginationNav}</div>";
+        $html .= "<div class='$class'>{$resultControlsSection}{$paginationNav}</div>";
         $html .= '</div>';
 
         return $html;
