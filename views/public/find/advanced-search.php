@@ -24,10 +24,13 @@ $useElasticsearch = AvantSearch::useElasticsearch();
 $contributorStats = '';
 if ($useElasticsearch)
 {
+    // TO-DO: Move contributor statistics to their own page -- for now they show up on the Advanced Search page.
+    // Display statistics of shared searching contributors.
     $avantElasticsearchClient = new AvantElasticsearchClient();
     if ($avantElasticsearchClient->ready())
     {
         $avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
+        $avantElasticsearchQueryBuilder->setIndexName($avantElasticsearchQueryBuilder->getIndexNameForSharing());
         $params = $avantElasticsearchQueryBuilder->constructTermAggregationsQueryParams('item.contributor');
         $response = $avantElasticsearchClient->search($params);
         if ($response == null)

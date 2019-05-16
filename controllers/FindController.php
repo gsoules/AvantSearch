@@ -205,6 +205,14 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     protected function performQueryUsingElasticsearch($params, $searchResults, $attempt = 1)
     {
         $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
+
+        $showAll = isset($_COOKIE['SEARCH-ALL']) ? $_COOKIE['SEARCH-ALL'] == 'true' : false;
+        if ($showAll)
+            $indexName = $this->avantElasticsearchQueryBuilder->getIndexNameForSharing();
+        else
+            $indexName = $this->avantElasticsearchQueryBuilder->getIndexNameForContributor();
+        $this->avantElasticsearchQueryBuilder->setIndexName($indexName);
+
         $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
 
         $queryParams = $this->getQueryParams();
@@ -240,8 +248,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $results = $avantElasticsearchClient->search($options);
             if ($results == null)
             {
+                // Null results means an exception occurred. This is different than a results of zero hits.
                 $e = $avantElasticsearchClient->getLastException();
-                //if (get_class($e) == 'Elasticsearch\Common\Exceptions\NoNodesAvailableException')
+                if (get_class($e) == 'Elasticsearch\Common\Exceptions\NoNodesAvailableException')
                 {
                     // This is the ‘No alive nodes found in your cluster’ exception.
                     if ($attempt == 3)
@@ -258,6 +267,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                             $this->performQueryUsingElasticsearch($params, $searchResults, $attempt);
                         }
                     }
+                }
+                else
+                {
+                    $searchResults->setError($avantElasticsearchClient->getElasticsearchExceptionMessage($e));
                 }
             }
             else
