@@ -95,6 +95,12 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     {
         queue_css_file('avantsearch');
 
+        if (AvantSearch::useElasticsearch())
+        {
+            // Cookies are needed to save the state of the Search All checkbox that appears below the search textbox.
+            queue_js_file('js.cookie');
+        }
+
         AvantSearch::emitSearchResultsTableCss();
     }
 }
