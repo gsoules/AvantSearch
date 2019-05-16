@@ -173,6 +173,7 @@ class AvantSearch
         }
 
         // Determine if the search-all option is set in a cookie and/or on the query string.
+        // If either case it true, display the checkbox as checked.
         $allCheckedCookie = isset($_COOKIE['SEARCH-ALL']) ? $_COOKIE['SEARCH-ALL'] == 'true' : false;
         $allCheckedQueryArg = isset($_GET['all']);
         $searchAll = $allCheckedQueryArg || $allCheckedCookie ? 'checked="checked"' : '';

@@ -35,13 +35,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $useElasticsearch = $isSimpleSearch && AvantSearch::useElasticsearch();
         $searchResults->setUseElasticsearch($useElasticsearch);
 
-        // See if the user wants to see commingled results or only those for this installation.
-        if ($useElasticsearch)
-        {
-            $this->commingled = isset($_GET['all']);
-            $searchResults->setShowCommingledResults($this->commingled);
-        }
-
         $exceptionMessage = '';
 
         $viewId = $searchResults->getViewId();
@@ -206,6 +199,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     {
         $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
         $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
+
+        // See if the user wants to see commingled results or only those for this installation.
+        $this->commingled = $this->avantElasticsearchQueryBuilder->getSearchAll();
+        $searchResults->setShowCommingledResults($this->commingled);
 
         $queryParams = $this->getQueryParams();
 
