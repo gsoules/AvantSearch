@@ -205,14 +205,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     protected function performQueryUsingElasticsearch($params, $searchResults, $attempt = 1)
     {
         $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
-
-        $showAll = isset($_COOKIE['SEARCH-ALL']) ? $_COOKIE['SEARCH-ALL'] == 'true' : false;
-        if ($showAll)
-            $indexName = $this->avantElasticsearchQueryBuilder->getIndexNameForSharing();
-        else
-            $indexName = $this->avantElasticsearchQueryBuilder->getIndexNameForContributor();
-        $this->avantElasticsearchQueryBuilder->setIndexName($indexName);
-
         $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
 
         $queryParams = $this->getQueryParams();
