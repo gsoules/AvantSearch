@@ -4,7 +4,7 @@
         var avantSearchForm = '<?php echo AvantSearch::getSearchFormHtml(); ?>';
         jQuery('#search-container').replaceWith(avantSearchForm);
 
-        jQuery("#clear").click(function()
+        jQuery("#search-clear-icon").click(function()
         {
             var query = jQuery('#query');
             query.val('');
@@ -14,21 +14,18 @@
 </script>
 
 <style>
-    span.deleteicon {
+    span.search-clear {
         position: relative;
     }
-    span.deleteicon span {
+    span.search-clear span {
         position: absolute;
         display: block;
         top: 5px;
-        right: 4px;
+        right: 5px;
         width: 16px;
-        height: 16px;
-        cursor: pointer;
+        height: 20px;
         color: #a0a0a0 !important;
-    }
-    span.deleteicon input {
-        padding-right: 16px;
-        box-sizing: border-box;
+        background-color: #fff;
+        cursor: pointer;
     }
 </style>
