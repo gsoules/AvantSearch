@@ -201,7 +201,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
 
         // See if the user wants to see commingled results or only those for this installation.
-        $this->commingled = $this->avantElasticsearchQueryBuilder->getSearchAll();
+        $this->commingled = $this->avantElasticsearchQueryBuilder->isUsingSharedIndex();
         $searchResults->setShowCommingledResults($this->commingled);
 
         $queryParams = $this->getQueryParams();
