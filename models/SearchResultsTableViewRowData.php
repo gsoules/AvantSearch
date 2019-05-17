@@ -248,7 +248,7 @@ class SearchResultsTableViewRowData
                 $texts = __('[Untitled]');
             }
             $tooltip = ItemPreview::getItemLinkTooltip();
-            $titles = explode(PHP_EOL, $texts);
+            $titles = explode(ES_DOCUMENT_EOL, $texts);
             $itemUrl =  $item['_source']['url']['item'];
             $titleLink = "<a href='$itemUrl' title='$tooltip' target='_blank'>$titles[0]</a>";
             $this->elementValue['Title']['text'] = $titleLink;
