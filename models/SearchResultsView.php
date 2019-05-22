@@ -210,11 +210,11 @@ class SearchResultsView
         $html .= "<button class='search-control-limit-button'></button>";
         $html .= "<div class='search-control-limit-options'>";
         $html .= "<ul>";
-        $html .= "<li><a id='x10' class='button show-layout-button'>10</a></li>";
-        $html .= "<li><a id='x25' class='button show-layout-button'>25</a></li>";
-        $html .= "<li><a id='x50' class='button show-layout-button'>50</a></li>";
-        $html .= "<li><a id='x100' class='button show-layout-button'>100</a></li>";
-        $html .= "<li><a id='x200' class='button show-layout-button'>200</a></li>";
+        $html .= "<li><a id='x10' class='button show-limit-button'>10</a></li>";
+        $html .= "<li><a id='x25' class='button show-limit-button'>25</a></li>";
+        $html .= "<li><a id='x50' class='button show-limit-button'>50</a></li>";
+        $html .= "<li><a id='x100' class='button show-limit-button'>100</a></li>";
+        $html .= "<li><a id='x200' class='button show-limit-button'>200</a></li>";
         $html .= " </ul>";
         $html .= "</div>";
         $html .= "</div>";

@@ -20,7 +20,10 @@
         return !isNaN(value) && (x | 0) === x;
     }
 
-    function setSelectedLayout(layoutId) {
+    function setSelectedLayout(kind, layoutId)
+    {
+        console.log('setSelectedLayout: ' + kind + ' ++ ' + layoutId);
+
         // Hide everything.
         for (var id = firstLayoutId; id <= lastLayoutId; id++)
         {
@@ -36,11 +39,11 @@
         layout.removeClass('layout-normal');
 
         // Close the layout selector panel.
-        jQuery('.search-control-layout-options').slideUp('fast');
+        jQuery('.search-control-' + kind + '-options').slideUp('fast');
 
         // Show the user which layout is selected.
         var layoutName = layout.text();
-        jQuery('.search-control-layout-button').text(layoutName + ' Layout');
+        jQuery('.search-control-' + kind + '-button').text(layoutName + ' Layout');
 
         if (layoutId !== currentLayoutId)
         {
@@ -76,28 +79,53 @@
         currentLayoutId = layoutId;
     }
 
+    function initSelector(kind)
+    {
+        jQuery('.search-control-' + kind + '-button').click(function (e)
+        {
+            // Show or hide the layout options panel.
+            jQuery('.search-control-' + kind + '-options').slideToggle('fast');
+        });
+
+        jQuery('.show-' + kind + '-button').click(function (e)
+        {
+            // Select the layout chosen by the user e.g. L1.
+            var id = jQuery(this).attr('id');
+            setSelectedLayout(kind, id.substr(1));
+        });
+
+        jQuery('.search-control-' + kind).mouseleave(function (e)
+        {
+            jQuery('.search-control-' + kind + '-options').slideUp('fast');
+        });
+    }
+
     jQuery(document).ready(function() {
         // Show the selected layout.
         currentLayoutId = '<?php echo $layoutId; ?>';
-        setSelectedLayout(currentLayoutId);
+        setSelectedLayout('layout', currentLayoutId);
+        setSelectedLayout('limit', 25);
 
-        jQuery('.search-control-layout-button').click(function (e)
-        {
-            // Show or hide the layout options panel.
-            jQuery('.search-control-layout-options').slideToggle('fast');
-        });
+        initSelector('layout');
+        initSelector('limit');
 
-        jQuery('.show-layout-button').click(function (e)
-        {
-           // Select the layout chosen by the user e.g. L1.
-            var id = jQuery(this).attr('id');
-            setSelectedLayout(id.substr(1));
-        });
-
-        jQuery('.search-control-layout').mouseleave(function (e)
-        {
-            jQuery('.search-control-layout-options').slideUp('fast');
-        });
+        // jQuery('.search-control-layout-button').click(function (e)
+        // {
+        //     // Show or hide the layout options panel.
+        //     jQuery('.search-control-layout-options').slideToggle('fast');
+        // });
+        //
+        // jQuery('.show-layout-button').click(function (e)
+        // {
+        //    // Select the layout chosen by the user e.g. L1.
+        //     var id = jQuery(this).attr('id');
+        //     setSelectedLayout(id.substr(1));
+        // });
+        //
+        // jQuery('.search-control-layout').mouseleave(function (e)
+        // {
+        //     jQuery('.search-control-layout-options').slideUp('fast');
+        // });
 
         jQuery('.search-show-more').click(function (e)
         {
