@@ -9,8 +9,8 @@
         for (var layoutId = firstLayoutId; layoutId <= lastLayoutId; layoutId++)
         {
             layouts = jQuery('#L' + layoutId);
-            layouts.removeClass('layout-selected');
-            layouts.addClass('layout-normal');
+            layouts.removeClass('selector-selected');
+            layouts.addClass('selector-normal');
         }
     }
 
@@ -20,9 +20,9 @@
         return !isNaN(value) && (x | 0) === x;
     }
 
-    function setSelectedLayout(kind, layoutId)
+    function setSelectedOption(kind, selectionId)
     {
-        console.log('setSelectedLayout: ' + kind + ' ++ ' + layoutId);
+        console.log('setSelectedOption: ' + kind + ' ++ ' + selectionId);
 
         // Hide everything.
         for (var id = firstLayoutId; id <= lastLayoutId; id++)
@@ -30,26 +30,26 @@
             jQuery('.L' + id).hide();
         }
 
-        jQuery('.L' + layoutId).show();
+        jQuery('.L' + selectionId).show();
 
-        // Highlight the selector button for the selected layout.
+        // Highlight the selector button for the selected option.
         deselectLayoutButtons();
-        layout = jQuery('#L' + layoutId);
-        layout.addClass('layout-selected');
-        layout.removeClass('layout-normal');
+        layout = jQuery('#L' + selectionId);
+        layout.addClass('selector-selected');
+        layout.removeClass('selector-normal');
 
-        // Close the layout selector panel.
-        jQuery('.search-control-' + kind + '-options').slideUp('fast');
+        // Close the selector panel.
+        jQuery('#search-control-' + kind + '-options').slideUp('fast');
 
-        // Show the user which layout is selected.
+        // Show the user which option is selected.
         var layoutName = layout.text();
-        jQuery('.search-control-' + kind + '-button').text(layoutName + ' Layout');
+        jQuery('#search-control-' + kind + '-button').text(layoutName + ' ' + kind);
 
-        if (layoutId !== currentLayoutId)
+        if (selectionId !== currentLayoutId)
         {
             // Update the layout query string value to reflect the newly selected layout.
             var oldPattern = new RegExp('&layout=' + currentLayoutId);
-            var newPattern = '&layout=' + layoutId;
+            var newPattern = '&layout=' + selectionId;
 
             // Update the layout Id in all links that post back to this page or to Advanced Search.
             jQuery(".search-link")
@@ -76,56 +76,38 @@
             history.replaceState(null, null, newUrl);
         }
         
-        currentLayoutId = layoutId;
+        currentLayoutId = selectionId;
     }
 
     function initSelector(kind)
     {
-        jQuery('.search-control-' + kind + '-button').click(function (e)
+        jQuery('#search-control-' + kind + '-button').click(function (e)
         {
-            // Show or hide the layout options panel.
-            jQuery('.search-control-' + kind + '-options').slideToggle('fast');
+            // Show or hide the selector options panel.
+            jQuery('#search-control-' + kind + '-options').slideToggle('fast');
         });
 
-        jQuery('.show-' + kind + '-button').click(function (e)
+        jQuery('.search-control-' + kind + '-option').click(function (e)
         {
-            // Select the layout chosen by the user e.g. L1.
+            // Select the option chosen by the user.
             var id = jQuery(this).attr('id');
-            setSelectedLayout(kind, id.substr(1));
+            setSelectedOption(kind, id.substr(1));
         });
 
-        jQuery('.search-control-' + kind).mouseleave(function (e)
+        jQuery('.search-control-selector').mouseleave(function (e)
         {
-            jQuery('.search-control-' + kind + '-options').slideUp('fast');
+            jQuery('#search-control-' + kind + '-options').slideUp('fast');
         });
     }
 
     jQuery(document).ready(function() {
         // Show the selected layout.
         currentLayoutId = '<?php echo $layoutId; ?>';
-        setSelectedLayout('layout', currentLayoutId);
-        setSelectedLayout('limit', 25);
+        setSelectedOption('layout', currentLayoutId);
+        setSelectedOption('limit', 25);
 
         initSelector('layout');
         initSelector('limit');
-
-        // jQuery('.search-control-layout-button').click(function (e)
-        // {
-        //     // Show or hide the layout options panel.
-        //     jQuery('.search-control-layout-options').slideToggle('fast');
-        // });
-        //
-        // jQuery('.show-layout-button').click(function (e)
-        // {
-        //    // Select the layout chosen by the user e.g. L1.
-        //     var id = jQuery(this).attr('id');
-        //     setSelectedLayout(id.substr(1));
-        // });
-        //
-        // jQuery('.search-control-layout').mouseleave(function (e)
-        // {
-        //     jQuery('.search-control-layout-options').slideUp('fast');
-        // });
 
         jQuery('.search-show-more').click(function (e)
         {
