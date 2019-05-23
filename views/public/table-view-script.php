@@ -1,17 +1,35 @@
 <script>
     var currentLayoutId = 0;
-    var firstLayoutId = <?php echo $layoutIdFirst; ?>;
-    var lastLayoutId = <?php echo $layoutIdLast; ?>;
 
-    function deselectSelectoroptions(prefix)
+    function deselectSelectorOptions(kind)
     {
         // Set all the  selector options to their unselected color.
-        for (var layoutId = firstLayoutId; layoutId <= lastLayoutId; layoutId++)
+        jQuery('.search-' + kind + '-option').each(function()
         {
-            layouts = jQuery('#' + prefix + layoutId);
-            layouts.removeClass('selector-selected');
-            layouts.addClass('selector-normal');
-        }
+            jQuery(this).removeClass('selector-selected');
+            jQuery(this).addClass('selector-normal');
+        });
+    }
+
+    function initSelector(kind, prefix)
+    {
+        jQuery('#search-' + kind + '-button').click(function (e)
+        {
+            // Show or hide the selector options panel.
+            jQuery('#search-' + kind + '-options').slideToggle('fast');
+        });
+
+        jQuery('.search-' + kind + '-option').click(function (e)
+        {
+            // Select the option chosen by the user.
+            var id = jQuery(this).attr('id');
+            setSelectedOption(kind, prefix, id.substr(1));
+        });
+
+        jQuery('.search-selector').mouseleave(function (e)
+        {
+            jQuery('#search-' + kind + '-options').slideUp('fast');
+        });
     }
 
     function isInteger(value)
@@ -24,16 +42,8 @@
     {
         console.log('setSelectedOption: ' + kind + ' : ' + prefix + ' : ' + optionId);
 
-        // Hide everything.
-        // for (var id = firstLayoutId; id <= lastLayoutId; id++)
-        // {
-        //     jQuery('.L' + id).hide();
-        // }
-
-        //jQuery('.L' + optionId).show();
-
         // Highlight the selector button for the selected option.
-        deselectSelectoroptions(prefix);
+        deselectSelectorOptions(kind);
         var selectedOption = jQuery('#' + prefix + optionId);
         selectedOption.addClass('selector-selected');
         selectedOption.removeClass('selector-normal');
@@ -79,32 +89,14 @@
         currentLayoutId = optionId;
     }
 
-    function initSelector(kind, prefix)
-    {
-        jQuery('#search-' + kind + '-button').click(function (e)
-        {
-            // Show or hide the selector options panel.
-            jQuery('#search-' + kind + '-options').slideToggle('fast');
-        });
-
-        jQuery('.search-' + kind + '-option').click(function (e)
-        {
-            // Select the option chosen by the user.
-            var id = jQuery(this).attr('id');
-            setSelectedOption(kind, prefix, id.substr(1));
-        });
-
-        jQuery('.search-selector').mouseleave(function (e)
-        {
-            jQuery('#search-' + kind + '-options').slideUp('fast');
-        });
-    }
-
     jQuery(document).ready(function() {
         // Show the selected layout.
         currentLayoutId = '<?php echo $layoutId; ?>';
-        setSelectedOption('layout', currentLayoutId);
-        setSelectedOption('limit', 25);
+
+        console.log('current layout Id = ' + currentLayoutId);
+
+        setSelectedOption('layout', 'L', currentLayoutId);
+        setSelectedOption('limit', 'X', 25);
 
         initSelector('layout', 'L');
         initSelector('limit', 'X');
