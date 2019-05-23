@@ -3,12 +3,12 @@
     var firstLayoutId = <?php echo $layoutIdFirst; ?>;
     var lastLayoutId = <?php echo $layoutIdLast; ?>;
 
-    function deselectLayoutButtons()
+    function deselectSelectoroptions(prefix)
     {
-        // Set all the layout selector buttons to their unselected color.
+        // Set all the  selector options to their unselected color.
         for (var layoutId = firstLayoutId; layoutId <= lastLayoutId; layoutId++)
         {
-            layouts = jQuery('#L' + layoutId);
+            layouts = jQuery('#' + prefix + layoutId);
             layouts.removeClass('selector-selected');
             layouts.addClass('selector-normal');
         }
@@ -20,38 +20,38 @@
         return !isNaN(value) && (x | 0) === x;
     }
 
-    function setSelectedOption(kind, selectionId)
+    function setSelectedOption(kind, prefix, optionId)
     {
-        console.log('setSelectedOption: ' + kind + ' ++ ' + selectionId);
+        console.log('setSelectedOption: ' + kind + ' : ' + prefix + ' : ' + optionId);
 
         // Hide everything.
-        for (var id = firstLayoutId; id <= lastLayoutId; id++)
-        {
-            jQuery('.L' + id).hide();
-        }
+        // for (var id = firstLayoutId; id <= lastLayoutId; id++)
+        // {
+        //     jQuery('.L' + id).hide();
+        // }
 
-        jQuery('.L' + selectionId).show();
+        //jQuery('.L' + optionId).show();
 
         // Highlight the selector button for the selected option.
-        deselectLayoutButtons();
-        layout = jQuery('#L' + selectionId);
-        layout.addClass('selector-selected');
-        layout.removeClass('selector-normal');
+        deselectSelectoroptions(prefix);
+        var selectedOption = jQuery('#' + prefix + optionId);
+        selectedOption.addClass('selector-selected');
+        selectedOption.removeClass('selector-normal');
 
         // Close the selector panel.
-        jQuery('#search-control-' + kind + '-options').slideUp('fast');
+        jQuery('#search-' + kind + '-options').slideUp('fast');
 
         // Show the user which option is selected.
-        var layoutName = layout.text();
-        jQuery('#search-control-' + kind + '-button').text(layoutName + ' ' + kind);
+        var optionText = selectedOption.text();
+        jQuery('#search-' + kind + '-button').text(optionText + ' ' + kind);
 
-        if (selectionId !== currentLayoutId)
+        if (optionId !== currentLayoutId)
         {
-            // Update the layout query string value to reflect the newly selected layout.
-            var oldPattern = new RegExp('&layout=' + currentLayoutId);
-            var newPattern = '&layout=' + selectionId;
+            // Update the query string value to reflect the newly selected option.
+            var oldPattern = new RegExp('&' + kind + '=' + currentLayoutId);
+            var newPattern = '&' + kind + '=' + optionId;
 
-            // Update the layout Id in all links that post back to this page or to Advanced Search.
+            // Update the option Id in all links that post back to this page or to Advanced Search.
             jQuery(".search-link")
                 .each(function () {
                     var oldHref = jQuery(this).prop("href");
@@ -60,7 +60,7 @@
                     jQuery(this).prop("href", newHref);
                 });
 
-            // Update the layout Id in the action for the Modify Search button's form.
+            // Update the option Id in the action for the Modify Search button's form.
             jQuery(".modify-search-button")
                 .each(function () {
                     var oldAction = jQuery(this).prop("action");
@@ -76,27 +76,27 @@
             history.replaceState(null, null, newUrl);
         }
         
-        currentLayoutId = selectionId;
+        currentLayoutId = optionId;
     }
 
-    function initSelector(kind)
+    function initSelector(kind, prefix)
     {
-        jQuery('#search-control-' + kind + '-button').click(function (e)
+        jQuery('#search-' + kind + '-button').click(function (e)
         {
             // Show or hide the selector options panel.
-            jQuery('#search-control-' + kind + '-options').slideToggle('fast');
+            jQuery('#search-' + kind + '-options').slideToggle('fast');
         });
 
-        jQuery('.search-control-' + kind + '-option').click(function (e)
+        jQuery('.search-' + kind + '-option').click(function (e)
         {
             // Select the option chosen by the user.
             var id = jQuery(this).attr('id');
-            setSelectedOption(kind, id.substr(1));
+            setSelectedOption(kind, prefix, id.substr(1));
         });
 
-        jQuery('.search-control-selector').mouseleave(function (e)
+        jQuery('.search-selector').mouseleave(function (e)
         {
-            jQuery('#search-control-' + kind + '-options').slideUp('fast');
+            jQuery('#search-' + kind + '-options').slideUp('fast');
         });
     }
 
@@ -106,8 +106,8 @@
         setSelectedOption('layout', currentLayoutId);
         setSelectedOption('limit', 25);
 
-        initSelector('layout');
-        initSelector('limit');
+        initSelector('layout', 'L');
+        initSelector('limit', 'X');
 
         jQuery('.search-show-more').click(function (e)
         {

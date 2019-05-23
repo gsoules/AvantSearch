@@ -369,26 +369,26 @@ input[type="checkbox"] {
 
 
 /* Position buttons on search results view */
-.search-control-selector  {
+.search-selector  {
 	float:left;
 	height: 100%;
 	margin-right: 12px;
 }
 
-.search-control-selector-button {
+.search-selector-button {
 	background-color: #52690c;
 	border-color: #52690c;
 }
 
-.search-control-selector-button:hover {
+.search-selector-button:hover {
 	background-color: #5f780c;
 }
 
-.search-control-selector-options li a {
+.search-selector-options li a {
 	background-color: #52690c;
 }
 
-.search-control-selector-options li a.selector-normal:hover {
+.search-selector-options li a.selector-normal:hover {
 	background-color: #ccc;
 }
 /* End item filter display */
@@ -402,12 +402,12 @@ input[type="checkbox"] {
 	margin-top: 0px;
 }
 
-.search-control-selector-button {
+.search-selector-button {
 	width: 200px;
 	text-align: left;
 }
 
-.search-control-selector-button:after {
+.search-selector-button:after {
 	content: "\f0d7";
 	font-family: "FontAwesome";
 	padding-left: 6px;
@@ -415,7 +415,7 @@ input[type="checkbox"] {
 }
 
 /* Change selector sub menu buttons */
-.search-control-selector-options {
+.search-selector-options {
 	position: relative;
 	z-index: 250;
 	-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
@@ -423,18 +423,18 @@ input[type="checkbox"] {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
-.search-control-selector-options ul {
+.search-selector-options ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 }
 
-.search-control-selector-options li {
+.search-selector-options li {
 	border-bottom: 1px solid #666;
 	position: relative;
 }
 
-.search-control-selector-options li a {
+.search-selector-options li a {
 	-moz-appearance: none;
 	-webkit-appearance: none;
 	border: 0;
@@ -452,17 +452,17 @@ input[type="checkbox"] {
 
 /* Default colors for selector options dropdown items */
 
-.search-control-selector-options li a.selector-normal {
+.search-selector-options li a.selector-normal {
 	background-color: #eee;
 	color: #222;
 }
 
-.search-control-selector-options li a.selector-normal:hover {
+.search-selector-options li a.selector-normal:hover {
 	background-color: #aaa;
 	color: #222;
 }
 
-.search-control-selector-options li a.selector-selected {
+.search-selector-options li a.selector-selected {
 	background-color: #aaa;
 	color: #fff;
 }
@@ -1015,9 +1015,9 @@ input[type="checkbox"] {
 		float: left;
 	}
 
-	/* use .search-control-selector instead */
+	/* use .search-selector instead */
 	.search-index-view-column-toggle,
-	.search-control-selector-options-panel {
+	.search-selector-options-panel {
 		clear: both;
 		margin-left: 0;
 	}
@@ -1049,7 +1049,7 @@ input[type="checkbox"] {
 		margin-bottom: 6px;
 	}
 
-	.search-control-selector {
+	.search-selector {
 		margin-left: 0;
 	}
 }

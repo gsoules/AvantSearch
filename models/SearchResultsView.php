@@ -183,9 +183,9 @@ class SearchResultsView
         if ($width == 0)
             $width = '200';
 
-        $html = "<div class='search-control-selector'>";
-        $html .= "<button id='search-control-layout-button' class='search-control-selector-button' style='width:{$width}px;'></button>";
-        $html .= "<div id='search-control-layout-options' class='search-control-selector-options'>";
+        $html = "<div class='search-selector'>";
+        $html .= "<button id='search-layout-button' class='search-selector-button' style='width:{$width}px;'></button>";
+        $html .= "<div id='search-layout-options' class='search-selector-options'>";
         $html .= "<ul>";
         foreach ($layoutsData as $idNumber => $layout)
         {
@@ -196,7 +196,7 @@ class SearchResultsView
             }
 
             $id = "L$idNumber";
-            $html .= "<li><a id='$id' class='button search-control-layout-option'>{$layout['name']}</a></li>";
+            $html .= "<li><a id='$id' class='button search-layout-option'>{$layout['name']}</a></li>";
         }
         $html .= " </ul>";
         $html .= "</div>";
@@ -206,15 +206,15 @@ class SearchResultsView
 
     public function emitSelectorForResultsPerPage()
     {
-        $html = "<div class='search-control-selector'>";
-        $html .= "<button id='search-control-limit-button' class='search-control-selector-button'></button>";
-        $html .= "<div id='search-control-limit-options' class='search-control-selector-options'>";
+        $html = "<div class='search-selector'>";
+        $html .= "<button id='search-limit-button' class='search-selector-button'></button>";
+        $html .= "<div id='search-limit-options' class='search-selector-options'>";
         $html .= "<ul>";
-        $html .= "<li><a id='x10' class='button search-control-limit-option'>10</a></li>";
-        $html .= "<li><a id='x25' class='button search-control-limit-option'>25</a></li>";
-        $html .= "<li><a id='x50' class='button search-control-limit-option'>50</a></li>";
-        $html .= "<li><a id='x100' class='button search-control-limit-option'>100</a></li>";
-        $html .= "<li><a id='x200' class='button search-control-limit-option'>200</a></li>";
+        $html .= "<li><a id='X10' class='button search-limit-option'>10</a></li>";
+        $html .= "<li><a id='X25' class='button search-limit-option'>25</a></li>";
+        $html .= "<li><a id='X50' class='button search-limit-option'>50</a></li>";
+        $html .= "<li><a id='X100' class='button search-limit-option'>100</a></li>";
+        $html .= "<li><a id='X200' class='button search-limit-option'>200</a></li>";
         $html .= " </ul>";
         $html .= "</div>";
         $html .= "</div>";
