@@ -1,5 +1,7 @@
 <script>
-    var currentLayoutId = 0;
+    var selectedOptionId = [];
+    selectedOptionId['layout'] = <?php echo $layoutId; ?>;
+    selectedOptionId['limit'] = 10;
 
     function deselectSelectorOptions(kind)
     {
@@ -32,15 +34,12 @@
         });
     }
 
-    function isInteger(value)
-    {
-        var x = parseFloat(value);
-        return !isNaN(value) && (x | 0) === x;
-    }
-
     function setSelectedOption(kind, prefix, optionId)
     {
         console.log('setSelectedOption: ' + kind + ' : ' + prefix + ' : ' + optionId);
+
+        if (kind === 'layout')
+            showColumnsForSelectedLayout(kind, prefix, optionId);
 
         // Highlight the selector button for the selected option.
         deselectSelectorOptions(kind);
@@ -51,14 +50,14 @@
         // Close the selector panel.
         jQuery('#search-' + kind + '-options').slideUp('fast');
 
-        // Show the user which option is selected.
+        // Show the selected option in the button's text.
         var optionText = selectedOption.text();
         jQuery('#search-' + kind + '-button').text(optionText + ' ' + kind);
 
-        if (optionId !== currentLayoutId)
+        if (optionId !== selectedOptionId[kind])
         {
             // Update the query string value to reflect the newly selected option.
-            var oldPattern = new RegExp('&' + kind + '=' + currentLayoutId);
+            var oldPattern = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
             var newPattern = '&' + kind + '=' + optionId;
 
             // Update the option Id in all links that post back to this page or to Advanced Search.
@@ -86,17 +85,29 @@
             history.replaceState(null, null, newUrl);
         }
         
-        currentLayoutId = optionId;
+        selectedOptionId[kind] = optionId;
+    }
+
+    function showColumnsForSelectedLayout(kind, prefix, optionId)
+    {
+        // Show the result columns for the selected layout and hide all other columns.
+        var selectedOptionId = prefix + optionId;
+        jQuery('.search-' + kind + '-option').each(function()
+        {
+            var optionLayoutId = jQuery(this).attr('id');
+            var columns = jQuery('.' + optionLayoutId);
+            if (selectedOptionId === optionLayoutId)
+                columns.show();
+            else
+                columns.hide();
+        });
     }
 
     jQuery(document).ready(function() {
-        // Show the selected layout.
-        currentLayoutId = '<?php echo $layoutId; ?>';
+        console.log('current layout Id = ' + selectedOptionId['layout']);
 
-        console.log('current layout Id = ' + currentLayoutId);
-
-        setSelectedOption('layout', 'L', currentLayoutId);
-        setSelectedOption('limit', 'X', 25);
+        setSelectedOption('layout', 'L', selectedOptionId['layout']);
+        setSelectedOption('limit', 'X', 10);
 
         initSelector('layout', 'L');
         initSelector('limit', 'X');
