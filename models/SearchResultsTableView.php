@@ -7,7 +7,6 @@ class SearchResultsTableView extends SearchResultsView
     protected $detailLayoutData;
     protected $layoutId;
     protected $layoutsData;
-    protected $limit;
     protected $showRelationships;
 
     function __construct()
@@ -212,16 +211,6 @@ class SearchResultsTableView extends SearchResultsView
             $layoutSelectOptions[$idNumber] = $layout['name'];
         }
         return $layoutSelectOptions;
-    }
-
-    public static function getLimitOptions()
-    {
-        return array(
-            '10' => '10',
-            '25' => '25',
-            '50' => '50',
-            '100' => '100',
-            '200' => '200');
     }
 
     protected function getOptionDataForDetailLayout()

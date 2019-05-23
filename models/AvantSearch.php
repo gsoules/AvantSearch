@@ -163,21 +163,26 @@ class AvantSearch
         $placeholderText = __('Enter search terms');
         $url = url('find');
 
-        $query = '';
-        $showLastQuery = true;
-        if ($showLastQuery)
-        {
-            // Initialize the search box with the last query submitted. Now that autocomplete
-            // is working, this might not always desirable and so this code is a switch for now.
-            $query = isset($_GET['query']) ? $_GET['query'] : '';
-            $query = htmlspecialchars($query, ENT_QUOTES);
-        }
+        // Initialize the search box with the last query submitted.
+        $query = isset($_GET['query']) ? $_GET['query'] : '';
+        $query = htmlspecialchars($query, ENT_QUOTES);
 
         // Construct the HTML that will replace the native Omeka search form with the one for AvantSearch.
         $html = '<div id="search-container" role="search">';
-        $html .= '<form id="search-form" name="search-form" action="' . $url. '" method="get">';
+        $html .= '<form id="search-form" name="search-form" action="' . $url . '" method="get">';
         $html .= '<span class="search-clear">';
         $html .= '<input id="query" type="text" name="query" value="' . $query . '" title="Search" autofocus placeholder="' . $placeholderText . '">';
+
+        // Add query args that control the results view and layout.
+        $queryArgs = $_GET;
+        foreach ($queryArgs as $key => $queryArg)
+        {
+            if ($key == 'layout' || $key == 'limit')
+            {
+                $html .= '<input type="hidden" name="' . $key. '" value="' . $queryArg . '">';
+            }
+        }
+
         $html .= '<span id="search-clear-icon">&#10006;</span></span>';
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button>';
         $html .= '<div>';

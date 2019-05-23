@@ -9,6 +9,8 @@ $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 $layoutId = $searchResults->getLayoutId();
 $layoutsData = $searchResults->getLayoutsData();
 
+$limit = $searchResults->getResultsLimit();
+
 $detailLayoutData = $searchResults->getDetailLayoutData();
 $column1 =  isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
 $column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
@@ -83,9 +85,11 @@ if ($totalResults)
     <?php if ($useElasticsearch): ?>
         </section>
     <?php endif; ?>
-    <?php echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId)); ?>
-    <?php echo pagination_links(); ?>
-    <?php echo '</div>'; ?>
+    <?php
+        echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId, 'limit' => $limit));
+        echo pagination_links();
+        echo '</div>';
+    ?>
 <?php else: ?>
     <div id="no-results">
         <p>

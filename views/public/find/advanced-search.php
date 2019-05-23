@@ -276,7 +276,7 @@ echo "<div id='avantsearch-container'>";
             <div class="table-view-limit-option search-view-option">
                 <?php
                 echo $this->formLabel('limit', __('Results Per Page'));
-                echo $this->formSelect('limit', @$_REQUEST['limit'], array(), $searchResultsTable->getLimitOptions());
+                echo $this->formSelect('limit', @$_REQUEST['limit'], array(), $searchResultsTable->getResultsLimitOptions());
                 ?>
             </div>
         </div>

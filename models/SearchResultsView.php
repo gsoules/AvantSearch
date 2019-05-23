@@ -10,9 +10,6 @@ class SearchResultsView
     const KEYWORD_CONDITION_CONTAINS = 2;
     const KEYWORD_CONDITION_BOOLEAN = 3;
 
-    const DEFAULT_LIMIT = 25;
-    const MAX_LIMIT = 200;
-
     protected $columnsData;
     protected $condition;
     protected $conditionName;
@@ -20,6 +17,7 @@ class SearchResultsView
     protected $facets;
     protected $files;
     protected $keywords;
+    protected $limit;
     protected $privateElements;
     protected $query;
     protected $results;
@@ -385,25 +383,38 @@ class SearchResultsView
         if (isset($this->limit))
             return $this->limit;
 
-        // First check for a cookie value.
-        $this->limit = isset($_COOKIE['SEARCH-LIMIT']) ? intval($_COOKIE['SEARCH-LIMIT']) : 0;
-        if ($this->limit > 0 && $this->limit <= self::MAX_LIMIT)
-            return $this->limit;
+        if (isset($_GET['limit']))
+        {
+            // First check for a query string argument.
+            $this->limit = intval($_GET['limit']);
+        }
+        else if (isset($_COOKIE['SEARCH-LIMIT']))
+        {
+            // First check for a cookie value.
+            $this->limit = intval($_COOKIE['SEARCH-LIMIT']);
+        }
+        else
+        {
+            // Use the Omeka admin/appearance/edit-settings setting for Results Per Page.
+            $this->limit = get_option('per_page_public');
+        }
 
-        // Next check for a query string argument.
-        $this->limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
-        if ($this->limit > 0 && $this->limit <= self::MAX_LIMIT)
-            return $this->limit;
-
-        // Use the Omeka admin/appearance/edit-settings setting for Results Per Page.
-        $this->limit = get_option('per_page_public');
-        if ($this->limit > 0 && $this->limit <= self::MAX_LIMIT)
-            return $this->limit;
-
-        // Just to be safe, provide a hard default.
-        $this->limit = self::DEFAULT_LIMIT;
+        // Make sure that the limit is valid.
+        $limitOptions = $this->getResultsLimitOptions();
+        if (!in_array($this->limit, $limitOptions))
+            $this->limit = reset($limitOptions);
 
         return $this->limit;
+    }
+
+    public function getResultsLimitOptions()
+    {
+        return array(
+            '10' => 10,
+            '25' => 25,
+            '50' => 50,
+            '100' => 100,
+            '200' => 200);
     }
 
     public function getSearchFiles()

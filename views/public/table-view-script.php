@@ -1,7 +1,7 @@
 <script>
     var selectedOptionId = [];
     selectedOptionId['layout'] = <?php echo $layoutId; ?>;
-    selectedOptionId['limit'] = 10;
+    selectedOptionId['limit'] = <?php echo $limit; ?>;
 
     function deselectSelectorOptions(kind)
     {
@@ -107,7 +107,7 @@
         console.log('current layout Id = ' + selectedOptionId['layout']);
 
         setSelectedOption('layout', 'L', selectedOptionId['layout']);
-        setSelectedOption('limit', 'X', 10);
+        setSelectedOption('limit', 'X', selectedOptionId['limit']);
 
         initSelector('layout', 'L');
         initSelector('limit', 'X');
