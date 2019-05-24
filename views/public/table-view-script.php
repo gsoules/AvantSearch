@@ -42,9 +42,6 @@
     {
         console.log('setSelectedOption: ' + kind + ' : ' + prefix + ' : ' + optionId);
 
-        if (kind === 'layout')
-            showColumnsForSelectedLayout(kind, prefix, optionId);
-
         // Highlight the selector button for the selected option.
         deselectSelectorOptions(kind);
         var selectedOption = jQuery('#' + prefix + optionId);
@@ -58,44 +55,51 @@
         var buttonTitle = selectorTitle[kind].replace('%s',selectedOption.text());
         jQuery('#search-' + kind + '-button').text(buttonTitle);
 
-        console.log('test: ' + optionId +  ' === ' + selectedOptionId[kind]);
-        if (optionId !== selectedOptionId[kind])
+        if (kind === 'layout')
         {
-            console.log('different');
-            // Update the query string value to reflect the newly selected option.
-            var oldPattern = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
-            var newPattern = '&' + kind + '=' + optionId;
-
-            // Update the option Id in all links that post back to this page or to Advanced Search.
-            jQuery(".search-link")
-                .each(function () {
-                    var oldHref = jQuery(this).prop("href");
-                    var newHref = oldHref.replace(oldPattern, '');
-                    newHref = newHref + newPattern;
-                    jQuery(this).prop("href", newHref);
-                });
-
-            // Update the option Id in the action for the Modify Search button's form.
-            jQuery(".modify-search-button")
-                .each(function () {
-                    var oldAction = jQuery(this).prop("action");
-                    var newAction = oldAction.replace(oldPattern, '');
-                    newAction = newAction + newPattern;
-                    jQuery(this).prop("action", newAction);
-                });
-
-            // Update the URL in the browser's address bar.
-            var oldUrl = document.location.href;
-            var newUrl = oldUrl.replace(oldPattern, '');
-            newUrl = newUrl + newPattern;
-            history.replaceState(null, null, newUrl);
-
-            if (kind === 'limit')
-            {
-                window.location.href = newUrl;
-            }
+            // The layout changed. Show the new layout's columns.
+            showColumnsForSelectedLayout(kind, prefix, optionId);
         }
-        
+
+        if (optionId === selectedOptionId[kind])
+        {
+            // The user clicked on the same option as was already selected.
+            return;
+        }
+
+        // Update the query string value to reflect the newly selected option.
+        var oldPattern = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
+        var newPattern = '&' + kind + '=' + optionId;
+
+        // Update the option Id in all links that post back to this page or to Advanced Search.
+        jQuery(".search-link")
+            .each(function () {
+                var oldHref = jQuery(this).prop("href");
+                var newHref = oldHref.replace(oldPattern, '');
+                newHref = newHref + newPattern;
+                jQuery(this).prop("href", newHref);
+            });
+
+        // Update the option Id in the action for the Modify Search button's form.
+        jQuery(".modify-search-button")
+            .each(function () {
+                var oldAction = jQuery(this).prop("action");
+                var newAction = oldAction.replace(oldPattern, '');
+                newAction = newAction + newPattern;
+                jQuery(this).prop("action", newAction);
+            });
+
+        // Update the URL in the browser's address bar.
+        var oldUrl = document.location.href;
+        var newUrl = oldUrl.replace(oldPattern, '');
+        newUrl = newUrl + newPattern;
+        history.replaceState(null, null, newUrl);
+
+        if (kind === 'limit')
+        {
+            window.location.href = newUrl;
+        }
+
         selectedOptionId[kind] = optionId;
     }
 
