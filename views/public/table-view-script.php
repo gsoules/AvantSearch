@@ -1,7 +1,11 @@
 <script>
     var selectedOptionId = [];
-    selectedOptionId['layout'] = <?php echo $layoutId; ?>;
-    selectedOptionId['limit'] = <?php echo $limit; ?>;
+    selectedOptionId['layout'] = parseInt(<?php echo $layoutId; ?>);
+    selectedOptionId['limit'] = parseInt(<?php echo $limit; ?>);
+
+    var selectorTitle = [];
+    selectorTitle['layout'] = '%s Layout';
+    selectorTitle['limit'] = '%s Per Page';
 
     function deselectSelectorOptions(kind)
     {
@@ -17,15 +21,15 @@
     {
         jQuery('#search-' + kind + '-button').click(function (e)
         {
-            // Show or hide the selector options panel.
+            // Show or hide the selector options panel when the button is clicked.
             jQuery('#search-' + kind + '-options').slideToggle('fast');
         });
 
         jQuery('.search-' + kind + '-option').click(function (e)
         {
-            // Select the option chosen by the user.
+            // Select the option chosen when an option is clicked.
             var id = jQuery(this).attr('id');
-            setSelectedOption(kind, prefix, id.substr(1));
+            setSelectedOption(kind, prefix, parseInt(id.substr(1)));
         });
 
         jQuery('.search-selector').mouseleave(function (e)
@@ -51,11 +55,13 @@
         jQuery('#search-' + kind + '-options').slideUp('fast');
 
         // Show the selected option in the button's text.
-        var optionText = selectedOption.text();
-        jQuery('#search-' + kind + '-button').text(optionText + ' ' + kind);
+        var buttonTitle = selectorTitle[kind].replace('%s',selectedOption.text());
+        jQuery('#search-' + kind + '-button').text(buttonTitle);
 
+        console.log('test: ' + optionId +  ' === ' + selectedOptionId[kind]);
         if (optionId !== selectedOptionId[kind])
         {
+            console.log('different');
             // Update the query string value to reflect the newly selected option.
             var oldPattern = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
             var newPattern = '&' + kind + '=' + optionId;
@@ -83,6 +89,11 @@
             var newUrl = oldUrl.replace(oldPattern, '');
             newUrl = newUrl + newPattern;
             history.replaceState(null, null, newUrl);
+
+            if (kind === 'limit')
+            {
+                window.location.href = newUrl;
+            }
         }
         
         selectedOptionId[kind] = optionId;

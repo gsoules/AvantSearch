@@ -16,6 +16,14 @@
 	width: 60px;
 }
 
+#no-results {
+	clear: both;
+}
+
+#no-results p {
+	margin-top: 0px;
+}
+
 #search-filter-form {
 	font-family: "Lato", sans-serif;
 }
@@ -369,37 +377,26 @@ input[type="checkbox"] {
 
 
 /* Position buttons on search results view */
+
 .search-selector  {
 	float:left;
 	height: 100%;
-	margin-right: 12px;
+	margin-right: 8px;
+}
+
+#search-limit-button {
+	width:116px;
 }
 
 .search-selector-button {
-	background-color: #52690c;
-	border-color: #52690c;
+	background-color: #e8e8e8;
+	border-color: #bababa;
+	color: #666666;
+	border-radius: 3px;
 }
 
 .search-selector-button:hover {
-	background-color: #5f780c;
-}
-
-.search-selector-options li a {
-	background-color: #52690c;
-}
-
-.search-selector-options li a.selector-normal:hover {
-	background-color: #ccc;
-}
-/* End item filter display */
-
-
-#no-results {
-	clear: both;
-}
-
-#no-results p {
-	margin-top: 0px;
+	background-color: #dbdbdb;
 }
 
 .search-selector-button {
@@ -414,7 +411,14 @@ input[type="checkbox"] {
 	float: right;
 }
 
-/* Change selector sub menu buttons */
+.search-selector-options li a {
+	background-color: #52690c;
+}
+
+.search-selector-options li a.selector-normal:hover {
+	background-color: #ccc;
+}
+
 .search-selector-options {
 	position: relative;
 	z-index: 250;
@@ -454,17 +458,20 @@ input[type="checkbox"] {
 
 .search-selector-options li a.selector-normal {
 	background-color: #eee;
-	color: #222;
+	color: #666;
+	border: 0;
 }
 
 .search-selector-options li a.selector-normal:hover {
 	background-color: #aaa;
-	color: #222;
+	color: #666;
+	border: 0;
 }
 
 .search-selector-options li a.selector-selected {
 	background-color: #aaa;
 	color: #fff;
+	border: 0;
 }
 
 
