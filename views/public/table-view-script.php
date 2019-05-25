@@ -42,22 +42,22 @@
     {
         console.log('setSelectedOption: ' + kind + ' : ' + prefix + ' : ' + optionId);
 
-        // Highlight the selector button for the selected option.
+        // Highlight the selected option in the panel of options.
         deselectSelectorOptions(kind);
         var selectedOption = jQuery('#' + prefix + optionId);
         selectedOption.addClass('selector-selected');
         selectedOption.removeClass('selector-normal');
 
-        // Close the selector panel.
+        // Close the options panel.
         jQuery('#search-' + kind + '-options').slideUp('fast');
 
-        // Show the selected option in the button's text.
+        // Show the selected option in the button title.
         var buttonTitle = selectorTitle[kind].replace('%s',selectedOption.text());
         jQuery('#search-' + kind + '-button').text(buttonTitle);
 
         if (kind === 'layout')
         {
-            // The layout changed. Show the new layout's columns.
+            // Show the columns for the selected layout.
             showColumnsForSelectedLayout(kind, prefix, optionId);
         }
 
@@ -67,16 +67,26 @@
             return;
         }
 
-        // Update the query string value to reflect the newly selected option.
-        var oldPattern = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
-        var newPattern = '&' + kind + '=' + optionId;
+        // Construct an updated query string to reflect the newly selected option.
+        var oldOptionArg = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
+        var oldUrl = document.location.href;
+        var urlWithoutOptionArg = oldUrl.replace(oldOptionArg, '');
+        var newOptionArg = '&' + kind + '=' + optionId;
+        var newUrl = urlWithoutOptionArg + newOptionArg;
+
+        if (kind === 'limit')
+        {
+            // The user wants to see more or fewer results. Reload the page.
+            window.location.href = newUrl;
+            return;
+        }
 
         // Update the option Id in all links that post back to this page or to Advanced Search.
         jQuery(".search-link")
             .each(function () {
                 var oldHref = jQuery(this).prop("href");
-                var newHref = oldHref.replace(oldPattern, '');
-                newHref = newHref + newPattern;
+                var newHref = oldHref.replace(oldOptionArg, '');
+                newHref = newHref + newOptionArg;
                 jQuery(this).prop("href", newHref);
             });
 
@@ -84,22 +94,15 @@
         jQuery(".modify-search-button")
             .each(function () {
                 var oldAction = jQuery(this).prop("action");
-                var newAction = oldAction.replace(oldPattern, '');
-                newAction = newAction + newPattern;
+                var newAction = oldAction.replace(oldOptionArg, '');
+                newAction = newAction + newOptionArg;
                 jQuery(this).prop("action", newAction);
             });
 
         // Update the URL in the browser's address bar.
-        var oldUrl = document.location.href;
-        var newUrl = oldUrl.replace(oldPattern, '');
-        newUrl = newUrl + newPattern;
         history.replaceState(null, null, newUrl);
 
-        if (kind === 'limit')
-        {
-            window.location.href = newUrl;
-        }
-
+        // Remember the new option.
         selectedOptionId[kind] = optionId;
     }
 
