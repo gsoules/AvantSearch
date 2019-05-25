@@ -26,6 +26,7 @@ if ($totalResults)
 {
     $resultControlsHtml = $searchResults->emitSelectorForLayout($layoutsData);
     $resultControlsHtml .= $searchResults->emitSelectorForResultsPerPage();
+    $resultControlsHtml .= $searchResults->emitSelectorForSortBy();
 }
 ?>
 

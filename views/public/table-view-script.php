@@ -2,10 +2,12 @@
     var selectedOptionId = [];
     selectedOptionId['layout'] = parseInt(<?php echo $layoutId; ?>);
     selectedOptionId['limit'] = parseInt(<?php echo $limit; ?>);
+    selectedOptionId['sort'] = 1;//parseInt(<?php echo $limit; ?>);
 
     var selectorTitle = [];
     selectorTitle['layout'] = '%s Layout';
     selectorTitle['limit'] = '%s Per Page';
+    selectorTitle['sort'] = 'Sort By %s';
 
     function deselectSelectorOptions(kind)
     {
@@ -118,7 +120,6 @@
     function updateUrl(element, propertyName, oldOptionArgPattern, newOptionArg)
     {
         // Replace an element's URL property with a new value to reflect a new option selection.
-        console.log('updateUrl: [' +  jQuery(element).prop('tagName') + '], ' + propertyName + ', ' + oldOptionArgPattern  + ', ' + newOptionArg);
         var oldUrl = jQuery(element).prop(propertyName);
         var urlWithoutOptionArg = oldUrl.replace(oldOptionArgPattern, '');
         var newUrl = urlWithoutOptionArg + newOptionArg;
@@ -130,9 +131,11 @@
 
         setSelectedOption('layout', 'L', selectedOptionId['layout']);
         setSelectedOption('limit', 'X', selectedOptionId['limit']);
+        setSelectedOption('sort', 'S', selectedOptionId['sort']);
 
         initSelector('layout', 'L');
         initSelector('limit', 'X');
+        initSelector('sort', 'S');
 
         jQuery('.search-show-more').click(function (e)
         {

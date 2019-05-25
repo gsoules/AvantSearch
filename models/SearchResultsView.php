@@ -182,7 +182,7 @@ class SearchResultsView
             $width = '200';
 
         $html = "<div class='search-selector'>";
-        $html .= "<button id='search-layout-button' class='search-selector-button' style='width:{$width}px;'></button>";
+        $html .= "<button id='search-layout-button' class='search-selector-button'></button>";
         $html .= "<div id='search-layout-options' class='search-selector-options'>";
         $html .= "<ul>";
         foreach ($layoutsData as $idNumber => $layout)
@@ -213,6 +213,20 @@ class SearchResultsView
         $html .= "<li><a id='X50' class='button search-limit-option'>50</a></li>";
         $html .= "<li><a id='X100' class='button search-limit-option'>100</a></li>";
         $html .= "<li><a id='X200' class='button search-limit-option'>200</a></li>";
+        $html .= " </ul>";
+        $html .= "</div>";
+        $html .= "</div>";
+        return $html;
+    }
+
+    public function emitSelectorForSortBy()
+    {
+        $html = "<div class='search-selector'>";
+        $html .= "<button id='search-sort-button' class='search-selector-button'></button>";
+        $html .= "<div id='search-sort-options' class='search-selector-options'>";
+        $html .= "<ul>";
+        $html .= "<li><a id='S1' class='button search-sort-option'>Relevance</a></li>";
+        $html .= "<li><a id='S2' class='button search-sort-option'>Column</a></li>";
         $html .= " </ul>";
         $html .= "</div>";
         $html .= "</div>";

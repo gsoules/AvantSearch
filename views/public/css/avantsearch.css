@@ -384,10 +384,6 @@ input[type="checkbox"] {
 	margin-right: 8px;
 }
 
-#search-limit-button {
-	width:116px;
-}
-
 .search-selector-button {
 	background-color: #e8e8e8;
 	border-color: #bababa;
@@ -400,7 +396,6 @@ input[type="checkbox"] {
 }
 
 .search-selector-button {
-	width: 200px;
 	text-align: left;
 }
 
