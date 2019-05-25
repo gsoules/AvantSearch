@@ -68,9 +68,9 @@
         }
 
         // Construct an updated query string to reflect the newly selected option.
-        var oldOptionArg = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
+        var oldOptionArgPattern = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
         var oldUrl = document.location.href;
-        var urlWithoutOptionArg = oldUrl.replace(oldOptionArg, '');
+        var urlWithoutOptionArg = oldUrl.replace(oldOptionArgPattern, '');
         var newOptionArg = '&' + kind + '=' + optionId;
         var newUrl = urlWithoutOptionArg + newOptionArg;
 
@@ -81,23 +81,17 @@
             return;
         }
 
-        // Update the option Id in all links that post back to this page or to Advanced Search.
-        jQuery(".search-link")
-            .each(function () {
-                var oldHref = jQuery(this).prop("href");
-                var newHref = oldHref.replace(oldOptionArg, '');
-                newHref = newHref + newOptionArg;
-                jQuery(this).prop("href", newHref);
-            });
+        // Update the URL in each link that posts back to this page. These include the
+        // pagination controls, column sorting links, and links to apply or remove facets.
+        jQuery(".search-link").each(function()
+        {
+            updateUrl(this, 'href', oldOptionArgPattern, newOptionArg);
+        });
 
-        // Update the option Id in the action for the Modify Search button's form.
-        jQuery(".modify-search-button")
-            .each(function () {
-                var oldAction = jQuery(this).prop("action");
-                var newAction = oldAction.replace(oldOptionArg, '');
-                newAction = newAction + newOptionArg;
-                jQuery(this).prop("action", newAction);
-            });
+        // Update the Modify Search button's action to use the new option.
+        var modifyButton = jQuery(".modify-search-button");
+        if (modifyButton.length)
+            updateUrl(modifyButton, 'action', oldOptionArgPattern, newOptionArg);
 
         // Update the URL in the browser's address bar.
         history.replaceState(null, null, newUrl);
@@ -119,6 +113,16 @@
             else
                 columns.hide();
         });
+    }
+
+    function updateUrl(element, propertyName, oldOptionArgPattern, newOptionArg)
+    {
+        // Replace an element's URL property with a new value to reflect a new option selection.
+        console.log('updateUrl: [' +  jQuery(element).prop('tagName') + '], ' + propertyName + ', ' + oldOptionArgPattern  + ', ' + newOptionArg);
+        var oldUrl = jQuery(element).prop(propertyName);
+        var urlWithoutOptionArg = oldUrl.replace(oldOptionArgPattern, '');
+        var newUrl = urlWithoutOptionArg + newOptionArg;
+        jQuery(element).prop(propertyName, newUrl);
     }
 
     jQuery(document).ready(function() {
