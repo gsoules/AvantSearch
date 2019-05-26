@@ -259,7 +259,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 }
                 else
                 {
-                    $searchResults->setError($avantElasticsearchClient->getElasticsearchExceptionMessage($e));
+                    $searchResults->setError($avantElasticsearchClient->getLastError());
                 }
             }
             else
