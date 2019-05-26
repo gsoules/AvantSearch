@@ -41,7 +41,7 @@ class SearchQueryBuilder
         }
         else
         {
-            $primaryField = $searchResults->getSortField();
+            $primaryField = $searchResults->getSortFieldElementId();
         }
 
         // Construct the query.

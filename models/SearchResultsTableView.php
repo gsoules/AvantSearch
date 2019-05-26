@@ -8,6 +8,7 @@ class SearchResultsTableView extends SearchResultsView
     protected $layoutId;
     protected $layoutsData;
     protected $showRelationships;
+    protected $sortOptions;
 
     function __construct()
     {
@@ -21,6 +22,8 @@ class SearchResultsTableView extends SearchResultsView
         $this->addDetailLayoutColumns();
         $this->addDescriptionColumn();
         $this->addYearColumns();
+
+        $this->initSortOptions();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
     }
@@ -161,17 +164,10 @@ class SearchResultsTableView extends SearchResultsView
 
     public function emitSelectorForSort()
     {
-        $useElasticsearch = $this->getUseElasticsearch();
-        $sortFieldName = $this->getSortFieldName();
-        $sortedByRelevance = $useElasticsearch && empty($sortFieldName);
-        $sortedBy = $sortedByRelevance ? __('xxxzzz') : $sortFieldName;
-
         $options = array();
-        $options["S0"] = 'relevance';
-        $columnsData = $this->getColumnsData();
-        foreach ($columnsData as $elementId => $columnData)
+        foreach ($this->sortOptions as $index => $option)
         {
-            $options["S$elementId"] = $columnData['name'];
+            $options["S$index"] = $option;
         }
 
         return $this->emitSelector('sort', $options);
@@ -277,8 +273,9 @@ class SearchResultsTableView extends SearchResultsView
 
     public function getSelectedSortId()
     {
-        $sortId = 1;
-        return $sortId;
+        $sortFieldName = $this->getSortFieldName();
+        $sortId = array_search ($sortFieldName, $this->sortOptions);
+        return $sortId === false ? 0 : $sortId;
     }
 
     public function getShowRelationships()
@@ -289,5 +286,16 @@ class SearchResultsTableView extends SearchResultsView
     public function hasLayoutL1()
     {
         return isset($this->layoutsData[1]);
+    }
+
+    public function initSortOptions()
+    {
+        $this->sortOptions[] = __('relevance');
+        $columnsData = $this->getColumnsData();
+
+        foreach ($columnsData as $columnData)
+        {
+            $this->sortOptions[] = $columnData['name'];
+        }
     }
 }
