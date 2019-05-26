@@ -172,65 +172,36 @@ class SearchResultsView
         return $this->searchFilters->emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected);
     }
 
-    public function emitSelectorForLayout($layoutsData)
+    public function emitSelector($kind, $options)
     {
-        // Get the width of the layout selector. Because of the fact that this control is a button with a dropdown effect
-        // created from ul and li tags, and because we don't know how wide the contents will be, it's nearly impossible
-        // to properly style the width of button and dropdown using CSS. Instead we let the admin choose its width.
-        $width = intval(SearchConfig::getOptionTextForLayoutSelectorWidth());
-        if ($width == 0)
-            $width = '200';
-
         $html = "<div class='search-selector'>";
-        $html .= "<button id='search-layout-button' class='search-selector-button'></button>";
-        $html .= "<div id='search-layout-options' class='search-selector-options'>";
+        $html .= "<button id='search-$kind-button' class='search-selector-button'></button>";
+        $html .= "<div id='search-$kind-options' class='search-selector-options'>";
         $html .= "<ul>";
-        foreach ($layoutsData as $idNumber => $layout)
+
+        foreach ($options as $id => $option)
         {
-            if (!SearchConfig::userHasAccessToLayout($layout))
-            {
-                // Omit admin layouts for non-admin users.
-                continue;
-            }
-
-            $id = "L$idNumber";
-            $html .= "<li><a id='$id' class='button search-layout-option'>{$layout['name']}</a></li>";
+            $html .= "<li><a id='$id' class='button search-$kind-option'>$option</a></li>";
         }
+
         $html .= " </ul>";
         $html .= "</div>";
         $html .= "</div>";
+
         return $html;
     }
 
-    public function emitSelectorForResultsPerPage()
+    public function emitSelectorForLimit()
     {
-        $html = "<div class='search-selector'>";
-        $html .= "<button id='search-limit-button' class='search-selector-button'></button>";
-        $html .= "<div id='search-limit-options' class='search-selector-options'>";
-        $html .= "<ul>";
-        $html .= "<li><a id='X10' class='button search-limit-option'>10</a></li>";
-        $html .= "<li><a id='X25' class='button search-limit-option'>25</a></li>";
-        $html .= "<li><a id='X50' class='button search-limit-option'>50</a></li>";
-        $html .= "<li><a id='X100' class='button search-limit-option'>100</a></li>";
-        $html .= "<li><a id='X200' class='button search-limit-option'>200</a></li>";
-        $html .= " </ul>";
-        $html .= "</div>";
-        $html .= "</div>";
-        return $html;
-    }
+        $options = array();
+        $limits = $this->getResultsLimitOptions();
 
-    public function emitSelectorForSortBy()
-    {
-        $html = "<div class='search-selector'>";
-        $html .= "<button id='search-sort-button' class='search-selector-button'></button>";
-        $html .= "<div id='search-sort-options' class='search-selector-options'>";
-        $html .= "<ul>";
-        $html .= "<li><a id='S1' class='button search-sort-option'>Relevance</a></li>";
-        $html .= "<li><a id='S2' class='button search-sort-option'>Column</a></li>";
-        $html .= " </ul>";
-        $html .= "</div>";
-        $html .= "</div>";
-        return $html;
+        foreach ($limits as $id => $limit)
+        {
+            $options["X$id"] = $limit;
+        }
+
+        return $this->emitSelector('limit', $options);
     }
 
     public function getAdvancedSearchFields()
@@ -453,6 +424,11 @@ class SearchResultsView
 
         $this->titles = isset($_GET['titles']) ? intval($_GET['titles'] == 1) : self::DEFAULT_SEARCH_TITLES ;
         return $this->titles;
+    }
+
+    public function getSelectedLimitId()
+    {
+        return $this->getResultsLimit();
     }
 
     public function getShowCommingledResults()

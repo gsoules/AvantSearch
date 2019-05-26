@@ -141,6 +141,33 @@ class SearchResultsTableView extends SearchResultsView
         return trim($classes);
     }
 
+    public function emitSelectorForLayout($layoutsData)
+    {
+        $options = array();
+
+        foreach ($layoutsData as $id => $layout)
+        {
+            if (!SearchConfig::userHasAccessToLayout($layout))
+            {
+                // Omit admin layouts for non-admin users.
+                continue;
+            }
+
+            $options["L$id"] = $layout['name'];
+        }
+
+        return $this->emitSelector('layout', $options);
+    }
+
+    public function emitSelectorForSort()
+    {
+        $options = array();
+
+        
+
+        return $this->emitSelector('sort', $options);
+    }
+
     protected function filterDetailLayoutData()
     {
         foreach ($this->detailLayoutData as $key => $row)
@@ -164,24 +191,6 @@ class SearchResultsTableView extends SearchResultsView
     public function getLayoutsData()
     {
         return $this->layoutsData;
-    }
-
-    public function getLayoutId()
-    {
-        if (isset($this->layoutId))
-            return $this->layoutId;
-
-        $firstLayoutId = $this->getLayoutIdFirst();
-        $lastLayoutId =$this->getLayoutIdLast();
-
-        $id = isset($_GET['layout']) ? intval($_GET['layout']) : $firstLayoutId;
-
-        // Make sure that the layout Id is valid.
-        if ($id < $firstLayoutId || $id > $lastLayoutId)
-            $id = $firstLayoutId;
-
-        $this->layoutId = $id;
-        return $this->layoutId;
     }
 
     public function getLayoutIdFirst()
@@ -237,6 +246,30 @@ class SearchResultsTableView extends SearchResultsView
         {
             return $detailLayoutData;
         }
+    }
+
+    public function getSelectedLayoutId()
+    {
+        if (isset($this->layoutId))
+            return $this->layoutId;
+
+        $firstLayoutId = $this->getLayoutIdFirst();
+        $lastLayoutId =$this->getLayoutIdLast();
+
+        $id = isset($_GET['layout']) ? intval($_GET['layout']) : $firstLayoutId;
+
+        // Make sure that the layout Id is valid.
+        if ($id < $firstLayoutId || $id > $lastLayoutId)
+            $id = $firstLayoutId;
+
+        $this->layoutId = $id;
+        return $this->layoutId;
+    }
+
+    public function getSelectedSortId()
+    {
+        $sortId = 1;
+        return $sortId;
     }
 
     public function getShowRelationships()

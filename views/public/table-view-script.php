@@ -1,13 +1,17 @@
 <script>
+    var LAYOUT = 'layout';
+    var LIMIT = 'limit';
+    var SORT = 'sort';
+
     var selectedOptionId = [];
-    selectedOptionId['layout'] = parseInt(<?php echo $layoutId; ?>);
-    selectedOptionId['limit'] = parseInt(<?php echo $limit; ?>);
-    selectedOptionId['sort'] = 1;//parseInt(<?php echo $limit; ?>);
+    selectedOptionId[LAYOUT] = parseInt(<?php echo $layoutId; ?>);
+    selectedOptionId[LIMIT] = parseInt(<?php echo $limitId; ?>);
+    selectedOptionId[SORT] = parseInt(<?php echo $sortId; ?>);
 
     var selectorTitle = [];
-    selectorTitle['layout'] = '%s Layout';
-    selectorTitle['limit'] = '%s Per Page';
-    selectorTitle['sort'] = 'Sort By %s';
+    selectorTitle[LAYOUT] = '%s Layout';
+    selectorTitle[LIMIT] = '%s Per Page';
+    selectorTitle[SORT] = 'Sort By %s';
 
     function deselectSelectorOptions(kind)
     {
@@ -57,7 +61,7 @@
         var buttonTitle = selectorTitle[kind].replace('%s',selectedOption.text());
         jQuery('#search-' + kind + '-button').text(buttonTitle);
 
-        if (kind === 'layout')
+        if (kind === LAYOUT)
         {
             // Show the columns for the selected layout.
             showColumnsForSelectedLayout(kind, prefix, optionId);
@@ -76,7 +80,7 @@
         var newOptionArg = '&' + kind + '=' + optionId;
         var newUrl = urlWithoutOptionArg + newOptionArg;
 
-        if (kind === 'limit')
+        if (kind === LIMIT)
         {
             // The user wants to see more or fewer results. Reload the page.
             window.location.href = newUrl;
@@ -127,15 +131,15 @@
     }
 
     jQuery(document).ready(function() {
-        console.log('current layout Id = ' + selectedOptionId['layout']);
+        console.log('current layout Id = ' + selectedOptionId[LAYOUT]);
 
-        setSelectedOption('layout', 'L', selectedOptionId['layout']);
-        setSelectedOption('limit', 'X', selectedOptionId['limit']);
-        setSelectedOption('sort', 'S', selectedOptionId['sort']);
+        setSelectedOption(LAYOUT, 'L', selectedOptionId[LAYOUT]);
+        setSelectedOption(LIMIT, 'X', selectedOptionId[LIMIT]);
+        setSelectedOption(SORT, 'S', selectedOptionId[SORT]);
 
-        initSelector('layout', 'L');
-        initSelector('limit', 'X');
-        initSelector('sort', 'S');
+        initSelector(LAYOUT, 'L');
+        initSelector(LIMIT, 'X');
+        initSelector(SORT, 'S');
 
         jQuery('.search-show-more').click(function (e)
         {

@@ -10,7 +10,7 @@ $searchResultsTable = new SearchResultsTableView();
 $searchResultsIndex = new SearchResultsIndexView();
 $searchResultsTree = new SearchResultsTreeView();
 
-$selectedLayoutId = $searchResultsTable->getLayoutId();
+$selectedLayoutId = $searchResultsTable->getSelectedLayoutId();
 $resultsPerPage = $searchResultsTable->getResultsLimit();
 $keywords = $searchResults->getKeywords();
 $searchTitlesOnly = $searchResultsTable->getSearchTitles();

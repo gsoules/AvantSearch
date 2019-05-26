@@ -6,11 +6,12 @@ $totalResults = $searchResults->getTotalResults();
 $showRelationships = $searchResults->getShowRelationships();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 
-$layoutId = $searchResults->getLayoutId();
+// Values passed to table-view-script.php
+$layoutId = $searchResults->getSelectedLayoutId();
+$limitId = $searchResults->getSelectedLimitId();
+$sortId = $searchResults->getSelectedSortId();
+
 $layoutsData = $searchResults->getLayoutsData();
-
-$limit = $searchResults->getResultsLimit();
-
 $detailLayoutData = $searchResults->getDetailLayoutData();
 $column1 =  isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
 $column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
@@ -25,8 +26,8 @@ $resultControlsHtml = '';
 if ($totalResults)
 {
     $resultControlsHtml = $searchResults->emitSelectorForLayout($layoutsData);
-    $resultControlsHtml .= $searchResults->emitSelectorForResultsPerPage();
-    $resultControlsHtml .= $searchResults->emitSelectorForSortBy();
+    $resultControlsHtml .= $searchResults->emitSelectorForLimit();
+    $resultControlsHtml .= $searchResults->emitSelectorForSort();
 }
 ?>
 
@@ -87,7 +88,7 @@ if ($totalResults)
         </section>
     <?php endif; ?>
     <?php
-        echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId, 'limit' => $limit));
+        echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId, 'limitId' => $limitId, 'sortId' => $sortId));
         echo pagination_links();
         echo '</div>';
     ?>
