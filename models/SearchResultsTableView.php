@@ -161,7 +161,6 @@ class SearchResultsTableView extends SearchResultsView
 
     public function emitSelectorForSort()
     {
-
         $useElasticsearch = $this->getUseElasticsearch();
         $sortFieldName = $this->getSortFieldName();
         $sortedByRelevance = $useElasticsearch && empty($sortFieldName);
