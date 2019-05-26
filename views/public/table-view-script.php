@@ -9,9 +9,9 @@
     selectedOptionId[SORT] = parseInt(<?php echo $sortId; ?>);
 
     var selectorTitle = [];
-    selectorTitle[LAYOUT] = '%s Layout';
-    selectorTitle[LIMIT] = '%s Per Page';
-    selectorTitle[SORT] = 'Sort By %s';
+    selectorTitle[LAYOUT] = '%s layout';
+    selectorTitle[LIMIT] = '%s per page';
+    selectorTitle[SORT] = 'Sort by %s';
 
     function deselectSelectorOptions(kind)
     {
@@ -108,17 +108,18 @@
 
     function showColumnsForSelectedLayout(kind, prefix, optionId)
     {
-        // Show the result columns for the selected layout and hide all other columns.
-        var selectedOptionId = prefix + optionId;
+        // Hide all the columns for each layout option.
         jQuery('.search-' + kind + '-option').each(function()
         {
             var optionLayoutId = jQuery(this).attr('id');
             var columns = jQuery('.' + optionLayoutId);
-            if (selectedOptionId === optionLayoutId)
-                columns.show();
-            else
-                columns.hide();
+            columns.hide();
         });
+
+        // Show only the columns for the selected layout.
+        var selectedOptionId = prefix + optionId;
+        columns = jQuery('.' + selectedOptionId);
+        columns.show();
     }
 
     function updateUrl(element, propertyName, oldOptionArgPattern, newOptionArg)
