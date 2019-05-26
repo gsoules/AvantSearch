@@ -161,9 +161,19 @@ class SearchResultsTableView extends SearchResultsView
 
     public function emitSelectorForSort()
     {
-        $options = array();
 
-        
+        $useElasticsearch = $this->getUseElasticsearch();
+        $sortFieldName = $this->getSortFieldName();
+        $sortedByRelevance = $useElasticsearch && empty($sortFieldName);
+        $sortedBy = $sortedByRelevance ? __('xxxzzz') : $sortFieldName;
+
+        $options = array();
+        $options["S0"] = 'relevance';
+        $columnsData = $this->getColumnsData();
+        foreach ($columnsData as $elementId => $columnData)
+        {
+            $options["S$elementId"] = $columnData['name'];
+        }
 
         return $this->emitSelector('sort', $options);
     }

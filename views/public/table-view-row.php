@@ -2,7 +2,7 @@
 /* @var $searchResults SearchResultsTableView */
 
 $data = new SearchResultsTableViewRowData($item, $searchResults);
-$columnData = $searchResults->getColumnsData();
+$columnsData = $searchResults->getColumnsData();
 $layoutData = $searchResults->getLayoutsData();
 
 $description = isset($data->elementValue['Description']['detail']) ? $data->elementValue['Description']['detail'] : '';
@@ -13,7 +13,7 @@ $hasPdfHits = !empty($pdfHits);
 echo '<tr>';
 
 // Emit the columns for this row's data.
-foreach ($columnData as $elementId => $column)
+foreach ($columnsData as $elementId => $column)
 {
     $columnName = $column['name'];
 
