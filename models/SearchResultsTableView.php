@@ -82,7 +82,7 @@ class SearchResultsTableView extends SearchResultsView
             {
                 if ($elementName == '<tags>' || $elementName == '<score>')
                 {
-                    // Tags abd Score are special cased elsewhere as pseudo elements.
+                    // Tags and Score are special cased elsewhere as pseudo elements.
                     continue;
                 }
                 if (!isset($this->columnsData[$elementId]))
