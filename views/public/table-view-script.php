@@ -23,6 +23,19 @@
         });
     }
 
+    function getQueryStringArg(arg)
+    {
+        var pairs = document.location.search.substring(1).split("&");
+        for (i = 0; i < pairs.length; i++)
+        {
+            var pair = pairs[i];
+            var eq = pair.indexOf('=');
+            if (pair.substring(0, eq).toLowerCase() === arg.toLowerCase())
+                return pair.substring(eq + 1);
+        }
+        return "";
+    }
+
     function initSelector(kind, prefix)
     {
         jQuery('#search-' + kind + '-button').click(function (e)
@@ -44,13 +57,15 @@
         });
     }
 
-    function setSelectedOption(kind, prefix, optionId)
+    function setSelectedOption(kind, prefix, newOptionId)
     {
-        console.log('setSelectedOption: ' + kind + ' : ' + prefix + ' : ' + optionId);
+        var oldOptionId = selectedOptionId[kind];
+
+        console.log('setSelectedOption: ' + kind + ' : ' + prefix + ' : ' + newOptionId + ' : ' + oldOptionId);
 
         // Highlight the selected option in the panel of options.
         deselectSelectorOptions(kind);
-        var selectedOption = jQuery('#' + prefix + optionId);
+        var selectedOption = jQuery('#' + prefix + newOptionId);
         selectedOption.addClass('selector-selected');
         selectedOption.removeClass('selector-normal');
 
@@ -58,31 +73,66 @@
         jQuery('#search-' + kind + '-options').slideUp('fast');
 
         // Show the selected option in the button title.
-        var buttonTitle = selectorTitle[kind].replace('%s',selectedOption.text());
+        var buttonTitle = selectorTitle[kind].replace('%s', selectedOption.text());
         jQuery('#search-' + kind + '-button').text(buttonTitle);
 
         if (kind === LAYOUT)
         {
             // Show the columns for the selected layout.
-            showColumnsForSelectedLayout(kind, prefix, optionId);
+            showColumnsForSelectedLayout(kind, prefix, newOptionId);
         }
 
-        if (optionId === selectedOptionId[kind])
+        if (newOptionId === oldOptionId)
         {
             // The user clicked on the same option as was already selected.
             return;
         }
 
-        // Construct an updated query string to reflect the newly selected option.
-        var oldOptionArgPattern = new RegExp('&' + kind + '=' + selectedOptionId[kind]);
-        var oldUrl = document.location.href;
-        var urlWithoutOptionArg = oldUrl.replace(oldOptionArgPattern, '');
-        var newOptionArg = '&' + kind + '=' + optionId;
-        var newUrl = urlWithoutOptionArg + newOptionArg;
-
-        if (kind === LIMIT)
+        var oldOptionValue;
+        var newOptionValue;
+        if (kind === SORT)
         {
-            // The user wants to see more or fewer results. Reload the page.
+            console.log('SORT 1: ' + oldOptionValue + ' : ' + newOptionValue);
+            oldOptionValue = jQuery('#' + prefix + oldOptionId).text();
+            newOptionValue = selectedOption.text();
+            oldOptionValue = encodeURIComponent(oldOptionValue);
+            newOptionValue = encodeURIComponent(newOptionValue);
+            console.log('SORT 2: ' + oldOptionValue + ' : ' + newOptionValue)
+        }
+        else
+        {
+            oldOptionValue = oldOptionId;
+            newOptionValue = newOptionId;
+        }
+
+        // Construct an updated query string to reflect the newly selected option.
+        var oldOptionArgPattern = new RegExp('&' + kind + '=' + oldOptionValue);
+        var oldUrl = document.location.href;
+        console.log('URL Before: ' + oldUrl);
+        var urlWithoutOptionArg = oldUrl.replace(oldOptionArgPattern, '');
+        console.log('URL Clean: ' + urlWithoutOptionArg);
+        var newOptionArg = '&' + kind + '=' + newOptionValue;
+        var newUrl = urlWithoutOptionArg + newOptionArg;
+        console.log('URL After: ' + newUrl);
+
+        if (kind === LIMIT || kind === SORT)
+        {
+            if (kind === SORT && newOptionId === 0)
+            {
+                // To sort by relevance, remove the sort and order args.
+                oldSortPattern = new RegExp('&sort=' + newOptionValue);
+                newUrl = newUrl.replace(oldSortPattern, '');
+
+                var orderValue = getQueryStringArg('order');
+                if (orderValue.length)
+                {
+                    oldOrderPattern = new RegExp('&order=' + orderValue);
+                    newUrl = newUrl.replace(oldOrderPattern, '');
+                }
+                console.log('relevance ' + newUrl);
+            }
+
+            // Reload the page.
             window.location.href = newUrl;
             return;
         }
@@ -103,7 +153,7 @@
         history.replaceState(null, null, newUrl);
 
         // Remember the new option.
-        selectedOptionId[kind] = optionId;
+        selectedOptionId[kind] = newOptionId;
     }
 
     function showColumnsForSelectedLayout(kind, prefix, optionId)
