@@ -218,6 +218,19 @@ class SearchResultsView
         return $this->emitSelector('limit', $options);
     }
 
+    public function emitSelectorForView()
+    {
+        $options = array();
+        $views = $this->getViewOptions();
+
+        foreach ($views as $id => $view)
+        {
+            $options["V$id"] = $view;
+        }
+
+        return $this->emitSelector('view', $options);
+    }
+
     public function getAdvancedSearchFields()
     {
         // Get the names of the private elements that the admin configured for AvantCommon.
@@ -443,6 +456,11 @@ class SearchResultsView
     public function getSelectedLimitId()
     {
         return $this->getResultsLimit();
+    }
+
+    public function getSelectedViewId()
+    {
+        return $this->getViewId();
     }
 
     public function getShowCommingledResults()

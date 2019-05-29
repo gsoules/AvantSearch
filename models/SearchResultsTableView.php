@@ -306,12 +306,18 @@ class SearchResultsTableView extends SearchResultsView
 
     public function initSortOptions()
     {
-        $this->sortOptions[] = __('relevance');
+        // Reserve the top slot in the array.
+        $this->sortOptions[] = __('AAA');
+
         $columnsData = $this->getColumnsData();
 
         foreach ($columnsData as $columnData)
         {
             $this->sortOptions[] = $columnData['name'];
         }
+
+        // Sort the values alphabetically except show 'relevance' at the top.
+        sort($this->sortOptions);
+        $this->sortOptions[0] = __('relevance');
     }
 }

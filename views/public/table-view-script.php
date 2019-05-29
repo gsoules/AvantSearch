@@ -3,18 +3,21 @@
     var LAYOUT = 'layout';
     var LIMIT = 'limit';
     var SORT = 'sort';
+    var VIEW = 'view';
 
     var selectedOptionId = [];
     selectedOptionId[FILES] = parseInt(<?php echo $imageFilterId; ?>);
     selectedOptionId[LAYOUT] = parseInt(<?php echo $layoutId; ?>);
     selectedOptionId[LIMIT] = parseInt(<?php echo $limitId; ?>);
     selectedOptionId[SORT] = parseInt(<?php echo $sortId; ?>);
+    selectedOptionId[VIEW] = parseInt(<?php echo $viewId; ?>);
 
     var selectorTitle = [];
     selectorTitle[FILES] = '%s';
-    selectorTitle[LAYOUT] = '%s layout';
+    selectorTitle[LAYOUT] = '%s Layout';
     selectorTitle[LIMIT] = '%s per page';
     selectorTitle[SORT] = 'Sort by %s';
+    selectorTitle[VIEW] = '%s';
 
     function deselectSelectorOptions(kind)
     {
@@ -118,7 +121,7 @@
         var newUrl = urlWithoutOptionArg + newOptionArg;
         console.log('URL After: ' + newUrl);
 
-        if (kind === FILES || kind === LIMIT || kind === SORT)
+        if (kind === FILES || kind === LIMIT || kind === SORT || kind === VIEW)
         {
             if (kind === SORT && newOptionId === 0)
             {
@@ -190,11 +193,13 @@
         setSelectedOption(LAYOUT, 'L', selectedOptionId[LAYOUT]);
         setSelectedOption(LIMIT, 'X', selectedOptionId[LIMIT]);
         setSelectedOption(SORT, 'S', selectedOptionId[SORT]);
+        setSelectedOption(VIEW, 'V', selectedOptionId[VIEW]);
 
         initSelector(FILES, 'F');
         initSelector(LAYOUT, 'L');
         initSelector(LIMIT, 'X');
         initSelector(SORT, 'S');
+        initSelector(VIEW, 'V');
 
         jQuery('.search-show-more').click(function (e)
         {

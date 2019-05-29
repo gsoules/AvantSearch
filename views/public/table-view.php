@@ -11,6 +11,7 @@ $imageFilterId = $searchResults->getSelectedImageFilterId();
 $layoutId = $searchResults->getSelectedLayoutId();
 $limitId = $searchResults->getSelectedLimitId();
 $sortId = $searchResults->getSelectedSortId();
+$viewId = $searchResults->getSelectedViewId();
 
 $layoutsData = $searchResults->getLayoutsData();
 $detailLayoutData = $searchResults->getDetailLayoutData();
@@ -26,6 +27,8 @@ echo "<div class='search-results-title'>$pageTitle</div>";
 $resultControlsHtml = '';
 if ($totalResults)
 {
+    // The order here is the left to right order of these controls on the Search Results page.
+    $resultControlsHtml .= $searchResults->emitSelectorForView();
     $resultControlsHtml .= $searchResults->emitSelectorForLayout($layoutsData);
     $resultControlsHtml .= $searchResults->emitSelectorForLimit();
     $resultControlsHtml .= $searchResults->emitSelectorForSort();
@@ -90,7 +93,7 @@ if ($totalResults)
         </section>
     <?php endif; ?>
     <?php
-        echo $this->partial('/table-view-script.php', array('imageFilterId' => $imageFilterId, 'layoutId' => $layoutId, 'limitId' => $limitId, 'sortId' => $sortId));
+        echo $this->partial('/table-view-script.php', array('imageFilterId' => $imageFilterId, 'layoutId' => $layoutId, 'limitId' => $limitId, 'sortId' => $sortId, 'viewId' => $viewId));
         echo pagination_links();
         echo '</div>';
     ?>
