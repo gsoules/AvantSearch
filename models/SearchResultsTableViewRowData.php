@@ -453,7 +453,11 @@ class SearchResultsTableViewRowData
                 $tags = '';
             }
 
-            $score = $this->userIsAdmin() ? $item['_score'] : '';
+            // Only show score to logged in user.
+            //$score = $this->userIsAdmin() ? $item['_score'] : '';
+
+            $score = $item['_score'];
+            $score = number_format($score, 2);
             $pdfHits = $this->generatePdfHits($item);
         }
         else
