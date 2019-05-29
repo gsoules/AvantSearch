@@ -27,29 +27,6 @@ class SearchResultsFilters
         $this->filterCount++;
     }
 
-    protected function emitAlternateSortLink($sortedByRelevance)
-    {
-        if ($sortedByRelevance)
-        {
-            // Don't offer an alternate when sorted by relevance since the user can click a column header for sorting.
-            return '';
-        }
-
-        // Remove column sorting.
-        $params = $_GET;
-        unset($params['sort']);
-        unset($params['order']);
-
-        // Create a new URL query string with the removed sort args.
-        $url = html_escape(url(array(), null, $params));
-
-        // Create the link a user can click to switch to the alternate sort.
-        $alternateSortLinkText =  __('Relevance');
-        $alternateSort = ' &mdash; ' . __('Sort by ') . "<a href='$url'>$alternateSortLinkText</a>";
-
-        return $alternateSort;
-    }
-
     protected function emitElasticsearchFilters()
     {
         $query = $this->searchResults->getQuery();
@@ -164,33 +141,7 @@ class SearchResultsFilters
                 $displayArray[__('\'Date equal to or before')] = $dateEnd;
         }
 
-        $layoutDetails = '';
-
-        if ($this->searchResults->getTotalResults() && $this->searchResults->getViewId() == SearchResultsViewFactory::TABLE_VIEW_ID)
-        {
-            $useElasticsearch = $this->searchResults->getUseElasticsearch();
-            $sortFieldName = $this->searchResults->getSortFieldName();
-            $sortedByRelevance = $useElasticsearch && empty($sortFieldName);
-            $sortedBy = $sortedByRelevance ? __('Relevance') : $sortFieldName;
-            $alternateSort = '';
-            if ($useElasticsearch)
-            {
-                $alternateSort = $this->emitAlternateSortLink($sortedByRelevance);
-            }
-            $layoutDetails .= __('Sorted by %s%s', $sortedBy, $alternateSort);
-        }
-
-        if ($this->searchResults->getSearchFiles() && $this->searchResults->getTotalResults() > 0)
-        {
-            $layoutDetails .= ' ' .  ' <span class="search-files-only">' . __('(only showing items with images or files)') . '</span>';
-        }
-
-        if (!empty($layoutDetails))
-        {
-            $layoutDetails = "<div class='search-filter-bar-layout-details'>$layoutDetails</div>";
-        }
-
-        $resultControlsSection = $resultControlsHtml . $layoutDetails;
+        $resultControlsSection = $resultControlsHtml;
 
         foreach ($displayArray as $name => $query)
         {
@@ -222,10 +173,6 @@ class SearchResultsFilters
         }
 
         $class = 'search-filter-bar-layout';
-        if (empty($layoutDetails))
-        {
-            $class .= ' no-details';
-        }
         $html = "<div id='search-filter-bar'>";
         $html .= $this->filterCount> 0 ? "<div class='search-filter-bar-message'>$this->filterMessage</div>" : '';
         $html .= "<div class='$class'>{$resultControlsSection}{$paginationNav}</div>";

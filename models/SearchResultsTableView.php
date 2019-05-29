@@ -5,6 +5,7 @@ class SearchResultsTableView extends SearchResultsView
     const RELATIONSHIPS_LAYOUT = 6;
 
     protected $detailLayoutData;
+    protected $imageFilterId;
     protected $layoutId;
     protected $layoutsData;
     protected $showRelationships;
@@ -251,6 +252,21 @@ class SearchResultsTableView extends SearchResultsView
         {
             return $detailLayoutData;
         }
+    }
+
+    public function getSelectedImageFilterId()
+    {
+        if (isset($this->imageFilterId))
+            return $this->imageFilterId;
+
+        $id = isset($_GET['files']) ? intval($_GET['files']) : 0;
+
+        // Make sure that the layout Id is valid.
+        if ($id < 0 || $id > 1)
+            $id = 0;
+
+        $this->imageFilterId = $id;
+        return $this->imageFilterId;
     }
 
     public function getSelectedLayoutId()

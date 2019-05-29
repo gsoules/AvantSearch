@@ -160,7 +160,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     {
         $sort = [];
 
-        if (!(isset($params['sort']) && isset($params['order'])))
+        if (!isset($params['sort']))
         {
             return $sort;
         }
@@ -214,15 +214,21 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $page = $this->_request->page ? $this->_request->page : 1;
         $start = ($page - 1) * $this->recordsPerPage;
-        $user = $this->getCurrentUser();
         $sort = $this->getSortParams($params);
+
+        // Determine if only items with a file attachment should be queried.
+        $files = isset($params['files']) && $params['files'] == 1;
+
+        // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
+        $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');
 
         $options = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams([
             'query' => $queryParams,
             'offset' => $start,
             'limit' => $this->recordsPerPage,
             'sort' => $sort,
-            'showNotPublic' => $user && is_allowed('Items', 'showNotPublic')
+            'public' => $public,
+            'files' => $files
             ],
             $this->commingled);
 

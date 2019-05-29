@@ -177,9 +177,10 @@ class AvantSearch
         $queryArgs = $_GET;
         foreach ($queryArgs as $key => $queryArg)
         {
-            if ($key == 'layout' || $key == 'limit')
+            if ($key == 'layout' || $key == 'limit' || $key == 'sort' || $key == 'order' || $key == 'files')
             {
-                $html .= '<input type="hidden" name="' . $key. '" value="' . $queryArg . '">';
+                $input = '<input type="hidden" name="' . $key . '" value="' . $queryArg . '">';
+                $html .= $input;
             }
         }
 

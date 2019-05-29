@@ -7,6 +7,7 @@ $showRelationships = $searchResults->getShowRelationships();
 $pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
 
 // Values passed to table-view-script.php
+$imageFilterId = $searchResults->getSelectedImageFilterId();
 $layoutId = $searchResults->getSelectedLayoutId();
 $limitId = $searchResults->getSelectedLimitId();
 $sortId = $searchResults->getSelectedSortId();
@@ -25,9 +26,10 @@ echo "<div class='search-results-title'>$pageTitle</div>";
 $resultControlsHtml = '';
 if ($totalResults)
 {
-    $resultControlsHtml = $searchResults->emitSelectorForLayout($layoutsData);
+    $resultControlsHtml .= $searchResults->emitSelectorForLayout($layoutsData);
     $resultControlsHtml .= $searchResults->emitSelectorForLimit();
     $resultControlsHtml .= $searchResults->emitSelectorForSort();
+    $resultControlsHtml .= $searchResults->emitSelectorForImageFilter();
 }
 ?>
 
@@ -88,7 +90,7 @@ if ($totalResults)
         </section>
     <?php endif; ?>
     <?php
-        echo $this->partial('/table-view-script.php', array('layoutId' => $layoutId, 'limitId' => $limitId, 'sortId' => $sortId));
+        echo $this->partial('/table-view-script.php', array('imageFilterId' => $imageFilterId, 'layoutId' => $layoutId, 'limitId' => $limitId, 'sortId' => $sortId));
         echo pagination_links();
         echo '</div>';
     ?>

@@ -189,6 +189,22 @@ class SearchResultsView
         return $html;
     }
 
+    public function emitSelectorForImageFilter()
+    {
+        $options = array();
+
+        $filters = array(
+            __('All results'),
+            __('Items with images'));
+
+        foreach ($filters as $id => $filter)
+        {
+            $options["F$id"] = $filter;
+        }
+
+        return $this->emitSelector('files', $options);
+    }
+
     public function emitSelectorForLimit()
     {
         $options = array();

@@ -1,14 +1,17 @@
 <script>
+    var FILES = 'files';
     var LAYOUT = 'layout';
     var LIMIT = 'limit';
     var SORT = 'sort';
 
     var selectedOptionId = [];
+    selectedOptionId[FILES] = parseInt(<?php echo $imageFilterId; ?>);
     selectedOptionId[LAYOUT] = parseInt(<?php echo $layoutId; ?>);
     selectedOptionId[LIMIT] = parseInt(<?php echo $limitId; ?>);
     selectedOptionId[SORT] = parseInt(<?php echo $sortId; ?>);
 
     var selectorTitle = [];
+    selectorTitle[FILES] = '%s';
     selectorTitle[LAYOUT] = '%s layout';
     selectorTitle[LIMIT] = '%s per page';
     selectorTitle[SORT] = 'Sort by %s';
@@ -115,7 +118,7 @@
         var newUrl = urlWithoutOptionArg + newOptionArg;
         console.log('URL After: ' + newUrl);
 
-        if (kind === LIMIT || kind === SORT)
+        if (kind === FILES || kind === LIMIT || kind === SORT)
         {
             if (kind === SORT && newOptionId === 0)
             {
@@ -181,13 +184,14 @@
         jQuery(element).prop(propertyName, newUrl);
     }
 
-    jQuery(document).ready(function() {
-        console.log('current layout Id = ' + selectedOptionId[LAYOUT]);
-
+    jQuery(document).ready(function()
+    {
+        setSelectedOption(FILES, 'F', selectedOptionId[FILES]);
         setSelectedOption(LAYOUT, 'L', selectedOptionId[LAYOUT]);
         setSelectedOption(LIMIT, 'X', selectedOptionId[LIMIT]);
         setSelectedOption(SORT, 'S', selectedOptionId[SORT]);
 
+        initSelector(FILES, 'F');
         initSelector(LAYOUT, 'L');
         initSelector(LIMIT, 'X');
         initSelector(SORT, 'S');
