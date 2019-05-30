@@ -255,7 +255,7 @@ input[type="checkbox"] {
 /* Position Modify Search button */
 .modify-search-button {
 	float: right;
-	margin: 12px 0;
+	margin-bottom: 4px;
 	text-align: center;
 }
 
@@ -309,14 +309,11 @@ input[type="checkbox"] {
 
 .search-results-title {
 	display: inline-block;
+	margin: 4px 0 8px 8px;
 	float: left;
-	margin-bottom: .5em;
-	margin-top:.5em;
-	padding: 0;
-	color: #1a77bd;
-	font-size:26px;
-	font-weight: 400;
-	line-height: 1.2em;
+	color: #777;
+	font-size:18px;
+	font-weight: bold;
 }
 
 .search-results-buttons {
@@ -351,17 +348,20 @@ input[type="checkbox"] {
 
 #search-filter-bar .search-filter-bar-message {
 	font-size:16px;
-	margin-bottom: 12px;
+	margin-bottom: 8px;
+	border-radius: 5px;
+	padding: 8px 4px 4px 8px;
+	border: 1px solid #ccc;
 }
 
-#search-filter-bar .search-filter-bar-message::before {
-	color: #29536b;
-	content: "\f002";
-	font-family: "FontAwesome";
-	font-size: 18px;
-	line-height: 24px;
-	padding: 0 8px 0 0;
-}
+/*#search-filter-bar .search-filter-bar-message::before {*/
+/*	color: #29536b;*/
+/*	content: "\f002";*/
+/*	font-family: "FontAwesome";*/
+/*	font-size: 18px;*/
+/*	line-height: 24px;*/
+/*	padding: 0 8px 0 0;*/
+/*}*/
 
 .search-filter-bar-layout {
 	height: 30px;
