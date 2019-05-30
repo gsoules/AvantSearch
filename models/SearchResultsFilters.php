@@ -5,6 +5,7 @@ class SearchResultsFilters
     protected $filterCount;
     protected $filterMessage;
     protected $searchResults;
+    protected $useElasticsearch;
 
     function __construct($searchResults)
     {
@@ -17,13 +18,7 @@ class SearchResultsFilters
     protected function addFilterMessageCriteria($criteria)
     {
         $criteria = html_escape(trim($criteria));
-        if (!empty($this->filterMessage))
-        {
-            if (strpos($criteria, __('AND'), 0) === false && strpos($criteria, __('OR'), 0) === false)
-                $this->filterMessage .= ';';
-            $this->filterMessage .= ' ';
-        }
-        $this->filterMessage .= "$criteria";
+        $this->filterMessage .= "<span class='search-filter'>$criteria</span>";
         $this->filterCount++;
     }
 
@@ -38,13 +33,15 @@ class SearchResultsFilters
         {
             foreach ($values as $value)
             {
-                $this->addFilterMessageCriteria("$group = $value");
+                $this->addFilterMessageCriteria("$group > $value");
             }
         }
     }
 
     public function emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected)
     {
+        $this->useElasticsearch = $this->searchResults->getUseElasticsearch();
+
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $requestArray = $request->getParams();
 
@@ -73,14 +70,15 @@ class SearchResultsFilters
                 }
             }
 
-            $conditionText = '';
-            $useElasticsearch = $this->searchResults->getUseElasticsearch();
-            if (!$useElasticsearch)
+            if ($this->useElasticsearch)
+            {
+                $displayArray[__('Keywords')] = "\"$keywords\"";
+            }
+            else
             {
                 $conditionName = $this->searchResults->getKeywordsConditionName();
-                $conditionText = " ($conditionName)";
+                $displayArray[__('Keywords')] = "$conditionName \"$keywords\"";
             }
-            $displayArray[__('Keywords')] = "\"$keywords\"$conditionText";
         }
 
         if (array_key_exists('advanced', $requestArray))
@@ -143,14 +141,15 @@ class SearchResultsFilters
 
         $resultControlsSection = $resultControlsHtml;
 
+        $this->filterMessage .= __('You searched for: ');
+
         foreach ($displayArray as $name => $query)
         {
             if ($name == __('Keywords') && $this->searchResults->getSearchTitles())
             {
-                $name .= ' ' . __('in') . ' <span class="search-titles-only">' . __('titles only') . '</span>';
+                $query .= ' ' . __(' in titles only');
             }
-
-            $this->addFilterMessageCriteria($name . ': ' . $query);
+            $this->addFilterMessageCriteria($query);
         }
 
         if (!empty($advancedArray))

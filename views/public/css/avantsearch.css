@@ -301,12 +301,6 @@ input[type="checkbox"] {
 	color: #777;
 }
 
-.search-titles-only
-{
-	color: #777777;
-	font-weight: bold;
-}
-
 .search-files-only
 {
 	color: #777777;
@@ -338,6 +332,15 @@ input[type="checkbox"] {
 /* The text that describes the current set of filters */
 
 /* Item filters display */
+.search-filter {
+	color: #333;
+	font-size:15px;
+	padding: 4px 8px 4px 8px;
+	margin-right: 6px;
+	background-color: #d1e4f2;
+	border-radius:5px;
+}
+
 #search-filter-bar {
 	clear: both;
 	padding-top: 0;

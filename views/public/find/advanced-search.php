@@ -80,7 +80,6 @@ echo "<div id='avantsearch-container'>";
 
 	<!-- Left Panel -->
 	<div id="avantsearch-primary">
-        <?php if (!$useElasticsearch): ?>
         <div class="search-form-section">
 			<div class="search-field">
 				<div class="avantsearch-label-column">
@@ -113,7 +112,6 @@ echo "<div id='avantsearch-container'>";
 				</div>
 			</div>
 		</div>
-        <?php endif; ?>
 
 		<div  id="search-narrow-by-fields" class="search-form-section">
 			<div>
