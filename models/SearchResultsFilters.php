@@ -5,7 +5,6 @@ class SearchResultsFilters
     protected $filterCount;
     protected $filterMessage;
     protected $searchResults;
-    protected $useElasticsearch;
 
     function __construct($searchResults)
     {
@@ -17,7 +16,7 @@ class SearchResultsFilters
 
     protected function addFilterMessageCriteria($criteria)
     {
-        $criteria = html_escape(trim($criteria));
+        //$criteria = html_escape(trim($criteria));
         $this->filterMessage .= "<span class='search-filter'>$criteria</span>";
         $this->filterCount++;
     }
@@ -31,7 +30,7 @@ class SearchResultsFilters
 
         foreach ($filterBarFacets as $group => $values)
         {
-            foreach ($values as $value)
+            foreach ($values['reset'] as $value)
             {
                 $this->addFilterMessageCriteria("$group > $value");
             }
@@ -40,7 +39,7 @@ class SearchResultsFilters
 
     public function emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected)
     {
-        $this->useElasticsearch = $this->searchResults->getUseElasticsearch();
+        $useElasticsearch = $this->searchResults->getUseElasticsearch();
 
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $requestArray = $request->getParams();
@@ -70,15 +69,8 @@ class SearchResultsFilters
                 }
             }
 
-            if ($this->useElasticsearch)
-            {
-                $displayArray[__('Keywords')] = "\"$keywords\"";
-            }
-            else
-            {
-                $conditionName = $this->searchResults->getKeywordsConditionName();
-                $displayArray[__('Keywords')] = "$conditionName \"$keywords\"";
-            }
+            $conditionName = $useElasticsearch ? '' : $this->searchResults->getKeywordsConditionName() . ' ';
+            $displayArray[__('Keywords')] = "$conditionName\"$keywords\"";
         }
 
         if (array_key_exists('advanced', $requestArray))
@@ -160,7 +152,7 @@ class SearchResultsFilters
             }
         }
 
-        if ($this->searchResults->getUseElasticsearch())
+        if ($useElasticsearch)
         {
             $this->emitElasticsearchFilters();
         }
