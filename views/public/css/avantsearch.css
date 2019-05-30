@@ -337,6 +337,8 @@ input[type="checkbox"] {
 	font-size:15px;
 	padding: 4px 8px 4px 8px;
 	margin-right: 6px;
+	margin-bottom: 4px;
+	display: inline-block;
 	background-color: #d1e4f2;
 	border-radius:5px;
 }
@@ -365,11 +367,19 @@ input[type="checkbox"] {
 	height: 30px;
 }
 
-.search-filter-bar-layout-details {
-	display: inline-block;
-	height: 100%;
-	margin-left:12px;
-	padding-top: 5px;
+a.search-reset-link {
+	font-size: 12px;
+	font-weight: bold;
+	padding-left: 6px;
+}
+
+a.search-reset-link:link,
+a.search-reset-link:visited {
+	color: #999;
+}
+
+a.search-reset-link:hover {
+	color: red;
 }
 
 

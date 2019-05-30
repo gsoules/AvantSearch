@@ -32,7 +32,8 @@ class SearchResultsFilters
         {
             foreach ($values['reset'] as $value)
             {
-                $this->addFilterMessageCriteria("$group > $value");
+                $separator = strpos($value, '<a') === 0 ? '' : ' > ';
+                $this->addFilterMessageCriteria("$group$separator$value");
             }
         }
     }
