@@ -37,15 +37,6 @@ if ($totalResults)
 }
 ?>
 
-<div class="search-results-buttons">
-    <?php
-    if (!$useElasticsearch)
-    {
-        echo $searchResults->emitModifySearchButton();
-    }
-    ?>
-</div>
-
 <?php echo $searchResults->emitSearchFilters($resultControlsHtml, ''); ?>
 
 <?php if ($totalResults > 0): ?>

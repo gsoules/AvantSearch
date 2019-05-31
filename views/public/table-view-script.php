@@ -150,10 +150,10 @@
             updateUrl(this, 'href', oldOptionArgPattern, newOptionArg);
         });
 
-        // Update the Modify Search button's action to use the new option.
-        var modifyButton = jQuery(".modify-search-button");
-        if (modifyButton.length)
-            updateUrl(modifyButton, 'action', oldOptionArgPattern, newOptionArg);
+        // Update the simple search form's hidden <input> for the layout Id.
+        var searchFormLayoutInput = jQuery("#layout-id");
+        if (searchFormLayoutInput.length)
+            jQuery(searchFormLayoutInput).prop("value", newOptionId);
 
         // Update the URL in the browser's address bar.
         history.replaceState(null, null, newUrl);

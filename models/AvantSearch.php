@@ -159,35 +159,28 @@ class AvantSearch
     public static function getSearchFormHtml()
     {
         $useElasticsearch = self::useElasticsearch();
-        $linkText = $useElasticsearch ? __('Advanced Search') : __('Advanced Search');
+        $linkText = __('Advanced Search');
         $placeholderText = __('Enter search terms');
-        $url = url('find');
-
-        // Initialize the search box with the last query submitted.
-        $query = isset($_GET['query']) ? $_GET['query'] : '';
-        $query = htmlspecialchars($query, ENT_QUOTES);
+        $query = isset($_GET['query']) ? htmlspecialchars($_GET['query'], ENT_QUOTES) : '';
+        $layoutId = isset($_GET['layout']) ? $_GET['layout'] : 1;
+        $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
+        $findUrl = url('/find') . $queryString;
+        $advancedSearchUrl = url('/find/advanced') . $queryString;
 
         // Construct the HTML that will replace the native Omeka search form with the one for AvantSearch.
-        $html = '<div id="search-container" role="search">';
-        $html .= '<form id="search-form" name="search-form" action="' . $url . '" method="get">';
+        // Initialize the search box with the text of the last query submitted.
+        // The search-clear <span> overlays an X in the far right of the search box to let you clear the string.
+        $html = '<div id="search-container">';
+        $html .= '<form id="search-form" name="search-form" action="' . $findUrl . '" method="get" class="search-form">';
         $html .= '<span class="search-clear">';
         $html .= '<input id="query" type="text" name="query" value="' . $query . '" title="Search" autofocus placeholder="' . $placeholderText . '">';
-
-        // Add query args that control the results view and layout.
-        $queryArgs = $_GET;
-        foreach ($queryArgs as $key => $queryArg)
-        {
-            if ($key == 'view' || $key == 'layout' || $key == 'limit' || $key == 'sort' || $key == 'order' || $key == 'files')
-            {
-                $input = '<input type="hidden" name="' . $key . '" value="' . $queryArg . '">';
-                $html .= $input;
-            }
-        }
-
+        $html .= '<input id="layout-id" type="hidden" name="layout" value="' . $layoutId . '">';
         $html .= '<span id="search-clear-icon">&#10006;</span></span>';
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button>';
         $html .= '<div>';
-        $html .= '<a href="' . WEB_ROOT . '/find/advanced">' . $linkText . '</a>';
+
+        // Emit the Advanced Search link.
+        $html .= '<a href="' . $advancedSearchUrl . '" class="search-link">' . $linkText . '</a>';
 
         if ($useElasticsearch)
         {
