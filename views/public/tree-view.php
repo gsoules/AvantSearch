@@ -63,7 +63,6 @@ echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";
 echo "<div class='search-results-title'>$pageTitle</div>";
 
-echo $searchResults->emitModifySearchButton();
 echo $searchResults->emitSearchFilters(__('Tree View by %s', $treeFieldName), $totalResults ? pagination_links() : '', false);
 
 if ($totalResults)

@@ -152,19 +152,6 @@ class SearchResultsView
         return url("find?$queryString");
     }
 
-    public function emitModifySearchButton()
-    {
-        if (!isset($this->subjectSearch))
-            $this->subjectSearch = isset($_GET['subjects']);
-
-        $text = __('Modify Search');
-        $uri = url('find/' . ($this->subjectSearch ? 'subject' : 'advanced'));
-        $action = $uri . (!empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : '');
-        $form = "<form id='modify-form' name='modify-form' action='$action' method='post' class='modify-search-button'>";
-        $form .= "<button id='submit_modify' 'type='submit' value='Modify'>$text</button></form>";
-        return $form;
-    }
-
     public function emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected = true)
     {
         return $this->searchFilters->emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected);

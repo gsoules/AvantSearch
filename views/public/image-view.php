@@ -24,12 +24,6 @@ echo "<div class='search-results-container'>";
 echo "<div class='search-results-title'>$pageTitle</div>";
 ?>
 
-<div class="search-results-buttons">
-<?php
-	echo $searchResults->emitModifySearchButton();
-?>
-</div>
-
 <?php echo $searchResults->emitSearchFilters($resultControlsHtml, $totalResults ? pagination_links() : ''); ?>
 
 <?php if ($totalResults): ?>
