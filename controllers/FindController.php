@@ -61,7 +61,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             else
             {
                 $this->performQueryUsingSql($params, $currentPage);
-
             }
 
         }
@@ -78,6 +77,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
         }
         catch (\Elasticsearch\Common\Exceptions\BadRequest400Exception $e)
+        {
+            $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
+        }
+        catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e)
         {
             $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
         }
@@ -198,6 +201,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     protected function performQueryUsingElasticsearch($params, $searchResults, $attempt = 1)
     {
+        /* @var $searchResults SearchResultsView */
+
         $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
         $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
 
@@ -240,6 +245,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $results = null;
         $this->totalRecords = 0;
         $this->records = array();
+        $searchResults->setQuery($queryParams);
+        $searchResults->setFacets(array());
 
         $avantElasticsearchClient = new AvantElasticsearchClient();
 
@@ -277,13 +284,12 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             {
                 $this->totalRecords = $results["hits"]["total"];
                 $this->records = $results['hits']['hits'];
-                $searchResults->setQuery($queryParams);
                 $searchResults->setFacets($results['aggregations']);
             }
         }
         else
         {
-            $searchResults->setError(__('Unable to communicate with the Elasticsearch server'));
+            $searchResults->setError(__('Unable to communicate with the ES server'));
         }
     }
 

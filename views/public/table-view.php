@@ -94,8 +94,8 @@ if ($totalResults)
         <p>
             <?php
             $error = $searchResults->getError();
-            $message = empty($error) ? __('Your search returned no results.') : $error;
-            echo $message;
+            if (!empty($error))
+                echo $error;
             ?>
         </p>
     </div>

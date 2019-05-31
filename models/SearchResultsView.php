@@ -433,15 +433,25 @@ class SearchResultsView
         $pageNumber = $pagination['page'];
         $perPage = $pagination['per_page'];
 
-        if ($count == 1)
+        if ($count == 0)
+        {
+            $message = __('No items found. Check the spelling of your keywords or try using fewer keywords.');
+        }
+        else if ($count == 1)
+        {
             return __('1 item found');
+        }
+        else
+        {
+            $last = $pageNumber * $perPage;
+            $first = $last - $perPage + 1;
+            if ($last > $count)
+                $last = $count;
 
-        $last = $pageNumber * $perPage;
-        $first = $last - $perPage + 1;
-        if ($last > $count)
-            $last = $count;
+            $message = "$first - $last of $count " . __('results');
+        }
 
-        return "$first - $last of $count " . __('results');
+        return $message;
     }
 
     public function getSearchTitles()
