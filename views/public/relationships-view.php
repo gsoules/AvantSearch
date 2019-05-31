@@ -3,7 +3,7 @@
 
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
-$pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
+$pageTitle = SearchResultsView::getSearchResultsMessage();
 
 $titleElementName = ItemMetadata::getTitleElementName();
 $columnsData = $searchResults->getColumnsData();

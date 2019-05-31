@@ -223,6 +223,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
         $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');
 
+        $viewId = $searchResults->getViewId();
+        $isIndexView = $viewId === SearchResultsViewFactory::INDEX_VIEW_ID;
+
         $options = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams([
             'query' => $queryParams,
             'offset' => $start,
@@ -231,7 +234,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             'public' => $public,
             'files' => $files
             ],
-            $this->commingled);
+            $this->commingled,
+            $isIndexView);
 
         $results = null;
         $this->totalRecords = 0;

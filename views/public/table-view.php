@@ -4,7 +4,7 @@
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 $showRelationships = $searchResults->getShowRelationships();
-$pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
+$resultsMessage = SearchResultsView::getSearchResultsMessage();
 
 // Values passed to table-view-script.php
 $imageFilterId = $searchResults->getSelectedImageFilterId();
@@ -20,9 +20,10 @@ $column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
 
 $useElasticsearch = $searchResults->getUseElasticsearch();
 
-echo head(array('title' => $pageTitle));
+echo head(array('title' => $resultsMessage));
 echo "<div class='search-results-container'>";
-echo "<div class='search-results-title'>$pageTitle</div>";
+$paginationLinks = pagination_links();
+echo "<div class='search-results-title'><span>$resultsMessage</span>$paginationLinks</div>";
 
 $resultControlsHtml = '';
 if ($totalResults)
@@ -45,7 +46,7 @@ if ($totalResults)
     ?>
 </div>
 
-<?php echo $searchResults->emitSearchFilters($resultControlsHtml, $totalResults ? pagination_links() : ''); ?>
+<?php echo $searchResults->emitSearchFilters($resultControlsHtml, ''); ?>
 
 <?php if ($totalResults > 0): ?>
     <?php if ($useElasticsearch): ?>
@@ -94,7 +95,7 @@ if ($totalResults)
     <?php endif; ?>
     <?php
         echo $this->partial('/table-view-script.php', array('imageFilterId' => $imageFilterId, 'layoutId' => $layoutId, 'limitId' => $limitId, 'sortId' => $sortId, 'viewId' => $viewId));
-        echo pagination_links();
+        echo "<div id='search-pagination-bottom'>$paginationLinks</div>";
         echo '</div>';
     ?>
 <?php else: ?>

@@ -1,7 +1,7 @@
 <?php
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
-$pageTitle = SearchResultsView::getSearchResultsMessage($totalResults);
+$pageTitle = SearchResultsView::getSearchResultsMessage();
 
 $useElasticsearch = $searchResults->getUseElasticsearch();
 

@@ -118,7 +118,7 @@ function emitLetterIndex($entries)
     return $letterIndex;
 }
 
-function flattenResults($results, $indexFieldElementId)
+function flattenResults($results, $indexFieldElementId, $searchResults)
 {
     // Combine results into unique entries. This is necessary because some results can have the same
     // leaf value, but a different ancestry. This can be due to a data entry error, or an obscure case
@@ -126,24 +126,40 @@ function flattenResults($results, $indexFieldElementId)
     // with a count representing the total of all the results with the same leaf text.
 
     $displayHierarchyElementLeaf = SearchConfig::isHierarchyElementThatDisplaysAs($indexFieldElementId, 'leaf');
-
     $entries = array();
-    foreach ($results as $result)
+
+    if ($searchResults->getUseElasticsearch())
     {
-        // For hierarchy elements that display only their leaf values, get the leaf text from the pseudo column text_exp
-        // emitted by the SQL query for index views.
-        $text = $displayHierarchyElementLeaf ? $result['text_exp'] : $result['text'];
-
-        $count = $result['count'];
-
-        if (isset($entries[$text]))
+        $facets = $searchResults->getFacets();
+        $buckets = $facets["subject"]["buckets"];
+        foreach ($buckets as $bucket)
         {
-            $count += $entries[$text]['count'];
+            $text = $bucket['key'];
+            $entries[$text]['count'] = $bucket['doc_count'];
+            $entries[$text]['id'] = 0;
+            $entries[$text]['hierarchy'] = false;
         }
-        $entries[$text]['count'] = $count;
-        $entries[$text]['id'] = $result['id'];
-        $entries[$text]['hierarchy'] = $displayHierarchyElementLeaf;
     }
+    else
+    {
+        foreach ($results as $result)
+        {
+            // For hierarchy elements that display only their leaf values, get the leaf text from the pseudo column text_exp
+            // emitted by the SQL query for index views.
+            $text = $displayHierarchyElementLeaf ? $result['text_exp'] : $result['text'];
+
+            $count = $result['count'];
+
+            if (isset($entries[$text]))
+            {
+                $count += $entries[$text]['count'];
+            }
+            $entries[$text]['count'] = $count;
+            $entries[$text]['id'] = $result['id'];
+            $entries[$text]['hierarchy'] = $displayHierarchyElementLeaf;
+        }
+    }
+
     return $entries;
 }
 
@@ -164,7 +180,7 @@ echo $searchResults->emitSearchFilters(__('Index View by %s', $indexFieldName), 
 
 if ($totalResults)
 {
-    $entries = flattenResults($results, $indexFieldElementId);
+    $entries = flattenResults($results, $indexFieldElementId, $searchResults);
 
     if ($showLetterIndex)
     {

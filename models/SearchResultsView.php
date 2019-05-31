@@ -438,10 +438,23 @@ class SearchResultsView
         return $this->files;
     }
 
-    public static function getSearchResultsMessage($count)
+    public static function getSearchResultsMessage()
     {
-        $s = $count == 1 ? __('item found') : __('items found');
-        return "$count $s";
+        $pagination = Zend_Registry::get('pagination');
+
+        $count = $pagination['total_results'];
+        $pageNumber = $pagination['page'];
+        $perPage = $pagination['per_page'];
+
+        if ($count == 1)
+            return __('1 item found');
+
+        $last = $pageNumber * $perPage;
+        $first = $last - $perPage + 1;
+        if ($last > $count)
+            $last = $count;
+
+        return "$first - $last of $count " . __('results');
     }
 
     public function getSearchTitles()
