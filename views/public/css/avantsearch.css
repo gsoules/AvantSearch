@@ -308,7 +308,7 @@ input[type="checkbox"] {
 }
 
 .search-results-title {
-	margin: 0 8px 0 8px;
+	margin: 0 8px 8px 8px;
 	padding-right: 12px;
 	float: left;
 	color: #222;
