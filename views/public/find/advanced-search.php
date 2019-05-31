@@ -270,22 +270,6 @@ echo "<div id='avantsearch-container'>";
             </div>
         </div>
 
-        <div id="results-limit-options" class="search-view-options">
-            <div class="table-view-limit-option search-view-option">
-                <?php
-                echo $this->formLabel('limit', __('Results Per Page'));
-                echo $this->formSelect('limit', @$_REQUEST['limit'], array(), $searchResultsTable->getResultsLimitOptions());
-                ?>
-            </div>
-        </div>
-
-        <div class="search-images-only-option">
-            <?php echo $this->formLabel('view-label', __('Search:')); ?>
-            <div class="search-radio-buttons">
-                <?php echo $this->formRadio('files', $searchFilesOnly, null, $searchResults->getFilesOnlyOptions()); ?>
-            </div>
-        </div>
-
         <div class="search-form-reset-button">
             <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Reset all search options</a>'; ?>
         </div>
@@ -414,9 +398,6 @@ echo "<div id='avantsearch-container'>";
         var userChangedOption = false;
         updateRelationshipsOption(userChangedOption);
 
-        searchAllCheckbox = jQuery('#limit');
-        searchAllCheckbox.val(<?php echo $resultsPerPage; ?>);
-
         jQuery("[name='view']").change(function (e)
         {
             // The user changed the results view.
@@ -428,14 +409,6 @@ echo "<div id='avantsearch-container'>";
         {
             var userChangedOption = true;
             updateRelationshipsOption(userChangedOption);
-        });
-
-        searchAllCheckbox.change(function (e)
-        {
-            // The user changed results per page. Save the selection in a cookie.
-            var resultsSelection = jQuery(searchAllCheckbox, 'option:selected').val();
-            jQuery('#simple-results').text(resultsSelection);
-            Cookies.set('SEARCH-LIMIT', resultsSelection, {expires: 7});
         });
 
         jQuery('#search-filter-form').submit(function()
@@ -470,15 +443,6 @@ echo "<div id='avantsearch-container'>";
             disableHiddenSelection('#layout');
             disableHiddenSelection('#index');
             disableHiddenSelection('#tree');
-
-            disableHiddenInput('#limit');
-
-            if (navigator.cookieEnabled)
-            {
-                // When cookies are disabled, pass the limit option on the query string.
-                var limitSelector = jQuery("#limit");
-                searchAllCheckbox.prop("disabled", true);
-            }
         });
     });
 </script>
