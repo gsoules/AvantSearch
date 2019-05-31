@@ -518,6 +518,7 @@ class SearchConfig extends ConfigOptions
 
     public static function saveOptionDataForLayouts()
     {
+        $privateElements = CommonConfig::getOptionDataForPrivateElements();
         $layouts = array();
         $layoutDefinitions = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_LAYOUTS]));
         foreach ($layoutDefinitions as $layoutDefinition)
@@ -563,6 +564,7 @@ class SearchConfig extends ConfigOptions
 
             $columnString = isset($parts[1]) ? $parts[1] : '';
             $columns = array_map('trim', explode(',', $columnString));
+
             foreach ($columns as $elementName)
             {
                 if (empty($elementName))
@@ -570,6 +572,9 @@ class SearchConfig extends ConfigOptions
 
                 $elementId = ItemMetadata::getElementIdForElementName($elementName);
                 self::errorRowIf($elementId == 0, CONFIG_LABEL_LAYOUTS, $id, __("'%s' is not an element.", $elementName));
+
+                $privateInPublicLayout = isset($privateElements[$elementId]) && $rights != 'admin';
+                self::errorRowIf($privateInPublicLayout, CONFIG_LABEL_LAYOUTS, $id, __("Private element '%s' can only be used in an admin layout.", $elementName));
 
                 $layouts[$idNumber]['columns'][] = $elementId ;
             }
