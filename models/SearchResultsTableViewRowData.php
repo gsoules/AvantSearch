@@ -5,7 +5,6 @@ class SearchResultsTableViewRowData
     protected $avantElasticsearch;
     protected $columnsData;
     public $elementValue;
-    protected $hierarchyElements;
     protected $itemFieldTextsHtml = array();
     public $itemThumbnailHtml;
     protected $searchResults;
@@ -16,7 +15,6 @@ class SearchResultsTableViewRowData
     {
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
-        $this->hierarchyElements = SearchConfig::getOptionDataForTreeView();
         $this->useElasticsearch = $searchResults->getUseElasticsearch();
         $this->showCommingledResults = $searchResults->getShowCommingledResults();
         $this->initializeData($item);
@@ -231,7 +229,8 @@ class SearchResultsTableViewRowData
             // Indicate that this item is private.
             $idLink = '* ' . $idLink;
         }
-        $this->elementValue[ItemMetadata::getIdentifierAliasElementName()]['text'] = $idLink;
+        //$this->elementValue[ItemMetadata::getIdentifierAliasElementName()]['text'] = $idLink;
+        $this->elementValue['Identifier']['text'] = $idLink;
     }
 
     protected function generateThumbnailHtml($item)
@@ -291,18 +290,18 @@ class SearchResultsTableViewRowData
 
     protected function getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, $filtered)
     {
-        if (!empty($elementTexts) && plugin_is_active('AvantElements'))
-        {
-            // If the element is specified as a checkbox using AvantElements, then return its display value for true.
-            // By virtue of the element being displayed, its value must be true. By virtue of being a checkbox, there's
-            // no meaning to having multiple instance of the value, so simply return the value for true e.g. "Yes".
-            $checkboxFieldsData = ElementsConfig::getOptionDataForCheckboxField();
-            if (array_key_exists($elementId, $checkboxFieldsData))
-            {
-                $definition = $checkboxFieldsData[$elementId];
-                return $definition['checked'];
-            }
-        }
+//        if (!empty($elementTexts) && plugin_is_active('AvantElements'))
+//        {
+//            // If the element is specified as a checkbox using AvantElements, then return its display value for true.
+//            // By virtue of the element being displayed, its value must be true. By virtue of being a checkbox, there's
+//            // no meaning to having multiple instance of the value, so simply return the value for true e.g. "Yes".
+//            $checkboxFieldsData = ElementsConfig::getOptionDataForCheckboxField();
+//            if (array_key_exists($elementId, $checkboxFieldsData))
+//            {
+//                $definition = $checkboxFieldsData[$elementId];
+//                return $definition['checked'];
+//            }
+//        }
 
         $texts = '';
 
@@ -343,7 +342,8 @@ class SearchResultsTableViewRowData
                 $texts .= '<br/>';
             }
 
-            $text = $filtered ? $this->filterHierarchicalElementText($elementId, $elementText) : $elementText;
+            //$text = $filtered ? $this->filterHierarchicalElementText($elementId, $elementText) : $elementText;
+            $text = $elementText;
 
             // Determine if the element's text needs to be displayed as HTML.
             $containsHtml = in_array($key, $htmlTextIndices);
@@ -398,7 +398,7 @@ class SearchResultsTableViewRowData
 
         $this->readMetadata($item);
         $this->generateDescription($item);
-        $this->generateDateRange();
+        //$this->generateDateRange();
         $this->generateIdentifierLink($item);
         $this->generateTitles($item);
         $this->generateThumbnailHtml($item);

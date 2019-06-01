@@ -7,6 +7,7 @@ class SearchResultsIndexView extends SearchResultsView
     function __construct()
     {
         parent::__construct();
+        $this->viewId = SearchResultsViewFactory::INDEX_VIEW_ID;
     }
 
     public function getIndexFieldElementId()

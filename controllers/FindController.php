@@ -28,7 +28,11 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->getRequest()->setParamSources(array('_GET'));
         $params = $this->getAllParams();
 
-        $searchResults = SearchResultsViewFactory::createSearchResultsView();
+        $viewId = isset($_GET['view']) ? intval($_GET['view']) : SearchResultsView::DEFAULT_VIEW;
+        if (!array_key_exists($viewId, SearchResultsViewFactory::getViewOptions()))
+            $viewId = SearchResultsView::DEFAULT_VIEW;
+        $searchResults = SearchResultsViewFactory::createSearchResultsView($viewId);
+
         $params['results'] = $searchResults;
 
         $isSimpleSearch = isset($params['query']);

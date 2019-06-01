@@ -18,6 +18,9 @@ $detailLayoutData = $searchResults->getDetailLayoutData();
 $column1 =  isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
 $column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
 
+$user = current_user();
+$okayToEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin');
+
 $useElasticsearch = $searchResults->getUseElasticsearch();
 
 echo head(array('title' => $resultsMessage));
@@ -63,6 +66,10 @@ if ($totalResults)
         </thead>
         <tbody>
         <?php
+
+        $timeStart = microtime(true);
+        $executionSeconds = $timeStart - $_SERVER["REQUEST_TIME_FLOAT"];
+
         foreach ($results as $result)
         {
             if (!$useElasticsearch)
@@ -75,12 +82,17 @@ if ($totalResults)
                     'item' => $result,
                     'searchResults' => $searchResults,
                     'column1' => $column1,
-                    'column2' => $column2)
+                    'column2' => $column2,
+                    'okayToEdit' => $okayToEdit)
             );
         }
+        $timeEnd = microtime(true);
+        $time = $timeEnd - $timeStart;
         ?>
         </tbody>
     </table>
+    <?php echo '>>> ' . $executionSeconds; ?>
+    <?php echo '>>> ' . $time; ?>
     <?php if ($useElasticsearch): ?>
         </section>
     <?php endif; ?>

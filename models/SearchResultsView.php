@@ -536,14 +536,6 @@ class SearchResultsView
 
     public function getViewId()
     {
-        if (isset($this->viewId))
-            return $this->viewId;
-
-        $this->viewId = isset($_GET['view']) ? intval($_GET['view']) : self::DEFAULT_VIEW;
-
-        if (!array_key_exists($this->viewId, $this->getViewOptions()))
-            $this->viewId = self::DEFAULT_VIEW;
-
         return $this->viewId;
     }
 
@@ -603,10 +595,5 @@ class SearchResultsView
     public function setUseElasticsearch($useElasticsearch)
     {
         $this->useElasticsearch = $useElasticsearch;
-    }
-
-    public function setViewId($viewId)
-    {
-        $this->viewId = $viewId;
     }
 }

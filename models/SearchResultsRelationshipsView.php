@@ -7,5 +7,6 @@ class SearchResultsRelationshipsView extends SearchResultsView
     function __construct()
     {
         parent::__construct();
+        $this->viewId = SearchResultsViewFactory::RELATIONSHIPS_VIEW_ID;
     }
 }

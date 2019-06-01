@@ -66,18 +66,14 @@ echo '</td>';
                 // Determine if it's okay to show the edit link for this item.
                 if ($searchResults->getUseElasticsearch())
                 {
-                    $okayToEdit = false;
                     if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
                     {
                         // This item was contributed by this installation. See if the user has edit rights.
                         $itemId = $item['_source']['item']['id'];
-                        $omekaItem = ItemMetadata::getItemFromId($itemId);
-                        $okayToEdit = is_allowed($omekaItem, 'edit');
                     }
                 }
                 else
                 {
-                    $okayToEdit = is_allowed($item, 'edit');
                     $itemId = $item->id;
                 }
 

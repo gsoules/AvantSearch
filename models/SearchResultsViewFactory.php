@@ -8,13 +8,8 @@ class SearchResultsViewFactory
     const IMAGE_VIEW_ID = 4;
     const RELATIONSHIPS_VIEW_ID = 5;
 
-    public static function createSearchResultsView()
+    public static function createSearchResultsView($viewId)
     {
-        // Instantiate the base class view in order to determine which subclass to use.
-        $searchResults = new SearchResultsView();
-        $viewId = $searchResults->getViewId();
-
-        // Create the appropriate object to prepare the SQL query.
         switch ($viewId)
         {
             case SearchResultsViewFactory::INDEX_VIEW_ID:
@@ -38,8 +33,6 @@ class SearchResultsViewFactory
                 $searchResults = new SearchResultsTableView();
                 break;
         }
-
-        $searchResults->setViewId($viewId);
 
         return $searchResults;
     }

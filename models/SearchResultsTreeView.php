@@ -10,6 +10,7 @@ class SearchResultsTreeView extends SearchResultsView
     function __construct()
     {
         parent::__construct();
+        $this->viewId = SearchResultsViewFactory::TABLE_VIEW_ID;
         $this->db = get_db();
     }
 
