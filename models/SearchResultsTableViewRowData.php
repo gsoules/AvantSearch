@@ -146,6 +146,65 @@ class SearchResultsTableViewRowData
         $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetail('Description', $descriptionText);
     }
 
+    protected function generateFileAttachmentHits($item)
+    {
+        $hits = array('count' => 0, 'text' => '');
+
+        if ($this->useElasticsearch && isset($item['highlight']))
+        {
+            $itemHighlight = $item['highlight'];
+            $hasHit = false;
+            foreach ($itemHighlight as $fieldName => $highlightText)
+            {
+                if (strpos($fieldName, 'pdf.text-') === 0)
+                {
+                    $hasHit = true;
+                    break;
+                }
+            }
+            if (!$hasHit)
+                return $hits;
+        }
+        else
+        {
+            return $hits;
+        }
+
+        // This item has hits in the text of one or more attached PDF or text files.
+
+        $fileNames = $item['_source']['pdf']['file-name'];
+        $highlightText = '';
+        $itemHighlight = $item['highlight'];
+
+        foreach ($fileNames as $index => $fileName)
+        {
+            if (!isset($itemHighlight["pdf.text-$index"]))
+            {
+                continue;
+            }
+            $url = $item['_source']['pdf']['file-url'][$index];
+
+            if (isset($_GET['query']))
+            {
+                // Append the query to the URL so that a compliant PDF reader will highlight
+                // the terms when the user clicks on the file name to open the file.
+                $url .= '#search="' . $_GET['query'] . '"';
+            }
+
+            $highlightText .= "<br/><a href='$url' target='_blank'>$fileName</a><br/>";
+            $highlights = $itemHighlight["pdf.text-$index"];
+            foreach ($highlights as $highlight)
+            {
+                // Insert a horizontal ellipsis character in front of the hit.
+                $highlightText .= " &hellip;$highlight";
+            }
+        }
+
+        $hits['count'] = count($fileNames);
+        $hits['text'] = $highlightText;
+        return $hits;
+    }
+
     protected function generateIdentifierLink($item)
     {
         // Create a link for the identifier.
@@ -173,57 +232,6 @@ class SearchResultsTableViewRowData
             $idLink = '* ' . $idLink;
         }
         $this->elementValue[ItemMetadata::getIdentifierAliasElementName()]['text'] = $idLink;
-    }
-
-    protected function generatePdfHits($item)
-    {
-        $pdfHits = array('count' => 0, 'text' => '');
-
-        if ($this->useElasticsearch && isset($item['highlight']))
-        {
-            $itemHighlight = $item['highlight'];
-            $hasHit = false;
-            foreach ($itemHighlight as $fieldName => $highlightText)
-            {
-                if (strpos($fieldName, 'pdf.text-') === 0)
-                {
-                    $hasHit = true;
-                    break;
-                }
-            }
-            if (!$hasHit)
-                return $pdfHits;
-        }
-        else
-        {
-            return $pdfHits;
-        }
-
-        // This item has hits in the text of one or more attached PDF file.
-
-        $fileNames = $item['_source']['pdf']['file-name'];
-        $highlightText = '';
-        $itemHighlight = $item['highlight'];
-
-        foreach ($fileNames as $index => $fileName)
-        {
-            if (!isset($itemHighlight["pdf.text-$index"]))
-            {
-                continue;
-            }
-            $url = $item['_source']['pdf']['file-url'][$index];
-            $highlightText .= "<br/><a href='$url' target='_blank'>$fileName</a><br/>";
-            $highlights = $itemHighlight["pdf.text-$index"];
-            foreach ($highlights as $highlight)
-            {
-                // Insert a horizontal ellipsis character in front of the hit.
-                $highlightText .= " &hellip;$highlight";
-            }
-        }
-
-        $pdfHits['count'] = count($fileNames);
-        $pdfHits['text'] = $highlightText;
-        return $pdfHits;
     }
 
     protected function generateThumbnailHtml($item)
@@ -458,7 +466,7 @@ class SearchResultsTableViewRowData
 
             $score = $item['_score'];
             $score = number_format($score, 2);
-            $pdfHits = $this->generatePdfHits($item);
+            $fileAttachmentHits = $this->generateFileAttachmentHits($item);
         }
         else
         {
@@ -470,10 +478,10 @@ class SearchResultsTableViewRowData
         $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetail(__('Tags'),  $tags);
         $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetail(__('Score'), $score);;
 
-        if ($this->useElasticsearch && $pdfHits['count'] > 0)
+        if ($this->useElasticsearch && $fileAttachmentHits['count'] > 0)
         {
-            $pdfHeader = __('PDF Attachment%s', $pdfHits['count'] > 1 ? 's' : '');
-            $this->elementValue['<pdf>']['detail'] = $this->searchResults->emitFieldDetail($pdfHeader, $pdfHits['text']);
+            $fileHitsSectionText = __('File Attachment%s', $fileAttachmentHits['count'] > 1 ? 's' : '');
+            $this->elementValue['<pdf>']['detail'] = $this->searchResults->emitFieldDetail($fileHitsSectionText, $fileAttachmentHits['text']);
         }
     }
 
