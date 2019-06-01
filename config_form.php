@@ -13,8 +13,6 @@ $columnsOptionRows = max(2, count(explode(PHP_EOL, $columnsOption)));
 $layoutsOption = SearchConfig::getOptionTextForLayouts();
 $layoutsOptionRows = max(2, count(explode(PHP_EOL, $layoutsOption)));
 
-$layoutSelectorWidth = SearchConfig::getOptionTextForLayoutSelectorWidth();
-
 $detailLayoutOption = SearchConfig::getOptionTextForDetailLayout();
 
 $indexViewOption = SearchConfig::getOptionTextForIndexView();
@@ -78,17 +76,6 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
         <?php echo $view->formTextarea(SearchConfig::OPTION_LAYOUTS, $layoutsOption, array('rows' => $layoutsOptionRows)); ?>
     </div>
 </div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo CONFIG_LABEL_LAYOUT_SELECTOR_WIDTH; ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __('The width of the layout selector dropdown.'); ?></p>
-        <?php echo $view->formText(SearchConfig::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth); ?>
-    </div>
-</div>
-
 
 <div class="field">
     <div class="two columns alpha">

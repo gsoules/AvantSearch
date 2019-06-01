@@ -7,7 +7,6 @@ define('CONFIG_LABEL_ELASTICSEARCH', __('Elasticsearch'));
 define('CONFIG_LABEL_INDEX_VIEW', __('Index View'));
 define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
 define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
-define('CONFIG_LABEL_LAYOUT_SELECTOR_WIDTH', __('Layout Selector Width'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
 define('CONFIG_LABEL_HIERARCHIES', __('Hierarchies'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
@@ -22,7 +21,6 @@ class SearchConfig extends ConfigOptions
     const OPTION_INDEX_VIEW = 'avantsearch_index_view';
     const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
     const OPTION_LAYOUTS = 'avantsearch_layouts';
-    const OPTION_LAYOUT_SELECTOR_WIDTH = 'avantsearch_layout_selector_width';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
     const OPTION_HIERARCHIES = 'avantsearch_hierarchies';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
@@ -348,19 +346,6 @@ class SearchConfig extends ConfigOptions
         return $layoutsOption;
     }
 
-    public static function getOptionTextForLayoutSelectorWidth()
-    {
-        if (self::configurationErrorsDetected())
-        {
-            $layoutSelectorWidth = $_POST[self::OPTION_LAYOUT_SELECTOR_WIDTH];
-        }
-        else
-        {
-            $layoutSelectorWidth = get_option(self::OPTION_LAYOUT_SELECTOR_WIDTH);
-        }
-        return $layoutSelectorWidth;
-    }
-
     public static function getOptionTextForTreeView()
     {
         return self::getOptionListText(self::OPTION_TREE_VIEW);
@@ -382,7 +367,6 @@ class SearchConfig extends ConfigOptions
     public static function saveConfiguration()
     {
         self::saveOptionDataForLayouts();
-        self::saveOptionDataForLayoutSelectorWidth();
         self::saveOptionDataForColumns();
         self::saveOptionDataForDetailLayout();
         self::saveOptionDataForIndexView();
@@ -583,14 +567,6 @@ class SearchConfig extends ConfigOptions
         set_option(self::OPTION_LAYOUTS, json_encode($layouts));
     }
 
-    public static function saveOptionDataForLayoutSelectorWidth()
-    {
-        $layoutSelectorWidth = intval($_POST[self::OPTION_LAYOUT_SELECTOR_WIDTH]);
-        self::errorIf($layoutSelectorWidth < 100, null, __('Layout Selector Width must be an integer value of 100 or greater.'));
-
-        set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, $layoutSelectorWidth);
-    }
-
     public static function saveOptionDataForTreeView()
     {
         self::saveOptionListData(self::OPTION_TREE_VIEW, CONFIG_LABEL_TREE_VIEW);
@@ -598,8 +574,6 @@ class SearchConfig extends ConfigOptions
 
     public static function setDefaultOptionValues()
     {
-        set_option(self::OPTION_LAYOUT_SELECTOR_WIDTH, 175);
-
         // Create default L1 and L2 layouts.
         $identifierElementId = ItemMetadata::getElementIdForElementName('Identifier');
         $titleElementId = ItemMetadata::getElementIdForElementName('Title');
