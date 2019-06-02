@@ -14,7 +14,6 @@ $selectedLayoutId = $searchResultsTable->getSelectedLayoutId();
 $resultsPerPage = $searchResultsTable->getResultsLimit();
 $keywords = $searchResults->getKeywords();
 $searchTitlesOnly = $searchResultsTable->getSearchTitles();
-$searchFilesOnly = $searchResultsTable->getSearchFiles();
 $condition = $searchResults->getKeywordsCondition();
 
 $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
@@ -435,7 +434,6 @@ echo "<div id='avantsearch-container'>";
             disableEmptyField('#year-start');
             disableEmptyField('#year-end');
 
-            disableDefaultRadioButton('files', '<?php echo SearchResultsView::DEFAULT_SEARCH_FILES; ?>');
             disableDefaultRadioButton('titles', '<?php echo SearchResultsView::DEFAULT_SEARCH_TITLES; ?>');
             disableDefaultRadioButton('condition', '<?php echo SearchResultsView::DEFAULT_KEYWORDS_CONDITION; ?>');
             disableDefaultRadioButton('view', '<?php echo SearchResultsView::DEFAULT_VIEW; ?>');

@@ -2,7 +2,7 @@
 class SearchResultsView
 {
     const DEFAULT_KEYWORDS_CONDITION = 1;
-    const DEFAULT_SEARCH_FILES = 0;
+    const DEFAULT_SEARCH_FILTER = 0;
     const DEFAULT_SEARCH_TITLES = 0;
     const DEFAULT_VIEW = '1';
 
@@ -15,7 +15,6 @@ class SearchResultsView
     protected $conditionName;
     protected $error;
     protected $facets;
-    protected $files;
     protected $keywords;
     protected $limit;
     protected $privateElements;
@@ -25,6 +24,7 @@ class SearchResultsView
     protected $totalResults;
     protected $searchFilters;
     protected $sortFieldElementId;
+    protected $sortOptions;
     protected $sortOrder;
     protected $showCommingledResults;
     protected $subjectSearch;
@@ -39,6 +39,8 @@ class SearchResultsView
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
         $this->showCommingledResults = false;
+
+        $this->initSortOptions();
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -176,12 +178,12 @@ class SearchResultsView
         return $html;
     }
 
-    public function emitSelectorForImageFilter()
+    public function emitSelectorForFilter()
     {
         $options = array();
 
         $filters = array(
-            __('All results'),
+            __('All items'),
             __('Items with images'));
 
         foreach ($filters as $id => $filter)
@@ -189,7 +191,7 @@ class SearchResultsView
             $options["F$id"] = $filter;
         }
 
-        return $this->emitSelector('files', $options);
+        return $this->emitSelector('filter', $options);
     }
 
     public function emitSelectorForLimit()
@@ -203,6 +205,17 @@ class SearchResultsView
         }
 
         return $this->emitSelector('limit', $options);
+    }
+
+    public function emitSelectorForSort()
+    {
+        $options = array();
+        foreach ($this->sortOptions as $index => $option)
+        {
+            $options["S$index"] = $option;
+        }
+
+        return $this->emitSelector('sort', $options);
     }
 
     public function emitSelectorForView()
@@ -299,14 +312,6 @@ class SearchResultsView
     public function getFacets()
     {
         return $this->facets;
-    }
-
-    public function getFilesOnlyOptions()
-    {
-        return array(
-            '0' => __('All items'),
-            '1' => __('Only items with images or files')
-        );
     }
 
     public function getKeywords()
@@ -418,11 +423,7 @@ class SearchResultsView
 
     public function getSearchFiles()
     {
-        if (isset($this->files))
-            return $this->files;
-
-        $this->files = isset($_GET['files']) ? intval($_GET['files'] == 1) : self::DEFAULT_SEARCH_FILES ;
-        return $this->files;
+        return isset($_GET['filter']) ? intval($_GET['filter'] == 1) : self::DEFAULT_SEARCH_FILTER ;
     }
 
     public static function getSearchResultsMessage()
@@ -463,9 +464,31 @@ class SearchResultsView
         return $this->titles;
     }
 
+    public function getSelectedFilterId()
+    {
+        if (isset($this->filterId))
+            return $this->filterId;
+
+        $id = isset($_GET['filter']) ? intval($_GET['filter']) : 0;
+
+        // Make sure that the layout Id is valid.
+        if ($id < 0 || $id > 1)
+            $id = 0;
+
+        $this->filterId = $id;
+        return $this->filterId;
+    }
+
     public function getSelectedLimitId()
     {
         return $this->getResultsLimit();
+    }
+
+    public function getSelectedSortId()
+    {
+        $sortFieldName = $this->getSortFieldName();
+        $sortId = array_search ($sortFieldName, $this->sortOptions);
+        return $sortId === false ? 0 : $sortId;
     }
 
     public function getSelectedViewId()
@@ -560,6 +583,23 @@ class SearchResultsView
     public function getViewShortName()
     {
         return SearchResultsViewFactory::getViewShortName($this->getViewId());
+    }
+
+    public function initSortOptions()
+    {
+        // Reserve the top slot in the array.
+        $this->sortOptions[] = __('AAA');
+
+        $columnsData = $this->getColumnsData();
+
+        foreach ($columnsData as $columnData)
+        {
+            $this->sortOptions[] = $columnData['name'];
+        }
+
+        // Sort the values alphabetically except show 'relevance' at the top.
+        sort($this->sortOptions);
+        $this->sortOptions[0] = __('relevance');
     }
 
     public function setError($message)

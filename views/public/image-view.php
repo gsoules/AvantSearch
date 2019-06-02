@@ -5,8 +5,9 @@ $pageTitle = SearchResultsView::getSearchResultsMessage();
 
 $useElasticsearch = $searchResults->getUseElasticsearch();
 
+$filterId = $searchResults->getSelectedFilterId();
 $limitId = $searchResults->getSelectedLimitId();
-//$sortId = $searchResults->getSelectedSortId();
+$sortId = $searchResults->getSelectedSortId();
 $viewId = $searchResults->getSelectedViewId();
 
 $resultControlsHtml = '';
@@ -15,8 +16,8 @@ if ($totalResults)
     // The order here is the left to right order of these controls on the Search Results page.
     $resultControlsHtml .= $searchResults->emitSelectorForView();
     $resultControlsHtml .= $searchResults->emitSelectorForLimit();
-    //$resultControlsHtml .= $searchResults->emitSelectorForSort();
-    $resultControlsHtml .= $searchResults->emitSelectorForImageFilter();
+    $resultControlsHtml .= $searchResults->emitSelectorForSort();
+    $resultControlsHtml .= $searchResults->emitSelectorForFilter();
 }
 
 echo head(array('title' => $pageTitle));
@@ -48,7 +49,7 @@ echo "<div class='search-results-title'>$pageTitle</div>";
         </ul>
     </div>
     <?php
-    echo $this->partial('/table-view-script.php', array('imageFilterId' => 0, 'layoutId' => 0, 'limitId' => $limitId, 'sortId' => 0, 'viewId' => $viewId));
+    echo $this->partial('/table-view-script.php', array('filterId' => $filterId, 'layoutId' => 0, 'limitId' => $limitId, 'sortId' => 0, 'viewId' => $viewId));
     echo pagination_links();
     echo '</div>';
     ?>

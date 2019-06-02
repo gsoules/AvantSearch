@@ -53,20 +53,20 @@ class SearchResultsViewFactory
     {
         $views = array();
 
-        $views[SearchResultsViewFactory::TABLE_VIEW_ID] = __('Table View');
-        $views[SearchResultsViewFactory::IMAGE_VIEW_ID] = __('Image View');
+        $views[SearchResultsViewFactory::TABLE_VIEW_ID] = __('Table');
+        $views[SearchResultsViewFactory::IMAGE_VIEW_ID] = __('Image');
 
         if (count(SearchResultsIndexView::getIndexFieldOptions()) >= 1)
-            $views[SearchResultsViewFactory::INDEX_VIEW_ID] = __('Index View');
+            $views[SearchResultsViewFactory::INDEX_VIEW_ID] = __('Index');
 
         if (count(SearchResultsTreeView::getTreeFieldOptions()) >= 1)
-            $views[SearchResultsViewFactory::TREE_VIEW_ID] = __('Tree View');
+            $views[SearchResultsViewFactory::TREE_VIEW_ID] = __('Tree');
 
         // Check if this plugin is configured to work with the AvantRelationships plugin. If yes, allow Relationships layout.
         $relationshipsAreEnabled = get_option(SearchConfig::OPTION_RELATIONSHIPS_VIEW) == true;
 
         if ($relationshipsAreEnabled)
-            $views[SearchResultsViewFactory::RELATIONSHIPS_VIEW_ID] = __('Relationships View');
+            $views[SearchResultsViewFactory::RELATIONSHIPS_VIEW_ID] = __('Relationships');
 
         return $views;
     }

@@ -227,7 +227,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $sort = $this->getSortParams($params);
 
         // Determine if only items with a file attachment should be queried.
-        $files = isset($params['files']) && $params['files'] == 1;
+        $files = isset($params['filter']) && $params['filter'] == 1;
 
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
         $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');

@@ -5,11 +5,10 @@ class SearchResultsTableView extends SearchResultsView
     const RELATIONSHIPS_LAYOUT = 6;
 
     protected $detailLayoutData;
-    protected $imageFilterId;
+    protected $filterId;
     protected $layoutId;
     protected $layoutsData;
     protected $showRelationships;
-    protected $sortOptions;
 
     function __construct()
     {
@@ -23,36 +22,9 @@ class SearchResultsTableView extends SearchResultsView
         $this->addLayoutIdsToColumns();
         $this->addDetailLayoutColumns();
         $this->addDescriptionColumn();
-//        $this->addYearColumns();
-
-        $this->initSortOptions();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
     }
-
-//    protected function addYearColumns()
-//    {
-//        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
-//        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
-//
-//        if (empty($yearStartElementName) || empty($yearEndElementName))
-//        {
-//            // This feature is only supported for installations that have all three date elements.
-//            return;
-//        }
-//        $yearStartElementId = ItemMetadata::getElementIdForElementName($yearStartElementName);
-//        $yearEndElementId = ItemMetadata::getElementIdForElementName($yearEndElementName);
-//
-//        if (!isset($this->columnsData[$yearStartElementId]))
-//        {
-//            $this->columnsData[$yearStartElementId] = self::createColumn($yearStartElementName, 0);
-//        }
-//
-//        if (!isset($this->columnsData[$yearEndElementId]))
-//        {
-//            $this->columnsData[$yearEndElementId] = self::createColumn($yearEndElementName, 0);
-//        }
-//    }
 
     protected function addDescriptionColumn()
     {
@@ -164,17 +136,6 @@ class SearchResultsTableView extends SearchResultsView
         return $this->emitSelector('layout', $options);
     }
 
-    public function emitSelectorForSort()
-    {
-        $options = array();
-        foreach ($this->sortOptions as $index => $option)
-        {
-            $options["S$index"] = $option;
-        }
-
-        return $this->emitSelector('sort', $options);
-    }
-
     protected function filterDetailLayoutData()
     {
         foreach ($this->detailLayoutData as $key => $row)
@@ -255,21 +216,6 @@ class SearchResultsTableView extends SearchResultsView
         }
     }
 
-    public function getSelectedImageFilterId()
-    {
-        if (isset($this->imageFilterId))
-            return $this->imageFilterId;
-
-        $id = isset($_GET['files']) ? intval($_GET['files']) : 0;
-
-        // Make sure that the layout Id is valid.
-        if ($id < 0 || $id > 1)
-            $id = 0;
-
-        $this->imageFilterId = $id;
-        return $this->imageFilterId;
-    }
-
     public function getSelectedLayoutId()
     {
         if (isset($this->layoutId))
@@ -288,13 +234,6 @@ class SearchResultsTableView extends SearchResultsView
         return $this->layoutId;
     }
 
-    public function getSelectedSortId()
-    {
-        $sortFieldName = $this->getSortFieldName();
-        $sortId = array_search ($sortFieldName, $this->sortOptions);
-        return $sortId === false ? 0 : $sortId;
-    }
-
     public function getShowRelationships()
     {
         return $this->showRelationships;
@@ -303,22 +242,5 @@ class SearchResultsTableView extends SearchResultsView
     public function hasLayoutL1()
     {
         return isset($this->layoutsData[1]);
-    }
-
-    public function initSortOptions()
-    {
-        // Reserve the top slot in the array.
-        $this->sortOptions[] = __('AAA');
-
-        $columnsData = $this->getColumnsData();
-
-        foreach ($columnsData as $columnData)
-        {
-            $this->sortOptions[] = $columnData['name'];
-        }
-
-        // Sort the values alphabetically except show 'relevance' at the top.
-        sort($this->sortOptions);
-        $this->sortOptions[0] = __('relevance');
     }
 }

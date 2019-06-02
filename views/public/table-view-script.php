@@ -1,23 +1,23 @@
 <script>
-    var FILES = 'files';
+    var FILTER = 'filter';
     var LAYOUT = 'layout';
     var LIMIT = 'limit';
     var SORT = 'sort';
     var VIEW = 'view';
 
     var selectedOptionId = [];
-    selectedOptionId[FILES] = parseInt(<?php echo $imageFilterId; ?>);
+    selectedOptionId[FILTER] = parseInt(<?php echo $filterId; ?>);
     selectedOptionId[LAYOUT] = parseInt(<?php echo $layoutId; ?>);
     selectedOptionId[LIMIT] = parseInt(<?php echo $limitId; ?>);
     selectedOptionId[SORT] = parseInt(<?php echo $sortId; ?>);
     selectedOptionId[VIEW] = parseInt(<?php echo $viewId; ?>);
 
     var selectorTitle = [];
-    selectorTitle[FILES] = '%s';
-    selectorTitle[LAYOUT] = '%s Layout';
-    selectorTitle[LIMIT] = '%s per page';
-    selectorTitle[SORT] = 'Sort by %s';
-    selectorTitle[VIEW] = '%s';
+    selectorTitle[FILTER] = 'Filter: %s';
+    selectorTitle[LAYOUT] = 'Layout: %s';
+    selectorTitle[LIMIT] = 'Per page: %s';
+    selectorTitle[SORT] = 'Sort: %s';
+    selectorTitle[VIEW] = 'View: %s';
 
     function deselectSelectorOptions(kind)
     {
@@ -79,8 +79,8 @@
         jQuery('#search-' + kind + '-options').slideUp('fast');
 
         // Show the selected option in the button title.
-        var buttonTitle = selectorTitle[kind].replace('%s', selectedOption.text());
-        jQuery('#search-' + kind + '-button').text(buttonTitle);
+        var buttonTitle = selectorTitle[kind].replace('%s', '<b>' + selectedOption.text() + '</b>');
+        jQuery('#search-' + kind + '-button').html(buttonTitle);
 
         if (kind === LAYOUT)
         {
@@ -116,7 +116,7 @@
         var newOptionArg = '&' + kind + '=' + newOptionValue;
         var newUrl = urlWithoutOptionArg + newOptionArg;
 
-        if (kind === FILES || kind === LIMIT || kind === SORT || kind === VIEW)
+        if (kind === FILTER || kind === LIMIT || kind === SORT || kind === VIEW)
         {
             if (kind === SORT && newOptionId === 0)
             {
@@ -190,13 +190,13 @@
 
     jQuery(document).ready(function()
     {
-        setSelectedOption(FILES, 'F', selectedOptionId[FILES]);
+        setSelectedOption(FILTER, 'F', selectedOptionId[FILTER]);
         setSelectedOption(LAYOUT, 'L', selectedOptionId[LAYOUT]);
         setSelectedOption(LIMIT, 'X', selectedOptionId[LIMIT]);
         setSelectedOption(SORT, 'S', selectedOptionId[SORT]);
         setSelectedOption(VIEW, 'V', selectedOptionId[VIEW]);
 
-        initSelector(FILES, 'F');
+        initSelector(FILTER, 'F');
         initSelector(LAYOUT, 'L');
         initSelector(LIMIT, 'X');
         initSelector(SORT, 'S');

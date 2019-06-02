@@ -7,7 +7,7 @@ $showRelationships = $searchResults->getShowRelationships();
 $resultsMessage = SearchResultsView::getSearchResultsMessage();
 
 // Values passed to table-view-script.php
-$imageFilterId = $searchResults->getSelectedImageFilterId();
+$filterId = $searchResults->getSelectedFilterId();
 $layoutId = $searchResults->getSelectedLayoutId();
 $limitId = $searchResults->getSelectedLimitId();
 $sortId = $searchResults->getSelectedSortId();
@@ -38,7 +38,7 @@ if ($totalResults)
     $resultControlsHtml .= $searchResults->emitSelectorForLayout($layoutsData);
     $resultControlsHtml .= $searchResults->emitSelectorForLimit();
     $resultControlsHtml .= $searchResults->emitSelectorForSort();
-    $resultControlsHtml .= $searchResults->emitSelectorForImageFilter();
+    $resultControlsHtml .= $searchResults->emitSelectorForFilter();
 }
 ?>
 
@@ -95,7 +95,7 @@ if ($totalResults)
     <?php
         echo $this->partial('/table-view-script.php',
             array(
-                'imageFilterId' => $imageFilterId,
+                'filterId' => $filterId,
                 'layoutId' => $layoutId,
                 'limitId' => $limitId,
                 'sortId' => $sortId,
