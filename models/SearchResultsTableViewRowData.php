@@ -28,22 +28,6 @@ class SearchResultsTableViewRowData
         $this->initializeData($item);
     }
 
-    protected function filterHierarchicalElementText($elementId, $text)
-    {
-        if (SearchConfig::isHierarchyElementThatDisplaysAs($elementId, 'leaf'))
-        {
-            $index = strrpos($text, ',', -1);
-
-            if ($index !== false)
-            {
-                // Filter out the ancestry to leave just the leaf text.
-                $text = trim(substr($text, $index + 1));
-            }
-        }
-
-        return $text;
-    }
-
     protected function generateDescription($item)
     {
         $hasHighlights = false;
@@ -324,7 +308,6 @@ class SearchResultsTableViewRowData
                 $texts .= '<br/>';
             }
 
-            //$text = $filtered ? $this->filterHierarchicalElementText($elementId, $elementText) : $elementText;
             $text = $elementText;
 
             // Determine if the element's text needs to be displayed as HTML.
