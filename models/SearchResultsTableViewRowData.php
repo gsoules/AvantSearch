@@ -1,22 +1,26 @@
 <?php
+// Be  careful to not add/change code here that causes a SQL query to occur for each row.
+// This code is optimized to execute as quickly as possible and SQL queries slow it down considerably.
 
 class SearchResultsTableViewRowData
 {
     protected $avantElasticsearch;
     protected $columnsData;
     public $elementValue;
+    protected $identifierAliasName;
     protected $itemFieldTextsHtml = array();
     public $itemThumbnailHtml;
     protected $searchResults;
     protected $showCommingledResults;
     protected $useElasticsearch;
 
-    public function __construct($item, SearchResultsTableView $searchResults)
+    public function __construct($item, SearchResultsTableView $searchResults, $identifierAliasName)
     {
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
         $this->useElasticsearch = $searchResults->getUseElasticsearch();
         $this->showCommingledResults = $searchResults->getShowCommingledResults();
+        $this->identifierAliasName = $identifierAliasName;
         $this->initializeData($item);
     }
 
@@ -207,7 +211,7 @@ class SearchResultsTableViewRowData
             // Indicate that this item is private.
             $idLink = '* ' . $idLink;
         }
-        //$this->elementValue[ItemMetadata::getIdentifierAliasElementName()]['text'] = $idLink;
+        $this->elementValue[$this->identifierAliasName]['text'] = $idLink;
         $this->elementValue['Identifier']['text'] = $idLink;
     }
 

@@ -20,6 +20,7 @@ $column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
 
 $user = current_user();
 $okayToEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin');
+$identifierAliasName = ItemMetadata::getIdentifierAliasElementName();
 
 $useElasticsearch = $searchResults->getUseElasticsearch();
 
@@ -79,6 +80,7 @@ if ($totalResults)
                     'searchResults' => $searchResults,
                     'column1' => $column1,
                     'column2' => $column2,
+                    'identifierAliasName' => $identifierAliasName,
                     'okayToEdit' => $okayToEdit)
             );
         }

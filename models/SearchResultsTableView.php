@@ -23,36 +23,36 @@ class SearchResultsTableView extends SearchResultsView
         $this->addLayoutIdsToColumns();
         $this->addDetailLayoutColumns();
         $this->addDescriptionColumn();
-        $this->addYearColumns();
+//        $this->addYearColumns();
 
         $this->initSortOptions();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
     }
 
-    protected function addYearColumns()
-    {
-        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
-        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
-
-        if (empty($yearStartElementName) || empty($yearEndElementName))
-        {
-            // This feature is only supported for installations that have all three date elements.
-            return;
-        }
-        $yearStartElementId = ItemMetadata::getElementIdForElementName($yearStartElementName);
-        $yearEndElementId = ItemMetadata::getElementIdForElementName($yearEndElementName);
-
-        if (!isset($this->columnsData[$yearStartElementId]))
-        {
-            $this->columnsData[$yearStartElementId] = self::createColumn($yearStartElementName, 0);
-        }
-
-        if (!isset($this->columnsData[$yearEndElementId]))
-        {
-            $this->columnsData[$yearEndElementId] = self::createColumn($yearEndElementName, 0);
-        }
-    }
+//    protected function addYearColumns()
+//    {
+//        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
+//        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
+//
+//        if (empty($yearStartElementName) || empty($yearEndElementName))
+//        {
+//            // This feature is only supported for installations that have all three date elements.
+//            return;
+//        }
+//        $yearStartElementId = ItemMetadata::getElementIdForElementName($yearStartElementName);
+//        $yearEndElementId = ItemMetadata::getElementIdForElementName($yearEndElementName);
+//
+//        if (!isset($this->columnsData[$yearStartElementId]))
+//        {
+//            $this->columnsData[$yearStartElementId] = self::createColumn($yearStartElementName, 0);
+//        }
+//
+//        if (!isset($this->columnsData[$yearEndElementId]))
+//        {
+//            $this->columnsData[$yearEndElementId] = self::createColumn($yearEndElementName, 0);
+//        }
+//    }
 
     protected function addDescriptionColumn()
     {

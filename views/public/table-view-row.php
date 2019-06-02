@@ -1,7 +1,9 @@
 <?php
+// Be  careful to not add/change code here that causes a SQL query to occur for each row.
+
 /* @var $searchResults SearchResultsTableView */
 
-$data = new SearchResultsTableViewRowData($item, $searchResults);
+$data = new SearchResultsTableViewRowData($item, $searchResults, $identifierAliasName);
 $columnsData = $searchResults->getColumnsData();
 $layoutData = $searchResults->getLayoutsData();
 
