@@ -5,7 +5,6 @@ $storageEngine = AvantSearch::getStorageEngineForSearchTextsTable();
 $titlesOnlySupported = SearchConfig::getOptionsSupportedTitlesOnly();
 $addressSortingSupported = SearchConfig::getOptionSupportedAddressSorting();
 $elasticsearchSupported = plugin_is_active('AvantElasticsearch');
-$relationshipsViewSupported = SearchConfig::getOptionSupportedRelationshipsView();
 
 $columnsOption = SearchConfig::getOptionTextForColumns();
 $columnsOptionRows = max(2, count(explode(PHP_EOL, $columnsOption)));
@@ -104,20 +103,6 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Elements that can be used as the Tree View field."); ?></p>
         <?php echo $view->formTextarea(SearchConfig::OPTION_TREE_VIEW, $treeViewOption, array('rows' => $treeViewOptionRows)); ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo CONFIG_LABEL_RELATIONSHIPS_VIEW; ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <?php if ($relationshipsViewSupported): ?>
-            <p class="explanation"><?php echo __('Show the option to display results in Relationships View.'); ?></p>
-            <?php echo $view->formCheckbox(SearchConfig::OPTION_RELATIONSHIPS_VIEW, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_RELATIONSHIPS_VIEW))); ?>
-        <?php else: ?>
-            <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'relationships-view'); ?>
-        <?php endif; ?>
     </div>
 </div>
 

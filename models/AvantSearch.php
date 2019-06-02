@@ -185,11 +185,13 @@ class AvantSearch
             $hiddenParams[urldecode($key)] = urldecode($value);
         }
 
+        $hiddenInputs = array('view', 'layout', 'sort', 'order', 'filter');
         foreach($hiddenParams as $key => $value)
         {
-            if ($key == 'page' || $key == 'query' || $key == 'all')
-                continue;
-            $html .= '<input id=search-form-' . $key . ' type="hidden" name="' . $key . '" value="' . $value . '">';
+            if (in_array($key, $hiddenInputs))
+            {
+                $html .= '<input id=search-form-' . $key . ' type="hidden" name="' . $key . '" value="' . $value . '">';
+            }
         }
 
         $html .= '<span id="search-clear-icon">&#10006;</span></span>';

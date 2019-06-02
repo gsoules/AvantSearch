@@ -16,7 +16,7 @@
     selectorTitle[FILTER] = 'Filter: %s';
     selectorTitle[LAYOUT] = 'Layout: %s';
     selectorTitle[LIMIT] = 'Per page: %s';
-    selectorTitle[SORT] = 'Sort: %s';
+    selectorTitle[SORT] = 'Sort by: %s';
     selectorTitle[VIEW] = 'View: %s';
 
     function deselectSelectorOptions(kind)

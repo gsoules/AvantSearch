@@ -132,11 +132,6 @@ class SearchConfig extends ConfigOptions
         return ($yearStartElementId != 0 && $yearEndElementId != 0 && $dateElementId != 0);
     }
 
-    public static function getOptionSupportedRelationshipsView()
-    {
-        return plugin_is_active('AvantRelationships');
-    }
-
     public static function getOptionSupportedAddressSorting()
     {
         // Determine if this database supports the REGEXP_REPLACE function which is needed to perform

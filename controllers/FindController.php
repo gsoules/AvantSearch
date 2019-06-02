@@ -44,7 +44,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $viewId = $searchResults->getViewId();
         if (SearchResultsViewFactory::viewUsesResultsLimit($viewId))
         {
-            $this->recordsPerPage = SearchResultsViewFactory::getResultsLimit($viewId, $searchResults);
+            $this->recordsPerPage = $searchResults->getResultsLimit();
         }
         else
         {

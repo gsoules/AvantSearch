@@ -6,7 +6,7 @@ $totalResults = $searchResults->getTotalResults();
 $showRelationships = $searchResults->getShowRelationships();
 $resultsMessage = SearchResultsView::getSearchResultsMessage();
 
-// Values passed to table-view-script.php
+// Values passed to results-view-script.php
 $filterId = $searchResults->getSelectedFilterId();
 $layoutId = $searchResults->getSelectedLayoutId();
 $limitId = $searchResults->getSelectedLimitId();
@@ -93,7 +93,7 @@ if ($totalResults)
         </section>
     <?php endif; ?>
     <?php
-        echo $this->partial('/table-view-script.php',
+        echo $this->partial('/results-view-script.php',
             array(
                 'filterId' => $filterId,
                 'layoutId' => $layoutId,

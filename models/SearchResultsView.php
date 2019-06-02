@@ -387,21 +387,7 @@ class SearchResultsView
         if (isset($this->limit))
             return $this->limit;
 
-        if (isset($_GET['limit']))
-        {
-            // First check for a query string argument.
-            $this->limit = intval($_GET['limit']);
-        }
-        else if (isset($_COOKIE['SEARCH-LIMIT']))
-        {
-            // First check for a cookie value.
-            $this->limit = intval($_COOKIE['SEARCH-LIMIT']);
-        }
-        else
-        {
-            // Use the Omeka admin/appearance/edit-settings setting for Results Per Page.
-            $this->limit = get_option('per_page_public');
-        }
+        $this->limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
 
         // Make sure that the limit is valid.
         $limitOptions = $this->getResultsLimitOptions();
