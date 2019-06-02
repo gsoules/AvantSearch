@@ -66,10 +66,6 @@ if ($totalResults)
         </thead>
         <tbody>
         <?php
-
-        $timeStart = microtime(true);
-        $executionSeconds = $timeStart - $_SERVER["REQUEST_TIME_FLOAT"];
-
         foreach ($results as $result)
         {
             if (!$useElasticsearch)
@@ -86,18 +82,21 @@ if ($totalResults)
                     'okayToEdit' => $okayToEdit)
             );
         }
-        $timeEnd = microtime(true);
-        $time = $timeEnd - $timeStart;
         ?>
         </tbody>
     </table>
-    <?php echo '>>> ' . $executionSeconds; ?>
-    <?php echo '>>> ' . $time; ?>
     <?php if ($useElasticsearch): ?>
         </section>
     <?php endif; ?>
     <?php
-        echo $this->partial('/table-view-script.php', array('imageFilterId' => $imageFilterId, 'layoutId' => $layoutId, 'limitId' => $limitId, 'sortId' => $sortId, 'viewId' => $viewId));
+        echo $this->partial('/table-view-script.php',
+            array(
+                'imageFilterId' => $imageFilterId,
+                'layoutId' => $layoutId,
+                'limitId' => $limitId,
+                'sortId' => $sortId,
+                'viewId' => $viewId)
+        );
         echo "<div id='search-pagination-bottom'>$paginationLinks</div>";
         echo '</div>';
     ?>
