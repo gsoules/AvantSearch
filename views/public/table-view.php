@@ -19,7 +19,7 @@ $column1 =  isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
 $column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
 
 $user = current_user();
-$okayToEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin');
+$userCanEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin');
 $identifierAliasName = ItemMetadata::getIdentifierAliasElementName();
 $checkboxFieldData = plugin_is_active('AvantElements') ? ElementsConfig::getOptionDataForCheckboxField() : array();
 
@@ -83,7 +83,7 @@ if ($totalResults)
                     'column2' => $column2,
                     'identifierAliasName' => $identifierAliasName,
                     'checkboxFieldData' => $checkboxFieldData,
-                    'okayToEdit' => $okayToEdit)
+                    'userCanEdit' => $userCanEdit)
             );
         }
         ?>

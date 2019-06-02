@@ -66,20 +66,23 @@ echo '</td>';
                 }
 
                 // Determine if it's okay to show the edit link for this item.
+                $showEditLink = false;
                 if ($searchResults->getUseElasticsearch())
                 {
                     if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
                     {
-                        // This item was contributed by this installation. See if the user has edit rights.
+                        // This item was contributed by this installation.
                         $itemId = $item['_source']['item']['id'];
+                        $showEditLink = $userCanEdit;
                     }
                 }
                 else
                 {
                     $itemId = $item->id;
+                    $showEditLink = $userCanEdit;
                 }
 
-                if ($okayToEdit)
+                if ($showEditLink)
                 {
                     echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a></div>';
                 }
