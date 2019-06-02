@@ -98,12 +98,10 @@
         var newOptionValue;
         if (kind === SORT)
         {
-            console.log('SORT 1: ' + oldOptionValue + ' : ' + newOptionValue);
             oldOptionValue = jQuery('#' + prefix + oldOptionId).text();
             newOptionValue = selectedOption.text();
             oldOptionValue = encodeURIComponent(oldOptionValue);
             newOptionValue = encodeURIComponent(newOptionValue);
-            console.log('SORT 2: ' + oldOptionValue + ' : ' + newOptionValue)
         }
         else
         {
@@ -114,12 +112,9 @@
         // Construct an updated query string to reflect the newly selected option.
         var oldOptionArgPattern = new RegExp('&' + kind + '=' + oldOptionValue);
         var oldUrl = document.location.href;
-        console.log('URL Before: ' + oldUrl);
         var urlWithoutOptionArg = oldUrl.replace(oldOptionArgPattern, '');
-        console.log('URL Clean: ' + urlWithoutOptionArg);
         var newOptionArg = '&' + kind + '=' + newOptionValue;
         var newUrl = urlWithoutOptionArg + newOptionArg;
-        console.log('URL After: ' + newUrl);
 
         if (kind === FILES || kind === LIMIT || kind === SORT || kind === VIEW)
         {
@@ -135,7 +130,6 @@
                     oldOrderPattern = new RegExp('&order=' + orderValue);
                     newUrl = newUrl.replace(oldOrderPattern, '');
                 }
-                console.log('relevance ' + newUrl);
             }
 
             // Reload the page.
@@ -151,7 +145,7 @@
         });
 
         // Update the simple search form's hidden <input> for the layout Id.
-        var searchFormLayoutInput = jQuery("#layout-id");
+        var searchFormLayoutInput = jQuery("#search-form-layout");
         if (searchFormLayoutInput.length)
             jQuery(searchFormLayoutInput).prop("value", newOptionId);
 

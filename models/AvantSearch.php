@@ -174,7 +174,24 @@ class AvantSearch
         $html .= '<form id="search-form" name="search-form" action="' . $findUrl . '" method="get" class="search-form">';
         $html .= '<span class="search-clear">';
         $html .= '<input id="query" type="text" name="query" value="' . $query . '" title="Search" autofocus placeholder="' . $placeholderText . '">';
-        $html .= '<input id="layout-id" type="hidden" name="layout" value="' . $layoutId . '">';
+
+        $hiddenParams = array();
+        $entries = explode('&', http_build_query($_GET));
+        foreach ($entries as $entry)
+        {
+            if( !$entry)
+                continue;
+            list($key, $value) = explode('=', $entry);
+            $hiddenParams[urldecode($key)] = urldecode($value);
+        }
+
+        foreach($hiddenParams as $key => $value)
+        {
+            if ($key == 'page' || $key == 'query' || $key == 'all')
+                continue;
+            $html .= '<input id=search-form-' . $key . ' type="hidden" name="' . $key . '" value="' . $value . '">';
+        }
+
         $html .= '<span id="search-clear-icon">&#10006;</span></span>';
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button>';
         $html .= '<div>';
