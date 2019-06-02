@@ -222,7 +222,7 @@ class SearchResultsTableViewRowData
             }
             else
             {
-                $texts = __('[Untitled]');
+                $texts = __('Untitled');
             }
             $tooltip = ItemPreview::getItemLinkTooltip();
             $titles = explode(ES_DOCUMENT_EOL, $texts);
