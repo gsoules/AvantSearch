@@ -36,28 +36,6 @@ class SearchResultsTableViewRowData
         return $text;
     }
 
-    protected function generateDateRange()
-    {
-        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
-        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
-
-        if (empty($yearStartElementName) || empty($yearEndElementName) || !isset($this->elementValue['Date']))
-        {
-            // This feature is only support for installations that have all three date elements.
-            return;
-        }
-
-        $date = $this->elementValue['Date']['text'];
-        $yearStartText = $this->elementValue[$yearStartElementName]['text'];
-        $yearEndText = $this->elementValue[$yearEndElementName]['text'];
-
-        if (empty($date) && !empty($yearStartText))
-        {
-            // The date is empty so show the year start/end range.
-            $this->elementValue['Date']['text'] = "$yearStartText - $yearEndText";
-        }
-    }
-
     protected function generateDescription($item)
     {
         $hasHighlights = false;
@@ -398,7 +376,6 @@ class SearchResultsTableViewRowData
 
         $this->readMetadata($item);
         $this->generateDescription($item);
-        //$this->generateDateRange();
         $this->generateIdentifierLink($item);
         $this->generateTitles($item);
         $this->generateThumbnailHtml($item);
