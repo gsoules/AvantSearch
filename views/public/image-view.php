@@ -28,6 +28,21 @@ echo "<div class='search-results-title'>$pageTitle</div>";
 <?php echo $searchResults->emitSearchFilters($resultControlsHtml, $totalResults ? pagination_links() : ''); ?>
 
 <?php if ($totalResults): ?>
+    <?php if ($useElasticsearch): ?>
+        <section id="search-table-elasticsearch-sidebar">
+            <?php
+            $query = $searchResults->getQuery();
+            $facets = $searchResults->getFacets();
+            echo $this->partial('/elasticsearch-facets.php', array(
+                    'query' => $query,
+                    'aggregations' => $facets,
+                    'totalResults' => $totalResults
+                )
+            );
+            ?>
+        </section>
+        <section id="search-table-elasticsearch-results">
+    <?php endif; ?>
     <div>
         <ul class="item-preview">
         <?php
@@ -49,13 +64,19 @@ echo "<div class='search-results-title'>$pageTitle</div>";
         </ul>
     </div>
     <?php
-    echo $this->partial('/table-view-script.php', array('filterId' => $filterId, 'layoutId' => 0, 'limitId' => $limitId, 'sortId' => 0, 'viewId' => $viewId));
+    echo $this->partial('/table-view-script.php', array('filterId' => $filterId, 'layoutId' => 0, 'limitId' => $limitId, 'sortId' => $sortId, 'viewId' => $viewId));
     echo pagination_links();
     echo '</div>';
     ?>
 <?php else: ?>
     <div id="no-results">
-        <p><?php echo __('Your search returned no results.'); ?></p>
+        <p>
+            <?php
+            $error = $searchResults->getError();
+            if (!empty($error))
+                echo $error;
+            ?>
+        </p>
     </div>
 <?php endif; ?>
 <?php echo foot(); ?>

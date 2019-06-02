@@ -178,7 +178,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $sortElementName = $params['sort'];
         $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
 
-        $sortOrder = $params['order'] == 'd' ? 'desc' : 'asc';
+        $sortOrder = isset($params['order']) && $params['order'] == 'd' ? 'desc' : 'asc';
 
         if ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
         {
