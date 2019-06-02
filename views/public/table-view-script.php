@@ -123,13 +123,20 @@
                 // To sort by relevance, remove the sort and order args.
                 oldSortPattern = new RegExp('&sort=' + newOptionValue);
                 newUrl = newUrl.replace(oldSortPattern, '');
-
                 var orderValue = getQueryStringArg('order');
                 if (orderValue.length)
                 {
                     oldOrderPattern = new RegExp('&order=' + orderValue);
                     newUrl = newUrl.replace(oldOrderPattern, '');
                 }
+            }
+
+            // Remove the page arg.
+            var pageValue = getQueryStringArg('page');
+            if (pageValue.length)
+            {
+                oldPagePattern = new RegExp('&page=' + pageValue);
+                newUrl = newUrl.replace(oldPagePattern, '');
             }
 
             // Reload the page.
