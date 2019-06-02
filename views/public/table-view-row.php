@@ -3,7 +3,7 @@
 
 /* @var $searchResults SearchResultsTableView */
 
-$data = new SearchResultsTableViewRowData($item, $searchResults, $identifierAliasName);
+$data = new SearchResultsTableViewRowData($item, $searchResults, $identifierAliasName, $checkboxFieldData);
 $columnsData = $searchResults->getColumnsData();
 $layoutData = $searchResults->getLayoutsData();
 

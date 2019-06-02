@@ -1,11 +1,14 @@
 <?php
-// Be  careful to not add/change code here that causes a SQL query to occur for each row.
+// Be  careful to not add/change code to this class that causes a SQL query to occur for each row.
 // This code is optimized to execute as quickly as possible and SQL queries slow it down considerably.
+// For example, the parameters $identifierAliasName and $checkboxFieldData that are passed to the constructor
+// contain data that must be obtained with a SQL query. The query is done just once before any rows are processed.
 
 class SearchResultsTableViewRowData
 {
     protected $avantElasticsearch;
     protected $columnsData;
+    protected $checkboxFieldData;
     public $elementValue;
     protected $identifierAliasName;
     protected $itemFieldTextsHtml = array();
@@ -14,13 +17,14 @@ class SearchResultsTableViewRowData
     protected $showCommingledResults;
     protected $useElasticsearch;
 
-    public function __construct($item, SearchResultsTableView $searchResults, $identifierAliasName)
+    public function __construct($item, SearchResultsTableView $searchResults, $identifierAliasName, $checkboxFieldData)
     {
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
         $this->useElasticsearch = $searchResults->getUseElasticsearch();
         $this->showCommingledResults = $searchResults->getShowCommingledResults();
         $this->identifierAliasName = $identifierAliasName;
+        $this->checkboxFieldData = $checkboxFieldData;
         $this->initializeData($item);
     }
 
@@ -272,18 +276,14 @@ class SearchResultsTableViewRowData
 
     protected function getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, $filtered)
     {
-//        if (!empty($elementTexts) && plugin_is_active('AvantElements'))
-//        {
-//            // If the element is specified as a checkbox using AvantElements, then return its display value for true.
-//            // By virtue of the element being displayed, its value must be true. By virtue of being a checkbox, there's
-//            // no meaning to having multiple instance of the value, so simply return the value for true e.g. "Yes".
-//            $checkboxFieldsData = ElementsConfig::getOptionDataForCheckboxField();
-//            if (array_key_exists($elementId, $checkboxFieldsData))
-//            {
-//                $definition = $checkboxFieldsData[$elementId];
-//                return $definition['checked'];
-//            }
-//        }
+        // If the element is specified as a checkbox using AvantElements, then return its display value for true.
+        // By virtue of the element being displayed, its value must be true. By virtue of being a checkbox, there's
+        // no meaning to having multiple instance of the value, so simply return the value for true e.g. "Yes".
+        if (!empty($elementTexts) && array_key_exists($elementId, $this->checkboxFieldData))
+        {
+            $definition = $this->checkboxFieldData[$elementId];
+            return $definition['checked'];
+        }
 
         $texts = '';
 
