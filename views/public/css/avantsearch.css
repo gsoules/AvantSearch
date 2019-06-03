@@ -323,7 +323,7 @@ input[type="checkbox"] {
 
 .search-results-title span {
 	display: inline-block;
-	padding-top: 4px;
+	padding-top: 6px;
 }
 
 .search-results-edit {
@@ -465,14 +465,15 @@ a.search-reset-link:hover {
 /* Default colors for selector options dropdown items */
 
 .search-selector-options li a.selector-normal {
-	background-color: #eee;
+	background-color: #ddd;
 	color: #666;
 	border: 0;
 }
 
 .search-selector-options li a.selector-normal:hover {
-	background-color: #aaa;
-	color: #666;
+	background-color: #ddd;
+	color: #222;
+	font-weight: bold;
 	border: 0;
 }
 
@@ -934,9 +935,9 @@ a.search-reset-link:hover {
 
 #search-table-view th {
 	color: #29536b;
-	font-size: 18px;
+	font-size: 14px;
 	font-variant: small-caps;
-	font-weight: normal;
+	font-weight: bold;
 	padding: 0 0 2px 4px;
 }
 
