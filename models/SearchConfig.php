@@ -73,7 +73,7 @@ class SearchConfig extends ConfigOptions
 
     public static function getOptionDataForHierarchies()
     {
-        return self::getOptionDefinitionData(self::OPTION_HIERARCHIES);
+        return self::getOptionListData(self::OPTION_HIERARCHIES);
     }
 
     public static function getOptionDataForIndexView()
@@ -263,27 +263,7 @@ class SearchConfig extends ConfigOptions
 
     public static function getOptionTextForHierarchies()
     {
-        if (self::configurationErrorsDetected())
-        {
-            $text = $_POST[self::OPTION_HIERARCHIES];
-        }
-        else
-        {
-            $data = self::getOptionDataForHierarchies();
-            $text = '';
-
-            foreach ($data as $elementId => $definition)
-            {
-                if (!empty($text))
-                {
-                    $text .= PHP_EOL;
-                }
-                $name = $definition['name'];
-                $display = $definition['display'];
-                $text .= "$name: $display";
-            }
-        }
-        return $text;
+        return self::getOptionListText(self::OPTION_HIERARCHIES);
     }
 
     public static function getOptionTextForIndexView()
@@ -344,13 +324,6 @@ class SearchConfig extends ConfigOptions
     public static function getOptionTextForTreeView()
     {
         return self::getOptionListText(self::OPTION_TREE_VIEW);
-    }
-
-    public static function isHierarchyElementThatDisplaysAs($elementId, $display)
-    {
-        $hierarchyElements = SearchConfig::getOptionDataForHierarchies();
-        $isHierarchyElement = array_key_exists($elementId, $hierarchyElements);
-        return $isHierarchyElement && $hierarchyElements[$elementId]['display'] == $display;
     }
 
     protected static function isPseudoElement($name)
@@ -455,34 +428,7 @@ class SearchConfig extends ConfigOptions
 
     public static function saveOptionDataForHierarchies()
     {
-        $data = array();
-        $definitions = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_HIERARCHIES]));
-        foreach ($definitions as $definition)
-        {
-            if (empty($definition))
-                continue;
-
-            // Text Field definitions are of the form: <element-name> ":" <display-option>
-            $parts = array_map('trim', explode(':', $definition));
-
-            $elementName = $parts[0];
-            $display = isset($parts[1]) ? trim($parts[1]) : '';
-            self::errorRowIf(strlen($display) == 0, CONFIG_LABEL_HIERARCHIES, $elementName, __("No display option specified."));
-
-            $options = array('root', 'leaf');
-            if (!empty($display) && !in_array($display, $options))
-            {
-                $allowed = implode(', ', $options);
-                self::errorRowIf(true, CONFIG_LABEL_HIERARCHIES, $elementName, __("'%s' is not a valid display option. Options: %s.", $display, $allowed));
-            }
-
-            $elementId = ItemMetadata::getElementIdForElementName($elementName);
-            self::errorIfNotElement($elementId, CONFIG_LABEL_HIERARCHIES, $elementName);
-
-            $data[$elementId] = array('display' => $display);
-        }
-
-        set_option(self::OPTION_HIERARCHIES, json_encode($data));
+        self::saveOptionListData(self::OPTION_HIERARCHIES, CONFIG_LABEL_HIERARCHIES);
     }
 
     public static function saveOptionDataForIndexView()

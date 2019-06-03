@@ -3,7 +3,6 @@
 
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
-$showRelationships = $searchResults->getShowRelationships();
 $resultsMessage = SearchResultsView::getSearchResultsMessage();
 
 // Values passed to results-view-script.php

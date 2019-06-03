@@ -223,7 +223,6 @@ class SearchQueryBuilder
         $titleFieldElementId = ItemMetadata::getTitleElementId();
 
         $sortByAddress = $sortField == $addressFieldElementId;
-        $sortAsHierarchy = SearchConfig::isHierarchyElementThatDisplaysAs($sortField, 'leaf');
 
         $sortByTitle = $sortField == $titleFieldElementId;
 
@@ -255,11 +254,6 @@ class SearchQueryBuilder
             // which refers to the match on the second group.
             $primaryColumnName .= '_exp';
             $this->select->columns($this->columnValueForStreetNameSort("_primary_column.text", $primaryColumnName));
-        }
-        elseif ($sortAsHierarchy)
-        {
-            $primaryColumnName .= '_exp';
-            $this->select->columns($this->columnValueForHierarchySort("_primary_column.text", $primaryColumnName));
         }
         else
         {

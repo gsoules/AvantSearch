@@ -19,6 +19,8 @@
     selectorTitle[SORT] = 'Sort by: %s';
     selectorTitle[VIEW] = 'View: %s';
 
+    var initializing = true;
+
     function deselectSelectorOptions(kind)
     {
         // Set all the  selector options to their unselected color.
@@ -88,14 +90,35 @@
             showColumnsForSelectedLayout(kind, prefix, newOptionId);
         }
 
+        var oldOptionValue;
+        var newOptionValue;
+        var newUrl;
+        var oldUrl = document.location.href;
+
         if (newOptionId === oldOptionId)
         {
-            // The user clicked on the same option as was already selected.
+            // Either the user clicked on the same option as was already selected or this is selector initialization.
+            if (!initializing && kind === SORT)
+            {
+                // Reverse the sort order.
+                var oldOrderValue = getQueryStringArg('order');
+                if (oldOrderValue.length)
+                {
+                    var newOrderValue = oldOrderValue === 'd' ? 'a' : 'd';
+                    oldOrderPattern = new RegExp('&order=' + oldOrderValue);
+                    newUrl = oldUrl.replace(oldOrderPattern, '&order=' + newOrderValue);
+                }
+                else
+                {
+                    newUrl = oldUrl + "&order=d";
+                }
+
+                // Reload the page to sort using the new order.
+                window.location.href = newUrl;
+            }
             return;
         }
 
-        var oldOptionValue;
-        var newOptionValue;
         if (kind === SORT)
         {
             oldOptionValue = jQuery('#' + prefix + oldOptionId).text();
@@ -111,10 +134,9 @@
 
         // Construct an updated query string to reflect the newly selected option.
         var oldOptionArgPattern = new RegExp('&' + kind + '=' + oldOptionValue);
-        var oldUrl = document.location.href;
         var urlWithoutOptionArg = oldUrl.replace(oldOptionArgPattern, '');
         var newOptionArg = '&' + kind + '=' + newOptionValue;
-        var newUrl = urlWithoutOptionArg + newOptionArg;
+        newUrl = urlWithoutOptionArg + newOptionArg;
 
         if (kind === FILTER || kind === LIMIT || kind === SORT || kind === VIEW)
         {
@@ -201,6 +223,8 @@
         initSelector(LIMIT, 'X');
         initSelector(SORT, 'S');
         initSelector(VIEW, 'V');
+
+        initializing = false;
 
         jQuery('.search-show-more').click(function (e)
         {
