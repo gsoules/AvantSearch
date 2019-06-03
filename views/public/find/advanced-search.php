@@ -20,7 +20,7 @@ $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
 $showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
 $useElasticsearch = AvantSearch::useElasticsearch();
-$contributorStats = '';
+$stats = '';
 if ($useElasticsearch)
 {
     // TO-DO: Move contributor statistics to their own page -- for now they show up on the Advanced Search page.
@@ -37,32 +37,60 @@ if ($useElasticsearch)
         $response = $avantElasticsearchClient->search($params);
         if ($response == null)
         {
-            $contributorStats = $avantElasticsearchClient->getLastError();
+            $stats = $avantElasticsearchClient->getLastError();
         }
         else
         {
-            $totalItems = 0;
-            $totalFiles = 0;
+            $audioTotal = 0;
+            $documentTotal = 0;
+            $imageTotal = 0;
+            $itemTotal = 0;
+            $videoTotal = 0;
+
             $buckets = $response["aggregations"]["contributors"]["buckets"];
-            $contributorStats .= "<table style='text-align:right'>";
-            $contributorStats .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong><td><strong>Attachments</strong></td></tr>';
+            $stats .= "<table style='text-align:right'>";
+            $stats .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong>';
+            $stats .= '<td><strong>Images</strong></td>';
+            $stats .= '<td><strong>Documents</strong></td>';
+            $stats .= '<td><strong>Audio</strong></td>';
+            $stats .= '<td><strong>Video</strong></td>';
+            $stats .= '</tr>';
+
             foreach ($buckets as $bucket)
             {
-                $contributorStats .= '<tr>';
+                $stats .= '<tr>';
                 $contributor = $bucket['key'];
                 $itemCount = $bucket['doc_count'];
-                $fileCount = $bucket['files']['value'];
-                $totalItems += $itemCount;
-                $totalFiles += $fileCount;
-                $itemCount = number_format($itemCount);
-                $fileCount = number_format($fileCount);
-                $contributorStats .= "<td>$contributor</td><td>$itemCount</td><td>$fileCount</td>";
-                $contributorStats .= '</tr>';
+                $itemTotal += $itemCount;
+                $stats .= "<td>$contributor</td><td>$itemCount</td>";
+
+                $imageCount = intval($bucket["image"]["value"]);
+                $imageTotal += $imageCount;
+                $stats .= "<td>$imageCount</td>";
+
+                $documentCount = intval($bucket["document"]["value"]);
+                $documentTotal += $documentCount;
+                $stats .= "<td>$documentCount</td>";
+
+                $audioCount = intval($bucket["audio"]["value"]);
+                $audioTotal += $audioCount;
+                $stats .= "<td>$audioCount</td>";
+
+                $videoCount = intval($bucket["video"]["value"]);
+                $videoTotal += $videoCount;
+                $stats .= "<td>$videoCount</td>";
+
+                $stats .= '</tr>';
             }
-            $totalItems = number_format($totalItems);
-            $totalFiles = number_format($totalFiles);
-            $contributorStats .= "<tr><td><strong>TOTAL</strong></td><td><strong>$totalItems</strong><td><strong>$totalFiles</strong></td></tr>";
-            $contributorStats .= '</table>';
+
+            $itemTotal = number_format($itemTotal);
+            $stats .= "<tr><td><strong>TOTAL</strong></td><td><strong>$itemTotal</strong>";
+            $stats .= "<td><strong>$imageTotal</strong></td>";
+            $stats .= "<td><strong>$documentTotal</strong></td>";
+            $stats .= "<td><strong>$audioTotal</strong></td>";
+            $stats .= "<td><strong>$videoTotal</strong></td>";
+            $stats .= "</tr>";
+            $stats .= '</table>';
         }
     }
 }
@@ -226,7 +254,7 @@ echo "<div id='avantsearch-container'>";
         <?php endif; ?>
 
         <?php if ($useElasticsearch): ?>
-            <?php echo $contributorStats; ?>
+            <?php echo $stats; ?>
         <?php endif; ?>
     </div>
 
