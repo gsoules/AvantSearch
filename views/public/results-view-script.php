@@ -69,8 +69,6 @@
     {
         var oldOptionId = selectedOptionId[kind];
 
-        console.log('setSelectedOption: ' + kind + ' : ' + prefix + ' : ' + newOptionId + ' : ' + oldOptionId);
-
         // Highlight the selected option in the panel of options.
         deselectSelectorOptions(kind);
         var selectedOption = jQuery('#' + prefix + newOptionId);
