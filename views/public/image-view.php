@@ -63,6 +63,9 @@ echo "<div class='search-results-title'>$pageTitle</div>";
         ?>
         </ul>
     </div>
+    <?php if ($useElasticsearch): ?>
+        </section>
+    <?php endif; ?>
     <?php
     echo $this->partial('/results-view-script.php', array('filterId' => $filterId, 'layoutId' => 0, 'limitId' => $limitId, 'sortId' => $sortId, 'viewId' => $viewId));
     echo pagination_links();
