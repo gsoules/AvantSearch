@@ -314,6 +314,7 @@ input[type="checkbox"] {
 	color: #222;
 	font-size:16px;
 	width: 100%;
+	height: 26px;
 }
 
 .search-results-buttons {

@@ -134,7 +134,7 @@ class SearchResultsFilters
 
         $resultControlsSection = $resultControlsHtml;
 
-        $this->filterMessage .= __('Search results for: ');
+        $this->filterMessage .= __('You searched for: ');
 
         foreach ($displayArray as $name => $query)
         {
