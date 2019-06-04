@@ -48,49 +48,62 @@ if ($useElasticsearch)
             $videoTotal = 0;
 
             $buckets = $response["aggregations"]["contributors"]["buckets"];
-            $stats .= "<table style='text-align:right'>";
-            $stats .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong>';
-            $stats .= '<td><strong>Images</strong></td>';
-            $stats .= '<td><strong>Documents</strong></td>';
-            $stats .= '<td><strong>Audio</strong></td>';
-            $stats .= '<td><strong>Video</strong></td>';
-            $stats .= '</tr>';
 
             foreach ($buckets as $bucket)
             {
-                $stats .= '<tr>';
-                $contributor = $bucket['key'];
                 $itemCount = $bucket['doc_count'];
                 $itemTotal += $itemCount;
-                $stats .= "<td>$contributor</td><td>$itemCount</td>";
 
                 $imageCount = intval($bucket["image"]["value"]);
                 $imageTotal += $imageCount;
-                $stats .= "<td>$imageCount</td>";
 
                 $documentCount = intval($bucket["document"]["value"]);
                 $documentTotal += $documentCount;
-                $stats .= "<td>$documentCount</td>";
 
                 $audioCount = intval($bucket["audio"]["value"]);
                 $audioTotal += $audioCount;
-                $stats .= "<td>$audioCount</td>";
 
                 $videoCount = intval($bucket["video"]["value"]);
                 $videoTotal += $videoCount;
-                $stats .= "<td>$videoCount</td>";
-
-                $stats .= '</tr>';
             }
 
+            $rows = '';
+            foreach ($buckets as $bucket)
+            {
+                $rows .= '<tr>';
+                $contributor = $bucket['key'];
+                $rows .= "<td>$contributor</td><td>$itemCount</td>";
+                $rows .= "<td>$imageCount</td>";
+                $rows .= "<td>$documentCount</td>";
+                if ($audioCount > 0)
+                    $rows .= "<td>$audioCount</td>";
+                if ($videoCount > 0)
+                    $rows .= "<td>$videoCount</td>";
+                $rows .= '</tr>';
+            }
+
+            $header = "<table style='text-align:right'>";
+            $header .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong>';
+            $header .= '<td><strong>Images</strong></td>';
+            $header .= '<td><strong>Documents</strong></td>';
+            if ($audioCount > 0)
+                $header .= '<td><strong>Audio</strong></td>';
+            if ($videoCount > 0)
+                $header .= '<td><strong>Video</strong></td>';
+            $header .= '</tr>';
+
             $itemTotal = number_format($itemTotal);
-            $stats .= "<tr><td><strong>TOTAL</strong></td><td><strong>$itemTotal</strong>";
-            $stats .= "<td><strong>$imageTotal</strong></td>";
-            $stats .= "<td><strong>$documentTotal</strong></td>";
-            $stats .= "<td><strong>$audioTotal</strong></td>";
-            $stats .= "<td><strong>$videoTotal</strong></td>";
-            $stats .= "</tr>";
-            $stats .= '</table>';
+            $totals = "<tr><td><strong>TOTAL</strong></td><td><strong>$itemTotal</strong>";
+            $totals .= "<td><strong>$imageTotal</strong></td>";
+            $totals .= "<td><strong>$documentTotal</strong></td>";
+            if ($audioCount > 0)
+                $totals .= "<td><strong>$audioTotal</strong></td>";
+            if ($videoCount > 0)
+                $totals .= "<td><strong>$videoTotal</strong></td>";
+            $totals .= "</tr>";
+            $totals .= '</table>';
+
+            $stats = $header . $rows . $totals;
         }
     }
 }
