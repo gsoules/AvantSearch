@@ -213,34 +213,28 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $queryParams = $this->getQueryParams();
 
         $id = ItemMetadata::getItemIdFromIdentifier($queryParams['query']);
-        if ($id) {
+        if ($id)
+        {
             // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
             AvantSearch::redirectToShowPageForItem($id);
         }
 
-        $page = $this->_request->page ? $this->_request->page : 1;
-        $start = ($page - 1) * $this->recordsPerPage;
+        $limit = $this->recordsPerPage;
         $sort = $this->getSortParams($params);
-
-        // Determine if only items with a file attachment should be queried.
-        $files = isset($params['filter']) && $params['filter'] == 1;
 
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
         $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');
 
-        $viewId = $searchResults->getViewId();
-        $isIndexView = $viewId === SearchResultsViewFactory::INDEX_VIEW_ID;
+        // Determine if only items with a file attachment should be queried.
+        $fileFilter = isset($params['filter']) && $params['filter'] == 1;
 
-        $options = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams([
-            'query' => $queryParams,
-            'offset' => $start,
-            'limit' => $this->recordsPerPage,
-            'sort' => $sort,
-            'public' => $public,
-            'files' => $files
-            ],
-            $this->commingled,
-            $isIndexView);
+        $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams(
+            $queryParams,
+            $limit,
+            $sort,
+            $public,
+            $fileFilter,
+            $this->commingled);
 
         $results = null;
         $this->totalRecords = 0;
@@ -252,7 +246,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         if ($avantElasticsearchClient->ready())
         {
-            $results = $avantElasticsearchClient->search($options);
+            $results = $avantElasticsearchClient->search($searchQueryParams);
             if ($results == null)
             {
                 // Null results means an exception occurred. This is different than a results of zero hits.

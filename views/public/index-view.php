@@ -162,20 +162,48 @@ function flattenResults($results, $indexFieldElementId, $searchResults)
 
 $results = $searchResults->getResults();
 $totalResults = count($results);
+$resultsMessage = SearchResultsView::getSearchResultsMessage();
+
 $indexFieldElementId = $searchResults->getIndexFieldElementId();
 $showLetterIndex = $totalResults > 50;
 $element = get_db()->getTable('Element')->find($indexFieldElementId);
 $indexFieldName = empty($element) ? '' : $element['name'];
 $pageTitle = __('Search Results');
+$useElasticsearch = $searchResults->getUseElasticsearch();
 
 echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";
-echo "<div class='search-results-title'>$pageTitle</div>";
+echo "<div class='search-results-title'><span>$resultsMessage</span></div>";
 
-echo $searchResults->emitSearchFilters(__('Index View by %s', $indexFieldName), $totalResults ? pagination_links() : '', false);
+$resultControlsHtml = '';
+if ($totalResults)
+{
+    // The order here is the left to right order of these controls on the Search Results page.
+    $resultControlsHtml .= $searchResults->emitSelectorForView();
+    //$resultControlsHtml .= $searchResults->emitSelectorForLayout($layoutsData);
+    //$resultControlsHtml .= $searchResults->emitSelectorForLimit();
+    //$resultControlsHtml .= $searchResults->emitSelectorForSort();
+    $resultControlsHtml .= $searchResults->emitSelectorForFilter();
+}
+
+echo $searchResults->emitSearchFilters($resultControlsHtml, '');
 
 if ($totalResults)
 {
+    if ($useElasticsearch)
+    {
+       echo '<section id="search-table-elasticsearch-sidebar">';
+        $query = $searchResults->getQuery();
+        $facets = $searchResults->getFacets();
+        echo $this->partial('/elasticsearch-facets.php', array(
+                'query' => $query,
+                'aggregations' => $facets,
+                'totalResults' => $totalResults
+            )
+        );
+        echo '</section>';
+        echo '<section id="search-table-elasticsearch-results">';
+    }
     $entries = flattenResults($results, $indexFieldElementId, $searchResults);
 
     if ($showLetterIndex)
@@ -195,6 +223,18 @@ if ($totalResults)
     }
 
     echo '</div>';
+    if ($useElasticsearch)
+    {
+        echo '</section>';
+    }
+    echo $this->partial('/results-view-script.php',
+        array(
+            'filterId' => 0,
+            'layoutId' => 0,
+            'limitId' => 0,
+            'sortId' => 0,
+            'viewId' => 2)
+    );
 }
 else
 {

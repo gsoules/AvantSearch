@@ -33,7 +33,7 @@ if ($useElasticsearch)
         // Explicitly specify that the shared index should be queried.
         $avantElasticsearchQueryBuilder->setIndexName(AvantElasticsearch::getNameOfSharedIndex());
 
-        $params = $avantElasticsearchQueryBuilder->constructTermAggregationsQueryParams('item.contributor');
+        $params = $avantElasticsearchQueryBuilder->constructFileStatisticsAggregationParams();
         $response = $avantElasticsearchClient->search($params);
         if ($response == null)
         {
