@@ -460,6 +460,24 @@ class SearchResultsView
         return $message;
     }
 
+    public static function getSearchResultsMessageForIndexView($totalResults)
+    {
+        if ($totalResults == 0)
+        {
+            $message = __('No items found. Check the spelling of your keywords or try using fewer keywords.');
+        }
+        else if ($totalResults == 1)
+        {
+            return __('1 item found');
+        }
+        else
+        {
+            $message = "$totalResults " . __('results');
+        }
+
+        return $message;
+    }
+
     public function getSearchTitles()
     {
         if (isset($this->titles))
@@ -472,8 +490,8 @@ class SearchResultsView
     public function getSelectedIndexId()
     {
         $indexFieldName = $this->getIndexFieldName();
-        $indexId = array_search ($indexFieldName, $this->indexOptions);
-        return $indexId === false ? 0 : $indexId;
+        $indexId = array_search($indexFieldName, $this->indexOptions);
+        return $indexId === false ? array_search('Title', $this->indexOptions) : $indexId;
     }
 
     public function getSelectedFilterId()
@@ -518,30 +536,37 @@ class SearchResultsView
         if (isset($this->sortFieldElementId))
             return $this->sortFieldElementId;
 
-        $sortSpecifier = isset($_GET['sort']) ? $_GET['sort'] : '';
+        $this->sortFieldElementId = $this->getElementIdForQueryArg('sort');
 
-        // Accept either an element Id or an element name as the sort field. This provides backwards
-        // compatibility with AvantSearch 2.0 which used element Ids for the sort specifier.
-        if (intval($sortSpecifier) == 0)
+        return $this->sortFieldElementId;
+    }
+
+    public function getElementIdForQueryArg($argName)
+    {
+        $elementSpecifier = isset($_GET[$argName]) ? $_GET[$argName] : '';
+
+        // Accept either an element Id or an element name as the element specifier. This provides backwards
+        // compatibility with AvantSearch 2.0 which used element Ids for sort and Index View index specifiers.
+        if (intval($elementSpecifier) == 0)
         {
             // The specifier is not an element Id. Assume that it's an element name. Attempt to get its element Id.
-            $this->sortFieldElementId = ItemMetadata::getElementIdForElementName($sortSpecifier);
+            $elementId = ItemMetadata::getElementIdForElementName($elementSpecifier);
         }
         else
         {
             // The specifier is a number. Verify that it's an element Id by attempting to get the element's name.
-            $sortFieldName = ItemMetadata::getElementNameFromId($sortSpecifier);
-            $this->sortFieldElementId = empty($sortFieldName) ? 0 : $sortSpecifier;
+            $elementName = ItemMetadata::getElementNameFromId($elementSpecifier);
+            $elementId = empty($elementName) ? 0 : $elementSpecifier;
         }
 
-        if ($this->sortFieldElementId == 0)
+        if ($elementId == 0)
         {
-            // Either no sort field was specified or its element Id or name is invalid. Use the Title as a default.
-            // This should only happen if someone modified the query string to change the sort specifier.
-            $this->sortFieldElementId = ItemMetadata::getTitleElementId();
+            // Either no element arg was specified or its element Id or name is invalid. Use the Title as a default.
+            // This should only happen if someone modified the query string to change the specifier.
+            $elementId = ItemMetadata::getTitleElementId();
         }
 
-        return $this->sortFieldElementId;
+        return $elementId;
     }
 
     public function getSortFieldName()

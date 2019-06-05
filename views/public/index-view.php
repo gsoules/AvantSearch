@@ -161,15 +161,26 @@ function flattenResults($results, $indexFieldElementId, $searchResults, $facets)
 }
 
 $results = $searchResults->getResults();
-$totalResults = count($results);
-$resultsMessage = SearchResultsView::getSearchResultsMessage();
-$pageTitle = SearchResultsView::getSearchResultsMessage();
+
+$useElasticsearch = $searchResults->getUseElasticsearch();
+$facets = array();
+if ($useElasticsearch)
+{
+    $facets = $searchResults->getFacets();
+    $totalResults = count($facets['index']['buckets']);
+}
+else
+{
+    $totalResults = count($results);
+}
+
+$resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults);
+$pageTitle = $resultsMessage;
 
 $indexFieldElementId = $searchResults->getIndexFieldElementId();
 $showLetterIndex = $totalResults > 50;
 $element = get_db()->getTable('Element')->find($indexFieldElementId);
 $indexFieldName = empty($element) ? '' : $element['name'];
-$useElasticsearch = $searchResults->getUseElasticsearch();
 
 $indexId = $searchResults->getSelectedIndexId();
 $viewId = $searchResults->getSelectedViewId();
@@ -194,7 +205,6 @@ if ($totalResults)
     {
        echo '<section id="search-table-elasticsearch-sidebar">';
         $query = $searchResults->getQuery();
-        $facets = $searchResults->getFacets();
         echo $this->partial('/elasticsearch-facets.php', array(
                 'query' => $query,
                 'aggregations' => $facets,
@@ -239,9 +249,6 @@ if ($totalResults)
 }
 else
 {
-    echo '<div id="no-results">';
-    echo '<p>' . __('Your search returned no results.') . '</p>';
-    echo '</div>';
     echo '</div>';
 }
 echo foot();
