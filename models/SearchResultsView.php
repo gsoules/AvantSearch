@@ -156,9 +156,9 @@ class SearchResultsView
         return url("find?$queryString");
     }
 
-    public function emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected = true)
+    public function emitSearchFilters($resultControlsHtml)
     {
-        return $this->searchFilters->emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected);
+        return $this->searchFilters->emitSearchFilters($resultControlsHtml);
     }
 
     public function emitSelector($kind, $options)

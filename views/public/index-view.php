@@ -157,9 +157,9 @@ function flattenResults($results, $indexFieldElementId, $searchResults, $facets)
     return $entries;
 }
 
+$useElasticsearch = $searchResults->getUseElasticsearch();
 $results = $searchResults->getResults();
 
-$useElasticsearch = $searchResults->getUseElasticsearch();
 $facets = array();
 if ($useElasticsearch)
 {
@@ -172,29 +172,23 @@ else
 }
 
 $resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults);
-$pageTitle = $resultsMessage;
 
 $indexFieldElementId = $searchResults->getIndexFieldElementId();
 $showLetterIndex = $totalResults > 50;
 $element = get_db()->getTable('Element')->find($indexFieldElementId);
 $indexFieldName = empty($element) ? '' : $element['name'];
 
+$optionSelectorsHtml = $searchResults->emitSelectorForView();
+$optionSelectorsHtml .= $searchResults->emitSelectorForIndex();
+
 $indexId = $searchResults->getSelectedIndexId();
 $viewId = $searchResults->getSelectedViewId();
 
-echo head(array('title' => $pageTitle));
+echo head(array('title' => $resultsMessage));
 echo "<div class='search-results-container'>";
 echo "<div class='search-results-title'><span>$resultsMessage</span></div>";
 
-$resultControlsHtml = '';
-if ($totalResults)
-{
-    // The order here is the left to right order of these controls on the Search Results page.
-    $resultControlsHtml .= $searchResults->emitSelectorForView();
-    $resultControlsHtml .= $searchResults->emitSelectorForIndex();
-}
-
-echo $searchResults->emitSearchFilters($resultControlsHtml, '');
+echo $searchResults->emitSearchFilters($optionSelectorsHtml);
 
 if ($totalResults)
 {
@@ -234,19 +228,26 @@ if ($totalResults)
     {
         echo '</section>';
     }
-    echo $this->partial('/results-view-script.php',
-        array(
-            'filterId' => 0,
-            'layoutId' => 0,
-            'limitId' => 0,
-            'sortId' => 0,
-            'indexId' => $indexId,
-            'viewId' => $viewId)
-    );
 }
 else
 {
+    echo '<div id="no-results">';
+    echo ' <p>';
+    $error = $searchResults->getError();
+    if (!empty($error))
+        echo $error;
+    echo '</p>';
     echo '</div>';
 }
+echo $this->partial('/results-view-script.php',
+    array(
+        'filterId' => 0,
+        'layoutId' => 0,
+        'limitId' => 0,
+        'sortId' => 0,
+        'indexId' => $indexId,
+        'viewId' => $viewId)
+);
+echo '</div>';
 echo foot();
 ?>

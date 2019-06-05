@@ -1,6 +1,7 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
+$useElasticsearch = $searchResults->getUseElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 $resultsMessage = SearchResultsView::getSearchResultsMessage();
@@ -22,28 +23,21 @@ $userCanEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin
 $identifierAliasName = ItemMetadata::getIdentifierAliasElementName();
 $checkboxFieldData = plugin_is_active('AvantElements') ? ElementsConfig::getOptionDataForCheckboxField() : array();
 
-$useElasticsearch = $searchResults->getUseElasticsearch();
+$optionSelectorsHtml = $searchResults->emitSelectorForView();
+$optionSelectorsHtml .= $searchResults->emitSelectorForLayout($layoutsData);
+$optionSelectorsHtml .= $searchResults->emitSelectorForLimit();
+$optionSelectorsHtml .= $searchResults->emitSelectorForSort();
+$optionSelectorsHtml .= $searchResults->emitSelectorForFilter();
 
 echo head(array('title' => $resultsMessage));
 echo "<div class='search-results-container'>";
 $paginationLinks = pagination_links();
 echo "<div class='search-results-title'><span>$resultsMessage</span>$paginationLinks</div>";
 
-$resultControlsHtml = '';
-if ($totalResults)
-{
-    // The order here is the left to right order of these controls on the Search Results page.
-    $resultControlsHtml .= $searchResults->emitSelectorForView();
-    $resultControlsHtml .= $searchResults->emitSelectorForLayout($layoutsData);
-    $resultControlsHtml .= $searchResults->emitSelectorForLimit();
-    $resultControlsHtml .= $searchResults->emitSelectorForSort();
-    $resultControlsHtml .= $searchResults->emitSelectorForFilter();
-}
+echo $searchResults->emitSearchFilters($optionSelectorsHtml);
 ?>
 
-<?php echo $searchResults->emitSearchFilters($resultControlsHtml, ''); ?>
-
-<?php if ($totalResults > 0): ?>
+<?php if ($totalResults): ?>
     <?php if ($useElasticsearch): ?>
         <section id="search-table-elasticsearch-sidebar">
             <?php
@@ -92,15 +86,6 @@ if ($totalResults)
         </section>
     <?php endif; ?>
     <?php
-        echo $this->partial('/results-view-script.php',
-            array(
-                'filterId' => $filterId,
-                'layoutId' => $layoutId,
-                'limitId' => $limitId,
-                'sortId' => $sortId,
-                'indexId' => 0,
-                'viewId' => $viewId)
-        );
         echo "<div id='search-pagination-bottom'>$paginationLinks</div>";
         echo '</div>';
     ?>
@@ -115,4 +100,16 @@ if ($totalResults)
         </p>
     </div>
 <?php endif; ?>
-<?php echo foot(); ?>
+<?php
+echo $this->partial('/results-view-script.php',
+    array(
+        'filterId' => $filterId,
+        'layoutId' => $layoutId,
+        'limitId' => $limitId,
+        'sortId' => $sortId,
+        'indexId' => 0,
+        'viewId' => $viewId)
+);
+echo '</div>';
+echo foot();
+?>

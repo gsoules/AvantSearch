@@ -18,6 +18,7 @@
 
 #no-results {
 	clear: both;
+	height: 300px;
 }
 
 #no-results p {

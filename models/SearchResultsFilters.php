@@ -38,7 +38,7 @@ class SearchResultsFilters
         }
     }
 
-    public function emitSearchFilters($resultControlsHtml, $paginationNav, $filtersExpected)
+    public function emitSearchFilters($resultControlsHtml)
     {
         $useElasticsearch = $this->searchResults->getUseElasticsearch();
 
@@ -158,16 +158,10 @@ class SearchResultsFilters
             $this->emitElasticsearchFilters();
         }
 
-        if ($filtersExpected && $this->filterCount == 0)
-        {
-            $message = __('No search filters');
-            $this->addFilterMessageCriteria($message);
-        }
-
         $class = 'search-filter-bar-layout';
         $html = "<div id='search-filter-bar'>";
         $html .= $this->filterCount> 0 ? "<div class='search-filter-bar-message'>$this->filterMessage</div>" : '';
-        $html .= "<div class='$class'>{$resultControlsSection}{$paginationNav}</div>";
+        $html .= "<div class='$class'>{$resultControlsSection}</div>";
         $html .= '</div>';
 
         return $html;

@@ -1,31 +1,26 @@
 <?php
+$useElasticsearch = $searchResults->getUseElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
-$pageTitle = SearchResultsView::getSearchResultsMessage();
-
-$useElasticsearch = $searchResults->getUseElasticsearch();
+$resultsMessage = SearchResultsView::getSearchResultsMessage();
 
 $filterId = $searchResults->getSelectedFilterId();
 $limitId = $searchResults->getSelectedLimitId();
 $sortId = $searchResults->getSelectedSortId();
 $viewId = $searchResults->getSelectedViewId();
 
-$resultControlsHtml = '';
-if ($totalResults)
-{
-    // The order here is the left to right order of these controls on the Search Results page.
-    $resultControlsHtml .= $searchResults->emitSelectorForView();
-    $resultControlsHtml .= $searchResults->emitSelectorForLimit();
-    $resultControlsHtml .= $searchResults->emitSelectorForSort();
-    $resultControlsHtml .= $searchResults->emitSelectorForFilter();
-}
+$optionSelectorsHtml = $searchResults->emitSelectorForView();
+$optionSelectorsHtml .= $searchResults->emitSelectorForLimit();
+$optionSelectorsHtml .= $searchResults->emitSelectorForSort();
+$optionSelectorsHtml .= $searchResults->emitSelectorForFilter();
 
-echo head(array('title' => $pageTitle));
+echo head(array('title' => $resultsMessage));
 echo "<div class='search-results-container'>";
-echo "<div class='search-results-title'>$pageTitle</div>";
-?>
+$paginationLinks = pagination_links();
+echo "<div class='search-results-title'><span>$resultsMessage</span>$paginationLinks</div>";
 
-<?php echo $searchResults->emitSearchFilters($resultControlsHtml, $totalResults ? pagination_links() : ''); ?>
+echo $searchResults->emitSearchFilters($optionSelectorsHtml);
+?>
 
 <?php if ($totalResults): ?>
     <?php if ($useElasticsearch): ?>
@@ -67,13 +62,6 @@ echo "<div class='search-results-title'>$pageTitle</div>";
         </section>
     <?php endif; ?>
     <?php
-    echo $this->partial('/results-view-script.php',
-        array('filterId' => $filterId,
-            'layoutId' => 0,
-            'limitId' => $limitId,
-            'sortId' => $sortId,
-            'indexId' => 0,
-            'viewId' => $viewId));
     echo pagination_links();
     echo '</div>';
     ?>
@@ -88,4 +76,15 @@ echo "<div class='search-results-title'>$pageTitle</div>";
         </p>
     </div>
 <?php endif; ?>
-<?php echo foot(); ?>
+<?php
+echo $this->partial('/results-view-script.php',
+    array('filterId' => $filterId,
+        'layoutId' => 0,
+        'limitId' => $limitId,
+        'sortId' => $sortId,
+        'indexId' => 0,
+        'viewId' => $viewId)
+);
+echo '</div>';
+echo foot();
+?>
