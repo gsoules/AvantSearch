@@ -173,23 +173,6 @@ class SearchResultsTableView extends SearchResultsView
         return empty($keys) ? 0 : max($keys);
     }
 
-    public function getLayoutSelectOptions()
-    {
-        $layoutsData = $this->layoutsData;
-        $layoutSelectOptions = array();
-        foreach ($layoutsData as $idNumber => $layout)
-        {
-            if (!SearchConfig::userHasAccessToLayout($layout))
-            {
-                // Omit admin layouts for non-admin users.
-                continue;
-            }
-
-            $layoutSelectOptions[$idNumber] = $layout['name'];
-        }
-        return $layoutSelectOptions;
-    }
-
     protected function getOptionDataForDetailLayout()
     {
         $detailLayoutData = SearchConfig::getOptionDataForDetailLayout();

@@ -18,15 +18,4 @@ class SearchResultsIndexView extends SearchResultsView
         $this->indexFieldElementId = $this->getElementIdForQueryArg('index');
         return $this->indexFieldElementId;
     }
-
-    public static function getIndexFieldOptions()
-    {
-        $indexViewData = SearchConfig::getOptionDataForIndexView();
-        $options = array();
-        foreach ($indexViewData as $elementId => $elementName)
-        {
-            $options[$elementId] = $elementName;
-        }
-        return $options;
-    }
 }

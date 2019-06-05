@@ -4,13 +4,11 @@ define('CONFIG_LABEL_ADDRESS_SORTING', __('Address Sorting'));
 define('CONFIG_LABEL_COLUMNS', __('Columns'));
 define('CONFIG_LABEL_DETAIL_LAYOUT', __('Detail Layout'));
 define('CONFIG_LABEL_ELASTICSEARCH', __('Elasticsearch'));
-define('CONFIG_LABEL_INDEX_VIEW', __('Index View'));
 define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
 define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
 define('CONFIG_LABEL_HIERARCHIES', __('Hierarchies'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
-define('CONFIG_LABEL_TREE_VIEW', __('Tree View'));
 
 class SearchConfig extends ConfigOptions
 {
@@ -18,13 +16,11 @@ class SearchConfig extends ConfigOptions
     const OPTION_COLUMNS = 'avantsearch_columns';
     const OPTION_DETAIL_LAYOUT = 'avantsearch_detail_layout';
     const OPTION_ELASTICSEARCH = 'avantsearch_elasticsearch';
-    const OPTION_INDEX_VIEW = 'avantsearch_index_view';
     const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
     const OPTION_LAYOUTS = 'avantsearch_layouts';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
     const OPTION_HIERARCHIES = 'avantsearch_hierarchies';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
-    const OPTION_TREE_VIEW = 'avantsearch_tree_view';
 
     public static function emitInnoDbMessage($engine)
     {
@@ -76,11 +72,6 @@ class SearchConfig extends ConfigOptions
         return self::getOptionListData(self::OPTION_HIERARCHIES);
     }
 
-    public static function getOptionDataForIndexView()
-    {
-        return self::getOptionListData(self::OPTION_INDEX_VIEW);
-    }
-
     public static function getOptionDataForIntegerSorting()
     {
         return self::getOptionListData(self::OPTION_INTEGER_SORTING);
@@ -114,11 +105,6 @@ class SearchConfig extends ConfigOptions
         }
 
         return $data;
-    }
-
-    public static function getOptionDataForTreeView()
-    {
-        return self::getOptionListData(self::OPTION_TREE_VIEW);
     }
 
     public static function getOptionSupportedDateRange()
@@ -266,11 +252,6 @@ class SearchConfig extends ConfigOptions
         return self::getOptionListText(self::OPTION_HIERARCHIES);
     }
 
-    public static function getOptionTextForIndexView()
-    {
-        return self::getOptionListText(self::OPTION_INDEX_VIEW);
-    }
-
     public static function getOptionTextForIntegerSorting()
     {
         return self::getOptionListText(self::OPTION_INTEGER_SORTING);
@@ -321,11 +302,6 @@ class SearchConfig extends ConfigOptions
         return $layoutsOption;
     }
 
-    public static function getOptionTextForTreeView()
-    {
-        return self::getOptionListText(self::OPTION_TREE_VIEW);
-    }
-
     protected static function isPseudoElement($name)
     {
         $pseudoElements = array('<tags>', '<score>');
@@ -337,8 +313,6 @@ class SearchConfig extends ConfigOptions
         self::saveOptionDataForLayouts();
         self::saveOptionDataForColumns();
         self::saveOptionDataForDetailLayout();
-        self::saveOptionDataForIndexView();
-        self::saveOptionDataForTreeView();
         self::saveOptionDataForHierarchies();
         self::saveOptionDataForIntegerSorting();
 
@@ -431,11 +405,6 @@ class SearchConfig extends ConfigOptions
         self::saveOptionListData(self::OPTION_HIERARCHIES, CONFIG_LABEL_HIERARCHIES);
     }
 
-    public static function saveOptionDataForIndexView()
-    {
-        self::saveOptionListData(self::OPTION_INDEX_VIEW, CONFIG_LABEL_INDEX_VIEW);
-    }
-
     public static function saveOptionDataForIntegerSorting()
     {
         self::saveOptionListData(self::OPTION_INTEGER_SORTING, CONFIG_LABEL_INTEGER_SORTING);
@@ -506,11 +475,6 @@ class SearchConfig extends ConfigOptions
         }
 
         set_option(self::OPTION_LAYOUTS, json_encode($layouts));
-    }
-
-    public static function saveOptionDataForTreeView()
-    {
-        self::saveOptionListData(self::OPTION_TREE_VIEW, CONFIG_LABEL_TREE_VIEW);
     }
 
     public static function setDefaultOptionValues()

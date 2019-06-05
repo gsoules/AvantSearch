@@ -14,12 +14,6 @@ $layoutsOptionRows = max(2, count(explode(PHP_EOL, $layoutsOption)));
 
 $detailLayoutOption = SearchConfig::getOptionTextForDetailLayout();
 
-$indexViewOption = SearchConfig::getOptionTextForIndexView();
-$indexViewOptionRows = max(2, count(explode(PHP_EOL, $indexViewOption)));
-
-$treeViewOption = SearchConfig::getOptionTextForTreeView();
-$treeViewOptionRows = max(2, count(explode(PHP_EOL, $treeViewOption)) - 1);
-
 $hierarchiesOption = SearchConfig::getOptionTextForHierarchies();
 $hierarchiesOptionRows = max(2, count(explode(PHP_EOL, $hierarchiesOption)));
 
@@ -83,26 +77,6 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Detail layout elements."); ?></p>
         <?php echo $view->formTextarea(SearchConfig::OPTION_DETAIL_LAYOUT, $detailLayoutOption, array('rows' => '2')); ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo CONFIG_LABEL_INDEX_VIEW; ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __("Elements that can be used as the Index View field."); ?></p>
-        <?php echo $view->formTextarea(SearchConfig::OPTION_INDEX_VIEW, $indexViewOption, array('rows' => $indexViewOptionRows)); ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo CONFIG_LABEL_TREE_VIEW; ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __("Elements that can be used as the Tree View field."); ?></p>
-        <?php echo $view->formTextarea(SearchConfig::OPTION_TREE_VIEW, $treeViewOption, array('rows' => $treeViewOptionRows)); ?>
     </div>
 </div>
 

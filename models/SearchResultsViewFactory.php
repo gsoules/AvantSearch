@@ -4,7 +4,6 @@ class SearchResultsViewFactory
 {
     const TABLE_VIEW_ID = 1;
     const INDEX_VIEW_ID = 2;
-    const TREE_VIEW_ID = 3;
     const IMAGE_VIEW_ID = 4;
 
     public static function createSearchResultsView($viewId)
@@ -13,10 +12,6 @@ class SearchResultsViewFactory
         {
             case SearchResultsViewFactory::INDEX_VIEW_ID:
                 $searchResults = new SearchResultsIndexView();
-                break;
-
-            case SearchResultsViewFactory::TREE_VIEW_ID:
-                $searchResults = new SearchResultsTreeView();
                 break;
 
             case SearchResultsViewFactory::IMAGE_VIEW_ID:
@@ -43,12 +38,7 @@ class SearchResultsViewFactory
 
         $views[SearchResultsViewFactory::TABLE_VIEW_ID] = __('Table');
         $views[SearchResultsViewFactory::IMAGE_VIEW_ID] = __('Images');
-
-        if (count(SearchResultsIndexView::getIndexFieldOptions()) >= 1)
-            $views[SearchResultsViewFactory::INDEX_VIEW_ID] = __('Index');
-
-        if (count(SearchResultsTreeView::getTreeFieldOptions()) >= 1)
-            $views[SearchResultsViewFactory::TREE_VIEW_ID] = __('Tree');
+        $views[SearchResultsViewFactory::INDEX_VIEW_ID] = __('Index');
 
         return $views;
     }
@@ -58,8 +48,7 @@ class SearchResultsViewFactory
         $shortNames = array(
             SearchResultsViewFactory::TABLE_VIEW_ID => 'table',
             SearchResultsViewFactory::IMAGE_VIEW_ID => 'image',
-            SearchResultsViewFactory::INDEX_VIEW_ID => 'index',
-            SearchResultsViewFactory::TREE_VIEW_ID => 'tree');
+            SearchResultsViewFactory::INDEX_VIEW_ID => 'index');
 
         return $shortNames[$viewId];
     }

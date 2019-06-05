@@ -7,11 +7,7 @@ $advancedSubmitButtonText = __('Search');
 // Instantiate search results objects needed to get option values.
 $searchResults = new SearchResultsView();
 $searchResultsTable = new SearchResultsTableView();
-$searchResultsIndex = new SearchResultsIndexView();
-$searchResultsTree = new SearchResultsTreeView();
 
-$selectedLayoutId = $searchResultsTable->getSelectedLayoutId();
-$resultsPerPage = $searchResultsTable->getResultsLimit();
 $keywords = $searchResults->getKeywords();
 $searchTitlesOnly = $searchResultsTable->getSearchTitles();
 $condition = $searchResults->getKeywordsCondition();
@@ -277,39 +273,6 @@ echo "<div id='avantsearch-container'>";
 			<input type="submit" class="submit button" value="<?php echo $advancedSubmitButtonText; ?>">
 		</div>
 
-        <?php echo $this->formLabel('view-label', __('Show search results in:')); ?>
-        <div class="search-radio-buttons">
-            <?php echo $this->formRadio('view', $searchResults->getViewId(), null, $searchResults->getViewOptions()); ?>
-        </div>
-
-        <div id="table-view-options" class="search-view-options">
-            <div class="table-view-layout-option search-view-option">
-                <?php
-                echo $this->formLabel('layout', __('Table Layout'));
-                $layoutSelectOptions = $searchResultsTable->getLayoutSelectOptions();
-                echo $this->formSelect('layout', $selectedLayoutId, array(), $layoutSelectOptions);
-                ?>
-            </div>
-        </div>
-
-        <div id="index-view-options" class="search-view-options">
-        	<div class="index-view-field-option search-view-option">
-				<?php
-				echo $this->formLabel('index-label', __('Index Field'));
-				echo $this->formSelect('index', @$_REQUEST['index'], array(), $searchResultsIndex->getIndexFieldOptions());
-				?>
-            </div>
-        </div>
-
-        <div id="tree-view-options" class="search-view-options">
-            <div class="tree-view-field-option search-view-option">
-            <?php
-            echo $this->formLabel('tree-label', __('Tree Field'));
-            echo $this->formSelect('tree', @$_REQUEST['tree'], array(), $searchResultsTree->getTreeFieldOptions());
-            ?>
-            </div>
-        </div>
-
         <div class="search-form-reset-button">
             <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Reset all search options</a>'; ?>
         </div>
@@ -320,14 +283,6 @@ echo "<div id='avantsearch-container'>";
 <?php echo js_tag('items-search'); ?>
 
 <script type="text/javascript">
-    var tableViewOptions = jQuery('#table-view-options');
-    var indexViewOptions = jQuery('#index-view-options');
-    var treeViewOptions = jQuery('#tree-view-options');
-    var resultsLimitOptions = jQuery('#results-limit-options');
-
-    var DEFAULT_LAYOUT = '<?php echo SearchResultsTableView::DEFAULT_LAYOUT; ?>';
-    var RELATIONSHIPS_LAYOUT = '<?php echo SearchResultsTableView::RELATIONSHIPS_LAYOUT; ?>';
-
     function disableDefaultRadioButton(name, defaultValue)
     {
         var checkedButton = jQuery("input[name='" + name + "']:checked");
@@ -358,98 +313,8 @@ echo "<div id='avantsearch-container'>";
         }
     }
 
-    function disableHiddenSelection(selector)
-    {
-        var select = jQuery(selector);
-        var selectedOption = select.find(":selected");
-        var hidden = select.is(':hidden');
-        if (hidden)
-        {
-            select.prop("disabled", true);
-        }
-    }
-
-    function setView(viewId)
-    {
-        viewId = parseInt(viewId, 10);
-
-        // Hide all options.
-        tableViewOptions.hide();
-        indexViewOptions.hide();
-        treeViewOptions.hide();
-        resultsLimitOptions.hide();
-
-        var selectedViewOptions = null;
-
-        // Show the options for the selected view.
-        if (viewId === <?php echo SearchResultsViewFactory::TABLE_VIEW_ID; ?>)
-            selectedViewOptions = tableViewOptions;
-        else if (viewId === <?php echo SearchResultsViewFactory::INDEX_VIEW_ID; ?>)
-            selectedViewOptions = indexViewOptions;
-        else if (viewId === <?php echo SearchResultsViewFactory::TREE_VIEW_ID; ?>)
-            selectedViewOptions = treeViewOptions;
-
-        if (selectedViewOptions)
-        {
-            selectedViewOptions.slideDown('slow');
-        }
-        if (viewId === <?php echo SearchResultsViewFactory::TABLE_VIEW_ID; ?> ||
-            viewId === <?php echo SearchResultsViewFactory::IMAGE_VIEW_ID; ?>)
-        {
-            resultsLimitOptions.slideDown('slow');
-        }
-    }
-
-    function updateRelationshipsOption(changed)
-    {
-        var showRelationships = jQuery("#relationships").prop('checked');
-        var layoutSelector = jQuery('#layout');
-        var selectedLayoutId = layoutSelector.val();
-
-        if (changed)
-        {
-            if (showRelationships)
-            {
-                // The user checked the Show Relationships box.
-                // Automatically change the selection to show the Relationships layout option.
-                selectedLayoutId = RELATIONSHIPS_LAYOUT;
-            }
-            else
-            {
-                // The user unchecked the Show Relationships box.
-                // Make sure that the Relationships layout option is not selected.
-                if (selectedLayoutId === RELATIONSHIPS_LAYOUT)
-                    selectedLayoutId = DEFAULT_LAYOUT;
-            }
-        }
-
-        // Show the selected layout option and enable/disable the Relationships option.
-        layoutSelector.val(selectedLayoutId);
-        jQuery("#layout option[value='" + RELATIONSHIPS_LAYOUT + "']").attr("disabled", !showRelationships);
-    }
-
     jQuery(document).ready(function () {
         Omeka.Search.activateSearchButtons();
-
-        // Show the options for the selected view.
-        var viewSelection = jQuery("[name='view']:checked").val();
-        setView(viewSelection);
-
-        var userChangedOption = false;
-        updateRelationshipsOption(userChangedOption);
-
-        jQuery("[name='view']").change(function (e)
-        {
-            // The user changed the results view.
-            var viewSelection = jQuery(this).val();
-            setView(viewSelection);
-        });
-
-        jQuery("[name='relationships']").change(function (e)
-        {
-            var userChangedOption = true;
-            updateRelationshipsOption(userChangedOption);
-        });
 
         jQuery('#search-filter-form').submit(function()
         {
@@ -477,11 +342,6 @@ echo "<div id='avantsearch-container'>";
 
             disableDefaultRadioButton('titles', '<?php echo SearchResultsView::DEFAULT_SEARCH_TITLES; ?>');
             disableDefaultRadioButton('condition', '<?php echo SearchResultsView::DEFAULT_KEYWORDS_CONDITION; ?>');
-            disableDefaultRadioButton('view', '<?php echo SearchResultsView::DEFAULT_VIEW; ?>');
-
-            disableHiddenSelection('#layout');
-            disableHiddenSelection('#index');
-            disableHiddenSelection('#tree');
         });
     });
 </script>

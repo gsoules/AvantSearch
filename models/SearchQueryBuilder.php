@@ -29,15 +29,12 @@ class SearchQueryBuilder
         $sortOrder = $searchResults->getSortOrder() == 'a' ? 'ASC' : ' DESC';
         $isKeywordQuery = !empty($keywords);
         $titleOnly = $searchResults->getSearchTitles();
-        $isIndexQuery = $viewId == SearchResultsViewFactory::INDEX_VIEW_ID || $viewId == SearchResultsViewFactory::TREE_VIEW_ID;
+        $isIndexQuery = $viewId == SearchResultsViewFactory::INDEX_VIEW_ID;
         $isFilesOnlyQuery = $searchResults->getSearchFiles();
 
         if ($isIndexQuery)
         {
-            if ($viewId == SearchResultsViewFactory::INDEX_VIEW_ID)
-                $primaryField =  $searchResults->getIndexFieldElementId();
-            else
-                $primaryField =  $searchResults->getTreeFieldElementId();
+            $primaryField =  $searchResults->getIndexFieldElementId();
         }
         else
         {
@@ -138,7 +135,7 @@ class SearchQueryBuilder
         }
 
         // Join the element-text table to bring in the value of the primary field. For Table View, the
-        // primary field is the sort field. For Index View and Tree View, it's the field being viewed.
+        // primary field is the sort field. For Index View, it's the field being viewed.
         $this->select->joinLeft(array('_primary_column' => $elementTextTable),
             "_primary_column.record_id = items.id AND _primary_column.record_type = 'item' AND _primary_column.element_id = $primaryField");
 
@@ -230,7 +227,7 @@ class SearchQueryBuilder
 
         if ($isIndexQuery && !$sortByTitle)
         {
-            // When Index View and Tree View results are not ordered by title, the primary column is
+            // When Index View results are not ordered by title, the primary column is
             // the primary element's column. When sorting by title, the title code below will sort
             // title without any leading quotes.
             $primaryColumnName = 'text';
