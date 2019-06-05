@@ -786,6 +786,7 @@ a.search-reset-link:hover {
     float: none;
     margin-bottom: 16px;
     height: 25px;
+	font-size: 12px;
 }
 
 .search-index-view-index li {
