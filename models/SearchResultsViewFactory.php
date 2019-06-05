@@ -37,7 +37,7 @@ class SearchResultsViewFactory
         $views = array();
 
         $views[SearchResultsViewFactory::TABLE_VIEW_ID] = __('Table');
-        $views[SearchResultsViewFactory::IMAGE_VIEW_ID] = __('Images');
+        $views[SearchResultsViewFactory::IMAGE_VIEW_ID] = __('Grid');
         $views[SearchResultsViewFactory::INDEX_VIEW_ID] = __('Index');
 
         return $views;

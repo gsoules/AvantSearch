@@ -14,9 +14,6 @@ $layoutsOptionRows = max(2, count(explode(PHP_EOL, $layoutsOption)));
 
 $detailLayoutOption = SearchConfig::getOptionTextForDetailLayout();
 
-$hierarchiesOption = SearchConfig::getOptionTextForHierarchies();
-$hierarchiesOptionRows = max(2, count(explode(PHP_EOL, $hierarchiesOption)));
-
 $integerSortingOption = SearchConfig::getOptionTextForIntegerSorting();
 $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)));
 
@@ -77,16 +74,6 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Detail layout elements."); ?></p>
         <?php echo $view->formTextarea(SearchConfig::OPTION_DETAIL_LAYOUT, $detailLayoutOption, array('rows' => '2')); ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo CONFIG_LABEL_HIERARCHIES; ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __('Elements that contain hierarchical values.'); ?></p>
-        <?php echo $view->formTextarea(SearchConfig::OPTION_HIERARCHIES, $hierarchiesOption, array('rows' => $hierarchiesOptionRows)); ?>
     </div>
 </div>
 

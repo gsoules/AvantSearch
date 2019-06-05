@@ -7,7 +7,6 @@ define('CONFIG_LABEL_ELASTICSEARCH', __('Elasticsearch'));
 define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
 define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
-define('CONFIG_LABEL_HIERARCHIES', __('Hierarchies'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
 
 class SearchConfig extends ConfigOptions
@@ -19,7 +18,6 @@ class SearchConfig extends ConfigOptions
     const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
     const OPTION_LAYOUTS = 'avantsearch_layouts';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
-    const OPTION_HIERARCHIES = 'avantsearch_hierarchies';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
 
     public static function emitInnoDbMessage($engine)
@@ -65,11 +63,6 @@ class SearchConfig extends ConfigOptions
         }
 
         return $data;
-    }
-
-    public static function getOptionDataForHierarchies()
-    {
-        return self::getOptionListData(self::OPTION_HIERARCHIES);
     }
 
     public static function getOptionDataForIntegerSorting()
@@ -247,11 +240,6 @@ class SearchConfig extends ConfigOptions
         return $detailLayoutOption;
     }
 
-    public static function getOptionTextForHierarchies()
-    {
-        return self::getOptionListText(self::OPTION_HIERARCHIES);
-    }
-
     public static function getOptionTextForIntegerSorting()
     {
         return self::getOptionListText(self::OPTION_INTEGER_SORTING);
@@ -313,7 +301,6 @@ class SearchConfig extends ConfigOptions
         self::saveOptionDataForLayouts();
         self::saveOptionDataForColumns();
         self::saveOptionDataForDetailLayout();
-        self::saveOptionDataForHierarchies();
         self::saveOptionDataForIntegerSorting();
 
         set_option(self::OPTION_TITLES_ONLY, intval($_POST[self::OPTION_TITLES_ONLY]));
@@ -398,11 +385,6 @@ class SearchConfig extends ConfigOptions
         }
 
         set_option(self::OPTION_DETAIL_LAYOUT, json_encode($detailRows));
-    }
-
-    public static function saveOptionDataForHierarchies()
-    {
-        self::saveOptionListData(self::OPTION_HIERARCHIES, CONFIG_LABEL_HIERARCHIES);
     }
 
     public static function saveOptionDataForIntegerSorting()

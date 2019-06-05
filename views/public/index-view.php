@@ -47,7 +47,7 @@ function emitEntries($entries, $indexFieldElementId, $searchResults)
             {
                 // If the index element is for hierarchical data, set the search condition to be only for the leaf
                 // (ends with) otherwise set the search for the exact string.
-                $searchCondition = $entry['hierarchy'] ? 'ends with' : 'is exactly';
+                $searchCondition = 'is exactly';
                 $url = $searchResults->emitIndexEntryUrl($entryText, $indexFieldElementId, $searchCondition);
                 echo "<a href=\"$url\">$entryText</a>";
             }
@@ -135,7 +135,6 @@ function flattenResults($results, $indexFieldElementId, $searchResults, $facets)
             $text = $bucket['key'];
             $entries[$text]['count'] = $bucket['doc_count'];
             $entries[$text]['id'] = 0;
-            $entries[$text]['hierarchy'] = false;
         }
     }
     else
@@ -152,7 +151,6 @@ function flattenResults($results, $indexFieldElementId, $searchResults, $facets)
 
             $entries[$text]['count'] = $count;
             $entries[$text]['id'] = $result['id'];
-            $entries[$text]['hierarchy'] = false;
         }
     }
 

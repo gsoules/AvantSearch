@@ -315,11 +315,6 @@ class SearchQueryBuilder
         }
     }
 
-    protected function columnValueForHierarchySort($columnName, $alias)
-    {
-        return "TRIM(SUBSTRING_INDEX($columnName, ',', -1)) AS $alias";
-    }
-
     protected function columnValueForStreetNameSort($columnName, $alias)
     {
         if ($this->smartSortingEnabled)
