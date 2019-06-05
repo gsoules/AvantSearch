@@ -85,6 +85,5 @@ echo $this->partial('/results-view-script.php',
         'indexId' => 0,
         'viewId' => $viewId)
 );
-echo '</div>';
 echo foot();
 ?>
