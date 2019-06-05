@@ -118,7 +118,7 @@ function emitLetterIndex($entries)
     return $letterIndex;
 }
 
-function flattenResults($results, $indexFieldElementId, $searchResults)
+function flattenResults($results, $indexFieldElementId, $searchResults, $facets)
 {
     // Combine results into unique entries. This is necessary because some results can have the same
     // leaf value, but a different ancestry. This can be due to a data entry error, or an obscure case
@@ -129,8 +129,8 @@ function flattenResults($results, $indexFieldElementId, $searchResults)
 
     if ($searchResults->getUseElasticsearch())
     {
-        $facets = $searchResults->getFacets();
-        $buckets = $facets["subject"]["buckets"];
+        $buckets = $facets['index']['buckets'];
+
         foreach ($buckets as $bucket)
         {
             $text = $bucket['key'];
@@ -163,13 +163,16 @@ function flattenResults($results, $indexFieldElementId, $searchResults)
 $results = $searchResults->getResults();
 $totalResults = count($results);
 $resultsMessage = SearchResultsView::getSearchResultsMessage();
+$pageTitle = SearchResultsView::getSearchResultsMessage();
 
 $indexFieldElementId = $searchResults->getIndexFieldElementId();
 $showLetterIndex = $totalResults > 50;
 $element = get_db()->getTable('Element')->find($indexFieldElementId);
 $indexFieldName = empty($element) ? '' : $element['name'];
-$pageTitle = __('Search Results');
 $useElasticsearch = $searchResults->getUseElasticsearch();
+
+$indexId = $searchResults->getSelectedIndexId();
+$viewId = $searchResults->getSelectedViewId();
 
 echo head(array('title' => $pageTitle));
 echo "<div class='search-results-container'>";
@@ -180,10 +183,7 @@ if ($totalResults)
 {
     // The order here is the left to right order of these controls on the Search Results page.
     $resultControlsHtml .= $searchResults->emitSelectorForView();
-    //$resultControlsHtml .= $searchResults->emitSelectorForLayout($layoutsData);
-    //$resultControlsHtml .= $searchResults->emitSelectorForLimit();
-    //$resultControlsHtml .= $searchResults->emitSelectorForSort();
-    $resultControlsHtml .= $searchResults->emitSelectorForFilter();
+    $resultControlsHtml .= $searchResults->emitSelectorForIndex();
 }
 
 echo $searchResults->emitSearchFilters($resultControlsHtml, '');
@@ -204,7 +204,7 @@ if ($totalResults)
         echo '</section>';
         echo '<section id="search-table-elasticsearch-results">';
     }
-    $entries = flattenResults($results, $indexFieldElementId, $searchResults);
+    $entries = flattenResults($results, $indexFieldElementId, $searchResults, $facets);
 
     if ($showLetterIndex)
     {
@@ -233,7 +233,8 @@ if ($totalResults)
             'layoutId' => 0,
             'limitId' => 0,
             'sortId' => 0,
-            'viewId' => 2)
+            'indexId' => $indexId,
+            'viewId' => $viewId)
     );
 }
 else

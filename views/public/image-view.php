@@ -67,7 +67,13 @@ echo "<div class='search-results-title'>$pageTitle</div>";
         </section>
     <?php endif; ?>
     <?php
-    echo $this->partial('/results-view-script.php', array('filterId' => $filterId, 'layoutId' => 0, 'limitId' => $limitId, 'sortId' => $sortId, 'viewId' => $viewId));
+    echo $this->partial('/results-view-script.php',
+        array('filterId' => $filterId,
+            'layoutId' => 0,
+            'limitId' => $limitId,
+            'sortId' => $sortId,
+            'indexId' => 0,
+            'viewId' => $viewId));
     echo pagination_links();
     echo '</div>';
     ?>

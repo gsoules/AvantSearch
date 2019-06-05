@@ -15,6 +15,7 @@ class SearchResultsView
     protected $conditionName;
     protected $error;
     protected $facets;
+    protected $indexOptions;
     protected $keywords;
     protected $limit;
     protected $privateElements;
@@ -40,6 +41,7 @@ class SearchResultsView
         $this->error = '';
         $this->showCommingledResults = false;
 
+        $this->initIndexOptions();
         $this->initSortOptions();
     }
 
@@ -194,6 +196,17 @@ class SearchResultsView
         return $this->emitSelector('filter', $options);
     }
 
+    public function emitSelectorForIndex()
+    {
+        $options = array();
+        foreach ($this->indexOptions as $index => $option)
+        {
+            $options["I$index"] = $option;
+        }
+
+        return $this->emitSelector('index', $options);
+    }
+
     public function emitSelectorForLimit()
     {
         $options = array();
@@ -312,6 +325,12 @@ class SearchResultsView
     public function getFacets()
     {
         return $this->facets;
+    }
+
+    public function getIndexFieldName()
+    {
+        $indexSpecifier = isset($_GET['index']) ? $_GET['index'] : '';
+        return $indexSpecifier;
     }
 
     public function getKeywords()
@@ -450,6 +469,13 @@ class SearchResultsView
         return $this->titles;
     }
 
+    public function getSelectedIndexId()
+    {
+        $indexFieldName = $this->getIndexFieldName();
+        $indexId = array_search ($indexFieldName, $this->indexOptions);
+        return $indexId === false ? 0 : $indexId;
+    }
+
     public function getSelectedFilterId()
     {
         if (isset($this->filterId))
@@ -569,6 +595,19 @@ class SearchResultsView
     public function getViewShortName()
     {
         return SearchResultsViewFactory::getViewShortName($this->getViewId());
+    }
+
+    public function initIndexOptions()
+    {
+        $columnsData = $this->getColumnsData();
+
+        foreach ($columnsData as $columnData)
+        {
+            $this->indexOptions[] = $columnData['name'];
+        }
+
+        // Sort the values alphabetically except show 'relevance' at the top.
+        sort($this->indexOptions);
     }
 
     public function initSortOptions()

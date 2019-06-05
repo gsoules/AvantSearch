@@ -98,6 +98,7 @@ if ($totalResults)
                 'layoutId' => $layoutId,
                 'limitId' => $limitId,
                 'sortId' => $sortId,
+                'indexId' => 0,
                 'viewId' => $viewId)
         );
         echo "<div id='search-pagination-bottom'>$paginationLinks</div>";

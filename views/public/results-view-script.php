@@ -1,5 +1,6 @@
 <script>
     var FILTER = 'filter';
+    var INDEX = 'index';
     var LAYOUT = 'layout';
     var LIMIT = 'limit';
     var SORT = 'sort';
@@ -7,6 +8,7 @@
 
     var selectedOptionId = [];
     selectedOptionId[FILTER] = parseInt(<?php echo $filterId; ?>);
+    selectedOptionId[INDEX] = parseInt(<?php echo $indexId; ?>);
     selectedOptionId[LAYOUT] = parseInt(<?php echo $layoutId; ?>);
     selectedOptionId[LIMIT] = parseInt(<?php echo $limitId; ?>);
     selectedOptionId[SORT] = parseInt(<?php echo $sortId; ?>);
@@ -14,6 +16,7 @@
 
     var selectorTitle = [];
     selectorTitle[FILTER] = 'Filter: %s';
+    selectorTitle[INDEX] = 'Index by: %s';
     selectorTitle[LAYOUT] = 'Layout: %s';
     selectorTitle[LIMIT] = 'Per page: %s';
     selectorTitle[SORT] = 'Sort by: %s';
@@ -117,7 +120,7 @@
             return;
         }
 
-        if (kind === SORT)
+        if (kind === SORT || kind === INDEX)
         {
             oldOptionValue = jQuery('#' + prefix + oldOptionId).text();
             newOptionValue = selectedOption.text();
@@ -136,7 +139,7 @@
         var newOptionArg = '&' + kind + '=' + newOptionValue;
         newUrl = urlWithoutOptionArg + newOptionArg;
 
-        if (kind === FILTER || kind === LIMIT || kind === SORT || kind === VIEW)
+        if (kind !== LAYOUT)
         {
             if (kind === SORT && newOptionId === 0)
             {
@@ -149,6 +152,34 @@
                     oldOrderPattern = new RegExp('&order=' + orderValue);
                     newUrl = newUrl.replace(oldOrderPattern, '');
                 }
+            }
+
+            if (kind === VIEW)
+            {
+                if (newOptionId === 2)
+                {
+                    // Remove the sort arg.
+                    var sortValue = getQueryStringArg('sort');
+                    if (sortValue.length)
+                    {
+                        oldSortPattern = new RegExp('&sort=' + sortValue);
+                        newUrl = newUrl.replace(oldSortPattern, '');
+                    }
+
+                }
+                if (newOptionId === 1 || newOptionId === 4)
+                {
+                    // Remove the index arg.
+                    var indexValue = getQueryStringArg('index');
+                    if (indexValue.length)
+                    {
+                        oldIndexPattern = new RegExp('&index=' + indexValue);
+                        newUrl = newUrl.replace(oldIndexPattern, '');
+                    }
+
+                }
+
+                console.log('Change View to: ' + newOptionId);
             }
 
             // Remove the page arg.
@@ -211,12 +242,14 @@
     jQuery(document).ready(function()
     {
         setSelectedOption(FILTER, 'F', selectedOptionId[FILTER]);
+        setSelectedOption(INDEX, 'I', selectedOptionId[INDEX]);
         setSelectedOption(LAYOUT, 'L', selectedOptionId[LAYOUT]);
         setSelectedOption(LIMIT, 'X', selectedOptionId[LIMIT]);
         setSelectedOption(SORT, 'S', selectedOptionId[SORT]);
         setSelectedOption(VIEW, 'V', selectedOptionId[VIEW]);
 
         initSelector(FILTER, 'F');
+        initSelector(INDEX, 'I');
         initSelector(LAYOUT, 'L');
         initSelector(LIMIT, 'X');
         initSelector(SORT, 'S');
