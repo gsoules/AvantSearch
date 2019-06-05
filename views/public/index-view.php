@@ -1,6 +1,55 @@
 <?php
 /* @var $searchResults SearchResultsIndexView */
 
+function createEntries($results, $searchResults, $facets)
+{
+    $entries = array();
+
+    if ($searchResults->getUseElasticsearch())
+    {
+        $buckets = $facets['index']['buckets'];
+
+        $rawValues = array();
+
+        foreach ($buckets as $bucket)
+        {
+            $raw = $bucket['key'];
+            $clean = preg_replace('/[^a-z\d ]/i', '', $raw);
+            $rawValues[] = array(
+                'original'=> $raw,
+                'text' => strtolower($clean),
+                'count' => $bucket['doc_count']);
+        }
+
+        usort($rawValues, 'entryTextComparator');
+
+        foreach ($rawValues as $rawValue)
+        {
+            $text = $rawValue['original'];
+            $entries[$text]['count'] = $rawValue['count'];
+            $entries[$text]['id'] = 0;
+        }
+    }
+    else
+    {
+        foreach ($results as $result)
+        {
+            $text = $result['text'];
+            $count = $result['count'];
+
+            if (isset($entries[$text]))
+            {
+                $count += $entries[$text]['count'];
+            }
+
+            $entries[$text]['count'] = $count;
+            $entries[$text]['id'] = $result['id'];
+        }
+    }
+
+    return $entries;
+}
+
 function emitEntries($entries, $indexFieldElementId, $searchResults)
 {
     $currentHeading = '';
@@ -11,9 +60,9 @@ function emitEntries($entries, $indexFieldElementId, $searchResults)
             continue;
         }
 
-        // Get the entry's first letter. If it's a double quote, use the second letter instead.
+        // Get the entry's first letter. If it's a quote, use the second letter instead.
         $firstLetter = substr($entryText, 0, 1);
-        if ($firstLetter == '"' && strlen($entryText) > 1)
+        if (($firstLetter == '"' || $firstLetter == '\'') && strlen($entryText) > 1)
         {
             $firstLetter = substr($entryText, 1, 1);
         }
@@ -117,44 +166,9 @@ function emitLetterIndex($entries)
     return $letterIndex;
 }
 
-function flattenResults($results, $indexFieldElementId, $searchResults, $facets)
+function entryTextComparator($object1, $object2)
 {
-    // Combine results into unique entries. This is necessary because some results can have the same
-    // leaf value, but a different ancestry. This can be due to a data entry error, or an obscure case
-    // e.g. 'Schoodic, Acadia National Park' and "MDI, Acadia National Park'. Create a unique entry
-    // with a count representing the total of all the results with the same leaf text.
-
-    $entries = array();
-
-    if ($searchResults->getUseElasticsearch())
-    {
-        $buckets = $facets['index']['buckets'];
-
-        foreach ($buckets as $bucket)
-        {
-            $text = $bucket['key'];
-            $entries[$text]['count'] = $bucket['doc_count'];
-            $entries[$text]['id'] = 0;
-        }
-    }
-    else
-    {
-        foreach ($results as $result)
-        {
-            $text = $result['text'];
-            $count = $result['count'];
-
-            if (isset($entries[$text]))
-            {
-                $count += $entries[$text]['count'];
-            }
-
-            $entries[$text]['count'] = $count;
-            $entries[$text]['id'] = $result['id'];
-        }
-    }
-
-    return $entries;
+    return $object1['text'] > $object2['text'];
 }
 
 $useElasticsearch = $searchResults->getUseElasticsearch();
@@ -173,8 +187,11 @@ else
 
 $resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults);
 
+// Disable the letter index feature, but keep the code in case we decide to enable it again. It seems like a good
+// idea to display a clickable alphabet above and below the results, but in practice it doesn't seem useful.
+$showLetterIndex = $totalResults > 1000;
+
 $indexFieldElementId = $searchResults->getIndexFieldElementId();
-$showLetterIndex = $totalResults > 50;
 $element = get_db()->getTable('Element')->find($indexFieldElementId);
 $indexFieldName = empty($element) ? '' : $element['name'];
 
@@ -205,7 +222,7 @@ if ($totalResults)
         echo '</section>';
         echo '<section id="search-table-elasticsearch-results">';
     }
-    $entries = flattenResults($results, $indexFieldElementId, $searchResults, $facets);
+    $entries = createEntries($results, $searchResults, $facets);
 
     if ($showLetterIndex)
     {
@@ -248,6 +265,5 @@ echo $this->partial('/results-view-script.php',
         'indexId' => $indexId,
         'viewId' => $viewId)
 );
-echo '</div>';
 echo foot();
 ?>
