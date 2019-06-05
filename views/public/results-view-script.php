@@ -1,10 +1,14 @@
 <script>
-    var FILTER = 'filter';
-    var INDEX = 'index';
-    var LAYOUT = 'layout';
-    var LIMIT = 'limit';
-    var SORT = 'sort';
-    var VIEW = 'view';
+    const FILTER = 'filter';
+    const INDEX = 'index';
+    const LAYOUT = 'layout';
+    const LIMIT = 'limit';
+    const SORT = 'sort';
+    const VIEW = 'view';
+
+    const INDEX_VIEW_ID = parseInt(<?php echo SearchResultsViewFactory::INDEX_VIEW_ID; ?>);
+    const IMAGE_VIEW_ID = parseInt(<?php echo SearchResultsViewFactory::IMAGE_VIEW_ID; ?>);
+    const TABLE_VIEW_ID = parseInt(<?php echo SearchResultsViewFactory::TABLE_VIEW_ID; ?>);
 
     var selectedOptionId = [];
     selectedOptionId[FILTER] = parseInt(<?php echo $filterId; ?>);
@@ -66,6 +70,18 @@
         {
             jQuery('#search-' + kind + '-options').slideUp('fast');
         });
+    }
+
+    function removeQueryStringArg(argName, oldUrl)
+    {
+        var newUrl = oldUrl;
+        var argValue = getQueryStringArg(argName);
+        if (argValue.length)
+        {
+            oldArgPattern = new RegExp('&' + argName + '=' + argValue);
+            newUrl = oldUrl.replace(oldArgPattern, '');
+        }
+        return newUrl;
     }
 
     function setSelectedOption(kind, prefix, newOptionId)
@@ -154,40 +170,18 @@
                 }
             }
 
+            // Remove any query string args that should not be present when the page reloads.
+            newUrl = removeQueryStringArg('page', newUrl);
             if (kind === VIEW)
             {
-                if (newOptionId === 2)
+                if (newOptionId === INDEX_VIEW_ID)
                 {
-                    // Remove the sort arg.
-                    var sortValue = getQueryStringArg('sort');
-                    if (sortValue.length)
-                    {
-                        oldSortPattern = new RegExp('&sort=' + sortValue);
-                        newUrl = newUrl.replace(oldSortPattern, '');
-                    }
-
+                    newUrl = removeQueryStringArg('sort', newUrl);
                 }
-                if (newOptionId === 1 || newOptionId === 4)
+                else if (newOptionId === TABLE_VIEW_ID || newOptionId === IMAGE_VIEW_ID)
                 {
-                    // Remove the index arg.
-                    var indexValue = getQueryStringArg('index');
-                    if (indexValue.length)
-                    {
-                        oldIndexPattern = new RegExp('&index=' + indexValue);
-                        newUrl = newUrl.replace(oldIndexPattern, '');
-                    }
-
+                    newUrl = removeQueryStringArg('index', newUrl);
                 }
-
-                console.log('Change View to: ' + newOptionId);
-            }
-
-            // Remove the page arg.
-            var pageValue = getQueryStringArg('page');
-            if (pageValue.length)
-            {
-                oldPagePattern = new RegExp('&page=' + pageValue);
-                newUrl = newUrl.replace(oldPagePattern, '');
             }
 
             // Reload the page.
