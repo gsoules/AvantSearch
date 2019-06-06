@@ -26,7 +26,7 @@
 }
 
 #search-filter-form {
-	font-family: "Lato", sans-serif;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 #search-filter-form .advanced-search-terms {
@@ -135,7 +135,7 @@ input[type="checkbox"] {
 	box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 	border-top: 1px solid #eee;
 	float: left;
-	font-family: "Lato", sans-serif;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	line-height: 28px;
 	margin: 12px 0 12px 0;
 	padding: 24px 16px 12px;
@@ -505,8 +505,8 @@ a.search-reset-link:hover {
 .search-pagination li {
 	color: #666666;
 	float: left;
-	font-family: "Roboto Condensed", sans-serif;
-	font-size: 16px;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 14px;
 	font-weight: normal;
 	height: 25px;
 	line-height: 22px;
@@ -582,7 +582,7 @@ a.search-reset-link:hover {
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	display: inline-block;
-	font-family: "Lato", sans-serif;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 14px;
 	height: 24px;
 	line-height: 18px;
@@ -591,7 +591,7 @@ a.search-reset-link:hover {
 	min-height: 1.9em;
 	padding: 0;
 	text-align: center;
-	width: 40px;
+	width: 28px;
 }
 
 /* === SQL Search Results - Table View ===
@@ -703,7 +703,7 @@ a.search-reset-link:hover {
 .search-results-detail-row td
 {
 	font-size: 85% !important;
-	font-family: "Lato", sans-serif;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	padding-bottom: 0px !important;
 	padding-top: 0px  !important;
 }
@@ -734,6 +734,7 @@ a.search-reset-link:hover {
 #search-index-view-headings {
 	clear: both;
 	column-count: 2;
+	margin-bottom: 12px;
 }
 
 /* Index letter heading */
@@ -786,7 +787,7 @@ a.search-reset-link:hover {
 .search-index-view-index li {
 	color: #666666;
 	float: left;
-	font-family: "Roboto Condensed", sans-serif;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	height: 25px;
 	line-height: 22px;
 	list-style-type: none;
