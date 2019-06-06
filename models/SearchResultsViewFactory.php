@@ -4,7 +4,8 @@ class SearchResultsViewFactory
 {
     const TABLE_VIEW_ID = 1;
     const INDEX_VIEW_ID = 2;
-    const IMAGE_VIEW_ID = 4;
+    const UNUSED_VIEW_ID = 3;
+    const GRID_VIEW_ID = 4;
 
     public static function createSearchResultsView($viewId)
     {
@@ -14,8 +15,8 @@ class SearchResultsViewFactory
                 $searchResults = new SearchResultsIndexView();
                 break;
 
-            case SearchResultsViewFactory::IMAGE_VIEW_ID:
-                $searchResults = new SearchResultsImageView();
+            case SearchResultsViewFactory::GRID_VIEW_ID:
+                $searchResults = new SearchResultsGridView();
                 break;
 
             case SearchResultsViewFactory::TABLE_VIEW_ID:
@@ -37,7 +38,7 @@ class SearchResultsViewFactory
         $views = array();
 
         $views[SearchResultsViewFactory::TABLE_VIEW_ID] = __('Table');
-        $views[SearchResultsViewFactory::IMAGE_VIEW_ID] = __('Grid');
+        $views[SearchResultsViewFactory::GRID_VIEW_ID] = __('Grid');
         $views[SearchResultsViewFactory::INDEX_VIEW_ID] = __('Index');
 
         return $views;
@@ -47,7 +48,7 @@ class SearchResultsViewFactory
     {
         $shortNames = array(
             SearchResultsViewFactory::TABLE_VIEW_ID => 'table',
-            SearchResultsViewFactory::IMAGE_VIEW_ID => 'image',
+            SearchResultsViewFactory::GRID_VIEW_ID => 'grid',
             SearchResultsViewFactory::INDEX_VIEW_ID => 'index');
 
         return $shortNames[$viewId];
@@ -55,7 +56,7 @@ class SearchResultsViewFactory
 
     public static function viewUsesResultsLimit($viewId)
     {
-        return $viewId == self::TABLE_VIEW_ID || $viewId == self::IMAGE_VIEW_ID;
+        return $viewId == self::TABLE_VIEW_ID || $viewId == self::GRID_VIEW_ID;
 
     }
 }

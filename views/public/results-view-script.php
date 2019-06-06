@@ -6,8 +6,8 @@
     const SORT = 'sort';
     const VIEW = 'view';
 
+    const GRID_VIEW_ID = parseInt(<?php echo SearchResultsViewFactory::GRID_VIEW_ID; ?>);
     const INDEX_VIEW_ID = parseInt(<?php echo SearchResultsViewFactory::INDEX_VIEW_ID; ?>);
-    const IMAGE_VIEW_ID = parseInt(<?php echo SearchResultsViewFactory::IMAGE_VIEW_ID; ?>);
     const TABLE_VIEW_ID = parseInt(<?php echo SearchResultsViewFactory::TABLE_VIEW_ID; ?>);
 
     var selectedOptionId = [];
@@ -178,7 +178,7 @@
                 {
                     newUrl = removeQueryStringArg('sort', newUrl);
                 }
-                else if (newOptionId === TABLE_VIEW_ID || newOptionId === IMAGE_VIEW_ID)
+                else if (newOptionId === TABLE_VIEW_ID || newOptionId === GRID_VIEW_ID)
                 {
                     newUrl = removeQueryStringArg('index', newUrl);
                 }
