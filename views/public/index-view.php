@@ -1,33 +1,45 @@
 <?php
 /* @var $searchResults SearchResultsIndexView */
 
-function createEntries($results, $searchResults, $facets)
+function createEntries($results, $searchResults, $indexFieldName)
 {
     $entries = array();
 
     if ($searchResults->getUseElasticsearch())
     {
-        $buckets = $facets['index']['buckets'];
+        $resultValues = array();
 
-        $rawValues = array();
-
-        foreach ($buckets as $bucket)
+        foreach ($results as $result)
         {
-            $raw = $bucket['key'];
-            $clean = preg_replace('/[^a-z\d ]/i', '', $raw);
-            $rawValues[] = array(
-                'original'=> $raw,
-                'text' => strtolower($clean),
-                'count' => $bucket['doc_count']);
+            $element = $result['_source']['element'];
+            if (isset($element[$indexFieldName]))
+                $originalText = $element[$indexFieldName];
+            else
+                $originalText = BLANK_FACET_SUBSTITUTE;
+            $trimmedText = preg_replace('/[^a-z\d ]/i', '', $originalText);
+            $value = array(
+                'original'=> $originalText,
+                'text' => strtolower($trimmedText),
+                'id' => $result['_source']['item']['id'],
+                'count' => 1);
+
+            if (isset($resultValues[$originalText]))
+            {
+                $resultValues[$originalText]['count'] += 1;
+            }
+            else
+            {
+                $resultValues[$originalText] = $value;
+            }
         }
 
-        usort($rawValues, 'entryTextComparator');
+        usort($resultValues, 'entryTextComparator');
 
-        foreach ($rawValues as $rawValue)
+        foreach ($resultValues as $resultValue)
         {
-            $text = $rawValue['original'];
-            $entries[$text]['count'] = $rawValue['count'];
-            $entries[$text]['id'] = 0;
+            $text = $resultValue['original'];
+            $entries[$text]['count'] = $resultValue['count'];
+            $entries[$text]['id'] = $resultValue['id'];
         }
     }
     else
@@ -53,6 +65,7 @@ function createEntries($results, $searchResults, $facets)
 function emitEntries($entries, $indexFieldElementId, $searchResults)
 {
     $currentHeading = '';
+
     foreach ($entries as $entryText => $entry)
     {
         if (empty($entryText))
@@ -94,8 +107,6 @@ function emitEntries($entries, $indexFieldElementId, $searchResults)
             // Emit a link to produce search results showing all items for this entry.
             if ($indexFieldElementId != 0)
             {
-                // If the index element is for hierarchical data, set the search condition to be only for the leaf
-                // (ends with) otherwise set the search for the exact string.
                 $searchCondition = 'is exactly';
                 $url = $searchResults->emitIndexEntryUrl($entryText, $indexFieldElementId, $searchCondition);
                 echo "<a href=\"$url\">$entryText</a>";
@@ -173,25 +184,26 @@ function entryTextComparator($object1, $object2)
 
 $useElasticsearch = $searchResults->getUseElasticsearch();
 $results = $searchResults->getResults();
+$totalResults = $searchResults->getTotalResults();
 
 $facets = array();
-if ($useElasticsearch)
-{
-    $facets = $searchResults->getFacets();
-    $totalResults = count($facets['index']['buckets']);
-}
-else
-{
-    $totalResults = count($results);
-}
 
 $resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults);
 
 $showLetterIndex = $totalResults > 1000;
 
-$indexFieldElementId = $searchResults->getIndexFieldElementId();
-$element = get_db()->getTable('Element')->find($indexFieldElementId);
-$indexFieldName = empty($element) ? '' : $element['name'];
+if ($useElasticsearch)
+{
+    $indexFieldElementId = 0;
+    $elementName = isset($_GET['index']) ? $_GET['index'] : 'Title';
+    $indexFieldName = (new AvantElasticsearch())->convertElementNameToElasticsearchFieldName($elementName);
+}
+else
+{
+    $indexFieldElementId = $searchResults->getIndexFieldElementId();
+    $element = get_db()->getTable('Element')->find($indexFieldElementId);
+    $indexFieldName = empty($element) ? '' : $element['name'];
+}
 
 $optionSelectorsHtml = $searchResults->emitSelectorForView();
 $optionSelectorsHtml .= $searchResults->emitSelectorForIndex();
@@ -211,6 +223,7 @@ if ($totalResults)
     {
        echo '<section id="search-table-elasticsearch-sidebar">';
         $query = $searchResults->getQuery();
+        $facets = $searchResults->getFacets();
         echo $this->partial('/elasticsearch-facets.php', array(
                 'query' => $query,
                 'aggregations' => $facets,
@@ -220,7 +233,8 @@ if ($totalResults)
         echo '</section>';
         echo '<section id="search-table-elasticsearch-results">';
     }
-    $entries = createEntries($results, $searchResults, $facets);
+
+    $entries = createEntries($results, $searchResults, $indexFieldName);
 
     if ($showLetterIndex)
     {
