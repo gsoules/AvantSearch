@@ -2,7 +2,7 @@
 $useElasticsearch = $searchResults->getUseElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
-$resultsMessage = SearchResultsView::getSearchResultsMessage();
+$resultsMessage = SearchResultsView::getSearchResultsMessage($searchResults->getResultsAreFuzzy());
 
 $filterId = $searchResults->getSelectedFilterId();
 $limitId = $searchResults->getSelectedLimitId();

@@ -4,7 +4,7 @@
 $useElasticsearch = $searchResults->getUseElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
-$resultsMessage = SearchResultsView::getSearchResultsMessage();
+$resultsMessage = SearchResultsView::getSearchResultsMessage($searchResults->getResultsAreFuzzy());
 
 // Values passed to results-view-script.php
 $filterId = $searchResults->getSelectedFilterId();

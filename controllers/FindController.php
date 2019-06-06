@@ -3,6 +3,7 @@
 class AvantSearch_FindController extends Omeka_Controller_AbstractActionController
 {
     private $avantElasticsearchQueryBuilder;
+    private $avantElasticsearchClient;
     private $commingled;
     private $facetDefinitions;
     private $totalRecords = 0;
@@ -227,6 +228,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         // Determine if only items with a file attachment should be queried.
         $fileFilter = isset($params['filter']) && $params['filter'] == 1;
+        $fuzzy = false;
 
         $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams(
             $queryParams,
@@ -234,7 +236,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $sort,
             $public,
             $fileFilter,
-            $this->commingled);
+            $this->commingled,
+            $fuzzy);
 
         $results = null;
         $this->totalRecords = 0;
@@ -242,65 +245,79 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $searchResults->setQuery($queryParams);
         $searchResults->setFacets(array());
 
-        $avantElasticsearchClient = new AvantElasticsearchClient();
+        $this->avantElasticsearchClient = new AvantElasticsearchClient();
 
-        if ($avantElasticsearchClient->ready())
+        if ($this->avantElasticsearchClient->ready())
         {
-            $results = $avantElasticsearchClient->search($searchQueryParams);
+            $results = $this->avantElasticsearchClient->search($searchQueryParams);
             if ($results == null)
             {
-                // Null results means an exception occurred. This is different than a results of zero hits.
-                $e = $avantElasticsearchClient->getLastException();
-                if (get_class($e) == 'Elasticsearch\Common\Exceptions\NoNodesAvailableException')
-                {
-                    // This is the ‘No alive nodes found in your cluster’ exception.
-                    if ($attempt == 3)
-                    {
-                        $searchResults->setError(__('Unable to connect with the server. <a href="">Try Again</a>'));
-                    }
-                    else
-                    {
-                        unset($avantElasticsearchClient);
-                        $avantElasticsearchClient = new AvantElasticsearchClient();
-                        if ($avantElasticsearchClient->ready())
-                        {
-                            $attempt++;
-                            $this->performQueryUsingElasticsearch($params, $searchResults, $attempt);
-                        }
-                    }
-                }
-                else
-                {
-                    $searchResults->setError($avantElasticsearchClient->getLastError());
-                }
+                // A null results means an exception occurred. This is different than a result of zero hits.
+                $this->retryQueryUsingElasticsearch($params, $searchResults, $attempt);
             }
             else
             {
                 $this->totalRecords = $results["hits"]["total"];
-
-                if ($this->totalRecords == 0)
+                if ($this->totalRecords >= 1)
                 {
-                    $searchQueryParams["body"]["query"]["bool"]["must"]["multi_match"]["type"] = 'best_fields';
-                    $searchQueryParams["body"]["query"]["bool"]["must"]["multi_match"]["fuzziness"] = 'auto';
+                    // The search produced at least one result.
+                    $this->records = $results['hits']['hits'];
+                    $searchResults->setFacets($results['aggregations']);
+                }
+                else
+                {
+                    // The search produced no results. Try again with fuzzy searching.
+                    $fuzzy = true;
+                    $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams(
+                        $queryParams,
+                        $limit,
+                        $sort,
+                        $public,
+                        $fileFilter,
+                        $this->commingled,
+                        $fuzzy);
 
-                    $results = $avantElasticsearchClient->search($searchQueryParams);
-                    if ($results == null)
-                    {
-                        return;
-                    }
-                    else
+                    $results = $this->avantElasticsearchClient->search($searchQueryParams);
+                    if ($results != null)
                     {
                         $this->totalRecords = $results["hits"]["total"];
+                        $this->records = $results['hits']['hits'];
+                        $searchResults->setFacets($results['aggregations']);
+                        $searchResults->setResultsAreFuzzy(true);
                     }
                 }
-
-                $this->records = $results['hits']['hits'];
-                $searchResults->setFacets($results['aggregations']);
             }
         }
         else
         {
             $searchResults->setError(__('Unable to communicate with the ES server'));
+        }
+    }
+
+    protected function retryQueryUsingElasticsearch($params, $searchResults, $attempt)
+    {
+        $e = $this->avantElasticsearchClient->getLastException();
+        if (get_class($e) == 'Elasticsearch\Common\Exceptions\NoNodesAvailableException')
+        {
+            // This is the ‘No alive nodes found in your cluster’ exception.
+            if ($attempt == 3)
+            {
+                $searchResults->setError(__('Unable to connect with the server. <a href="">Try Again</a>'));
+            }
+            else
+            {
+                unset($this->avantElasticsearchClient);
+                $this->avantElasticsearchClient = new AvantElasticsearchClient();
+                if ($this->avantElasticsearchClient->ready())
+                {
+                    $attempt++;
+                    $this->performQueryUsingElasticsearch($params, $searchResults, $attempt);
+                }
+            }
+        }
+        else
+        {
+            $searchResults->setError($this->avantElasticsearchClient->getLastError());
         }
     }
 

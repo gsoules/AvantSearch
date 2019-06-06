@@ -21,14 +21,15 @@ class SearchResultsView
     protected $privateElements;
     protected $query;
     protected $results;
-    protected $titles;
-    protected $totalResults;
+    protected $resulstAreFuzzy;
     protected $searchFilters;
     protected $sortFieldElementId;
     protected $sortFields;
     protected $sortOrder;
     protected $showCommingledResults;
     protected $subjectSearch;
+    protected $titles;
+    protected $totalResults;
     protected $useElasticsearch;
     protected $viewId;
     protected $viewName;
@@ -40,6 +41,19 @@ class SearchResultsView
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
         $this->showCommingledResults = false;
+        $this->resultsAreFuzzy = false;
+    }
+
+    protected static function appendFuzzyMessage($message)
+    {
+        $message .= ' <div class="search-results-message-info"> &nbsp;&ndash; ' . __('No items match the search terms. These results are for similar keywords.') . '</div>';
+        return $message;
+    }
+
+    protected static function appendSpellingMessage($message)
+    {
+        $message .= ' <div class="search-results-message-info">&nbsp;&ndash; ' .  __('Check the spelling of your keywords or try using fewer keywords.') . '</div>';
+        return $message;
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -432,40 +446,47 @@ class SearchResultsView
         return isset($_GET['filter']) ? intval($_GET['filter'] == 1) : self::DEFAULT_SEARCH_FILTER ;
     }
 
-    public static function getSearchResultsMessage()
+    public static function getSearchResultsMessage($fuzzy)
     {
         $pagination = Zend_Registry::get('pagination');
 
-        $count = $pagination['total_results'];
+        $totalResults = $pagination['total_results'];
         $pageNumber = $pagination['page'];
         $perPage = $pagination['per_page'];
 
-        if ($count == 0)
+        if ($totalResults == 0)
         {
-            $message = __('No items found. Check the spelling of your keywords or try using fewer keywords.');
+            $message = __('No items found');
+            $message = self::appendSpellingMessage($message);
         }
-        else if ($count == 1)
+        else if ($totalResults == 1)
         {
-            return __('1 item found');
+            $message = __('1 item found');
         }
         else
         {
             $last = $pageNumber * $perPage;
             $first = $last - $perPage + 1;
-            if ($last > $count)
-                $last = $count;
+            if ($last > $totalResults)
+                $last = $totalResults;
 
-            $message = "$first - $last of $count " . __('results');
+            $message = "$first - $last of $totalResults " . __('results');
+        }
+
+        if ($totalResults >= 1 && $fuzzy)
+        {
+            $message = self::appendFuzzyMessage($message);
         }
 
         return $message;
     }
 
-    public static function getSearchResultsMessageForIndexView($totalResults)
+    public static function getSearchResultsMessageForIndexView($totalResults, $fuzzy)
     {
         if ($totalResults == 0)
         {
-            $message = __('No items found. Check the spelling of your keywords or try using fewer keywords.');
+            $message = __('No items found');
+            $message = self::appendSpellingMessage($message);
         }
         else if ($totalResults == 1)
         {
@@ -474,6 +495,11 @@ class SearchResultsView
         else
         {
             $message = "$totalResults " . __('results');
+        }
+
+        if ($totalResults >= 1 && $fuzzy)
+        {
+            $message = self::appendFuzzyMessage($message);
         }
 
         return $message;
@@ -638,6 +664,11 @@ class SearchResultsView
         return $this->indexFields;
     }
 
+    public function getResultsAreFuzzy()
+    {
+        return $this->resultsAreFuzzy;
+    }
+
     public function getSortFieldName()
     {
         $sortSpecifier = isset($_GET['sort']) ? $_GET['sort'] : '';
@@ -721,6 +752,11 @@ class SearchResultsView
     public function setResults($results)
     {
         $this->results = $results;
+    }
+
+    public function setResultsAreFuzzy($fuzzy)
+    {
+        $this->resultsAreFuzzy = $fuzzy;
     }
 
     public function setTotalResults($totalResults)

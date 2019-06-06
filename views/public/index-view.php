@@ -196,7 +196,7 @@ $totalResults = $searchResults->getTotalResults();
 
 if ($totalResults <= AvantSearch::MAX_SEARCH_RESULTS)
 {
-    $resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults);
+    $resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults, $searchResults->getResultsAreFuzzy());
 }
 else
 {

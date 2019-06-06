@@ -314,8 +314,15 @@ input[type="checkbox"] {
 	float: left;
 	color: #222;
 	font-size:16px;
+	font-weight:bold;
 	width: 100%;
 	height: 26px;
+}
+
+.search-results-message-info {
+	font-weight: normal;
+	color: #666;
+	display: inline-block;
 }
 
 .search-results-buttons {
