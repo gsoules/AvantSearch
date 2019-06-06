@@ -39,7 +39,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
 
 <?php if ($totalResults): ?>
     <?php if ($useElasticsearch): ?>
-        <section id="search-table-elasticsearch-sidebar">
+        <section id="elasticsearch-sidebar">
             <?php
             $query = $searchResults->getQuery();
             $facets = $searchResults->getFacets();
@@ -51,7 +51,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
             );
             ?>
         </section>
-        <section id="search-table-elasticsearch-results">
+        <section id="elasticsearch-results">
     <?php endif; ?>
     <table id="search-table-view">
         <thead>

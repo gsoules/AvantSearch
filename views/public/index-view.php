@@ -235,7 +235,7 @@ if ($totalResults)
 {
     if ($useElasticsearch)
     {
-       echo '<section id="search-table-elasticsearch-sidebar">';
+       echo '<section id="elasticsearch-sidebar">';
         $query = $searchResults->getQuery();
         $facets = $searchResults->getFacets();
         echo $this->partial('/elasticsearch-facets.php', array(
@@ -245,7 +245,7 @@ if ($totalResults)
             )
         );
         echo '</section>';
-        echo '<section id="search-table-elasticsearch-results">';
+        echo '<section id="elasticsearch-results">';
     }
 
     $entries = createEntries($results, $searchResults, $indexFieldName);

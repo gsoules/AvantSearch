@@ -605,6 +605,10 @@ a.search-reset-link:hover {
 
 /* === SQL Search Results - Table View ===
 --------------------------------------------------------- */
+#search-table-view {
+	border-top: 1px solid #e8e8e8;
+}
+
 #search-table-view tr {
 	width: 100%;
 }
@@ -738,7 +742,6 @@ a.search-reset-link:hover {
 /* The whole index view */
 #search-index-view-headings {
 	clear: both;
-	padding: 16px 0;
 	column-count: 2;
 }
 
@@ -819,7 +822,6 @@ a.search-reset-link:hover {
 	-webkit-box-sizing: border-box;
 	-moz-box-sizing: border-box;
 	box-sizing: border-box;
-	display: block;
 	height: 100%;
 	padding: 0 7px;
 }
@@ -1111,14 +1113,6 @@ a.search-reset-link:hover {
 	#search-filter-form .eight.columns {
 		width: 92%;
 	}
-
-	#search-table-elasticsearch-results {
-		width: 100%;
-	}
-
-	#search-table-elasticsearch-sidebar {
-		display: none;
-	}
 }
 
 /* === CSS for Width < 480px ===
@@ -1163,14 +1157,6 @@ a.search-reset-link:hover {
 
 	#search-index-view-headings {
 		column-count: 1;
-	}
-
-	#search-table-elasticsearch-results {
-		width: 100%;
-	}
-
-	#search-table-elasticsearch-sidebar {
-		display: none;
 	}
 }
 
