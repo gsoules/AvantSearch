@@ -194,11 +194,17 @@ $useElasticsearch = $searchResults->getUseElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 
-$facets = array();
+if ($totalResults <= AvantSearch::MAX_SEARCH_RESULTS)
+{
+    $resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults);
+}
+else
+{
+    $max = number_format(AvantSearch::MAX_SEARCH_RESULTS);
+    $resultsMessage = __('Your search exceeds the limit of ' . $max . ' results. Refine your search at left, or use more keywords.');
+}
 
-$resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults);
-
-$showLetterIndex = $totalResults > 1000;
+$showLetterIndex = true;// $totalResults > 1000;
 
 if ($useElasticsearch)
 {

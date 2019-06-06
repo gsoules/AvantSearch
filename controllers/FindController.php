@@ -50,10 +50,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
         else
         {
-            // Index view shows all results. Since there's no way to prevent Zend_Db_Select
-            // from appending LIMIT to the end of the query, set the limit to a  high value.
-            // For Elasticsearch, the max is 10,000;
-            $this->recordsPerPage = $useElasticsearch ? 10000 : 100000;
+            // Index view shows all results and thus must return them from a single query with no paging.
+            $this->recordsPerPage = $useElasticsearch ? AvantSearch::MAX_SEARCH_RESULTS : 100000;
         }
 
         try

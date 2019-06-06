@@ -1,6 +1,9 @@
 <?php
 class AvantSearch
 {
+    // This is the default maximum allowed by Elasticsearch and is also a reasonable max for SQL searches.
+    public const MAX_SEARCH_RESULTS = 10000;
+
     public static function buildSearchQuery($args)
     {
         $params = $args['params'];
