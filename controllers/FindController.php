@@ -277,6 +277,23 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             else
             {
                 $this->totalRecords = $results["hits"]["total"];
+
+                if ($this->totalRecords == 0)
+                {
+                    $searchQueryParams["body"]["query"]["bool"]["must"]["multi_match"]["type"] = 'best_fields';
+                    $searchQueryParams["body"]["query"]["bool"]["must"]["multi_match"]["fuzziness"] = 'auto';
+
+                    $results = $avantElasticsearchClient->search($searchQueryParams);
+                    if ($results == null)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        $this->totalRecords = $results["hits"]["total"];
+                    }
+                }
+
                 $this->records = $results['hits']['hits'];
                 $searchResults->setFacets($results['aggregations']);
             }
