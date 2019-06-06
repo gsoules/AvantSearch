@@ -165,7 +165,7 @@ class SearchResultsView
     {
         $html = "<div class='search-selector'>";
         $html .= "<button id='search-$kind-button' class='search-selector-button'></button>";
-        $html .= "<div id='search-$kind-options' class='search-selector-options'>";
+        $html .= "<div id='search-$kind-options' class='search-selector-options' style='display:none;'>";
         $html .= "<ul>";
 
         foreach ($options as $id => $option)
