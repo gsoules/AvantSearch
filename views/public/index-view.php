@@ -15,12 +15,12 @@ function createEntries($results, $searchResults, $indexFieldName)
             if (isset($element[$indexFieldName]))
                 $originalText = $element[$indexFieldName];
             else
-                $originalText = BLANK_FACET_SUBSTITUTE;
+                $originalText = BLANK_FIELD_SUBSTITUTE;
             $trimmedText = preg_replace('/[^a-z\d ]/i', '', $originalText);
             $value = array(
                 'original'=> $originalText,
                 'text' => strtolower($trimmedText),
-                'id' => $result['_source']['item']['id'],
+                'url' => $result['_source']['url']['item'],
                 'count' => 1);
 
             if (isset($resultValues[$originalText]))
@@ -39,7 +39,7 @@ function createEntries($results, $searchResults, $indexFieldName)
         {
             $text = $resultValue['original'];
             $entries[$text]['count'] = $resultValue['count'];
-            $entries[$text]['id'] = $resultValue['id'];
+            $entries[$text]['url'] = $resultValue['url'];
         }
     }
     else
@@ -98,9 +98,17 @@ function emitEntries($entries, $indexFieldElementId, $searchResults)
         $count = $entry['count'];
         if ($count === 1)
         {
-            // Emit a link directly to the item's show page.
-            $item = get_record_by_id('Item', $entry['id']);
-            echo link_to($item, null, $entryText);
+            if ($searchResults->getUseElasticsearch())
+            {
+                $link = "<a href='{$entry['url']}'>$entryText</a>";
+            }
+            else
+            {
+                // Emit a link directly to the item's show page.
+                $item = get_record_by_id('Item', $entry['id']);
+                $link = link_to($item, null, $entryText);
+            }
+            echo $link;
         }
         else
         {

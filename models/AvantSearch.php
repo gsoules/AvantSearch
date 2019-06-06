@@ -30,6 +30,10 @@ class AvantSearch
 
     public static function emitSearchResultsTableCss()
     {
+        $viewId = isset($_GET['view']) ? $_GET['view'] : SearchResultsViewFactory::TABLE_VIEW_ID;
+        if ($viewId != SearchResultsViewFactory::TABLE_VIEW_ID)
+            return;
+
         $columnsData = SearchConfig::getOptionDataForColumns();
 
         $css = array();

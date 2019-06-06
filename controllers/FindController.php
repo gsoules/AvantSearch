@@ -35,8 +35,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $params['results'] = $searchResults;
 
-        $isSimpleSearch = isset($params['query']);
-        $useElasticsearch = $isSimpleSearch && AvantSearch::useElasticsearch();
+        // For testing purposes only.
+        $useSqlSearch = isset($params['sql']);
+
+        $useElasticsearch = AvantSearch::useElasticsearch() && !$useSqlSearch;
         $searchResults->setUseElasticsearch($useElasticsearch);
 
         $exceptionMessage = '';
