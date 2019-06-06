@@ -15,7 +15,7 @@ class SearchResultsView
     protected $conditionName;
     protected $error;
     protected $facets;
-    protected $indexOptions;
+    protected $indexFields;
     protected $keywords;
     protected $limit;
     protected $privateElements;
@@ -25,7 +25,7 @@ class SearchResultsView
     protected $totalResults;
     protected $searchFilters;
     protected $sortFieldElementId;
-    protected $sortOptions;
+    protected $sortFields;
     protected $sortOrder;
     protected $showCommingledResults;
     protected $subjectSearch;
@@ -40,9 +40,6 @@ class SearchResultsView
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
         $this->showCommingledResults = false;
-
-        $this->initIndexOptions();
-        $this->initSortOptions();
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -198,10 +195,12 @@ class SearchResultsView
 
     public function emitSelectorForIndex()
     {
+        $indexFields = $this->getIndexFields();
+
         $options = array();
-        foreach ($this->indexOptions as $index => $option)
+        foreach ($indexFields as $index => $field)
         {
-            $options["I$index"] = $option;
+            $options["I$index"] = $field;
         }
 
         return $this->emitSelector('index', $options);
@@ -222,10 +221,12 @@ class SearchResultsView
 
     public function emitSelectorForSort()
     {
+        $sortFields = $this->getSortFields();
+
         $options = array();
-        foreach ($this->sortOptions as $index => $option)
+        foreach ($sortFields as $index => $field)
         {
-            $options["S$index"] = $option;
+            $options["S$index"] = $field;
         }
 
         return $this->emitSelector('sort', $options);
@@ -487,13 +488,6 @@ class SearchResultsView
         return $this->titles;
     }
 
-    public function getSelectedIndexId()
-    {
-        $indexFieldName = $this->getIndexFieldName();
-        $indexId = array_search($indexFieldName, $this->indexOptions);
-        return $indexId === false ? array_search('Title', $this->indexOptions) : $indexId;
-    }
-
     public function getSelectedFilterId()
     {
         if (isset($this->filterId))
@@ -509,6 +503,14 @@ class SearchResultsView
         return $this->filterId;
     }
 
+    public function getSelectedIndexId()
+    {
+        $indexFieldName = $this->getIndexFieldName();
+        $indexFields = $this->getIndexFields();
+        $indexId = array_search($indexFieldName, $indexFields);
+        return $indexId === false ? array_search('Title', $indexFields) : $indexId;
+    }
+
     public function getSelectedLimitId()
     {
         return $this->getResultsLimit();
@@ -517,8 +519,9 @@ class SearchResultsView
     public function getSelectedSortId()
     {
         $sortFieldName = $this->getSortFieldName();
-        $sortId = array_search ($sortFieldName, $this->sortOptions);
-        return $sortId === false ? 0 : $sortId;
+        $sortFields = $this->getSortFields();
+        $sortId = array_search ($sortFieldName, $sortFields);
+        return $sortId === false ? array_search('relevance', $sortFields) : $sortId;
     }
 
     public function getSelectedViewId()
@@ -529,6 +532,63 @@ class SearchResultsView
     public function getShowCommingledResults()
     {
         return $this->showCommingledResults;
+    }
+
+    public function getSortableFields()
+    {
+        $includePrivateFields = !empty(current_user());
+        $commingled = $this->getShowCommingledResults();
+
+        if ($commingled)
+        {
+            $allowedFields = array(
+                'Creator',
+                'Date',
+                'Place',
+                'Rights',
+                'Subject',
+                'Title',
+                'Type'
+            );
+        }
+        else
+        {
+            // Get all the fields defined for this installation.
+            $allFields = self::getAllFields();
+
+            if ($includePrivateFields)
+            {
+                $allowedFields = $allFields;
+            }
+            else
+            {
+                // Derive just the public fields. Start by getting the private fields.
+                $privateFields = array();
+                foreach ($this->privateElementsData as $elementId => $name)
+                {
+                    $privateFields[$elementId] = $name;
+                }
+
+                // Determine which fields are public by removing the private fields from all fields.
+                $allowedFields = array_diff($allFields, $privateFields);
+            }
+
+            // The allowed fields array now contain all the fields the user can see, but we need to eliminate any
+            // that the admin has not configured them to see in the Columns option in AvantSearch, some of which
+            // will be public and others private.
+            $columns = SearchConfig::getOptionDataForColumns();
+            foreach ($columns as $column)
+            {
+                $columnFields[] = $column['name'];
+            }
+
+            // Reduce the list of the allowed fields to only those configured as columns. If the user is not logged in,
+            // the allowed fields won't contain private fields and thus no private fields will end up in the final list.
+            $allowedFields = array_intersect($allowedFields, $columnFields);
+        }
+
+        sort($allowedFields);
+        return $allowedFields;
     }
 
     public function getSortFieldElementId()
@@ -569,10 +629,31 @@ class SearchResultsView
         return $elementId;
     }
 
+    public function getIndexFields()
+    {
+        if (!isset($this->indexFields))
+        {
+            $this->indexFields = $this->getSortableFields();
+        }
+        return $this->indexFields;
+    }
+
     public function getSortFieldName()
     {
         $sortSpecifier = isset($_GET['sort']) ? $_GET['sort'] : '';
         return $sortSpecifier;
+    }
+
+    public function getSortFields()
+    {
+        if (!isset($this->sortFields))
+        {
+            $this->sortFields = $this->getSortableFields();
+
+            // Prepend the relevance option as the first choice.
+            array_unshift($this->sortFields, __('relevance'));
+        }
+        return $this->sortFields;
     }
 
     public function getSortOrder()
@@ -620,36 +701,6 @@ class SearchResultsView
     public function getViewShortName()
     {
         return SearchResultsViewFactory::getViewShortName($this->getViewId());
-    }
-
-    public function initIndexOptions()
-    {
-        $columnsData = $this->getColumnsData();
-
-        foreach ($columnsData as $columnData)
-        {
-            $this->indexOptions[] = $columnData['name'];
-        }
-
-        // Sort the values alphabetically except show 'relevance' at the top.
-        sort($this->indexOptions);
-    }
-
-    public function initSortOptions()
-    {
-        // Reserve the top slot in the array.
-        $this->sortOptions[] = __('AAA');
-
-        $columnsData = $this->getColumnsData();
-
-        foreach ($columnsData as $columnData)
-        {
-            $this->sortOptions[] = $columnData['name'];
-        }
-
-        // Sort the values alphabetically except show 'relevance' at the top.
-        sort($this->sortOptions);
-        $this->sortOptions[0] = __('relevance');
     }
 
     public function setError($message)

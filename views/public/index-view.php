@@ -204,7 +204,7 @@ else
     $resultsMessage = __('Your search exceeds the limit of ' . $max . ' results. Refine your search at left, or use more keywords.');
 }
 
-$showLetterIndex = true;// $totalResults > 1000;
+$showLetterIndex = $totalResults > 1000;
 
 if ($useElasticsearch)
 {
