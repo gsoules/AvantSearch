@@ -187,8 +187,6 @@ else
 
 $resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults);
 
-// Disable the letter index feature, but keep the code in case we decide to enable it again. It seems like a good
-// idea to display a clickable alphabet above and below the results, but in practice it doesn't seem useful.
 $showLetterIndex = $totalResults > 1000;
 
 $indexFieldElementId = $searchResults->getIndexFieldElementId();
