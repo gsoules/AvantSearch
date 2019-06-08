@@ -195,7 +195,12 @@
                 }
             }
 
-            // Reload the page with the new arguments.
+            if (kind === SITE)
+            {
+                newUrl = removeQueryStringArg('layout', newUrl);
+                newUrl = removeQueryStringArg('sort', newUrl);
+            }
+                // Reload the page with the new arguments.
             window.location.href = newUrl;
             return;
         }
