@@ -211,7 +211,7 @@ class SearchResultsView
 
         $sites = array(
             __('This site'),
-            __('All sites'));
+            __('Shared sites'));
 
         return $this->emitSelector('site', 'D', $sites);
     }

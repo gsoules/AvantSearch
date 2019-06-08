@@ -225,26 +225,6 @@ class AvantSearch
         // Emit the Advanced Search link.
         $html .= '<a href="' . $advancedSearchUrl . '" class="search-link">' . $linkText . '</a>';
 
-        if ($useElasticsearch)
-        {
-            $sharedIndexIsEnabled = (bool)get_option(ElasticsearchConfig::OPTION_ES_SHARE) == true;
-            $localIndexIsEnabled = (bool)get_option(ElasticsearchConfig::OPTION_ES_LOCAL) == true;
-
-            if ($sharedIndexIsEnabled && $localIndexIsEnabled)
-            {
-                // Searching of both the shared and local indexes is enabled. Show a checkbox to let the user choose
-                // which index to search. If only one index is enabled, the checkbox is not shown. Determine if the
-                // box should be checked or unchecked based on a cookie and/or a query string arg. The query arg allows
-                // the box to stay checked from query to query even if cookies are disabled, but if they are disabled,
-                // the box won't be checked when the user leaves the site and returns another time.
-                $queryArgIndicatesShared = isset($_GET['all']) ? $_GET['all'] == 'on' : false;
-                $cookieIndicatesShared = isset($_COOKIE['SEARCH-ALL']) ? $_COOKIE['SEARCH-ALL'] == 'true' : false;
-                $checkboxState = $queryArgIndicatesShared || $cookieIndicatesShared ? 'checked="checked"' : '';
-                $html .= '<input id="all" type="checkbox" name="all"' . $checkboxState . '>';
-                $html .= '<span>' . __('Search all Digital Archive sites') . '</span>';
-            }
-        }
-
         $html .= '</div>';
         $html .= '</form>';
         $html .= '</div>';

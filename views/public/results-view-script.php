@@ -195,13 +195,6 @@
                 }
             }
 
-            if (kind === SITE)
-            {
-                // Save the new site selection in a cookie so that the user will be searching the same site
-                // the next time they return to the Digital Archive.
-                Cookies.set('SITE', id, {expires: 7});
-            }
-
             // Reload the page with the new arguments.
             window.location.href = newUrl;
             return;
