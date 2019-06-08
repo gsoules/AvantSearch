@@ -26,11 +26,14 @@ class SearchResultsTableView extends SearchResultsView
     {
         if ($this->sharedSearchingEnabled())
         {
-            $detailData[0][] = 'Type';
-            $detailData[0][] = 'Subject';
-            $detailData[0][] = 'Creator';
-            $detailData[0][] = 'Place';
-            $detailData[0][] = 'Date';
+            // Get the detail layout columns from the AvantElasticsearch config.ini file.
+            $config = $this->getAvantElasticsearcConfig();
+            $columnsList = $config ? $config-> shared_detail_layout : array();
+            $columnNames = array_map('trim', explode(',', $columnsList));
+            foreach ($columnNames as $name)
+            {
+                $detailData[0][] = $name;
+            }
             $this->detailLayoutData = $detailData;
         }
         else
@@ -45,26 +48,25 @@ class SearchResultsTableView extends SearchResultsView
     {
         if ($this->sharedSearchingEnabled())
         {
-            $layoutsData[1]['name'] = 'Details';
-            $layoutsData[1]['admin'] = false;
-            $layoutsData[1]['columns'] = array();
+            $this->layoutsData = $layoutsData = array();
 
-            $layoutsData[2]['name'] = 'Type | Subject';
-            $layoutsData[2]['admin'] = false;
-            $columns[] = 'Identifier';
-            $columns[] = 'Title';
-            $columns[] = 'Type';
-            $columns[] = 'Subject';
-            $layoutsData[2]['columns'] = $columns;
-
-            $layoutsData[3]['name'] = 'Place | Date';
-            $layoutsData[3]['admin'] = false;
-            unset($columns);
-            $columns[] = 'Identifier';
-            $columns[] = 'Title';
-            $columns[] = 'Place';
-            $columns[] = 'Date';
-            $layoutsData[3]['columns'] = $columns;
+            // Get the shared layouts from the AvantElasticsearch config.ini file.
+            $config = $this->getAvantElasticsearcConfig();
+            $layouts = $config ? $config-> shared_layouts : array();
+            foreach ($layouts as $layout)
+            {
+                $parts = array_map('trim', explode(',', $layout));
+                if (count($parts) < 2)
+                    continue;
+                $layoutId = intval($parts[0]);
+                $name = $parts[1];
+                for ($index = 2; $index < count($parts); $index++)
+                {
+                    $columns[] = $parts[$index];
+                }
+                $layoutsData[$layoutId] = $this->createLayout($name, $columns);
+                unset($columns);
+            }
 
             $this->layoutsData = $layoutsData;
         }
@@ -165,6 +167,14 @@ class SearchResultsTableView extends SearchResultsView
         return $column;
     }
 
+    protected function createLayout($name, $columns)
+    {
+        $layout['name'] = $name;
+        $layout['admin'] = false;
+        $layout['columns'] = $columns;
+        return $layout;
+    }
+
     public static function createLayoutClasses($column)
     {
         $classes = '';
@@ -206,6 +216,19 @@ class SearchResultsTableView extends SearchResultsView
                     unset($this->detailLayoutData[$key][$elementId]);
                 }
             }
+        }
+    }
+
+    protected function getAvantElasticsearcConfig()
+    {
+        try
+        {
+            $configFile = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'config.ini';
+            return new Zend_Config_Ini($configFile, 'config');
+        }
+        catch (Exception $e)
+        {
+            return null;
         }
     }
 
