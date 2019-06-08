@@ -48,7 +48,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
         {
             if ($useElasticsearch)
             {
-                $itemPreview = new ItemPreview($item, true, $searchResults->getShowCommingledResults());
+                $itemPreview = new ItemPreview($item, true, $searchResults->sharedSearchingEnabled());
                 echo $itemPreview->emitItemPreviewAsListElement(false);
             }
             else

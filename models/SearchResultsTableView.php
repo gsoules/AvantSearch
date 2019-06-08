@@ -15,15 +15,58 @@ class SearchResultsTableView extends SearchResultsView
         parent::__construct();
         $this->viewId = SearchResultsViewFactory::TABLE_VIEW_ID;
 
-        $this->layoutsData = SearchConfig::getOptionDataForLayouts();
-        $this->detailLayoutData = $this->getOptionDataForDetailLayout();
-
-        self::filterDetailLayoutData();
-        $this->addLayoutIdsToColumns();
-        $this->addDetailLayoutColumns();
+        $this->setLayoutsData();
+        $this->setDataForDetailLayout();
         $this->addDescriptionColumn();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
+    }
+
+    protected function setDataForDetailLayout()
+    {
+        if ($this->sharedSearchingEnabled())
+        {
+            $detailData[0][51] = 'Type';
+            $detailData[0][49] = 'Subject';
+            $detailData[0][39] = 'Creator';
+            $detailData[0][62] = 'Place';
+            $detailData[0][40] = 'Date';
+            $this->detailLayoutData = $detailData;
+        }
+        else
+        {
+            $this->detailLayoutData = $this->getOptionDataForDetailLayout();
+        }
+
+        $this->addDetailLayoutColumns();
+    }
+
+    protected function setLayoutsData()
+    {
+        if ($this->sharedSearchingEnabled())
+        {
+            $layoutsData[1]['name'] = 'Details';
+            $layoutsData[1]['admin'] = false;
+            $layoutsData[1]['columns'] = array();
+
+            $layoutsData[2]['name'] = 'Type | Subject';
+            $layoutsData[2]['admin'] = false;
+            $layoutsData[2]['columns'] = array(
+                43 => 'Identifier',
+                50 => 'Title',
+                51 => 'Type',
+                49 => 'Subject'
+            );
+
+            $this->layoutsData = $layoutsData;
+        }
+        else
+        {
+            $this->layoutsData = SearchConfig::getOptionDataForLayouts();
+        }
+
+        self::filterDetailLayoutData();
+        $this->addLayoutIdsToColumns();
     }
 
     protected function addDescriptionColumn()

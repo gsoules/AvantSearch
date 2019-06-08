@@ -23,10 +23,10 @@ class SearchResultsView
     protected $results;
     protected $resulstAreFuzzy;
     protected $searchFilters;
+    protected $sharedSearchingEnabled;
     protected $sortFieldElementId;
     protected $sortFields;
     protected $sortOrder;
-    protected $showCommingledResults;
     protected $subjectSearch;
     protected $titles;
     protected $totalResults;
@@ -40,7 +40,7 @@ class SearchResultsView
         $this->privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
-        $this->showCommingledResults = false;
+        $this->sharedSearchingEnabled = $this->getSelectedSiteId() == 1;
         $this->resultsAreFuzzy = false;
     }
 
@@ -230,7 +230,7 @@ class SearchResultsView
 
     public function emitSelectorHtml($kind, $options, $highlightSharedOptions)
     {
-        $shared = AvantSearch::allowSharedSearching() && $this->getShowCommingledResults() && $highlightSharedOptions;
+        $shared = AvantSearch::allowSharedSearching() && $this->sharedSearchingEnabled() && $highlightSharedOptions;
         $sharedClass = $shared ? ' search-option-shared' : '';
 
         $html = "<div class='search-selector'>";
@@ -600,11 +600,6 @@ class SearchResultsView
         return $this->getViewId();
     }
 
-    public function getShowCommingledResults()
-    {
-        return $this->showCommingledResults;
-    }
-
     public function getSortFieldElementId()
     {
         if (isset($this->sortFieldElementId))
@@ -618,9 +613,8 @@ class SearchResultsView
     public function getSortableFields()
     {
         $includePrivateFields = !empty(current_user());
-        $commingled = $this->getShowCommingledResults();
 
-        if ($commingled)
+        if ($this->sharedSearchingEnabled())
         {
             $allowedFields = array(
                 'Creator',
@@ -767,11 +761,6 @@ class SearchResultsView
         $this->resultsAreFuzzy = $fuzzy;
     }
 
-    public function setShowCommingledResults($show)
-    {
-        $this->showCommingledResults = $show;
-    }
-
     public function setTotalResults($totalResults)
     {
         $this->totalResults = $totalResults;
@@ -780,5 +769,10 @@ class SearchResultsView
     public function setUseElasticsearch($useElasticsearch)
     {
         $this->useElasticsearch = $useElasticsearch;
+    }
+
+    public function sharedSearchingEnabled()
+    {
+        return $this->sharedSearchingEnabled;
     }
 }

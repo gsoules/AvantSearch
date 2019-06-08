@@ -14,7 +14,7 @@ class SearchResultsTableViewRowData
     protected $itemFieldTextsHtml = array();
     public $itemThumbnailHtml;
     protected $searchResults;
-    protected $showCommingledResults;
+    protected $sharedSearchingEnabled;
     protected $useElasticsearch;
 
     public function __construct($item, SearchResultsTableView $searchResults, $identifierAliasName, $checkboxFieldData)
@@ -22,7 +22,7 @@ class SearchResultsTableViewRowData
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
         $this->useElasticsearch = $searchResults->getUseElasticsearch();
-        $this->showCommingledResults = $searchResults->getShowCommingledResults();
+        $this->sharedSearchingEnabled = $searchResults->sharedSearchingEnabled();
         $this->identifierAliasName = $identifierAliasName;
         $this->checkboxFieldData = $checkboxFieldData;
         $this->initializeData($item);
@@ -179,7 +179,7 @@ class SearchResultsTableViewRowData
         if ($this->useElasticsearch)
         {
             $identifier = $item['_source']['element']['identifier'];
-            if ($this->showCommingledResults)
+            if ($this->sharedSearchingEnabled)
             {
                 $contributorId = $item['_source']['item']['contributor-id'];
                 $identifier = $contributorId . '-' . $identifier;
@@ -205,7 +205,7 @@ class SearchResultsTableViewRowData
 
     protected function generateThumbnailHtml($item)
     {
-        $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->showCommingledResults);
+        $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->sharedSearchingEnabled);
         $this->itemThumbnailHtml = $itemPreview->emitItemHeader(true);
         $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
@@ -246,7 +246,7 @@ class SearchResultsTableViewRowData
             $this->elementValue['Title']['text'] .= '<div class="search-title-aka">' . html_escape($title) . '</div>';
         }
 
-        if ($this->showCommingledResults)
+        if ($this->sharedSearchingEnabled)
         {
             $contributor = $item['_source']['item']['contributor'];
             $this->elementValue['Title']['text'] .= "<div class='search-contributor'>$contributor</div>";
@@ -313,18 +313,18 @@ class SearchResultsTableViewRowData
             // Determine if the element's text needs to be displayed as HTML.
             $containsHtml = in_array($key, $htmlTextIndices);
 
-            if ($containsHtml && $this->useElasticsearch && !$this->showCommingledResults)
+            if ($containsHtml && $this->useElasticsearch && !$this->sharedSearchingEnabled)
             {
                 // The Elasticsearch index does not contain the original HTML for element values, only an indication
                 // of which element texts contain HTML. Get the original HTML from the Omeka database. This can't be
-                // done for commingled results because this installation can't access the other databases.
+                // done for shared results because this installation can't access the other databases.
                 $itemId = $item['_source']['item']['id'];
                 $omekaItem = ItemMetadata::getItemFromId($itemId);
                 if ($omekaItem)
                 {
                     // Verify that the item Id is ok. It might be invalid if the Elasticsearch index contains
-                    // commingled data even though it's not supposed to, but that can happen during development
-                    // when testing with non-commingled behavior with a commingled index.
+                    // shared data even though it's not supposed to, but that can happen during development
+                    // when testing local results behavior with a shared data.
                     $elementTexts = ItemMetadata::getAllElementTextsForElementName($omekaItem, $elementName);
                     $text = $elementTexts[$key];
                 }

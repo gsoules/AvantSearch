@@ -4,10 +4,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 {
     private $avantElasticsearchQueryBuilder;
     private $avantElasticsearchClient;
-    private $commingled;
     private $facetDefinitions;
     private $totalRecords = 0;
     private $records = array();
+    private $sharedSearchingEnabled;
 
     public function advancedSearchAction()
     {
@@ -207,9 +207,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
         $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
 
-        // See if the user wants to see commingled results or only those for this installation.
-        $this->commingled = $this->avantElasticsearchQueryBuilder->isUsingSharedIndex();
-        $searchResults->setShowCommingledResults($this->commingled);
+        // See if the user wants to see shared search results or only those for this installation.
+        $this->sharedSearchingEnabled = $this->avantElasticsearchQueryBuilder->isUsingSharedIndex();
 
         $queryParams = $this->getQueryParams();
 
@@ -236,7 +235,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $sort,
             $public,
             $fileFilter,
-            $this->commingled,
+            $this->sharedSearchingEnabled,
             $fuzzy);
 
         $results = null;
@@ -274,7 +273,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                         $sort,
                         $public,
                         $fileFilter,
-                        $this->commingled,
+                        $this->sharedSearchingEnabled,
                         $fuzzy);
 
                     $results = $this->avantElasticsearchClient->search($searchQueryParams);
