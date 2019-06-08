@@ -36,10 +36,10 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
             );
             ?>
         </section>
-        <section id="elasticsearch-results" class="grid-view">
+        <section id="elasticsearch-results">
     <?php endif; ?>
     <div>
-        <ul class="item-preview">
+        <ul class="item-preview grid-view">
         <?php
         foreach ($results as $item)
         {

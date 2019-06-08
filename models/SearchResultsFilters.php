@@ -16,7 +16,6 @@ class SearchResultsFilters
 
     protected function addFilterMessageCriteria($criteria)
     {
-        //$criteria = html_escape(trim($criteria));
         $this->filterMessage .= "<span class='search-filter'>$criteria</span>";
         $this->filterCount++;
     }
@@ -71,7 +70,7 @@ class SearchResultsFilters
             }
 
             $conditionName = $useElasticsearch ? '' : $this->searchResults->getKeywordsConditionName() . ' ';
-            $displayArray[__('Keywords')] = "$conditionName\"$keywords\"";
+            $displayArray[__('Keywords')] = "$conditionName$keywords";
         }
 
         if (array_key_exists('advanced', $requestArray))

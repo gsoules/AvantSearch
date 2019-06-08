@@ -192,7 +192,7 @@ class AvantSearch
             $hiddenParams[urldecode($key)] = urldecode($value);
         }
 
-        $hiddenInputs = array('view', 'layout', 'sort', 'order', 'filter');
+        $hiddenInputs = array('view', 'layout', 'limit', 'sort', 'order', 'filter');
         foreach($hiddenParams as $key => $value)
         {
             if (in_array($key, $hiddenInputs))
