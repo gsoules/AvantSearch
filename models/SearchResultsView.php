@@ -186,8 +186,8 @@ class SearchResultsView
     public function emitSelectorForFilter()
     {
         $filters = array(
-            __('All items'),
-            __('Items with images'));
+            __('All'),
+            __('With images'));
 
         return $this->emitSelector('filter', 'F', $filters);
     }

@@ -21,7 +21,7 @@
     selectedOptionId[VIEW] = parseInt(<?php echo $viewId; ?>);
 
     var selectorTitle = [];
-    selectorTitle[FILTER] = 'Filter: %s';
+    selectorTitle[FILTER] = 'Items: %s';
     selectorTitle[INDEX] = 'Index by: %s';
     selectorTitle[LAYOUT] = 'Layout: %s';
     selectorTitle[LIMIT] = 'Per page: %s';
