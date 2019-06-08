@@ -23,7 +23,7 @@
     var selectorTitle = [];
     selectorTitle[FILTER] = 'Items: %s';
     selectorTitle[INDEX] = 'Index by: %s';
-    selectorTitle[LAYOUT] = 'Layout: %s';
+    selectorTitle[LAYOUT] = 'Columns: %s';
     selectorTitle[LIMIT] = 'Per page: %s';
     selectorTitle[SORT] = 'Sort by: %s';
     selectorTitle[SITE] = 'Search: %s';

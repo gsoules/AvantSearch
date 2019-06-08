@@ -485,6 +485,23 @@ a.search-reset-link:hover {
 	border: 0;
 }
 
+.search-option-shared::before,
+.search-option-shared-option::after,
+.search-option-shared {
+	content: "\f1e0";
+	font-family: "FontAwesome";
+	font-weight: normal;
+	font-size: 11px;
+	color: #185893;
+}
+
+.search-option-shared::before {
+	padding-right: 8px;
+}
+
+.search-option-shared-option::after {
+	padding-left: 12px;
+}
 
 /* === Pagination controls for Table View ===
 --------------------------------------------------------- */

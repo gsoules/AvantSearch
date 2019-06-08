@@ -172,7 +172,7 @@ class SearchResultsView
         return $this->searchFilters->emitSearchFilters($resultControlsHtml);
     }
 
-    protected function emitSelector($name, $prefix, array $values)
+    protected function emitSelector($name, $prefix, array $values, $hightlightSharedOptions = false)
     {
         $options = array();
         foreach ($values as $id => $value)
@@ -180,7 +180,7 @@ class SearchResultsView
             $options["$prefix$id"] = $value;
         }
 
-        return $this->emitSelectorHtml($name, $options);
+        return $this->emitSelectorHtml($name, $options, $hightlightSharedOptions);
     }
 
     public function emitSelectorForFilter()
@@ -195,7 +195,7 @@ class SearchResultsView
     public function emitSelectorForIndex()
     {
         $indexFields = $this->getIndexFields();
-        return $this->emitSelector('index', 'I', $indexFields);
+        return $this->emitSelector('index', 'I', $indexFields, true);
     }
 
     public function emitSelectorForLimit()
@@ -219,7 +219,7 @@ class SearchResultsView
     public function emitSelectorForSort()
     {
         $sortFields = $this->getSortFields();
-        return $this->emitSelector('sort', 'S', $sortFields);
+        return $this->emitSelector('sort', 'S', $sortFields, true);
     }
 
     public function emitSelectorForView()
@@ -228,8 +228,11 @@ class SearchResultsView
         return $this->emitSelector('view', 'V', $views);
     }
 
-    public function emitSelectorHtml($kind, $options)
+    public function emitSelectorHtml($kind, $options, $highlightSharedOptions)
     {
+        $shared = AvantSearch::allowSharedSearching() && $this->getShowCommingledResults() && $highlightSharedOptions;
+        $sharedClass = $shared ? ' search-option-shared' : '';
+
         $html = "<div class='search-selector'>";
         $html .= "<button id='search-$kind-button' class='search-selector-button'></button>";
         $html .= "<div id='search-$kind-options' class='search-selector-options' style='display:none;'>";
@@ -237,7 +240,10 @@ class SearchResultsView
 
         foreach ($options as $id => $option)
         {
-            $html .= "<li><a id='$id' class='button search-$kind-option'>$option</a></li>";
+            if ($kind == 'site' && $id == 'D1')
+                $sharedClass = ' search-option-shared-option';
+
+            $html .= "<li><a id='$id' class='button search-$kind-option$sharedClass'>$option</a></li>";
         }
 
         $html .= " </ul>";

@@ -133,7 +133,7 @@ class SearchResultsTableView extends SearchResultsView
             $options["L$id"] = $layout['name'];
         }
 
-        return $this->emitSelectorHtml('layout', $options);
+        return $this->emitSelectorHtml('layout', $options, true);
     }
 
     protected function filterDetailLayoutData()
