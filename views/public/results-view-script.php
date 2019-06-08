@@ -3,6 +3,7 @@
     const INDEX = 'index';
     const LAYOUT = 'layout';
     const LIMIT = 'limit';
+    const SITE = 'site';
     const SORT = 'sort';
     const VIEW = 'view';
 
@@ -15,6 +16,7 @@
     selectedOptionId[INDEX] = parseInt(<?php echo $indexId; ?>);
     selectedOptionId[LAYOUT] = parseInt(<?php echo $layoutId; ?>);
     selectedOptionId[LIMIT] = parseInt(<?php echo $limitId; ?>);
+    selectedOptionId[SITE] = parseInt(<?php echo $siteId; ?>);
     selectedOptionId[SORT] = parseInt(<?php echo $sortId; ?>);
     selectedOptionId[VIEW] = parseInt(<?php echo $viewId; ?>);
 
@@ -24,6 +26,7 @@
     selectorTitle[LAYOUT] = 'Layout: %s';
     selectorTitle[LIMIT] = 'Per page: %s';
     selectorTitle[SORT] = 'Sort by: %s';
+    selectorTitle[SITE] = 'Search: %s';
     selectorTitle[VIEW] = 'View: %s';
 
     var initializing = true;
@@ -84,6 +87,12 @@
         return newUrl;
     }
 
+    function saveCookie(kind, id)
+    {
+        // Save the selection in a cookie even though we are not using cookies at this time.
+        Cookies.set(kind.toUpperCase() + '-ID', id, {expires: 7});
+    }
+
     function setSelectedOption(kind, prefix, newOptionId)
     {
         var oldOptionId = selectedOptionId[kind];
@@ -114,7 +123,7 @@
 
         if (newOptionId === oldOptionId)
         {
-            // Either the user clicked on the same option as was already selected or this is selector initialization.
+            // Either the user clicked on the same option as was already selected, or this is selector initialization.
             if (!initializing && kind === SORT)
             {
                 // Reverse the sort order.
@@ -148,6 +157,8 @@
             oldOptionValue = oldOptionId;
             newOptionValue = newOptionId;
         }
+
+        saveCookie(kind, newOptionValue);
 
         // Construct an updated query string to reflect the newly selected option.
         var oldOptionArgPattern = new RegExp('&' + kind + '=' + oldOptionValue);
@@ -184,7 +195,14 @@
                 }
             }
 
-            // Reload the page.
+            if (kind === SITE)
+            {
+                // Save the new site selection in a cookie so that the user will be searching the same site
+                // the next time they return to the Digital Archive.
+                Cookies.set('SITE', id, {expires: 7});
+            }
+
+            // Reload the page with the new arguments.
             window.location.href = newUrl;
             return;
         }
@@ -239,6 +257,7 @@
         setSelectedOption(INDEX, 'I', selectedOptionId[INDEX]);
         setSelectedOption(LAYOUT, 'L', selectedOptionId[LAYOUT]);
         setSelectedOption(LIMIT, 'X', selectedOptionId[LIMIT]);
+        setSelectedOption(SITE, 'D', selectedOptionId[SITE]);
         setSelectedOption(SORT, 'S', selectedOptionId[SORT]);
         setSelectedOption(VIEW, 'V', selectedOptionId[VIEW]);
 
@@ -246,6 +265,7 @@
         initSelector(INDEX, 'I');
         initSelector(LAYOUT, 'L');
         initSelector(LIMIT, 'X');
+        initSelector(SITE, 'D');
         initSelector(SORT, 'S');
         initSelector(VIEW, 'V');
 

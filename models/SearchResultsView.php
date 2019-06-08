@@ -172,7 +172,63 @@ class SearchResultsView
         return $this->searchFilters->emitSearchFilters($resultControlsHtml);
     }
 
-    public function emitSelector($kind, $options)
+    protected function emitSelector($name, $prefix, array $values)
+    {
+        $options = array();
+        foreach ($values as $id => $value)
+        {
+            $options["$prefix$id"] = $value;
+        }
+
+        return $this->emitSelectorHtml($name, $options);
+    }
+
+    public function emitSelectorForFilter()
+    {
+        $filters = array(
+            __('All items'),
+            __('Items with images'));
+
+        return $this->emitSelector('filter', 'F', $filters);
+    }
+
+    public function emitSelectorForIndex()
+    {
+        $indexFields = $this->getIndexFields();
+        return $this->emitSelector('index', 'I', $indexFields);
+    }
+
+    public function emitSelectorForLimit()
+    {
+        $limits = $this->getResultsLimitOptions();
+        return $this->emitSelector('limit', 'X', $limits);
+    }
+
+    public function emitSelectorForSite()
+    {
+        if (!AvantSearch::allowSharedSearching())
+            return '';
+
+        $sites = array(
+            __('This site'),
+            __('All sites'));
+
+        return $this->emitSelector('site', 'D', $sites);
+    }
+
+    public function emitSelectorForSort()
+    {
+        $sortFields = $this->getSortFields();
+        return $this->emitSelector('sort', 'S', $sortFields);
+    }
+
+    public function emitSelectorForView()
+    {
+        $views = $this->getViewOptions();
+        return $this->emitSelector('view', 'V', $views);
+    }
+
+    public function emitSelectorHtml($kind, $options)
     {
         $html = "<div class='search-selector'>";
         $html .= "<button id='search-$kind-button' class='search-selector-button'></button>";
@@ -189,74 +245,6 @@ class SearchResultsView
         $html .= "</div>";
 
         return $html;
-    }
-
-    public function emitSelectorForFilter()
-    {
-        $options = array();
-
-        $filters = array(
-            __('All items'),
-            __('Items with images'));
-
-        foreach ($filters as $id => $filter)
-        {
-            $options["F$id"] = $filter;
-        }
-
-        return $this->emitSelector('filter', $options);
-    }
-
-    public function emitSelectorForIndex()
-    {
-        $indexFields = $this->getIndexFields();
-
-        $options = array();
-        foreach ($indexFields as $index => $field)
-        {
-            $options["I$index"] = $field;
-        }
-
-        return $this->emitSelector('index', $options);
-    }
-
-    public function emitSelectorForLimit()
-    {
-        $options = array();
-        $limits = $this->getResultsLimitOptions();
-
-        foreach ($limits as $id => $limit)
-        {
-            $options["X$id"] = $limit;
-        }
-
-        return $this->emitSelector('limit', $options);
-    }
-
-    public function emitSelectorForSort()
-    {
-        $sortFields = $this->getSortFields();
-
-        $options = array();
-        foreach ($sortFields as $index => $field)
-        {
-            $options["S$index"] = $field;
-        }
-
-        return $this->emitSelector('sort', $options);
-    }
-
-    public function emitSelectorForView()
-    {
-        $options = array();
-        $views = $this->getViewOptions();
-
-        foreach ($views as $id => $view)
-        {
-            $options["V$id"] = $view;
-        }
-
-        return $this->emitSelector('view', $options);
     }
 
     public function getAdvancedSearchFields()
@@ -332,6 +320,34 @@ class SearchResultsView
         return $this->columnsData;
     }
 
+    public function getElementIdForQueryArg($argName)
+    {
+        $elementSpecifier = isset($_GET[$argName]) ? $_GET[$argName] : '';
+
+        // Accept either an element Id or an element name as the element specifier. This provides backwards
+        // compatibility with AvantSearch 2.0 which used element Ids for sort and Index View index specifiers.
+        if (intval($elementSpecifier) == 0)
+        {
+            // The specifier is not an element Id. Assume that it's an element name. Attempt to get its element Id.
+            $elementId = ItemMetadata::getElementIdForElementName($elementSpecifier);
+        }
+        else
+        {
+            // The specifier is a number. Verify that it's an element Id by attempting to get the element's name.
+            $elementName = ItemMetadata::getElementNameFromId($elementSpecifier);
+            $elementId = empty($elementName) ? 0 : $elementSpecifier;
+        }
+
+        if ($elementId == 0)
+        {
+            // Either no element arg was specified or its element Id or name is invalid. Use the Title as a default.
+            // This should only happen if someone modified the query string to change the specifier.
+            $elementId = ItemMetadata::getTitleElementId();
+        }
+
+        return $elementId;
+    }
+
     public function getError()
     {
         return $this->error;
@@ -346,6 +362,15 @@ class SearchResultsView
     {
         $indexSpecifier = isset($_GET['index']) ? $_GET['index'] : '';
         return $indexSpecifier;
+    }
+
+    public function getIndexFields()
+    {
+        if (!isset($this->indexFields))
+        {
+            $this->indexFields = $this->getSortableFields();
+        }
+        return $this->indexFields;
     }
 
     public function getKeywords()
@@ -516,17 +541,13 @@ class SearchResultsView
 
     public function getSelectedFilterId()
     {
-        if (isset($this->filterId))
-            return $this->filterId;
-
         $id = isset($_GET['filter']) ? intval($_GET['filter']) : 0;
 
         // Make sure that the layout Id is valid.
         if ($id < 0 || $id > 1)
             $id = 0;
 
-        $this->filterId = $id;
-        return $this->filterId;
+        return $id;
     }
 
     public function getSelectedIndexId()
@@ -540,6 +561,24 @@ class SearchResultsView
     public function getSelectedLimitId()
     {
         return $this->getResultsLimit();
+    }
+
+    public function getSelectedSiteId()
+    {
+        if (isset($_GET['site']))
+        {
+            $id = intval($_GET['site']);
+        }
+        else
+        {
+            $id = isset($_COOKIE['SITE']) ? intval($_COOKIE['SITE']) : 0;
+        }
+
+        // Make sure that the site Id is valid.
+        if ($id < 0 || $id > 1)
+            $id = 0;
+
+        return $id;
     }
 
     public function getSelectedSortId()
@@ -558,6 +597,16 @@ class SearchResultsView
     public function getShowCommingledResults()
     {
         return $this->showCommingledResults;
+    }
+
+    public function getSortFieldElementId()
+    {
+        if (isset($this->sortFieldElementId))
+            return $this->sortFieldElementId;
+
+        $this->sortFieldElementId = $this->getElementIdForQueryArg('sort');
+
+        return $this->sortFieldElementId;
     }
 
     public function getSortableFields()
@@ -615,53 +664,6 @@ class SearchResultsView
 
         sort($allowedFields);
         return $allowedFields;
-    }
-
-    public function getSortFieldElementId()
-    {
-        if (isset($this->sortFieldElementId))
-            return $this->sortFieldElementId;
-
-        $this->sortFieldElementId = $this->getElementIdForQueryArg('sort');
-
-        return $this->sortFieldElementId;
-    }
-
-    public function getElementIdForQueryArg($argName)
-    {
-        $elementSpecifier = isset($_GET[$argName]) ? $_GET[$argName] : '';
-
-        // Accept either an element Id or an element name as the element specifier. This provides backwards
-        // compatibility with AvantSearch 2.0 which used element Ids for sort and Index View index specifiers.
-        if (intval($elementSpecifier) == 0)
-        {
-            // The specifier is not an element Id. Assume that it's an element name. Attempt to get its element Id.
-            $elementId = ItemMetadata::getElementIdForElementName($elementSpecifier);
-        }
-        else
-        {
-            // The specifier is a number. Verify that it's an element Id by attempting to get the element's name.
-            $elementName = ItemMetadata::getElementNameFromId($elementSpecifier);
-            $elementId = empty($elementName) ? 0 : $elementSpecifier;
-        }
-
-        if ($elementId == 0)
-        {
-            // Either no element arg was specified or its element Id or name is invalid. Use the Title as a default.
-            // This should only happen if someone modified the query string to change the specifier.
-            $elementId = ItemMetadata::getTitleElementId();
-        }
-
-        return $elementId;
-    }
-
-    public function getIndexFields()
-    {
-        if (!isset($this->indexFields))
-        {
-            $this->indexFields = $this->getSortableFields();
-        }
-        return $this->indexFields;
     }
 
     public function getResultsAreFuzzy()
@@ -759,14 +761,14 @@ class SearchResultsView
         $this->resultsAreFuzzy = $fuzzy;
     }
 
-    public function setTotalResults($totalResults)
-    {
-        $this->totalResults = $totalResults;
-    }
-
     public function setShowCommingledResults($show)
     {
         $this->showCommingledResults = $show;
+    }
+
+    public function setTotalResults($totalResults)
+    {
+        $this->totalResults = $totalResults;
     }
 
     public function setUseElasticsearch($useElasticsearch)

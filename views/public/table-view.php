@@ -6,13 +6,6 @@ $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 $resultsMessage = SearchResultsView::getSearchResultsMessage($searchResults->getResultsAreFuzzy());
 
-// Values passed to results-view-script.php
-$filterId = $searchResults->getSelectedFilterId();
-$layoutId = $searchResults->getSelectedLayoutId();
-$limitId = $searchResults->getSelectedLimitId();
-$sortId = $searchResults->getSelectedSortId();
-$viewId = $searchResults->getSelectedViewId();
-
 $layoutsData = $searchResults->getLayoutsData();
 $detailLayoutData = $searchResults->getDetailLayoutData();
 $column1 =  isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
@@ -23,10 +16,19 @@ $userCanEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin
 $identifierAliasName = ItemMetadata::getIdentifierAliasElementName();
 $checkboxFieldData = plugin_is_active('AvantElements') ? ElementsConfig::getOptionDataForCheckboxField() : array();
 
-$optionSelectorsHtml = $searchResults->emitSelectorForView();
+$filterId = $searchResults->getSelectedFilterId();
+$layoutId = $searchResults->getSelectedLayoutId();
+$limitId = $searchResults->getSelectedLimitId();
+$siteId = $searchResults->getSelectedSiteId();
+$sortId = $searchResults->getSelectedSortId();
+$viewId = $searchResults->getSelectedViewId();
+
+// Selectors are displayed left to right in the order listed here.
+$optionSelectorsHtml = $searchResults->emitSelectorForSite();
+$optionSelectorsHtml .= $searchResults->emitSelectorForView();
 $optionSelectorsHtml .= $searchResults->emitSelectorForLayout($layoutsData);
-$optionSelectorsHtml .= $searchResults->emitSelectorForLimit();
 $optionSelectorsHtml .= $searchResults->emitSelectorForSort();
+$optionSelectorsHtml .= $searchResults->emitSelectorForLimit();
 $optionSelectorsHtml .= $searchResults->emitSelectorForFilter();
 
 echo head(array('title' => $resultsMessage));
@@ -104,10 +106,11 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
 echo $this->partial('/results-view-script.php',
     array(
         'filterId' => $filterId,
+        'indexId' => 0,
         'layoutId' => $layoutId,
         'limitId' => $limitId,
+        'siteId' => $siteId,
         'sortId' => $sortId,
-        'indexId' => 0,
         'viewId' => $viewId)
 );
 echo foot();

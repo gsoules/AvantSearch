@@ -2,7 +2,19 @@
 class AvantSearch
 {
     // This is the default maximum allowed by Elasticsearch and is also a reasonable max for SQL searches.
-    public const MAX_SEARCH_RESULTS = 10000;
+    const MAX_SEARCH_RESULTS = 10000;
+
+    public static function allowSharedSearching()
+    {
+        $allow = false;
+        if  (self::useElasticsearch())
+        {
+            $sharedIndexIsEnabled = (bool)get_option(ElasticsearchConfig::OPTION_ES_SHARE) == true;
+            $localIndexIsEnabled = (bool)get_option(ElasticsearchConfig::OPTION_ES_LOCAL) == true;
+            $allow = $sharedIndexIsEnabled && $localIndexIsEnabled;
+        }
+        return $allow;
+    }
 
     public static function buildSearchQuery($args)
     {
@@ -165,16 +177,16 @@ class AvantSearch
 
     public static function getSearchFormHtml()
     {
+        // This method constructs the HTML that will replace the native Omeka search form with the one for AvantSearch.
+
         $useElasticsearch = self::useElasticsearch();
         $linkText = __('Advanced Search');
         $placeholderText = __('Enter search terms');
         $query = isset($_GET['query']) ? htmlspecialchars($_GET['query'], ENT_QUOTES) : '';
-        $layoutId = isset($_GET['layout']) ? $_GET['layout'] : 1;
         $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
         $findUrl = url('/find') . $queryString;
         $advancedSearchUrl = url('/find/advanced') . $queryString;
 
-        // Construct the HTML that will replace the native Omeka search form with the one for AvantSearch.
         // Initialize the search box with the text of the last query submitted.
         // The search-clear <span> overlays an X in the far right of the search box to let you clear the string.
         $html = '<div id="search-container">';
@@ -182,6 +194,7 @@ class AvantSearch
         $html .= '<span class="search-clear">';
         $html .= '<input id="query" type="text" name="query" value="' . $query . '" title="Search" autofocus placeholder="' . $placeholderText . '">';
 
+        // Get the query string arguments that will need corresponding hidden <input> tags.
         $hiddenParams = array();
         $entries = explode('&', http_build_query($_GET));
         foreach ($entries as $entry)
@@ -192,7 +205,8 @@ class AvantSearch
             $hiddenParams[urldecode($key)] = urldecode($value);
         }
 
-        $hiddenInputs = array('view', 'layout', 'limit', 'sort', 'order', 'filter');
+        // Emit hidden <input> tags.
+        $hiddenInputs = array('filter', 'layout', 'limit', 'order', 'site', 'sort', 'view');
         foreach($hiddenParams as $key => $value)
         {
             if (in_array($key, $hiddenInputs))
@@ -201,7 +215,10 @@ class AvantSearch
             }
         }
 
+        // Emit the X at far right used to clear the search box.
         $html .= '<span id="search-clear-icon">&#10006;</span></span>';
+
+        // Emit the search button.
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button>';
         $html .= '<div>';
 

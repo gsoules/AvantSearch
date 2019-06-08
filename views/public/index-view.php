@@ -219,11 +219,14 @@ else
     $indexFieldName = empty($element) ? '' : $element['name'];
 }
 
-$optionSelectorsHtml = $searchResults->emitSelectorForView();
-$optionSelectorsHtml .= $searchResults->emitSelectorForIndex();
-
 $indexId = $searchResults->getSelectedIndexId();
+$siteId = $searchResults->getSelectedSiteId();
 $viewId = $searchResults->getSelectedViewId();
+
+// Selectors are displayed left to right in the order listed here.
+$optionSelectorsHtml = $searchResults->emitSelectorForSite();
+$optionSelectorsHtml .= $searchResults->emitSelectorForView();
+$optionSelectorsHtml .= $searchResults->emitSelectorForIndex();
 
 echo head(array('title' => $resultsMessage));
 echo "<div class='search-results-container'>";
@@ -285,10 +288,11 @@ else
 echo $this->partial('/results-view-script.php',
     array(
         'filterId' => 0,
+        'indexId' => $indexId,
         'layoutId' => 0,
         'limitId' => 0,
+        'siteId' => $siteId,
         'sortId' => 0,
-        'indexId' => $indexId,
         'viewId' => $viewId)
 );
 echo foot();

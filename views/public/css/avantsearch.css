@@ -345,7 +345,7 @@ input[type="checkbox"] {
 /* Item filters display */
 .search-filter {
 	color: #444;
-	font-size:15px;
+	font-size:13px;
 	padding: 4px 8px 4px 8px;
 	margin-right: 6px;
 	margin-bottom: 4px;
@@ -361,7 +361,7 @@ input[type="checkbox"] {
 }
 
 #search-filter-bar .search-filter-bar-message {
-	font-size:16px;
+	font-size:14px;
 	margin-bottom: 8px;
 	border-radius: 5px;
 	padding: 8px 4px 4px 8px;
@@ -398,6 +398,7 @@ a.search-reset-link:hover {
 }
 
 .search-selector-button {
+	font-size: 13px;
 	background-color: #e8e8e8;
 	border-color: #bababa;
 	color: #666666;
@@ -460,6 +461,8 @@ a.search-reset-link:hover {
 	margin: 0;
 	padding: 2px 8px;
 	width: 100%;
+	font-size: 13px;
+	font-weight: bold;
 }
 
 /* Default colors for selector options dropdown items */
@@ -473,7 +476,6 @@ a.search-reset-link:hover {
 .search-selector-options li a.selector-normal:hover {
 	background-color: #ddd;
 	color: #222;
-	font-weight: bold;
 	border: 0;
 }
 

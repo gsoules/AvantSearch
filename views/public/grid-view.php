@@ -6,12 +6,15 @@ $resultsMessage = SearchResultsView::getSearchResultsMessage($searchResults->get
 
 $filterId = $searchResults->getSelectedFilterId();
 $limitId = $searchResults->getSelectedLimitId();
+$siteId = $searchResults->getSelectedSiteId();
 $sortId = $searchResults->getSelectedSortId();
 $viewId = $searchResults->getSelectedViewId();
 
-$optionSelectorsHtml = $searchResults->emitSelectorForView();
-$optionSelectorsHtml .= $searchResults->emitSelectorForLimit();
+// Selectors are displayed left to right in the order listed here.
+$optionSelectorsHtml = $searchResults->emitSelectorForSite();
+$optionSelectorsHtml .= $searchResults->emitSelectorForView();
 $optionSelectorsHtml .= $searchResults->emitSelectorForSort();
+$optionSelectorsHtml .= $searchResults->emitSelectorForLimit();
 $optionSelectorsHtml .= $searchResults->emitSelectorForFilter();
 
 echo head(array('title' => $resultsMessage));
@@ -79,10 +82,11 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
 <?php
 echo $this->partial('/results-view-script.php',
     array('filterId' => $filterId,
+        'indexId' => 0,
         'layoutId' => 0,
         'limitId' => $limitId,
+        'siteId' => $siteId,
         'sortId' => $sortId,
-        'indexId' => 0,
         'viewId' => $viewId)
 );
 echo foot();
