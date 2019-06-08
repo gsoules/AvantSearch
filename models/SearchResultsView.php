@@ -36,7 +36,8 @@ class SearchResultsView
 
     function __construct()
     {
-        $this->columnsData = SearchConfig::getOptionDataForColumns();
+        $this->setColumnsData();
+
         $this->privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
@@ -744,6 +745,15 @@ class SearchResultsView
     public function setFacets($facets)
     {
         $this->facets = $facets;
+    }
+
+    public function setColumnsData()
+    {
+        $columnsData = SearchConfig::getOptionDataForColumns();
+        foreach ($columnsData as $columnData)
+        {
+            $this->columnsData[$columnData['name']] = $columnData;
+        }
     }
 
     public function setQuery($query)

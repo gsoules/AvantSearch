@@ -15,8 +15,8 @@ class SearchResultsTableView extends SearchResultsView
         parent::__construct();
         $this->viewId = SearchResultsViewFactory::TABLE_VIEW_ID;
 
-        $this->setLayoutsData();
         $this->setDataForDetailLayout();
+        $this->setLayoutsData();
         $this->addDescriptionColumn();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
@@ -26,11 +26,11 @@ class SearchResultsTableView extends SearchResultsView
     {
         if ($this->sharedSearchingEnabled())
         {
-            $detailData[0][51] = 'Type';
-            $detailData[0][49] = 'Subject';
-            $detailData[0][39] = 'Creator';
-            $detailData[0][62] = 'Place';
-            $detailData[0][40] = 'Date';
+            $detailData[0][] = 'Type';
+            $detailData[0][] = 'Subject';
+            $detailData[0][] = 'Creator';
+            $detailData[0][] = 'Place';
+            $detailData[0][] = 'Date';
             $this->detailLayoutData = $detailData;
         }
         else
@@ -51,27 +51,36 @@ class SearchResultsTableView extends SearchResultsView
 
             $layoutsData[2]['name'] = 'Type | Subject';
             $layoutsData[2]['admin'] = false;
-            $layoutsData[2]['columns'] = array(
-                43 => 'Identifier',
-                50 => 'Title',
-                51 => 'Type',
-                49 => 'Subject'
-            );
+            $columns[] = 'Identifier';
+            $columns[] = 'Title';
+            $columns[] = 'Type';
+            $columns[] = 'Subject';
+            $layoutsData[2]['columns'] = $columns;
+
+            $layoutsData[3]['name'] = 'Place | Date';
+            $layoutsData[3]['admin'] = false;
+            unset($columns);
+            $columns[] = 'Identifier';
+            $columns[] = 'Title';
+            $columns[] = 'Place';
+            $columns[] = 'Date';
+            $layoutsData[3]['columns'] = $columns;
 
             $this->layoutsData = $layoutsData;
         }
         else
         {
             $this->layoutsData = SearchConfig::getOptionDataForLayouts();
+            self::filterPrivateDetailLayoutData();
         }
 
-        self::filterDetailLayoutData();
         $this->addLayoutIdsToColumns();
     }
 
     protected function addDescriptionColumn()
     {
         // Make sure there's a Description column because it's needed by the L1 detail layout.
+        // There will be no Description column if none of the layouts include it as a column.
         $hasDescriptionColumn = false;
         foreach ($this->columnsData as $column)
         {
@@ -83,11 +92,7 @@ class SearchResultsTableView extends SearchResultsView
         }
         if (!$hasDescriptionColumn)
         {
-            $elementId = ItemMetadata::getElementIdForElementName('Description');
-            if ($elementId != 0)
-            {
-                $this->columnsData[$elementId] = self::createColumn('Description', 0);
-            }
+            $this->columnsData['Description'] = self::createColumn('Description', 0);
         }
     }
 
@@ -102,10 +107,10 @@ class SearchResultsTableView extends SearchResultsView
                     // Tags and Score are special cased elsewhere as pseudo elements.
                     continue;
                 }
-                if (!isset($this->columnsData[$elementId]))
+                if (!$this->columnsDataContains($elementName))
                 {
                     // This column is specified in the Detail Layout option, but is not listed in the Columns option.
-                    $this->columnsData[$elementId] = self::createColumn($elementName, 0);
+                    $this->columnsData[$elementName] = self::createColumn($elementName, 0);
                 }
             }
         }
@@ -115,7 +120,7 @@ class SearchResultsTableView extends SearchResultsView
     {
         foreach ($this->layoutsData as $idNumber => $layout)
         {
-            foreach ($layout['columns'] as $elementId => $columnName)
+            foreach ($layout['columns'] as $columnName)
             {
                 if (!SearchConfig::userHasAccessToLayout($layout))
                 {
@@ -129,14 +134,24 @@ class SearchResultsTableView extends SearchResultsView
                     continue;
                 }
 
-                if (!isset($this->columnsData[$elementId]))
+                if (!$this->columnsDataContains($columnName))
                 {
                     // This column is specified in the Layouts option, but is not listed in the Columns option.
-                    $this->columnsData[$elementId] = self::createColumn($columnName, 0);
+                    $this->columnsData[$columnName] = self::createColumn($columnName, 0);
                 }
-                $this->columnsData[$elementId]['layouts'][] = "L$idNumber";
+                $this->columnsData[$columnName]['layouts'][] = "L$idNumber";
             }
         }
+    }
+
+    public function columnsDataContains($columnName)
+    {
+        foreach ($this->columnsData as $columnData)
+        {
+            if ($columnData['name'] == $columnName)
+                return true;
+        }
+        return false;
     }
 
     public static function createColumn($name, $width, $align = '')
@@ -179,7 +194,7 @@ class SearchResultsTableView extends SearchResultsView
         return $this->emitSelectorHtml('layout', $options, true);
     }
 
-    protected function filterDetailLayoutData()
+    protected function filterPrivateDetailLayoutData()
     {
         foreach ($this->detailLayoutData as $key => $row)
         {

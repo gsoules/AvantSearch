@@ -258,15 +258,19 @@ class SearchResultsTableViewRowData
         return $data->elementValue[$elementName]['detail'];
     }
 
-    protected function getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, $filtered)
+    protected function getElementTextsAsHtml($item, $elementName, $elementTexts, $filtered)
     {
-        // If the element is specified as a checkbox using AvantElements, then return its display value for true.
-        // By virtue of the element being displayed, its value must be true. By virtue of being a checkbox, there's
-        // no meaning to having multiple instance of the value, so simply return the value for true e.g. "Yes".
-        if (!empty($elementTexts) && array_key_exists($elementId, $this->checkboxFieldData))
+        if (!empty($elementTexts))
         {
-            $definition = $this->checkboxFieldData[$elementId];
-            return $definition['checked'];
+            foreach ($this->checkboxFieldData as $checkboxData)
+            {
+                if ($checkboxData['name'] == $elementName)
+                {
+                    // The element is configured as a checkbox in AvantElements. Return its checked display value.
+                    // By virtue of being a checkbox, there's no meaning to having multiple instance of the value.
+                    return $checkboxData['checked'];
+                }
+            }
         }
 
         $texts = '';
@@ -378,7 +382,7 @@ class SearchResultsTableViewRowData
             $this->getItemFieldTextsHtml($item);
         }
 
-        foreach ($this->columnsData as $elementId => $column)
+        foreach ($this->columnsData as $column)
         {
             $elementName = $column['name'];
 
@@ -401,7 +405,7 @@ class SearchResultsTableViewRowData
                     $elementTexts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
                 }
 
-                $filteredText = $this->getElementTextsAsHtml($item, $elementId, $elementName, $elementTexts, true);
+                $filteredText = $this->getElementTextsAsHtml($item, $elementName, $elementTexts, true);
 
                 if ($elementName != 'Description')
                 {

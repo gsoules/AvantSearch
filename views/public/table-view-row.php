@@ -15,7 +15,7 @@ $hasPdfHits = !empty($pdfHits);
 echo '<tr>';
 
 // Emit the columns for this row's data.
-foreach ($columnsData as $elementId => $column)
+foreach ($columnsData as $column)
 {
     $columnName = $column['name'];
 
