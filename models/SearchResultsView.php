@@ -10,7 +10,6 @@ class SearchResultsView
     const KEYWORD_CONDITION_CONTAINS = 2;
     const KEYWORD_CONDITION_BOOLEAN = 3;
 
-    protected $columnsData;
     protected $condition;
     protected $conditionName;
     protected $error;
@@ -23,7 +22,6 @@ class SearchResultsView
     protected $results;
     protected $resulstAreFuzzy;
     protected $searchFilters;
-    protected $sharedSearchingEnabled;
     protected $sortFieldElementId;
     protected $sortFields;
     protected $sortOrder;
@@ -36,12 +34,9 @@ class SearchResultsView
 
     function __construct()
     {
-        $this->setColumnsData();
-
         $this->privateElementsData = CommonConfig::getOptionDataForPrivateElements();
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
-        $this->sharedSearchingEnabled = $this->getSelectedSiteId() == 1;
         $this->resultsAreFuzzy = false;
     }
 
@@ -322,9 +317,17 @@ class SearchResultsView
         return $fields;
     }
 
-    public function getColumnsData()
+    protected function getAvantElasticsearcConfig()
     {
-        return $this->columnsData;
+        try
+        {
+            $configFile = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'config.ini';
+            return new Zend_Config_Ini($configFile, 'config');
+        }
+        catch (Exception $e)
+        {
+            return null;
+        }
     }
 
     public function getElementIdForQueryArg($argName)
@@ -375,7 +378,7 @@ class SearchResultsView
     {
         if (!isset($this->indexFields))
         {
-            $this->indexFields = $this->getSortableFields();
+            $this->indexFields = $this->getTableLayoutColumns();
         }
         return $this->indexFields;
     }
@@ -446,6 +449,11 @@ class SearchResultsView
     public function getResults()
     {
         return $this->results;
+    }
+
+    public function getResultsAreFuzzy()
+    {
+        return $this->resultsAreFuzzy;
     }
 
     public function getResultsLimit()
@@ -611,21 +619,42 @@ class SearchResultsView
         return $this->sortFieldElementId;
     }
 
-    public function getSortableFields()
+    public function getSortFieldName()
+    {
+        $sortSpecifier = isset($_GET['sort']) ? $_GET['sort'] : '';
+        return $sortSpecifier;
+    }
+
+    public function getSortFields()
+    {
+        if (!isset($this->sortFields))
+        {
+            $this->sortFields = $this->getTableLayoutColumns();
+
+            // Prepend the relevance option as the first choice.
+            array_unshift($this->sortFields, __('relevance'));
+        }
+        return $this->sortFields;
+    }
+
+    public function getSortOrder()
+    {
+        if (isset($this->sortOrder))
+            return $this->sortOrder;
+
+        $this->sortOrder = isset($_GET['order']) ? $_GET['order'] : 'a';
+        return $this->sortOrder;
+    }
+
+    public function getTableLayoutColumns()
     {
         $includePrivateFields = !empty(current_user());
 
         if ($this->sharedSearchingEnabled())
         {
-            $allowedFields = array(
-                'Creator',
-                'Date',
-                'Place',
-                'Rights',
-                'Subject',
-                'Title',
-                'Type'
-            );
+            $config = $this->getAvantElasticsearcConfig();
+            $columnsList = $config ? $config-> shared_sort_columns : array();
+            $allowedFields = array_map('trim', explode(',', $columnsList));
         }
         else
         {
@@ -663,40 +692,7 @@ class SearchResultsView
             $allowedFields = array_intersect($allowedFields, $columnFields);
         }
 
-        sort($allowedFields);
         return $allowedFields;
-    }
-
-    public function getResultsAreFuzzy()
-    {
-        return $this->resultsAreFuzzy;
-    }
-
-    public function getSortFieldName()
-    {
-        $sortSpecifier = isset($_GET['sort']) ? $_GET['sort'] : '';
-        return $sortSpecifier;
-    }
-
-    public function getSortFields()
-    {
-        if (!isset($this->sortFields))
-        {
-            $this->sortFields = $this->getSortableFields();
-
-            // Prepend the relevance option as the first choice.
-            array_unshift($this->sortFields, __('relevance'));
-        }
-        return $this->sortFields;
-    }
-
-    public function getSortOrder()
-    {
-        if (isset($this->sortOrder))
-            return $this->sortOrder;
-
-        $this->sortOrder = isset($_GET['order']) ? $_GET['order'] : 'a';
-        return $this->sortOrder;
     }
 
     public function getTotalResults()
@@ -747,15 +743,6 @@ class SearchResultsView
         $this->facets = $facets;
     }
 
-    public function setColumnsData()
-    {
-        $columnsData = SearchConfig::getOptionDataForColumns();
-        foreach ($columnsData as $columnData)
-        {
-            $this->columnsData[$columnData['name']] = $columnData;
-        }
-    }
-
     public function setQuery($query)
     {
         $this->query = $query;
@@ -783,6 +770,7 @@ class SearchResultsView
 
     public function sharedSearchingEnabled()
     {
-        return $this->sharedSearchingEnabled;
+        return $this->getSelectedSiteId() == 1;
+
     }
 }

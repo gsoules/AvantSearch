@@ -19,6 +19,11 @@ foreach ($columnsData as $column)
 {
     $columnName = $column['name'];
 
+    if ($columnName == 'Identifier' && $searchResults->sharedSearchingEnabled())
+    {
+        continue;
+    }
+
     // Form the special class name e.g. 'search-td-title' that is unique to this row column.
     $columnClass = SearchResultsView::createColumnClass($columnName, 'td');
 

@@ -14,15 +14,22 @@ if ($searchResults->hasLayoutL1())
 
 foreach ($columnsData as $column)
 {
+    $columnName = $column['name'];
+
+    if ($columnName == 'Identifier' && $searchResults->sharedSearchingEnabled())
+    {
+        continue;
+    }
+
     $classes = SearchResultsTableView::createLayoutClasses($column);
     $sortable = true;
 
-    if ($column['name'] == 'Title')
+    if ($columnName == 'Title')
     {
         $classes = 'L1 ' . $classes;
     }
 
-    if ($column['name'] == 'Description')
+    if ($columnName == 'Description')
     {
         // Don't allow sorting of the description column. It doesn't make sense and is problematic for Elasticsearch.
         $sortable = false;
@@ -35,9 +42,9 @@ foreach ($columnsData as $column)
     }
 
     // Form the special class name e.g. 'search-th-title' that is unique to this header column.
-    $classes .= ' ' . SearchResultsView::createColumnClass($column['name'], 'th');
+    $classes .= ' ' . SearchResultsView::createColumnClass($columnName, 'th');
 
-    $headerColumns[] = array('name' => $column['name'], 'label' => $column['alias'], 'classes' => $classes, 'sortable' => $sortable);
+    $headerColumns[] = array('name' => $columnName, 'label' => $column['alias'], 'classes' => $classes, 'sortable' => $sortable);
 }
 
 echo $searchResults->emitHeaderRow($headerColumns);

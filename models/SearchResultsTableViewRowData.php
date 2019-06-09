@@ -25,6 +25,7 @@ class SearchResultsTableViewRowData
         $this->sharedSearchingEnabled = $searchResults->sharedSearchingEnabled();
         $this->identifierAliasName = $identifierAliasName;
         $this->checkboxFieldData = $checkboxFieldData;
+
         $this->initializeData($item);
     }
 
@@ -206,7 +207,7 @@ class SearchResultsTableViewRowData
     protected function generateThumbnailHtml($item)
     {
         $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->sharedSearchingEnabled);
-        $this->itemThumbnailHtml = $itemPreview->emitItemHeader(true);
+        //$this->itemThumbnailHtml = $itemPreview->emitItemHeader(true);
         $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
 
@@ -411,6 +412,11 @@ class SearchResultsTableViewRowData
                 {
                     $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetail($column['alias'], $filteredText);
                 }
+            }
+            else
+            {
+                // Title text is handled by generateTitles.
+                $filteredText = '';
             }
 
             $this->elementValue[$elementName]['text'] = $filteredText;

@@ -4,6 +4,7 @@ class SearchResultsTableView extends SearchResultsView
     const DEFAULT_LAYOUT = 1;
     const RELATIONSHIPS_LAYOUT = 6;
 
+    protected $columnsData;
     protected $detailLayoutData;
     protected $filterId;
     protected $layoutId;
@@ -15,68 +16,12 @@ class SearchResultsTableView extends SearchResultsView
         parent::__construct();
         $this->viewId = SearchResultsViewFactory::TABLE_VIEW_ID;
 
+        $this->setColumnsData();
         $this->setDataForDetailLayout();
         $this->setLayoutsData();
         $this->addDescriptionColumn();
 
         $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
-    }
-
-    protected function setDataForDetailLayout()
-    {
-        if ($this->sharedSearchingEnabled())
-        {
-            // Get the detail layout columns from the AvantElasticsearch config.ini file.
-            $config = $this->getAvantElasticsearcConfig();
-            $columnsList = $config ? $config-> shared_detail_layout : array();
-            $columnNames = array_map('trim', explode(',', $columnsList));
-            foreach ($columnNames as $name)
-            {
-                $detailData[0][] = $name;
-            }
-            $this->detailLayoutData = $detailData;
-        }
-        else
-        {
-            $this->detailLayoutData = $this->getOptionDataForDetailLayout();
-        }
-
-        $this->addDetailLayoutColumns();
-    }
-
-    protected function setLayoutsData()
-    {
-        if ($this->sharedSearchingEnabled())
-        {
-            $this->layoutsData = $layoutsData = array();
-
-            // Get the shared layouts from the AvantElasticsearch config.ini file.
-            $config = $this->getAvantElasticsearcConfig();
-            $layouts = $config ? $config-> shared_layouts : array();
-            foreach ($layouts as $layout)
-            {
-                $parts = array_map('trim', explode(',', $layout));
-                if (count($parts) < 2)
-                    continue;
-                $layoutId = intval($parts[0]);
-                $name = $parts[1];
-                for ($index = 2; $index < count($parts); $index++)
-                {
-                    $columns[] = $parts[$index];
-                }
-                $layoutsData[$layoutId] = $this->createLayout($name, $columns);
-                unset($columns);
-            }
-
-            $this->layoutsData = $layoutsData;
-        }
-        else
-        {
-            $this->layoutsData = SearchConfig::getOptionDataForLayouts();
-            self::filterPrivateDetailLayoutData();
-        }
-
-        $this->addLayoutIdsToColumns();
     }
 
     protected function addDescriptionColumn()
@@ -219,17 +164,9 @@ class SearchResultsTableView extends SearchResultsView
         }
     }
 
-    protected function getAvantElasticsearcConfig()
+    public function getColumnsData()
     {
-        try
-        {
-            $configFile = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'config.ini';
-            return new Zend_Config_Ini($configFile, 'config');
-        }
-        catch (Exception $e)
-        {
-            return null;
-        }
+        return $this->columnsData;
     }
 
     public function getDetailLayoutData()
@@ -306,5 +243,84 @@ class SearchResultsTableView extends SearchResultsView
     public function hasLayoutL1()
     {
         return isset($this->layoutsData[1]);
+    }
+
+    public function setColumnsData()
+    {
+        if ($this->sharedSearchingEnabled())
+        {
+            $columnNames = $this->getTableLayoutColumns();
+            foreach ($columnNames as $columnName)
+            {
+                $columns[] = self::createColumn($columnName, 0);
+            }
+        }
+        else
+        {
+            $columns = SearchConfig::getOptionDataForColumns();
+        }
+
+        foreach ($columns as $column)
+        {
+            $this->columnsData[$column['name']] = $column;
+        }
+    }
+
+    protected function setDataForDetailLayout()
+    {
+        if ($this->sharedSearchingEnabled())
+        {
+            // Get the detail layout columns from the AvantElasticsearch config.ini file.
+            $config = $this->getAvantElasticsearcConfig();
+            $columnsList = $config ? $config-> shared_detail_layout : array();
+            $columnNames = array_map('trim', explode(',', $columnsList));
+            foreach ($columnNames as $name)
+            {
+                $detailData[0][] = $name;
+            }
+            $this->detailLayoutData = $detailData;
+        }
+        else
+        {
+            $this->detailLayoutData = $this->getOptionDataForDetailLayout();
+        }
+
+        $this->addDetailLayoutColumns();
+    }
+
+    protected function setLayoutsData()
+    {
+        if ($this->sharedSearchingEnabled())
+        {
+            $this->layoutsData = $layoutsData = array();
+
+            // Get the shared layouts from the AvantElasticsearch config.ini file.
+            $config = $this->getAvantElasticsearcConfig();
+            $layouts = $config ? $config-> shared_layouts : array();
+            foreach ($layouts as $layout)
+            {
+                $parts = array_map('trim', explode(',', $layout));
+                if (count($parts) < 2)
+                    continue;
+                $columns = array();
+                $layoutId = intval($parts[0]);
+                $name = $parts[1];
+                for ($index = 2; $index < count($parts); $index++)
+                {
+                    $columns[] = $parts[$index];
+                }
+                $layoutsData[$layoutId] = $this->createLayout($name, $columns);
+                unset($columns);
+            }
+
+            $this->layoutsData = $layoutsData;
+        }
+        else
+        {
+            $this->layoutsData = SearchConfig::getOptionDataForLayouts();
+            self::filterPrivateDetailLayoutData();
+        }
+
+        $this->addLayoutIdsToColumns();
     }
 }
