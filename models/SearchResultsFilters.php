@@ -39,7 +39,7 @@ class SearchResultsFilters
 
     public function emitSearchFilters($resultControlsHtml)
     {
-        $useElasticsearch = $this->searchResults->getUseElasticsearch();
+        $useElasticsearch = $this->searchResults->useElasticsearch();
 
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $requestArray = $request->getParams();

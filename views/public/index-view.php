@@ -5,7 +5,7 @@ function createEntries($results, $searchResults, $indexFieldName)
 {
     $entries = array();
 
-    if ($searchResults->getUseElasticsearch())
+    if ($searchResults->useElasticsearch())
     {
         $resultValues = array();
 
@@ -190,7 +190,7 @@ function entryTextComparator($object1, $object2)
     return $object1['text'] > $object2['text'];
 }
 
-$useElasticsearch = $searchResults->getUseElasticsearch();
+$useElasticsearch = $searchResults->useElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 

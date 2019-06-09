@@ -72,7 +72,7 @@ echo '</td>';
 
                 // Determine if it's okay to show the edit link for this item.
                 $showEditLink = false;
-                if ($searchResults->getUseElasticsearch())
+                if ($searchResults->useElasticsearch())
                 {
                     if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
                     {

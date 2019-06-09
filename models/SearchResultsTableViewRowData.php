@@ -21,7 +21,7 @@ class SearchResultsTableViewRowData
     {
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
-        $this->useElasticsearch = $searchResults->getUseElasticsearch();
+        $this->useElasticsearch = $searchResults->useElasticsearch();
         $this->sharedSearchingEnabled = $searchResults->sharedSearchingEnabled();
         $this->identifierAliasName = $identifierAliasName;
         $this->checkboxFieldData = $checkboxFieldData;

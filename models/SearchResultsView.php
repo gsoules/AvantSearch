@@ -37,6 +37,15 @@ class SearchResultsView
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
         $this->resultsAreFuzzy = false;
+
+        $this->useElasticsearch = AvantSearch::useElasticsearch();
+
+        if (isset($_GET['sql']))
+        {
+            // This is only for development and testing purposes to make it easy to disable Elasticsearch
+            // functionality without having to go to the configuration settings for AvantSearch.
+            $this->useElasticsearch = false;
+        }
     }
 
     protected static function appendFuzzyMessage($message)
@@ -687,11 +696,6 @@ class SearchResultsView
         return $this->totalResults;
     }
 
-    public function getUseElasticsearch()
-    {
-        return $this->useElasticsearch;
-    }
-
     public function getViewId()
     {
         return $this->viewId;
@@ -750,14 +754,14 @@ class SearchResultsView
         $this->totalResults = $totalResults;
     }
 
-    public function setUseElasticsearch($useElasticsearch)
-    {
-        $this->useElasticsearch = $useElasticsearch;
-    }
-
     public function sharedSearchingEnabled()
     {
         return $this->useElasticsearch && $this->getSelectedSiteId() == 1;
 
+    }
+
+    public function useElasticsearch()
+    {
+        return $this->useElasticsearch;
     }
 }

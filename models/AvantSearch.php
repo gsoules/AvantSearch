@@ -287,6 +287,7 @@ class AvantSearch
 
     public static function useElasticsearch()
     {
-        return get_option(SearchConfig::OPTION_ELASTICSEARCH) && plugin_is_active('AvantElasticsearch');
+        // Elasticsearch is enabled when AvantElasticsearch is installed and AvantSearch is configured to use it.
+        return SearchConfig::getOptionSupportedElasticsearch() && get_option(SearchConfig::OPTION_ELASTICSEARCH);
     }
 }

@@ -1,7 +1,7 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
-$useElasticsearch = $searchResults->getUseElasticsearch();
+$useElasticsearch = $searchResults->useElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 $resultsMessage = SearchResultsView::getSearchResultsMessage($searchResults->getResultsAreFuzzy());

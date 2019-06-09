@@ -4,7 +4,7 @@ $view = get_view();
 $storageEngine = AvantSearch::getStorageEngineForSearchTextsTable();
 $titlesOnlySupported = SearchConfig::getOptionsSupportedTitlesOnly();
 $addressSortingSupported = SearchConfig::getOptionSupportedAddressSorting();
-$elasticsearchSupported = plugin_is_active('AvantElasticsearch');
+$elasticsearchSupported = SearchConfig::getOptionSupportedElasticsearch();
 
 $columnsOption = SearchConfig::getOptionTextForColumns();
 $columnsOptionRows = max(2, count(explode(PHP_EOL, $columnsOption)));
