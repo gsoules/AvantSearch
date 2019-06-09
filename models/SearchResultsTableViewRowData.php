@@ -410,7 +410,7 @@ class SearchResultsTableViewRowData
 
                 if ($elementName != 'Description')
                 {
-                    $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetail($column['alias'], $filteredText);
+                    $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetail($column['name'], $filteredText, $column['alias']);
                 }
             }
             else

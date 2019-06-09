@@ -17,7 +17,6 @@ class SearchResultsView
     protected $indexFields;
     protected $keywords;
     protected $limit;
-    protected $privateElements;
     protected $query;
     protected $results;
     protected $resulstAreFuzzy;
@@ -78,11 +77,12 @@ class SearchResultsView
         return $classAttribute;
     }
 
-    public function emitFieldDetail($elementName, $text)
+    public function emitFieldDetail($elementName, $text, $alias = '')
     {
         $class = 'search-results-detail-element';
         $class .= in_array($elementName, $this->privateElementsData) ? ' private-element' : '';
-        return $text ? "<span class='$class'>$elementName</span>:<span class=\"search-results-detail-text\">$text</span>" : '';
+        $displayedName = empty($alias) ? $elementName : $alias;
+        return $text ? "<span class='$class'>$displayedName</span>:<span class=\"search-results-detail-text\">$text</span>" : '';
     }
 
     public function emitHeaderRow($headerColumns)
@@ -315,19 +315,6 @@ class SearchResultsView
         }
 
         return $fields;
-    }
-
-    protected function getAvantElasticsearcConfig()
-    {
-        try
-        {
-            $configFile = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'config.ini';
-            return new Zend_Config_Ini($configFile, 'config');
-        }
-        catch (Exception $e)
-        {
-            return null;
-        }
     }
 
     public function getElementIdForQueryArg($argName)
@@ -652,7 +639,7 @@ class SearchResultsView
 
         if ($this->sharedSearchingEnabled())
         {
-            $config = $this->getAvantElasticsearcConfig();
+            $config = AvantElasticsearch::getAvantElasticsearcConfig();
             $columnsList = $config ? $config-> shared_sort_columns : array();
             $allowedFields = array_map('trim', explode(',', $columnsList));
         }
@@ -770,7 +757,7 @@ class SearchResultsView
 
     public function sharedSearchingEnabled()
     {
-        return $this->getSelectedSiteId() == 1;
+        return $this->useElasticsearch && $this->getSelectedSiteId() == 1;
 
     }
 }

@@ -271,7 +271,7 @@ class SearchResultsTableView extends SearchResultsView
         if ($this->sharedSearchingEnabled())
         {
             // Get the detail layout columns from the AvantElasticsearch config.ini file.
-            $config = $this->getAvantElasticsearcConfig();
+            $config = AvantElasticsearch::getAvantElasticsearcConfig();
             $columnsList = $config ? $config-> shared_detail_layout : array();
             $columnNames = array_map('trim', explode(',', $columnsList));
             foreach ($columnNames as $name)
@@ -295,7 +295,7 @@ class SearchResultsTableView extends SearchResultsView
             $this->layoutsData = $layoutsData = array();
 
             // Get the shared layouts from the AvantElasticsearch config.ini file.
-            $config = $this->getAvantElasticsearcConfig();
+            $config = AvantElasticsearch::getAvantElasticsearcConfig();
             $layouts = $config ? $config-> shared_layouts : array();
             foreach ($layouts as $layout)
             {

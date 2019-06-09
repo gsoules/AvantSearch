@@ -14,16 +14,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         return;
     }
 
-    public function subjectSearchAction()
-    {
-        return;
-    }
-
-    public function searchResultsAction()
-    {
-        $this->find();
-    }
-
     protected function find()
     {
         $this->getRequest()->setParamSources(array('_GET'));
@@ -118,6 +108,41 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->view->assign(array('searchResults' => $searchResults));
     }
 
+    private function getElasticsearchSortParams($params)
+    {
+        $sort = [];
+
+        if (!isset($params['sort']))
+        {
+            return $sort;
+        }
+
+        $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
+
+        $sortElementName = $params['sort'];
+        $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
+
+        $sortOrder = isset($params['order']) && $params['order'] == 'd' ? 'desc' : 'asc';
+
+        if ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
+        {
+            $sort[] = ['sort.address-street' => $sortOrder];
+            $sort[] = ['sort.address-number' => $sortOrder];
+        }
+        else if (in_array($sortElementName, $integerSortElements))
+        {
+            $sort[] = ["sort.$fieldName" => $sortOrder];
+        }
+        else
+        {
+            $sort[] = ["element.$fieldName.keyword" => $sortOrder];
+        }
+
+        $sort[] = '_score';
+
+        return $sort;
+    }
+
     private function getQueryParams()
     {
         $parts = $this->_request->getQuery();
@@ -165,41 +190,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $params[$kind][$facetId] = $values;
     }
 
-    private function getSortParams($params)
-    {
-        $sort = [];
-
-        if (!isset($params['sort']))
-        {
-            return $sort;
-        }
-
-        $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
-
-        $sortElementName = $params['sort'];
-        $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
-
-        $sortOrder = isset($params['order']) && $params['order'] == 'd' ? 'desc' : 'asc';
-
-        if ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
-        {
-            $sort[] = ['sort.address-street' => $sortOrder];
-            $sort[] = ['sort.address-number' => $sortOrder];
-        }
-        else if (in_array($sortElementName, $integerSortElements))
-        {
-            $sort[] = ["sort.$fieldName" => $sortOrder];
-        }
-        else
-        {
-            $sort[] = ["element.$fieldName.keyword" => $sortOrder];
-        }
-
-        $sort[] = '_score';
-
-        return $sort;
-    }
-
     protected function performQueryUsingElasticsearch($params, $searchResults, $attempt = 1)
     {
         /* @var $searchResults SearchResultsView */
@@ -220,7 +210,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
 
         $limit = $this->recordsPerPage;
-        $sort = $this->getSortParams($params);
+        $sort = $this->getElasticsearchSortParams($params);
 
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
         $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');
@@ -293,6 +283,15 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
     }
 
+    protected function performQueryUsingSql($params, $currentPage)
+    {
+        // Perform the query using the built-in Omeka mechanism for advanced search.
+        // That code will eventually call this plugin's hookItemsBrowseSql() method.
+        $this->_helper->db->setDefaultModelName('Item');
+        $this->records = $this->_helper->db->findBy($params, $this->recordsPerPage, $currentPage);
+        $this->totalRecords = $this->_helper->db->count($params);
+    }
+
     protected function retryQueryUsingElasticsearch($params, $searchResults, $attempt)
     {
         $e = $this->avantElasticsearchClient->getLastException();
@@ -320,12 +319,13 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
     }
 
-    protected function performQueryUsingSql($params, $currentPage)
+    public function searchResultsAction()
     {
-        // Perform the query using the built-in Omeka mechanism for advanced search.
-        // That code will eventually call this plugin's hookItemsBrowseSql() method.
-        $this->_helper->db->setDefaultModelName('Item');
-        $this->records = $this->_helper->db->findBy($params, $this->recordsPerPage, $currentPage);
-        $this->totalRecords = $this->_helper->db->count($params);
+        $this->find();
+    }
+
+    public function subjectSearchAction()
+    {
+        return;
     }
 }
