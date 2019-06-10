@@ -23,11 +23,11 @@ function createEntries($results, $searchResults, $indexFieldName)
             foreach ($texts as $text)
             {
                 // For sorting purposes, remove all non alphanumeric and blank characters.
-                $trimmedText = preg_replace('/[^a-z\d ]/i', '', $text);
+                $cleanText = preg_replace('/[^a-z\d ]/i', '', $text);
 
                 $value = array(
-                    'original'=> $text,
-                    'text' => strtolower($trimmedText),
+                    'text'=> $text,
+                    'clean-text' => strtolower($cleanText),
                     'url' => $result['_source']['url']['item'],
                     'count' => 1);
 
@@ -47,7 +47,7 @@ function createEntries($results, $searchResults, $indexFieldName)
 
         foreach ($resultValues as $resultValue)
         {
-            $text = $resultValue['original'];
+            $text = $resultValue['text'];
             $entries[$text]['count'] = $resultValue['count'];
             $entries[$text]['url'] = $resultValue['url'];
         }
@@ -197,7 +197,7 @@ function emitLetterIndex($entries)
 
 function entryTextComparator($object1, $object2)
 {
-    return $object1['text'] > $object2['text'];
+    return $object1['clean-text'] > $object2['clean-text'];
 }
 
 $useElasticsearch = $searchResults->useElasticsearch();
