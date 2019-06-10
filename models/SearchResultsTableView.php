@@ -9,7 +9,6 @@ class SearchResultsTableView extends SearchResultsView
     protected $filterId;
     protected $layoutId;
     protected $layoutsData;
-    protected $showRelationships;
 
     function __construct()
     {
@@ -20,8 +19,6 @@ class SearchResultsTableView extends SearchResultsView
         $this->setDataForDetailLayout();
         $this->setLayoutsData();
         $this->addDescriptionColumn();
-
-        $this->showRelationships = isset($_GET['relationships']) ? intval($_GET['relationships']) == '1' : false;
     }
 
     protected function addDescriptionColumn()
@@ -233,11 +230,6 @@ class SearchResultsTableView extends SearchResultsView
 
         $this->layoutId = $id;
         return $this->layoutId;
-    }
-
-    public function getShowRelationships()
-    {
-        return $this->showRelationships;
     }
 
     public function hasLayoutL1()
