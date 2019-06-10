@@ -188,6 +188,7 @@
                 if (newOptionId === INDEX_VIEW_ID)
                 {
                     newUrl = removeQueryStringArg('sort', newUrl);
+                    newUrl = removeQueryStringArg('filter', newUrl);
                 }
                 else if (newOptionId === TABLE_VIEW_ID || newOptionId === GRID_VIEW_ID)
                 {
