@@ -27,9 +27,10 @@ if ($useElasticsearch)
         $avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
 
         // Explicitly specify that the shared index should be queried.
-        $avantElasticsearchQueryBuilder->setIndexName(AvantElasticsearch::getNameOfSharedIndex());
+        $indexName = AvantElasticsearch::getNameOfSharedIndex();
+        $avantElasticsearchQueryBuilder->setIndexName($indexName);
 
-        $params = $avantElasticsearchQueryBuilder->constructFileStatisticsAggregationParams();
+        $params = $avantElasticsearchQueryBuilder->constructFileStatisticsAggregationParams($indexName);
         $response = $avantElasticsearchClient->search($params);
         if ($response == null)
         {
@@ -43,6 +44,7 @@ if ($useElasticsearch)
             $itemTotal = 0;
             $videoTotal = 0;
 
+            $rows = '';
             $buckets = $response["aggregations"]["contributors"]["buckets"];
 
             foreach ($buckets as $bucket)
@@ -61,18 +63,13 @@ if ($useElasticsearch)
 
                 $videoCount = intval($bucket["video"]["value"]);
                 $videoTotal += $videoCount;
-            }
 
-            $rows = '';
-            foreach ($buckets as $bucket)
-            {
                 $rows .= '<tr>';
                 $contributor = $bucket['key'];
                 $rows .= "<td>$contributor</td><td>$itemCount</td>";
                 $rows .= "<td>$imageCount</td>";
                 $rows .= "<td>$documentCount</td>";
-                if ($audioCount > 0)
-                    $rows .= "<td>$audioCount</td>";
+                $rows .= "<td>$audioCount</td>";
                 if ($videoCount > 0)
                     $rows .= "<td>$videoCount</td>";
                 $rows .= '</tr>';
@@ -82,9 +79,9 @@ if ($useElasticsearch)
             $header .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong>';
             $header .= '<td><strong>Images</strong></td>';
             $header .= '<td><strong>Documents</strong></td>';
-            if ($audioCount > 0)
+            if ($audioTotal > 0)
                 $header .= '<td><strong>Audio</strong></td>';
-            if ($videoCount > 0)
+            if ($videoTotal > 0)
                 $header .= '<td><strong>Video</strong></td>';
             $header .= '</tr>';
 
@@ -92,8 +89,7 @@ if ($useElasticsearch)
             $totals = "<tr><td><strong>TOTAL</strong></td><td><strong>$itemTotal</strong>";
             $totals .= "<td><strong>$imageTotal</strong></td>";
             $totals .= "<td><strong>$documentTotal</strong></td>";
-            if ($audioCount > 0)
-                $totals .= "<td><strong>$audioTotal</strong></td>";
+            $totals .= "<td><strong>$audioTotal</strong></td>";
             if ($videoCount > 0)
                 $totals .= "<td><strong>$videoTotal</strong></td>";
             $totals .= "</tr>";
