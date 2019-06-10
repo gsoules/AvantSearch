@@ -4,7 +4,7 @@ class AvantSearch
     // This is the default maximum allowed by Elasticsearch and is also a reasonable max for SQL searches.
     const MAX_SEARCH_RESULTS = 10000;
 
-    public static function allowSharedSearching()
+    public static function allowToggleBetweenLocalAndSharedSearching()
     {
         $allow = false;
         if  (self::useElasticsearch())
