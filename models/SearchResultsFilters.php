@@ -86,10 +86,19 @@ class SearchResultsFilters
                     continue;
 
                 $elementId = $row['element_id'];
-                $element = $db->getTable('Element')->find($elementId);
-                if (empty($element))
+
+                if ($useElasticsearch)
+                {
+                    $elementName = $elementId;
+                }
+                else
+                {
+                    $elementName = ItemMetadata::getElementNameFromId($elementId);
+                }
+
+                if (empty($elementName))
                     continue;
-                $elementName = $element->name;
+
                 $type = __($row['type']);
                 $advancedValue = $elementName . ' ' . $type;
                 if (isset($row['terms']) && $type != 'is empty' && $type != 'is not empty')

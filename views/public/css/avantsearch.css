@@ -351,6 +351,7 @@ input[type="checkbox"] {
 	margin-bottom: 4px;
 	display: inline-block;
 	background-color: #d1e4f2;
+	border: 1px solid #A8B7C4;
 	border-radius:5px;
 }
 
@@ -418,6 +419,11 @@ a.search-reset-link:hover {
 	font-family: "FontAwesome";
 	padding-left: 6px;
 	float: right;
+}
+
+#search-filter-button.images-only-fitler {
+	background-color: #d1e4f2;
+	border-color: #A8B7C4;
 }
 
 .search-selector-options li a {

@@ -209,8 +209,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
         $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');
 
-        // Determine if only items with a file attachment should be queried.
-        $fileFilter = isset($params['filter']) && $params['filter'] == 1;
         $fuzzy = false;
 
         $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams(
@@ -218,7 +216,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $limit,
             $sort,
             $public,
-            $fileFilter,
             $this->sharedSearchingEnabled,
             $fuzzy);
 
@@ -256,7 +253,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                         $limit,
                         $sort,
                         $public,
-                        $fileFilter,
                         $this->sharedSearchingEnabled,
                         $fuzzy);
 

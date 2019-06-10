@@ -13,23 +13,33 @@ function createEntries($results, $searchResults, $indexFieldName)
         {
             $element = $result['_source']['element'];
             if (isset($element[$indexFieldName]))
-                $originalText = $element[$indexFieldName];
+                $fieldValue = $element[$indexFieldName];
             else
-                $originalText = BLANK_FIELD_SUBSTITUTE;
-            $trimmedText = preg_replace('/[^a-z\d ]/i', '', $originalText);
-            $value = array(
-                'original'=> $originalText,
-                'text' => strtolower($trimmedText),
-                'url' => $result['_source']['url']['item'],
-                'count' => 1);
+                $fieldValue = BLANK_FIELD_SUBSTITUTE;
 
-            if (isset($resultValues[$originalText]))
+            // Split multiple values (e.g. AKA titles) into separate text values.
+            $texts = explode(ES_DOCUMENT_EOL, $fieldValue);
+
+            foreach ($texts as $text)
             {
-                $resultValues[$originalText]['count'] += 1;
-            }
-            else
-            {
-                $resultValues[$originalText] = $value;
+                // For sorting purposes, remove all non alphanumeric and blank characters.
+                $trimmedText = preg_replace('/[^a-z\d ]/i', '', $text);
+
+                $value = array(
+                    'original'=> $text,
+                    'text' => strtolower($trimmedText),
+                    'url' => $result['_source']['url']['item'],
+                    'count' => 1);
+
+                if (isset($resultValues[$text]))
+                {
+                    // This text is already been seen. Bump its count.
+                    $resultValues[$text]['count'] += 1;
+                }
+                else
+                {
+                    $resultValues[$text] = $value;
+                }
             }
         }
 
@@ -113,7 +123,7 @@ function emitEntries($entries, $indexFieldElementId, $searchResults)
         else
         {
             // Emit a link to produce search results showing all items for this entry.
-            if ($indexFieldElementId != 0)
+            if (!empty($indexFieldElementId))
             {
                 $searchCondition = 'is exactly';
                 $url = $searchResults->emitIndexEntryUrl($entryText, $indexFieldElementId, $searchCondition);
@@ -208,8 +218,8 @@ $showLetterIndex = $totalResults > 1000;
 
 if ($useElasticsearch)
 {
-    $indexFieldElementId = 0;
-    $elementName = isset($_GET['index']) ? $_GET['index'] : 'Title';
+    $elementName = AvantCommon::queryStringArg('index', 'Title');
+    $indexFieldElementId = $elementName;
     $indexFieldName = (new AvantElasticsearch())->convertElementNameToElasticsearchFieldName($elementName);
 }
 else

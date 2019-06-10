@@ -239,9 +239,10 @@ class SearchResultsView
         // The icon is not shown for share-only installations, but to show it, remove the test to allow toggling.
         $shared = AvantSearch::allowToggleBetweenLocalAndSharedSearching() && $this->sharedSearchingEnabled() && $highlightSharedOptions;
         $sharedClass = $shared ? ' search-option-shared' : '';
+        $filterImagesClass = intval(AvantCommon::queryStringArg('filter')) == 1 ? ' images-only-fitler' : '';
 
         $html = "<div class='search-selector'>";
-        $html .= "<button id='search-$kind-button' class='search-selector-button'></button>";
+        $html .= "<button id='search-$kind-button' class='search-selector-button$filterImagesClass'></button>";
         $html .= "<div id='search-$kind-options' class='search-selector-options' style='display:none;'>";
         $html .= "<ul>";
 
@@ -525,9 +526,9 @@ class SearchResultsView
         {
             $message .= self::messageInfo(__('No items match the search terms. These results are for similar keywords.'));
         }
-        else if (AvantCommon::queryStringArg('filter') == 1)
+        else if (!$isIndexView && AvantCommon::queryStringArg('filter') == 1)
         {
-            $message .= self::messageInfo(__('Only showing items with images. Other items might match your search terms.'));
+            $message .= self::messageInfo(__('Only showing results with images.'));
         }
 
         return $message;
