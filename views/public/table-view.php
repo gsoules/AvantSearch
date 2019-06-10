@@ -4,7 +4,7 @@
 $useElasticsearch = $searchResults->useElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
-$resultsMessage = SearchResultsView::getSearchResultsMessage($searchResults->getResultsAreFuzzy());
+$resultsMessage = SearchResultsView::getSearchResultsMessage($totalResults, $searchResults->getResultsAreFuzzy());
 
 $layoutsData = $searchResults->getLayoutsData();
 $detailLayoutData = $searchResults->getDetailLayoutData();

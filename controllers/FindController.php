@@ -19,10 +19,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->getRequest()->setParamSources(array('_GET'));
         $params = $this->getAllParams();
 
-        // Get the view from the query string and if not valid, use the default view.
-        $viewId = isset($_GET['view']) ? intval($_GET['view']) : SearchResultsView::DEFAULT_VIEW;
+        $viewId = AvantCommon::queryStringArg('view', SearchResultsViewFactory::TABLE_VIEW_ID);
         if (!array_key_exists($viewId, SearchResultsViewFactory::getViewOptions()))
-            $viewId = SearchResultsView::DEFAULT_VIEW;
+            $viewId = SearchResultsViewFactory::TABLE_VIEW_ID;
 
         $searchResults = SearchResultsViewFactory::createSearchResultsView($viewId);
         $params['results'] = $searchResults;

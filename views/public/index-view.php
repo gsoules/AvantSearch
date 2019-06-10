@@ -98,7 +98,7 @@ function emitEntries($entries, $indexFieldElementId, $searchResults)
         $count = $entry['count'];
         if ($count === 1)
         {
-            if ($searchResults->getUseElasticsearch())
+            if ($searchResults->useElasticsearch())
             {
                 $link = "<a href='{$entry['url']}'>$entryText</a>";
             }
@@ -196,7 +196,7 @@ $totalResults = $searchResults->getTotalResults();
 
 if ($totalResults <= AvantSearch::MAX_SEARCH_RESULTS)
 {
-    $resultsMessage = SearchResultsView::getSearchResultsMessageForIndexView($totalResults, $searchResults->getResultsAreFuzzy());
+    $resultsMessage = SearchResultsView::getSearchResultsMessage($totalResults, $searchResults->getResultsAreFuzzy());
 }
 else
 {

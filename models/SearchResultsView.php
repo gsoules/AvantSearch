@@ -4,7 +4,6 @@ class SearchResultsView
     const DEFAULT_KEYWORDS_CONDITION = 1;
     const DEFAULT_SEARCH_FILTER = 0;
     const DEFAULT_SEARCH_TITLES = 0;
-    const DEFAULT_VIEW = '1';
 
     const KEYWORD_CONDITION_ALL_WORDS = 1;
     const KEYWORD_CONDITION_CONTAINS = 2;
@@ -15,12 +14,14 @@ class SearchResultsView
     protected $error;
     protected $facets;
     protected $indexFields;
+    protected $localIndexIsEnabled = false;
     protected $keywords;
     protected $limit;
     protected $query;
     protected $results;
     protected $resulstAreFuzzy;
     protected $searchFilters;
+    protected $sharedIndexIsEnabled = false;
     protected $sortFieldElementId;
     protected $sortFields;
     protected $sortOrder;
@@ -39,25 +40,22 @@ class SearchResultsView
         $this->resultsAreFuzzy = false;
 
         $this->useElasticsearch = AvantSearch::useElasticsearch();
-
-        if (isset($_GET['sql']))
+        if ($this->useElasticsearch)
         {
-            // This is only for development and testing purposes to make it easy to disable Elasticsearch
-            // functionality without having to go to the configuration settings for AvantSearch.
-            $this->useElasticsearch = false;
+            $this->sharedIndexIsEnabled = (bool)get_option(ElasticsearchConfig::OPTION_ES_SHARE) == true;
+            $this->localIndexIsEnabled = (bool)get_option(ElasticsearchConfig::OPTION_ES_LOCAL) == true;
+            if (!($this->sharedIndexIsEnabled || $this->localIndexIsEnabled))
+            {
+                // This should never be the case, but turning off both options has the effect of disabling Elasticsearch.
+                $this->useElasticsearch = false;
+            }
+            if (isset($_GET['sql']))
+            {
+                // This is only for development and testing purposes to make it easy to disable Elasticsearch
+                // functionality without having to go to the configuration settings for AvantSearch.
+                $this->useElasticsearch = false;
+            }
         }
-    }
-
-    protected static function appendFuzzyMessage($message)
-    {
-        $message .= ' <div class="search-results-message-info"> &nbsp;&ndash; ' . __('No items match the search terms. These results are for similar keywords.') . '</div>';
-        return $message;
-    }
-
-    protected static function appendSpellingMessage($message)
-    {
-        $message .= ' <div class="search-results-message-info">&nbsp;&ndash; ' .  __('Check the spelling of your keywords or try using fewer keywords.') . '</div>';
-        return $message;
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -211,7 +209,7 @@ class SearchResultsView
 
     public function emitSelectorForSite()
     {
-        if (!AvantSearch::allowSharedSearching())
+        if (!AvantSearch::allowToggleBetweenLocalAndSharedSearching())
             return '';
 
         $sites = array(
@@ -235,7 +233,11 @@ class SearchResultsView
 
     public function emitSelectorHtml($kind, $options, $highlightSharedOptions)
     {
-        $shared = AvantSearch::allowSharedSearching() && $this->sharedSearchingEnabled() && $highlightSharedOptions;
+        // Show the share icon in front of the option text when the following are true:
+        // - The options are different for local and shared indexes i.e. layouts, sort columns, and Index View indexes.
+        // - The installation allows the user to toggle between local and shared indexes.
+        // The icon is not shown for share-only installations, but to show it, remove the test to allow toggling.
+        $shared = AvantSearch::allowToggleBetweenLocalAndSharedSearching() && $this->sharedSearchingEnabled() && $highlightSharedOptions;
         $sharedClass = $shared ? ' search-option-shared' : '';
 
         $html = "<div class='search-selector'>";
@@ -482,18 +484,21 @@ class SearchResultsView
         return isset($_GET['filter']) ? intval($_GET['filter'] == 1) : self::DEFAULT_SEARCH_FILTER ;
     }
 
-    public static function getSearchResultsMessage($fuzzy)
+    public static function getSearchResultsMessage($totalResults, $fuzzy)
     {
-        $pagination = Zend_Registry::get('pagination');
+        $isIndexView = AvantCommon::queryStringArg('view') == SearchResultsViewFactory::INDEX_VIEW_ID;
 
-        $totalResults = $pagination['total_results'];
-        $pageNumber = $pagination['page'];
-        $perPage = $pagination['per_page'];
+        if (!$isIndexView)
+        {
+            $pagination = Zend_Registry::get('pagination');
+            $pageNumber = $pagination['page'];
+            $perPage = $pagination['per_page'];
+        }
 
         if ($totalResults == 0)
         {
             $message = __('No items found');
-            $message = self::appendSpellingMessage($message);
+            $message .= self::messageInfo(__('Check the spelling of your keywords or try using fewer keywords.'));
         }
         else if ($totalResults == 1)
         {
@@ -501,41 +506,28 @@ class SearchResultsView
         }
         else
         {
-            $last = $pageNumber * $perPage;
-            $first = $last - $perPage + 1;
-            if ($last > $totalResults)
-                $last = $totalResults;
+            if ($isIndexView)
+            {
+                $message = "$totalResults " . __('results');
+            }
+            else
+            {
+                $last = $pageNumber * $perPage;
+                $first = $last - $perPage + 1;
+                if ($last > $totalResults)
+                    $last = $totalResults;
 
-            $message = "$first - $last of $totalResults " . __('results');
+                $message = "$first - $last of $totalResults " . __('results');
+            }
         }
 
-        if ($totalResults >= 1 && $fuzzy)
+        if ($totalResults > 0 && $fuzzy)
         {
-            $message = self::appendFuzzyMessage($message);
+            $message .= self::messageInfo(__('No items match the search terms. These results are for similar keywords.'));
         }
-
-        return $message;
-    }
-
-    public static function getSearchResultsMessageForIndexView($totalResults, $fuzzy)
-    {
-        if ($totalResults == 0)
+        else if (AvantCommon::queryStringArg('filter') == 1)
         {
-            $message = __('No items found');
-            $message = self::appendSpellingMessage($message);
-        }
-        else if ($totalResults == 1)
-        {
-            return __('1 item found');
-        }
-        else
-        {
-            $message = "$totalResults " . __('results');
-        }
-
-        if ($totalResults >= 1 && $fuzzy)
-        {
-            $message = self::appendFuzzyMessage($message);
+            $message .= self::messageInfo(__('Only showing items with images. Other items might match your search terms.'));
         }
 
         return $message;
@@ -724,6 +716,11 @@ class SearchResultsView
         return SearchResultsViewFactory::getViewShortName($this->getViewId());
     }
 
+    protected static function messageInfo($info)
+    {
+        return ' <div class="search-results-message-info"> &nbsp;&ndash; ' . $info . '</div>';
+    }
+
     public function setError($message)
     {
         $this->error = $message;
@@ -756,8 +753,9 @@ class SearchResultsView
 
     public function sharedSearchingEnabled()
     {
-        return $this->useElasticsearch && $this->getSelectedSiteId() == 1;
-
+        $onlySharedSearchingEnabled = $this->sharedIndexIsEnabled && !$this->localIndexIsEnabled;
+        $sharedSearchingRequested = $this->getSelectedSiteId() == 1 || $onlySharedSearchingEnabled;
+        return $this->useElasticsearch && $sharedSearchingRequested;
     }
 
     public function useElasticsearch()
