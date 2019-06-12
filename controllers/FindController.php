@@ -143,7 +143,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         // Set the query parameter and then remove it from the parts since it's not a facet.
         $params = [
-            'query' => $parts['query']
+            'query' => isset($parts['query']) ? $parts['query'] : ''
         ];
         unset($parts['query']);
 
