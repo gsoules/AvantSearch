@@ -87,13 +87,15 @@ class SearchResultsFilters
 
                 $elementId = $row['element_id'];
 
-                if ($useElasticsearch)
+                if (ctype_digit($elementId))
                 {
-                    $elementName = $elementId;
+                    // The value is an Omeka element Id.
+                    $elementName = ItemMetadata::getElementNameFromId($elementId);
                 }
                 else
                 {
-                    $elementName = ItemMetadata::getElementNameFromId($elementId);
+                    // The value is an Omeka element name.
+                    $elementName = $elementId;
                 }
 
                 if (empty($elementName))
