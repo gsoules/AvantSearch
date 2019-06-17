@@ -676,6 +676,10 @@ a.search-reset-link:hover {
 	width: 100px;
 }
 
+.item-preview .item-img.fallback-image {
+	width: 100px;
+}
+
 .search-td-image .item-preview-header {
 	padding-left: 8px;
 	width: 140px;

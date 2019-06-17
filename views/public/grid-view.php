@@ -49,13 +49,13 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
             if ($useElasticsearch)
             {
                 $itemPreview = new ItemPreview($item, true, $searchResults->sharedSearchingEnabled());
-                echo $itemPreview->emitItemPreviewAsListElement(false);
+                echo $itemPreview->emitItemPreviewForGrid();
             }
             else
             {
                 set_current_record('Item', $item);
                 $itemPreview = new ItemPreview($item);
-                echo $itemPreview->emitItemPreviewAsListElement(false);
+                echo $itemPreview->emitItemPreviewForGrid();
             }
         }
         ?>
