@@ -211,7 +211,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $fuzzy = false;
 
-        $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams(
+        $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQuery(
             $queryParams,
             $limit,
             $sort,
@@ -248,7 +248,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 {
                     // The search produced no results. Try again with fuzzy searching.
                     $fuzzy = true;
-                    $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQueryParams(
+                    $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQuery(
                         $queryParams,
                         $limit,
                         $sort,
