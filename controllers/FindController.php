@@ -244,9 +244,11 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                     $this->records = $results['hits']['hits'];
                     $searchResults->setFacets($results['aggregations']);
                 }
-                else
+                else if (!empty($queryParams['query']) ||  !empty($queryParams['keywords']))
                 {
-                    // The search produced no results. Try again with fuzzy searching.
+                    // The search produced no results. Try again with fuzzy searching. This code does not execute if
+                    // there are no search terms as is the case when all conditions are Advanced Search filters such
+                    // as Creator contains some value or some field not empty. In those cases, fuzzy search does not apply.
                     $fuzzy = true;
                     $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQuery(
                         $queryParams,

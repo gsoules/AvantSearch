@@ -524,7 +524,7 @@ class SearchResultsView
 
         if ($totalResults > 0 && $fuzzy)
         {
-            $message .= self::messageInfo(__('No items match the search terms. These results are for similar keywords.'));
+            $message .= self::messageInfo(__('No items exactly match the search terms. These results are for similar keywords.'));
         }
         else if (!$isIndexView && AvantCommon::queryStringArg('filter') == 1)
         {
