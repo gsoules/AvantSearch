@@ -121,6 +121,7 @@ echo "<div id='avantsearch-container'>";
 					<?php echo $this->formText('keywords', $keywords, array('id' => 'keywords')); ?>
 				</div>
 			</div>
+            <?php if (!$useElasticsearch): ?>
             <?php if ($showTitlesOption): ?>
             <div class="search-field">
                 <div class="avantsearch-label-column">
@@ -143,7 +144,8 @@ echo "<div id='avantsearch-container'>";
 					</div>
 				</div>
 			</div>
-		</div>
+            <?php endif; ?>
+        </div>
 
 		<div  id="search-narrow-by-fields" class="search-form-section">
 			<div>
@@ -161,19 +163,22 @@ echo "<div id='avantsearch-container'>";
 					foreach ($search as $i => $rows): ?>
 						<div class="search-entry">
 							<?php
-							echo $this->formSelect(
-								"advanced[$i][joiner]",
-								@$rows['joiner'],
-								array(
-									'title' => __("Search Joiner"),
-									'id' => null,
-									'class' => 'advanced-search-joiner'
-								),
-								array(
-									'and' => __('AND'),
-									'or' => __('OR'),
-								)
-							);
+                            if (!$useElasticsearch)
+                            {
+                                echo $this->formSelect(
+                                    "advanced[$i][joiner]",
+                                    @$rows['joiner'],
+                                    array(
+                                        'title' => __("Search Joiner"),
+                                        'id' => null,
+                                        'class' => 'advanced-search-joiner'
+                                    ),
+                                    array(
+                                        'and' => __('AND'),
+                                        'or' => __('OR'),
+                                    )
+                                );
+                            }
 							echo $this->formSelect(
 								"advanced[$i][element_id]",
 								@$rows['element_id'],
@@ -192,18 +197,7 @@ echo "<div id='avantsearch-container'>";
 									'id' => null,
 									'class' => 'advanced-search-type'
 								),
-								array(
-									'contains' => __('Contains'),
-									'does not contain' => __('Does not contain'),
-									'does not match' => __('Does not match'),
-									'ends with' => __('Ends with'),
-									'is empty' => __('Is empty'),
-									'is exactly' => __('Is exactly'),
-									'is not empty' => __('Is not empty'),
-									'is not exactly' => __('Is not exactly'),
-									'matches' => __('Matches'),
-									'starts with' => __('Starts with'),
-								)
+								$searchResults->getAdvancedSearchConditions($useElasticsearch)
 							);
 							echo $this->formText(
 								"advanced[$i][terms]",

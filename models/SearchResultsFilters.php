@@ -108,7 +108,7 @@ class SearchResultsFilters
                     $advancedValue .= ' "' . $row['terms'] . '"';
                 }
 
-                if ($index)
+                if ($index && !$useElasticsearch)
                 {
                     if(isset($row['joiner']) && $row['joiner'] === 'or')
                     {

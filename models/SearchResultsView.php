@@ -261,6 +261,42 @@ class SearchResultsView
         return $html;
     }
 
+    public function getAdvancedSearchConditions($useElasticsearch)
+    {
+        $conditions = array(
+            'contains' => __('Contains'),
+            'does not contain' => __('Does not contain'),
+            'is empty' => __('Is empty'),
+            'is not empty' => __('Is not empty'),
+            'is exactly' => __('Is exactly'),
+            'is not exactly' => __('Is not exactly'),
+            'matches' => __('Matches'),
+            'does not match' => __('Does not match'),
+            'starts with' => __('Starts with'),
+            'ends with' => __('Ends with')
+        );
+
+        if ($useElasticsearch)
+        {
+            // There are not very useful and can mostly be achieved by prefixing a term with '-' to mean does not contain.
+            unset($conditions['does not contain']);
+            unset($conditions['does not match']);
+            unset($conditions['is not exactly']);
+
+            // Support for Matches and Ends With is in AvantElasticsearchQueryBuilder::constructQueryCondition(),
+            // but both can perform poorly if misused and neither are commonly needed, so let's disable them for now.
+            unset($conditions['matches']);
+            unset($conditions['ends with']);
+
+            // Starts With is supported too, but usually Contains works just as well. A problem with Starts With is
+            // that for multi-value fields like Subject, it will only work on the first value and thus won't return
+            // a matching item where the search terms are in a second or third value.
+            unset($conditions['starts with']);
+        }
+
+        return $conditions;
+    }
+
     public function getAdvancedSearchFields()
     {
         // Get the names of the private elements that the admin configured for AvantCommon.
