@@ -261,6 +261,10 @@ echo "<div id='avantsearch-container'>";
 	<div id="avantsearch-secondary">
 		<div id="search-button" class="panel">
 			<input type="submit" class="submit button" value="<?php echo $advancedSubmitButtonText; ?>">
+            <?php if ($useElasticsearch): ?>
+                <!-- Emit the hidden <input> tags needed to put query string argument values into the form. -->
+                <?php echo AvantSearch::getSearchFormInputsHtml() ?>
+            <?php endif; ?>
 		</div>
 
         <div class="search-form-reset-button">

@@ -194,26 +194,8 @@ class AvantSearch
         $html .= '<span class="search-clear">';
         $html .= '<input id="query" type="text" name="query" value="' . $query . '" title="Search" autofocus placeholder="' . $placeholderText . '">';
 
-        // Get the query string arguments that will need corresponding hidden <input> tags.
-        $hiddenParams = array();
-        $entries = explode('&', http_build_query($_GET));
-        foreach ($entries as $entry)
-        {
-            if( !$entry)
-                continue;
-            list($key, $value) = explode('=', $entry);
-            $hiddenParams[urldecode($key)] = urldecode($value);
-        }
-
-        // Emit hidden <input> tags.
-        $hiddenInputs = array('filter', 'layout', 'limit', 'order', 'site', 'sort', 'view');
-        foreach($hiddenParams as $key => $value)
-        {
-            if (in_array($key, $hiddenInputs))
-            {
-                $html .= '<input id=search-form-' . $key . ' type="hidden" name="' . $key . '" value="' . $value . '">';
-            }
-        }
+        // Emit the hidden <input> tags needed to put query string argument values into the form.
+        $html .= self::getSearchFormInputsHtml();
 
         // Emit the X at far right used to clear the search box.
         $html .= '<span id="search-clear-icon">&#10006;</span></span>';
@@ -229,6 +211,37 @@ class AvantSearch
         $html .= '</form>';
         $html .= '</div>';
 
+        return $html;
+    }
+
+    public static function getSearchFormInputsHtml()
+    {
+        $html = '';
+
+        // Get the query string arguments that will need corresponding hidden <input> tags.
+        $hiddenParams = array();
+        $entries = explode('&', http_build_query($_GET));
+        foreach ($entries as $entry)
+        {
+            if (!$entry)
+            {
+                continue;
+            }
+            list($key, $value) = explode('=', $entry);
+            $hiddenParams[urldecode($key)] = urldecode($value);
+        }
+
+        // Specify which query string arguments will get corresponding <input> tags.
+        $hiddenInputs = array('filter', 'index', 'layout', 'limit', 'order', 'site', 'sort', 'view');
+
+        // Emit hidden <input> tags.
+        foreach ($hiddenParams as $key => $value)
+        {
+            if (in_array($key, $hiddenInputs))
+            {
+                $html .= '<input id="search-form-' . $key . '" type="hidden" name="' . $key . '" value="' . $value . '">';
+            }
+        }
         return $html;
     }
 
