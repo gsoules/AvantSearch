@@ -9,6 +9,7 @@ class SearchResultsView
     const KEYWORD_CONDITION_CONTAINS = 2;
     const KEYWORD_CONDITION_BOOLEAN = 3;
 
+    protected $advancedSearchFields;
     protected $condition;
     protected $conditionName;
     protected $error;
@@ -299,6 +300,9 @@ class SearchResultsView
 
     public function getAdvancedSearchFields()
     {
+        if (isset($this->advancedSearchFields))
+            return $this->advancedSearchFields;
+
         // Get the names of the private elements that the admin configured for AvantCommon.
         $privateFields = array();
         foreach ($this->privateElementsData as $elementId => $name)
@@ -318,25 +322,32 @@ class SearchResultsView
             // bottom of the list and require scrolling to select.
             foreach ($publicFields as $elementId => $fieldName)
             {
-                $value = $fieldName;
-                $options[__('Public Fields')][$elementId] = $value;
+                if ($this->useElasticsearch)
+                    $options[__('Public Fields')][$fieldName] = $fieldName;
+                else
+                    $options[__('Public Fields')][$elementId] = $fieldName;
             }
             foreach ($privateFields as $elementId => $fieldName)
             {
-                $value = $fieldName;
-                $options[__('Admin Fields')][$elementId] = $value;
+                if ($this->useElasticsearch)
+                    $options[__('Admin Fields')][$fieldName] = $fieldName;
+                else
+                  $options[__('Admin Fields')][$elementId] = $fieldName;
             }
         }
         else
         {
             foreach ($publicFields as $elementId => $fieldName)
             {
-                $value = $fieldName;
-                $options[$elementId] = $value;
+                if ($this->useElasticsearch)
+                    $options[$fieldName] = $fieldName;
+                else
+                    $options[$elementId] = $fieldName;
             }
         }
 
-        return $options;
+        $this->advancedSearchFields = $options;
+        return $this->advancedSearchFields;
     }
 
     public function getAllFields()
