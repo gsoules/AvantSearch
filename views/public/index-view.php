@@ -22,6 +22,10 @@ function createEntries($results, $searchResults, $indexFieldName)
 
             foreach ($texts as $text)
             {
+                // Don't index blank fields.
+                if ($text == BLANK_FIELD_SUBSTITUTE)
+                    continue;
+
                 // For sorting purposes, remove all non alphanumeric and blank characters.
                 $cleanText = preg_replace('/[^a-z\d ]/i', '', $text);
 
