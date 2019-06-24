@@ -4,6 +4,9 @@ $advancedFormAttributes['action'] = url('find');
 $advancedFormAttributes['method'] = 'GET';
 $advancedSubmitButtonText = __('Search');
 
+$helpTextFileName = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'elasticsearch-help.html';
+$helpText = file_get_contents($helpTextFileName);
+
 // Instantiate search results objects needed to get option values.
 $searchResults = new SearchResultsView();
 $searchResultsTable = new SearchResultsTableView();
@@ -230,11 +233,11 @@ echo "<div id='avantsearch-container'>";
             </div>
         </div>
 
-        <?php if ($showDateRangeOption): ?>
+        <?php if ($showDateRangeOption || $useElasticsearch): ?>
         <div class="search-form-section">
 			<div>
 				<div class="avantsearch-label-column">
-					<?php echo $this->formLabel('year-start', CommonConfig::getOptionTextForYearStart()); ?>
+					<?php echo $this->formLabel('year-start', $useElasticsearch ? __('Year Start') : CommonConfig::getOptionTextForYearStart()); ?>
 				</div>
 				<div class="avantsearch-option-column inputs">
 					<?php echo $this->formText('year_start', @$_REQUEST['year_start'], array('size' => '40', 'id' => 'year-start', 'title' => 'Four digit start year'));	?>
@@ -243,7 +246,7 @@ echo "<div id='avantsearch-container'>";
 
 			<div>
 				<div class="avantsearch-label-column">
-					<?php echo $this->formLabel('year-end', CommonConfig::getOptionTextForYearEnd()); ?>
+					<?php echo $this->formLabel('year-end', $useElasticsearch ? __('Year End') : CommonConfig::getOptionTextForYearEnd()); ?>
 				</div>
 				<div class="avantsearch-option-column inputs">
 					<?php echo $this->formText('year_end', @$_REQUEST['year_end'], array('size' => '40', 'id' => 'year-end', 'title' => 'Four digit end year'));	?>
@@ -266,6 +269,10 @@ echo "<div id='avantsearch-container'>";
                 <?php echo AvantSearch::getSearchFormInputsHtml() ?>
             <?php endif; ?>
 		</div>
+
+        <?php if ($useElasticsearch): ?>
+            <div><?php echo $helpText ?></div>
+        <?php endif; ?>
 
         <div class="search-form-reset-button">
             <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Reset all search options</a>'; ?>

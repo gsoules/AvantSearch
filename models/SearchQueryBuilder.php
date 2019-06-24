@@ -292,7 +292,7 @@ class SearchQueryBuilder
         $yearStartElementName = CommonConfig::getOptionTextForYearStart();
         $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
 
-        if (!empty($_GET['year_start']))
+        if (!empty($yearStartElementName) && !empty($_GET['year_start']))
         {
             $yearStart = intval(trim($_GET['year_start']));
 
@@ -303,7 +303,7 @@ class SearchQueryBuilder
             $this->select->where("_year_start.text >= '$yearStart'");
         }
 
-        if (!empty($_GET['year_end']))
+        if (!empty($yearEndElementName) && !empty($_GET['year_end']))
         {
             $yearEnd = intval(trim($_GET['year_end']));
 

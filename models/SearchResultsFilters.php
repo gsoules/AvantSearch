@@ -31,7 +31,7 @@ class SearchResultsFilters
         {
             foreach ($values['reset'] as $value)
             {
-                $separator = strpos($value, '<a') === 0 ? '' : ' > ';
+                $separator = strpos($value, '<a') === 0 ? '' : ': ';
                 $this->addFilterMessageCriteria("$group$separator$value");
             }
         }
@@ -102,7 +102,7 @@ class SearchResultsFilters
                     continue;
 
                 $type = __($row['type']);
-                $advancedValue = $elementName . ' ' . $type;
+                $advancedValue = $elementName . ': ' . $type;
                 if (isset($row['terms']) && $type != 'is empty' && $type != 'is not empty')
                 {
                     $advancedValue .= ' "' . $row['terms'] . '"';
@@ -126,20 +126,22 @@ class SearchResultsFilters
         if (!empty($_GET['tags']))
         {
             $tags = $_GET['tags'];
-            $displayArray['Tags'] = $tags;
+            $displayArray[] = __('Tags: ') . $tags;
         }
 
         if (!empty($_GET['year_start']) || !empty($_GET['year_end']))
         {
-            $dateStart = empty($_GET['year_start']) ? '0' : intval(trim($_GET['year_start']));
-            $dateEnd = empty($_GET['year_end']) ? '0' : intval(trim($_GET['year_end']));
+            $yearStart = empty($_GET['year_start']) ? '0' : intval(trim($_GET['year_start']));
+            $yearEnd = empty($_GET['year_end']) ? '0' : intval(trim($_GET['year_end']));
 
-            if ($dateStart && $dateEnd)
-                $displayArray[__('Date Range')] = "$dateStart to $dateEnd";
-            elseif ($dateStart)
-                $displayArray[__('\'Date equal to or after\'')] = $dateStart;
+            if ($yearStart && $yearEnd)
+                $range = $yearStart . __(' to ') .  $yearEnd;
+            elseif ($yearStart)
+                $range = ">= $yearStart";
             else
-                $displayArray[__('\'Date equal to or before')] = $dateEnd;
+                $range = "<= $yearEnd";
+
+            $displayArray[] = __('Year: ') . $range;
         }
 
         $resultControlsSection = $resultControlsHtml;
