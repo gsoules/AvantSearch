@@ -19,88 +19,10 @@ $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
 $showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
 $useElasticsearch = AvantSearch::useElasticsearch();
-$stats = '';
-if ($useElasticsearch)
+
+if ($useElasticsearch && AvantElasticsearch::useSharedIndexForQueries())
 {
-    // TO-DO: Move contributor statistics to their own page -- for now they show up on the Advanced Search page.
-    // Display statistics of shared searching contributors.
-    $avantElasticsearchClient = new AvantElasticsearchClient();
-    if ($avantElasticsearchClient->ready())
-    {
-        $avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
-
-        // Explicitly specify that the shared index should be queried.
-        $indexName = AvantElasticsearch::getNameOfSharedIndex();
-        $avantElasticsearchQueryBuilder->setIndexName($indexName);
-
-        $params = $avantElasticsearchQueryBuilder->constructFileStatisticsAggregationParams($indexName);
-        $response = $avantElasticsearchClient->search($params);
-        if ($response == null)
-        {
-            $stats = $avantElasticsearchClient->getLastError();
-        }
-        else
-        {
-            $audioTotal = 0;
-            $documentTotal = 0;
-            $imageTotal = 0;
-            $itemTotal = 0;
-            $videoTotal = 0;
-
-            $rows = '';
-            $buckets = $response["aggregations"]["contributors"]["buckets"];
-
-            foreach ($buckets as $bucket)
-            {
-                $itemCount = $bucket['doc_count'];
-                $itemTotal += $itemCount;
-
-                $imageCount = intval($bucket["image"]["value"]);
-                $imageTotal += $imageCount;
-
-                $documentCount = intval($bucket["document"]["value"]);
-                $documentTotal += $documentCount;
-
-                $audioCount = intval($bucket["audio"]["value"]);
-                $audioTotal += $audioCount;
-
-                $videoCount = intval($bucket["video"]["value"]);
-                $videoTotal += $videoCount;
-
-                $rows .= '<tr>';
-                $contributor = $bucket['key'];
-                $rows .= "<td>$contributor</td><td>$itemCount</td>";
-                $rows .= "<td>$imageCount</td>";
-                $rows .= "<td>$documentCount</td>";
-                $rows .= "<td>$audioCount</td>";
-                if ($videoCount > 0)
-                    $rows .= "<td>$videoCount</td>";
-                $rows .= '</tr>';
-            }
-
-            $header = "<table style='text-align:right'>";
-            $header .= '<tr><td><strong>Contributor</strong></td><td><strong>Items</strong>';
-            $header .= '<td><strong>Images</strong></td>';
-            $header .= '<td><strong>Documents</strong></td>';
-            if ($audioTotal > 0)
-                $header .= '<td><strong>Audio</strong></td>';
-            if ($videoTotal > 0)
-                $header .= '<td><strong>Video</strong></td>';
-            $header .= '</tr>';
-
-            $itemTotal = number_format($itemTotal);
-            $totals = "<tr><td><strong>TOTAL</strong></td><td><strong>$itemTotal</strong>";
-            $totals .= "<td><strong>$imageTotal</strong></td>";
-            $totals .= "<td><strong>$documentTotal</strong></td>";
-            $totals .= "<td><strong>$audioTotal</strong></td>";
-            if ($videoCount > 0)
-                $totals .= "<td><strong>$videoTotal</strong></td>";
-            $totals .= "</tr>";
-            $totals .= '</table>';
-
-            $stats = $header . $rows . $totals;
-        }
-    }
+    $stats = AvantElasticsearch::generateContributorStatistics();
 }
 
 $pageTitle = $useElasticsearch ? __('Advanced Search') : __('Advanced Search');
@@ -250,8 +172,11 @@ echo "<div id='avantsearch-container'>";
 		</div>
         <?php endif; ?>
 
-        <?php if ($useElasticsearch): ?>
-            <?php echo $stats; ?>
+        <?php if (isset($stats)): ?>
+            <div class="search-form-section">
+                <div id="search-stats-title"><?php echo __('Contributor Statistics'); ?></div>
+                <?php echo $stats; ?>
+            </div>
         <?php endif; ?>
     </div>
 
