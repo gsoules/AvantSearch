@@ -14,9 +14,10 @@ class SearchResultsFilters
         $this->filterMessage = '';
     }
 
-    protected function addFilterMessageCriteria($criteria)
+    protected function addFilterMessageCriteria($filter, $resetUrl)
     {
-        $this->filterMessage .= "<span class='search-filter'>$criteria</span>";
+        $link = AvantSearch::getSearchFilterResetLink($resetUrl);
+        $this->filterMessage .= "<span class='search-filter'>$filter$link</span>";
         $this->filterCount++;
     }
 
@@ -29,10 +30,9 @@ class SearchResultsFilters
 
         foreach ($filterBarFacets as $group => $values)
         {
-            foreach ($values['reset'] as $value)
+            foreach ($values['reset-url'] as $index => $url)
             {
-                $separator = strpos($value, '<a') === 0 ? '' : ': ';
-                $this->addFilterMessageCriteria("$group$separator$value");
+                $this->addFilterMessageCriteria($values['reset-text'][$index], $url);
             }
         }
     }
@@ -44,7 +44,6 @@ class SearchResultsFilters
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $requestArray = $request->getParams();
 
-        $db = get_db();
         $displayArray = array();
 
         $subjectSearch = empty($_GET['subjects']) ? '0' : intval($_GET['subjects']);
@@ -76,7 +75,7 @@ class SearchResultsFilters
         if (array_key_exists('advanced', $requestArray))
         {
             $advancedArray = array();
-            $index = 0;
+            $advancedIndex = 0;
             foreach ($requestArray['advanced'] as $i => $row)
             {
                 if (empty($row['element_id']) || empty($row['type']))
@@ -108,7 +107,7 @@ class SearchResultsFilters
                     $advancedValue .= ' "' . $row['terms'] . '"';
                 }
 
-                if ($index && !$useElasticsearch)
+                if ($advancedIndex && !$useElasticsearch)
                 {
                     if(isset($row['joiner']) && $row['joiner'] === 'or')
                     {
@@ -119,7 +118,7 @@ class SearchResultsFilters
                         $advancedValue = __('AND') . ' ' . $advancedValue;
                     }
                 }
-                $advancedArray[$index++] = $advancedValue;
+                $advancedArray[$advancedIndex++] = $advancedValue;
             }
         }
 
@@ -154,14 +153,39 @@ class SearchResultsFilters
             {
                 $query .= ' ' . __(' in titles only');
             }
-            $this->addFilterMessageCriteria($query);
+            $this->addFilterMessageCriteria($query, '');
         }
 
         if (!empty($advancedArray))
         {
-            foreach ($advancedArray as $j => $advanced)
+            foreach ($advancedArray as $advancedIndex => $advanced)
             {
-                $this->addFilterMessageCriteria($advanced);
+                $entries = explode('&', http_build_query($_GET));
+
+                foreach ($entries as $entry)
+                {
+                    $args[] = urldecode($entry);
+                }
+
+                foreach ($args as $argsIndex => $value)
+                {
+                    $prefixLength = strlen('advanced[]') + ($advancedIndex <= 9 ? 1 : 2);
+                    $prefix = substr($value, 0, $prefixLength);
+                    if (strpos($prefix, "advanced[$advancedIndex]") === 0)
+                    {
+                        unset($entries[$argsIndex]);
+                    }
+                }
+
+                $query = '?';
+                foreach ($entries as $value)
+                {
+                    if (strlen($query) > 1)
+                        $query .= '&';
+                    $query .= $value;
+                }
+
+                $this->addFilterMessageCriteria($advanced, $query);
             }
         }
 

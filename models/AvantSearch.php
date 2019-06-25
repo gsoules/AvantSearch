@@ -175,6 +175,11 @@ class AvantSearch
         return $elementTexts;
     }
 
+    public static function getSearchFilterResetLink($url)
+    {
+        return '<a href="' . $url . '" title="Remove filter" class="search-reset-link">' . '&#10006;' . '</a>';
+    }
+
     public static function getSearchFormHtml()
     {
         // This method constructs the HTML that will replace the native Omeka search form with the one for AvantSearch.
