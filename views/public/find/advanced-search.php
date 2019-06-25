@@ -209,7 +209,8 @@ echo "<div id='avantsearch-container'>";
 									'size' => '20',
 									'title' => __("Search Terms"),
 									'id' => null,
-									'class' => 'advanced-search-terms'
+									'class' => 'advanced-search-terms',
+                                    'autofocus' => ''
 								)
 							);
 							?>
@@ -222,6 +223,7 @@ echo "<div id='avantsearch-container'>";
             <button type="button" class="add_search"><?php echo __('Add field'); ?></button>
         </div>
 
+        <?php if (!$useElasticsearch): ?>
         <div class="search-form-section">
             <div>
                 <div class="avantsearch-label-column">
@@ -232,26 +234,19 @@ echo "<div id='avantsearch-container'>";
                 </div>
             </div>
         </div>
+        <?php endif; ?>
 
         <?php if ($showDateRangeOption || $useElasticsearch): ?>
         <div class="search-form-section">
-			<div>
-				<div class="avantsearch-label-column">
-					<?php echo $this->formLabel('year-start', $useElasticsearch ? __('Year Start') : CommonConfig::getOptionTextForYearStart()); ?>
-				</div>
-				<div class="avantsearch-option-column inputs">
-					<?php echo $this->formText('year_start', @$_REQUEST['year_start'], array('size' => '40', 'id' => 'year-start', 'title' => 'Four digit start year'));	?>
-				</div>
-			</div>
-
-			<div>
-				<div class="avantsearch-label-column">
-					<?php echo $this->formLabel('year-end', $useElasticsearch ? __('Year End') : CommonConfig::getOptionTextForYearEnd()); ?>
-				</div>
-				<div class="avantsearch-option-column inputs">
-					<?php echo $this->formText('year_end', @$_REQUEST['year_end'], array('size' => '40', 'id' => 'year-end', 'title' => 'Four digit end year'));	?>
-				</div>
-			</div>
+            <div class="avantsearch-label-column">
+                <?php echo $this->formLabel('year-range', __('Years')); ?>
+            </div>
+            <div class="avantsearch-year-range">
+                <label><?php echo $useElasticsearch ? __('Start') : CommonConfig::getOptionTextForYearStart(); ?></label>
+                <?php echo $this->formText('year_start', @$_REQUEST['year_start'], array('id' => 'year-start', 'title' => 'Four digit start year')); ?>
+                <label><?php echo $useElasticsearch ? __('End') : CommonConfig::getOptionTextForYearEnd(); ?></label>
+                <?php echo $this->formText('year_end', @$_REQUEST['year_end'], array('id' => 'year-end', 'title' => 'Four digit end year')); ?>
+            </div>
 		</div>
         <?php endif; ?>
 
@@ -271,11 +266,11 @@ echo "<div id='avantsearch-container'>";
 		</div>
 
         <?php if ($useElasticsearch): ?>
-            <div><?php echo $helpText ?></div>
+            <div class="search-help"><?php echo $helpText ?></div>
         <?php endif; ?>
 
         <div class="search-form-reset-button">
-            <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Reset all search options</a>'; ?>
+            <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Clear all search options</a>'; ?>
         </div>
     </div>
 </form>

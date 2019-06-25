@@ -159,12 +159,47 @@ input[type="checkbox"] {
 	min-height: 3em;
 }
 
+.search-help {
+	font-size: 16px;
+	font-weight: bold;
+}
+
+.search-help > ul {
+	padding-left: 0px;
+	font-size:13px;
+	font-weight: normal;
+	margin-top: 4px;
+	margin-bottom: 6px;
+	list-style-type: none;
+}
+
+.search-help > ul > li  {
+	padding-top: 14px;
+}
+
+.search-help > ul > li > span {
+	background-color: #ddd;
+	padding: 2px 4px;
+	font-weight: bold;
+}
+
 .search-entry:first-of-type .advanced-search-joiner {
   	display: none;
 }
 
 .advanced-search-joiner {
   	width: 15%;
+}
+
+.avantsearch-year-range > label {
+	font-weight: normal;
+}
+
+#year-start,
+#year-end {
+	width: 54px !important;
+	margin-left: 4px;
+	margin-right: 16px;
 }
 
 .search-entry:first-of-type select {
@@ -230,9 +265,9 @@ input[type="checkbox"] {
 
 /* Display 'Clear all search filters' graphic before link */
 .search-form-reset-button::before {
-	content: "\f12d";
+	content: "\f00d";
 	font-family: "FontAwesome";
-	font-size: 20px;
+	font-size: 16px;
 }
 
 /* Next styles are for 'Clear all search filters' link and 'Go to Advanced Search' link */

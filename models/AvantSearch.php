@@ -180,9 +180,13 @@ class AvantSearch
         // This method constructs the HTML that will replace the native Omeka search form with the one for AvantSearch.
 
         $useElasticsearch = self::useElasticsearch();
+        $request = Zend_Controller_Front::getInstance()->getRequest();
+        $action = $request->getActionName();
+        $isAdvancedSearchPage = $action == 'advanced-search' && $useElasticsearch;
+
         $linkText = __('Advanced Search');
         $placeholderText = __('Enter search terms');
-        $query = isset($_GET['query']) ? htmlspecialchars($_GET['query'], ENT_QUOTES) : '';
+        $query = isset($_GET['query']) && !$isAdvancedSearchPage ? htmlspecialchars($_GET['query'], ENT_QUOTES) : '';
         $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
         $findUrl = url('/find') . $queryString;
         $advancedSearchUrl = url('/find/advanced') . $queryString;
@@ -205,7 +209,8 @@ class AvantSearch
         $html .= '<div>';
 
         // Emit the Advanced Search link.
-        $html .= '<a href="' . $advancedSearchUrl . '" class="search-link">' . $linkText . '</a>';
+        if (!$isAdvancedSearchPage)
+            $html .= '<a href="' . $advancedSearchUrl . '" class="search-link">' . $linkText . '</a>';
 
         $html .= '</div>';
         $html .= '</form>';

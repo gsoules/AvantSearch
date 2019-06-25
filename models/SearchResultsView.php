@@ -313,6 +313,16 @@ class SearchResultsView
         $allFields = self::getAllFields();
         $publicFields = array_diff($allFields, $privateFields);
 
+        if ($this->useElasticsearch)
+        {
+            $publicFields['<tags>'] = 'Tags';
+
+            if (AvantElasticsearch::useSharedIndexForQueries())
+                $publicFields['<contributor>'] = 'Contributor';
+
+            asort($publicFields);
+        }
+
         $options = array('' => __('Select Below'));
 
         if (!empty(current_user()) && !empty($privateFields))

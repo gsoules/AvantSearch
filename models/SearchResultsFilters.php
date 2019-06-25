@@ -126,7 +126,7 @@ class SearchResultsFilters
         if (!empty($_GET['tags']))
         {
             $tags = $_GET['tags'];
-            $displayArray[] = __('Tags: ') . $tags;
+            $displayArray['<tags>'] = __('Tags: ') . $tags;
         }
 
         if (!empty($_GET['year_start']) || !empty($_GET['year_end']))
@@ -141,7 +141,7 @@ class SearchResultsFilters
             else
                 $range = "<= $yearEnd";
 
-            $displayArray[] = __('Year: ') . $range;
+            $displayArray['<years>'] = __('Year: ') . $range;
         }
 
         $resultControlsSection = $resultControlsHtml;
