@@ -1,4 +1,5 @@
 <?php
+queue_js_file('results-view-script');
 queue_js_file('js.cookie');
 
 /* @var $searchResults SearchResultsView */
