@@ -73,25 +73,13 @@ class SearchResultsFilters
 
     protected function emitBasicSearchFilters()
     {
-//        foreach ($this->basicArgsArray as $kind => $query)
-//        {
-//            if ($kind == 'keywords' && $this->searchResults->getSearchTitles())
-//            {
-//                $query .= ' ' . __(' in titles only');
-//            }
-//            $this->createFilterWithRemoveX($query, '');
-//        }
-
-        //$condition = $this->searchResults->getKeywordsCondition();
-
-
         if (empty($this->basicArgsArray))
             return;
 
         // Get all the arguments from the query string.
         $queryArgs = explode('&', http_build_query($_GET));
 
-        foreach ($this->basicArgsArray as $basicIndex => $basicArg)
+        foreach ($this->basicArgsArray as $argName => $basicArg)
         {
             // Make a copy of the arguments array that the following code can modify without affecting the original.
             $args = $queryArgs;
@@ -103,7 +91,7 @@ class SearchResultsFilters
                 if (strpos($pair, 'advanced') === 0)
                     continue;
 
-                $encodedBasicArg = $basicArg['name'] . '=' . urlencode($basicArg['value']);
+                $encodedBasicArg = $argName . '=' . urlencode($basicArg['value']);
                 if ($encodedBasicArg == $pair)
                 {
                     // Remove this arg from the copy of the query args array.
@@ -244,10 +232,11 @@ class SearchResultsFilters
 
         // Derive the query arg name/value pair based on whether the keywords came from the
         // simple search textbox ('query') or the Advanced Search page keywords field ('keywords').
-        $this->basicArgsArray['keywords']['name'] = isset($_GET['keywords']) ? 'keywords' : 'query';
-        $this->basicArgsArray['keywords']['value'] = $query;
+        $argName = isset($_GET['keywords']) ? 'keywords' : 'query';
+        $this->basicArgsArray[$argName]['value'] = $query;
 
         $condition = $this->searchResults->getKeywordsCondition();
+        $qualifier = '';
 
         if ($condition == SearchResultsView::KEYWORD_CONDITION_ALL_WORDS || $condition == SearchResultsView::KEYWORD_CONDITION_BOOLEAN)
         {
@@ -264,9 +253,21 @@ class SearchResultsFilters
 
                 $keywords .= $word;
             }
-        }
 
-        $conditionName = $useElasticsearch ? '' : $this->searchResults->getKeywordsConditionName() . ' ';
+            if (!$useElasticsearch)
+            {
+                $condition = strtolower($this->searchResults->getKeywordsConditionName());
+                if ($this->searchResults->getSearchTitles())
+                {
+                    $condition .= __(' in titles only');
+                }
+                $qualifier = " ($condition)";
+            }
+        }
+        else
+        {
+            $keywords = $query;
+        }
 
         // Put single quotes around the keywords unless they are already wrapped in double quotes.
         $phraseMatch = strpos($keywords, '"') === 0 && strrpos($keywords, '"') === strlen($keywords) - 1;
@@ -275,34 +276,24 @@ class SearchResultsFilters
             $keywords = "'$keywords'";
         }
 
-        $this->basicArgsArray['keywords']['display'] = $conditionName . $keywords;
+        $this->basicArgsArray[$argName]['display'] = $keywords . $qualifier;
     }
 
     protected function getYearRangeArgs()
     {
-        if (!empty($_GET['year_start']) || !empty($_GET['year_end']))
+        $yearStart = AvantCommon::queryStringArg('year_start', 0);
+        $yearEnd = AvantCommon::queryStringArg('year_end', 0);
+
+        if ($yearStart > 0)
         {
-            $yearStart = empty($_GET['year_start']) ? '0' : intval(trim($_GET['year_start']));
-            $yearEnd = empty($_GET['year_end']) ? '0' : intval(trim($_GET['year_end']));
+            $this->basicArgsArray['year_start']['value'] = $yearStart;
+            $this->basicArgsArray['year_start']['display'] = __('Year start: ') . $yearStart;
+        }
 
-            if ($yearStart && $yearEnd)
-            {
-                $this->basicArgsArray['years']['start'] = $yearStart;
-                $this->basicArgsArray['years']['end'] = $yearEnd;
-                $range = $yearStart . __(' to ') . $yearEnd;
-            }
-            elseif ($yearStart)
-            {
-                $this->basicArgsArray['years']['start'] = $yearStart;
-                $range = ">= $yearStart";
-            }
-            else
-            {
-                $this->basicArgsArray['years']['end'] = $yearEnd;
-                $range = "<= $yearEnd";
-            }
-
-            $this->basicArgsArray['years']['display'] = __('Year: ') . $range;
+        if ($yearEnd > 0)
+        {
+            $this->basicArgsArray['year_end']['value'] = $yearEnd;
+            $this->basicArgsArray['year_end']['display'] = __('Year end: ') . $yearEnd;
         }
     }
 }
