@@ -2,7 +2,8 @@
 
 class SearchResultsFilters
 {
-    protected $advancedArray = array();
+    protected $advancedArgsArray = array();
+    protected $basicArgsArray = array();
     protected $filterCount;
     protected $filterMessage;
     protected $searchResults;
@@ -15,7 +16,7 @@ class SearchResultsFilters
         $this->filterMessage = '';
     }
 
-    protected function addFilterMessageCriteria($filter, $resetUrl)
+    protected function createFilterWithRemoveX($filter, $resetUrl)
     {
         $link = AvantSearch::getSearchFilterResetLink($resetUrl);
         $this->filterMessage .= "<span class='search-filter'>$filter$link</span>";
@@ -24,37 +25,104 @@ class SearchResultsFilters
 
     protected function emitAdvancedSearchFilters()
     {
-        if (empty($this->advancedArray))
+        if (empty($this->advancedArgsArray))
             return;
 
+        // Get all the arguments from the query string.
         $queryArgs = explode('&', http_build_query($_GET));
 
-        foreach ($this->advancedArray as $advancedIndex => $advanced)
+        foreach ($this->advancedArgsArray as $advancedIndex => $advancedArg)
         {
+            // Make a copy of the arguments array that the following code can modify without affecting the original.
             $args = $queryArgs;
 
-            foreach ($args as $argsIndex => $value)
+            // Examine each arg/value pair, looking for the one that matches the current Advanced Search arg.
+            foreach ($args as $argsIndex => $pair)
             {
+                // Skip any args that are not for Advanced Search.
+                if (strpos($pair, 'advanced') === false)
+                    continue;
+
+                // Create a prefix for this arg based on its index e.g. 'advanced[0'. Note that the arg is encoded and
+                // so the prefix will actually look like 'advanced%5B0' The prefix length includes index length.
                 $advancedPrefix = urlencode('advanced[');
                 $prefixLength = strlen($advancedPrefix) + ($advancedIndex <= 9 ? 1 : 2);
-                $prefix = substr($value, 0, $prefixLength);
+                $prefix = substr($pair, 0, $prefixLength);
+
                 if (strpos($prefix, "$advancedPrefix$advancedIndex") === 0)
                 {
+                    // Remove this arg from the copy of the query args array.
                     unset($args[$argsIndex]);
                 }
             }
 
+            // Reconstruct the query string from the args array minus the arg that just got removed.
             $query = '?';
-            foreach ($args as $value)
+            foreach ($args as $pair)
             {
                 if (strlen($query) > 1)
                 {
                     $query .= '&';
                 }
-                $query .= $value;
+                $query .= $pair;
             }
 
-            $this->addFilterMessageCriteria($advanced, $query);
+            $this->createFilterWithRemoveX($advancedArg, $query);
+        }
+    }
+
+    protected function emitBasicSearchFilters()
+    {
+//        foreach ($this->basicArgsArray as $kind => $query)
+//        {
+//            if ($kind == 'keywords' && $this->searchResults->getSearchTitles())
+//            {
+//                $query .= ' ' . __(' in titles only');
+//            }
+//            $this->createFilterWithRemoveX($query, '');
+//        }
+
+        //$condition = $this->searchResults->getKeywordsCondition();
+
+
+        if (empty($this->basicArgsArray))
+            return;
+
+        // Get all the arguments from the query string.
+        $queryArgs = explode('&', http_build_query($_GET));
+
+        foreach ($this->basicArgsArray as $basicIndex => $basicArg)
+        {
+            // Make a copy of the arguments array that the following code can modify without affecting the original.
+            $args = $queryArgs;
+
+            // Examine each arg/value pair, looking for the one that matches the current basic arg.
+            foreach ($args as $argsIndex => $pair)
+            {
+                // Skip any args that are for Advanced Search.
+                if (strpos($pair, 'advanced') === 0)
+                    continue;
+
+                $encodedBasicArg = $basicArg['name'] . '=' . urlencode($basicArg['value']);
+                if ($encodedBasicArg == $pair)
+                {
+                    // Remove this arg from the copy of the query args array.
+                    unset($args[$argsIndex]);
+                }
+            }
+
+            // Reconstruct the query string from the args array minus the arg that just got removed.
+            $query = '?';
+            foreach ($args as $pair)
+            {
+                if (strlen($query) > 1)
+                {
+                    $query .= '&';
+                }
+                $query .= $pair;
+            }
+
+            $this->createFilterWithRemoveX($basicArg['display'], $query);
         }
     }
 
@@ -69,7 +137,7 @@ class SearchResultsFilters
         {
             foreach ($values['reset-url'] as $index => $url)
             {
-                $this->addFilterMessageCriteria($values['reset-text'][$index], $url);
+                $this->createFilterWithRemoveX($values['reset-text'][$index], $url);
             }
         }
     }
@@ -81,70 +149,13 @@ class SearchResultsFilters
         $request = Zend_Controller_Front::getInstance()->getRequest();
         $requestArray = $request->getParams();
 
-        $displayArray = array();
-
-        $subjectSearch = empty($_GET['subjects']) ? '0' : intval($_GET['subjects']);
-
-        $keywords = $this->searchResults->getKeywords();
-        if (!empty($keywords))
-        {
-            $condition = $this->searchResults->getKeywordsCondition();
-
-            if ($condition == SearchResultsView::KEYWORD_CONDITION_ALL_WORDS || $condition == SearchResultsView::KEYWORD_CONDITION_BOOLEAN)
-            {
-                $words = explode(' ', $keywords);
-                $words = array_map('trim', $words);
-                $keywords = '';
-                foreach ($words as $word)
-                {
-                    if (empty($word) || SearchQueryBuilder::isStopWord($word))
-                        continue;
-                    if (!empty($keywords))
-                        $keywords .= ' ';
-                    $keywords .= $word;
-                }
-            }
-
-            $conditionName = $useElasticsearch ? '' : $this->searchResults->getKeywordsConditionName() . ' ';
-            $displayArray[__('Keywords')] = "$conditionName$keywords";
-        }
-
-        $this->getAdvancedSearchArgs($requestArray, $subjectSearch, $useElasticsearch);
-
-        if (!empty($_GET['tags']))
-        {
-            $tags = $_GET['tags'];
-            $displayArray['<tags>'] = __('Tags: ') . $tags;
-        }
-
-        if (!empty($_GET['year_start']) || !empty($_GET['year_end']))
-        {
-            $yearStart = empty($_GET['year_start']) ? '0' : intval(trim($_GET['year_start']));
-            $yearEnd = empty($_GET['year_end']) ? '0' : intval(trim($_GET['year_end']));
-
-            if ($yearStart && $yearEnd)
-                $range = $yearStart . __(' to ') .  $yearEnd;
-            elseif ($yearStart)
-                $range = ">= $yearStart";
-            else
-                $range = "<= $yearEnd";
-
-            $displayArray['<years>'] = __('Year: ') . $range;
-        }
-
-        $resultControlsSection = $resultControlsHtml;
+        $this->getKeywordsArg($useElasticsearch);
+        $this->getAdvancedSearchArgs($requestArray, $useElasticsearch);
+        $this->getYearRangeArgs();
 
         $this->filterMessage .= __('You searched for: ');
 
-        foreach ($displayArray as $name => $query)
-        {
-            if ($name == __('Keywords') && $this->searchResults->getSearchTitles())
-            {
-                $query .= ' ' . __(' in titles only');
-            }
-            $this->addFilterMessageCriteria($query, '');
-        }
-
+        $this->emitBasicSearchFilters();
         $this->emitAdvancedSearchFilters();
 
         if ($useElasticsearch)
@@ -155,13 +166,13 @@ class SearchResultsFilters
         $class = 'search-filter-bar-layout';
         $html = "<div id='search-filter-bar'>";
         $html .= $this->filterCount> 0 ? "<div class='search-filter-bar-message'>$this->filterMessage</div>" : '';
-        $html .= "<div class='$class'>{$resultControlsSection}</div>";
+        $html .= "<div class='$class'>{$resultControlsHtml}</div>";
         $html .= '</div>';
 
         return $html;
     }
 
-    protected function getAdvancedSearchArgs(array $requestArray, $subjectSearch, $useElasticsearch)
+    protected function getAdvancedSearchArgs(array $requestArray, $useElasticsearch)
     {
         if (!array_key_exists('advanced', $requestArray))
             return;
@@ -170,11 +181,6 @@ class SearchResultsFilters
         foreach ($requestArray['advanced'] as $i => $row)
         {
             if (empty($row['element_id']) || empty($row['type']))
-            {
-                continue;
-            }
-
-            if ($subjectSearch && $row['terms'] == '*')
             {
                 continue;
             }
@@ -201,7 +207,16 @@ class SearchResultsFilters
             $advancedValue = $elementName . ': ' . $type;
             if (isset($row['terms']) && $type != 'is empty' && $type != 'is not empty')
             {
-                $advancedValue .= ' "' . $row['terms'] . '"';
+                $terms = $row['terms'];
+
+                // Put single quotes around the terms unless they are already wrapped in double quotes.
+                $phraseMatch = strpos($terms, '"') === 0 && strrpos($terms, '"') === strlen($terms) - 1;
+                if (!$phraseMatch)
+                {
+                    $terms = "'$terms'";
+                }
+
+                $advancedValue .= " $terms";
             }
 
             if ($advancedIndex && !$useElasticsearch)
@@ -216,7 +231,78 @@ class SearchResultsFilters
                 }
             }
 
-            $this->advancedArray[$advancedIndex++] = $advancedValue;
+            $this->advancedArgsArray[$advancedIndex++] = $advancedValue;
+        }
+    }
+
+    protected function getKeywordsArg($useElasticsearch)
+    {
+        $query = $this->searchResults->getKeywords();
+
+        if (empty($query))
+            return;
+
+        // Derive the query arg name/value pair based on whether the keywords came from the
+        // simple search textbox ('query') or the Advanced Search page keywords field ('keywords').
+        $this->basicArgsArray['keywords']['name'] = isset($_GET['keywords']) ? 'keywords' : 'query';
+        $this->basicArgsArray['keywords']['value'] = $query;
+
+        $condition = $this->searchResults->getKeywordsCondition();
+
+        if ($condition == SearchResultsView::KEYWORD_CONDITION_ALL_WORDS || $condition == SearchResultsView::KEYWORD_CONDITION_BOOLEAN)
+        {
+            $words = array_map('trim', explode(' ', $query));
+            $keywords = '';
+
+            foreach ($words as $word)
+            {
+                if (empty($word) || (!$useElasticsearch && SearchQueryBuilder::isStopWord($word)))
+                    continue;
+
+                if (!empty($keywords))
+                    $keywords .= ' ';
+
+                $keywords .= $word;
+            }
+        }
+
+        $conditionName = $useElasticsearch ? '' : $this->searchResults->getKeywordsConditionName() . ' ';
+
+        // Put single quotes around the keywords unless they are already wrapped in double quotes.
+        $phraseMatch = strpos($keywords, '"') === 0 && strrpos($keywords, '"') === strlen($keywords) - 1;
+        if (!$phraseMatch)
+        {
+            $keywords = "'$keywords'";
+        }
+
+        $this->basicArgsArray['keywords']['display'] = $conditionName . $keywords;
+    }
+
+    protected function getYearRangeArgs()
+    {
+        if (!empty($_GET['year_start']) || !empty($_GET['year_end']))
+        {
+            $yearStart = empty($_GET['year_start']) ? '0' : intval(trim($_GET['year_start']));
+            $yearEnd = empty($_GET['year_end']) ? '0' : intval(trim($_GET['year_end']));
+
+            if ($yearStart && $yearEnd)
+            {
+                $this->basicArgsArray['years']['start'] = $yearStart;
+                $this->basicArgsArray['years']['end'] = $yearEnd;
+                $range = $yearStart . __(' to ') . $yearEnd;
+            }
+            elseif ($yearStart)
+            {
+                $this->basicArgsArray['years']['start'] = $yearStart;
+                $range = ">= $yearStart";
+            }
+            else
+            {
+                $this->basicArgsArray['years']['end'] = $yearEnd;
+                $range = "<= $yearEnd";
+            }
+
+            $this->basicArgsArray['years']['display'] = __('Year: ') . $range;
         }
     }
 }
