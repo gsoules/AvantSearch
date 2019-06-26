@@ -37,7 +37,7 @@ echo "<div id='avantsearch-container'>";
 				<div class="avantsearch-label-column">
 					<?php echo $this->formLabel('keywords', __('Keywords')); ?><br>
 				</div>
-				<div class="avantsearch-option-column inputs">
+				<div class="avantsearch-option-column">
 					<?php echo $this->formText('keywords', $keywords, array('id' => 'keywords')); ?>
 				</div>
 			</div>
@@ -173,9 +173,9 @@ echo "<div id='avantsearch-container'>";
                 <!-- Emit the hidden <input> tags needed to put query string argument values into the form. -->
                 <?php echo AvantSearch::getSearchFormInputsHtml() ?>
             <?php endif; ?>
-            <div class="search-form-reset-button">
-                <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Clear all search options</a>'; ?>
-            </div>
+        </div>
+        <div class="search-form-reset-button">
+            <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Clear all search options</a>'; ?>
         </div>
 
     </div>

@@ -84,7 +84,7 @@
 
 /* Add field button */
 .add_search {
-	margin: 6px 0 12px 0;
+	margin: 0 0;
 }
 
 /* Remove field button */
@@ -211,6 +211,23 @@ input[type="checkbox"] {
 	font-weight: normal;
 }
 
+/* Add field button */
+.add_search {
+	background-color: #52690c;
+	border: 1px solid #52690c;
+}
+
+/* Remove field button */
+.remove_search {
+	background-color: #7e432c;
+	border: 1px solid #7e432c;
+}
+
+.add_search:hover. .remove_search:hover {
+	background-color: #5f5f5f;
+	border: 1px solid #5f5f5f;
+}
+
 #year-start,
 #year-end {
 	width: 54px !important;
@@ -235,7 +252,8 @@ input[type="checkbox"] {
 }
 
 #search-button {
-	margin-bottom: 8px;
+	margin-top: 8px;
+	float: right;
 }
 
 /* Make the search button appear at the top of the secondary column. */
@@ -280,7 +298,7 @@ input[type="checkbox"] {
 }
 
 /* Display 'Clear all search filters' graphic before link */
-.search-form-reset-button::before {
+.search-form-reset-button::after {
 	content: "\f00d";
 	font-family: "FontAwesome";
 	font-size: 16px;
@@ -299,7 +317,7 @@ input[type="checkbox"] {
 }
 
 .search-form-reset-button {
-	float: right;
+	float: left;
 	padding-top: 4px;
 }
 
