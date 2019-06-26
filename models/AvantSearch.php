@@ -190,7 +190,7 @@ class AvantSearch
         $isAdvancedSearchPage = $action == 'advanced-search' && $useElasticsearch;
 
         $linkText = __('Advanced Search');
-        $placeholderText = __('Enter search terms');
+        $placeholderText = __('Enter keywords to search for');
         $query = isset($_GET['query']) && !$isAdvancedSearchPage ? htmlspecialchars($_GET['query'], ENT_QUOTES) : '';
         $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
         $findUrl = url('/find') . $queryString;
