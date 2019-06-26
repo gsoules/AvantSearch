@@ -188,7 +188,6 @@ class SearchResultsTableViewRowData
     protected function generateThumbnailHtml($item)
     {
         $itemPreview = new ItemPreview($item, $this->useElasticsearch, $this->sharedSearchingEnabled);
-        //$this->itemThumbnailHtml = $itemPreview->emitItemHeader(true);
         $this->itemThumbnailHtml .= $itemPreview->emitItemThumbnail(false);
     }
 
