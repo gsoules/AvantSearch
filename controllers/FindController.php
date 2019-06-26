@@ -14,6 +14,11 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         return;
     }
 
+    public function contributorsAction()
+    {
+        return;
+    }
+
     protected function find()
     {
         $this->getRequest()->setParamSources(array('_GET'));
@@ -314,10 +319,5 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     public function searchResultsAction()
     {
         $this->find();
-    }
-
-    public function subjectSearchAction()
-    {
-        return;
     }
 }

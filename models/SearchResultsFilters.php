@@ -2,6 +2,7 @@
 
 class SearchResultsFilters
 {
+    protected $advancedArray = array();
     protected $filterCount;
     protected $filterMessage;
     protected $searchResults;
@@ -19,6 +20,42 @@ class SearchResultsFilters
         $link = AvantSearch::getSearchFilterResetLink($resetUrl);
         $this->filterMessage .= "<span class='search-filter'>$filter$link</span>";
         $this->filterCount++;
+    }
+
+    protected function emitAdvancedSearchFilters()
+    {
+        if (empty($this->advancedArray))
+            return;
+
+        $queryArgs = explode('&', http_build_query($_GET));
+
+        foreach ($this->advancedArray as $advancedIndex => $advanced)
+        {
+            $args = $queryArgs;
+
+            foreach ($args as $argsIndex => $value)
+            {
+                $advancedPrefix = urlencode('advanced[');
+                $prefixLength = strlen($advancedPrefix) + ($advancedIndex <= 9 ? 1 : 2);
+                $prefix = substr($value, 0, $prefixLength);
+                if (strpos($prefix, "$advancedPrefix$advancedIndex") === 0)
+                {
+                    unset($args[$argsIndex]);
+                }
+            }
+
+            $query = '?';
+            foreach ($args as $value)
+            {
+                if (strlen($query) > 1)
+                {
+                    $query .= '&';
+                }
+                $query .= $value;
+            }
+
+            $this->addFilterMessageCriteria($advanced, $query);
+        }
     }
 
     protected function emitElasticsearchFilters()
@@ -72,55 +109,7 @@ class SearchResultsFilters
             $displayArray[__('Keywords')] = "$conditionName$keywords";
         }
 
-        if (array_key_exists('advanced', $requestArray))
-        {
-            $advancedArray = array();
-            $advancedIndex = 0;
-            foreach ($requestArray['advanced'] as $i => $row)
-            {
-                if (empty($row['element_id']) || empty($row['type']))
-                    continue;
-
-                if ($subjectSearch && $row['terms'] == '*')
-                    continue;
-
-                $elementId = $row['element_id'];
-
-                if (ctype_digit($elementId))
-                {
-                    // The value is an Omeka element Id.
-                    $elementName = ItemMetadata::getElementNameFromId($elementId);
-                }
-                else
-                {
-                    // The value is an Omeka element name.
-                    $elementName = $elementId;
-                }
-
-                if (empty($elementName))
-                    continue;
-
-                $type = __($row['type']);
-                $advancedValue = $elementName . ': ' . $type;
-                if (isset($row['terms']) && $type != 'is empty' && $type != 'is not empty')
-                {
-                    $advancedValue .= ' "' . $row['terms'] . '"';
-                }
-
-                if ($advancedIndex && !$useElasticsearch)
-                {
-                    if(isset($row['joiner']) && $row['joiner'] === 'or')
-                    {
-                        $advancedValue = __('OR') . ' ' . $advancedValue;
-                    }
-                    else
-                    {
-                        $advancedValue = __('AND') . ' ' . $advancedValue;
-                    }
-                }
-                $advancedArray[$advancedIndex++] = $advancedValue;
-            }
-        }
+        $this->getAdvancedSearchArgs($requestArray, $subjectSearch, $useElasticsearch);
 
         if (!empty($_GET['tags']))
         {
@@ -156,38 +145,7 @@ class SearchResultsFilters
             $this->addFilterMessageCriteria($query, '');
         }
 
-        if (!empty($advancedArray))
-        {
-            foreach ($advancedArray as $advancedIndex => $advanced)
-            {
-                $entries = explode('&', http_build_query($_GET));
-
-                foreach ($entries as $entry)
-                {
-                    $args[] = urldecode($entry);
-                }
-
-                foreach ($args as $argsIndex => $value)
-                {
-                    $prefixLength = strlen('advanced[]') + ($advancedIndex <= 9 ? 1 : 2);
-                    $prefix = substr($value, 0, $prefixLength);
-                    if (strpos($prefix, "advanced[$advancedIndex]") === 0)
-                    {
-                        unset($entries[$argsIndex]);
-                    }
-                }
-
-                $query = '?';
-                foreach ($entries as $value)
-                {
-                    if (strlen($query) > 1)
-                        $query .= '&';
-                    $query .= $value;
-                }
-
-                $this->addFilterMessageCriteria($advanced, $query);
-            }
-        }
+        $this->emitAdvancedSearchFilters();
 
         if ($useElasticsearch)
         {
@@ -201,5 +159,64 @@ class SearchResultsFilters
         $html .= '</div>';
 
         return $html;
+    }
+
+    protected function getAdvancedSearchArgs(array $requestArray, $subjectSearch, $useElasticsearch)
+    {
+        if (!array_key_exists('advanced', $requestArray))
+            return;
+
+        $advancedIndex = 0;
+        foreach ($requestArray['advanced'] as $i => $row)
+        {
+            if (empty($row['element_id']) || empty($row['type']))
+            {
+                continue;
+            }
+
+            if ($subjectSearch && $row['terms'] == '*')
+            {
+                continue;
+            }
+
+            $elementId = $row['element_id'];
+
+            if (ctype_digit($elementId))
+            {
+                // The value is an Omeka element Id.
+                $elementName = ItemMetadata::getElementNameFromId($elementId);
+            }
+            else
+            {
+                // The value is an Omeka element name.
+                $elementName = $elementId;
+            }
+
+            if (empty($elementName))
+            {
+                continue;
+            }
+
+            $type = __($row['type']);
+            $advancedValue = $elementName . ': ' . $type;
+            if (isset($row['terms']) && $type != 'is empty' && $type != 'is not empty')
+            {
+                $advancedValue .= ' "' . $row['terms'] . '"';
+            }
+
+            if ($advancedIndex && !$useElasticsearch)
+            {
+                if (isset($row['joiner']) && $row['joiner'] === 'or')
+                {
+                    $advancedValue = __('OR') . ' ' . $advancedValue;
+                }
+                else
+                {
+                    $advancedValue = __('AND') . ' ' . $advancedValue;
+                }
+            }
+
+            $this->advancedArray[$advancedIndex++] = $advancedValue;
+        }
     }
 }

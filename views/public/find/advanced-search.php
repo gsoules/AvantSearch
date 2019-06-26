@@ -20,12 +20,7 @@ $showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
 $useElasticsearch = AvantSearch::useElasticsearch();
 
-if ($useElasticsearch && AvantElasticsearch::useSharedIndexForQueries())
-{
-    $stats = AvantElasticsearch::generateContributorStatistics();
-}
-
-$pageTitle = $useElasticsearch ? __('Advanced Search') : __('Advanced Search');
+$pageTitle = __('Advanced Search');
 
 queue_js_file('js.cookie');
 echo head(array('title' => $pageTitle, 'bodyclass' => 'avantsearch-advanced'));
@@ -172,31 +167,24 @@ echo "<div id='avantsearch-container'>";
 		</div>
         <?php endif; ?>
 
-        <?php if (isset($stats)): ?>
-            <div class="search-form-section">
-                <div id="search-stats-title"><?php echo __('Contributor Statistics'); ?></div>
-                <?php echo $stats; ?>
-            </div>
-        <?php endif; ?>
-    </div>
-
-	<!-- Right Panel -->
-	<div id="avantsearch-secondary">
-		<div id="search-button" class="panel">
-			<input type="submit" class="submit button" value="<?php echo $advancedSubmitButtonText; ?>">
+        <div id="search-button" class="panel">
+            <input type="submit" class="submit button" value="<?php echo $advancedSubmitButtonText; ?>">
             <?php if ($useElasticsearch): ?>
                 <!-- Emit the hidden <input> tags needed to put query string argument values into the form. -->
                 <?php echo AvantSearch::getSearchFormInputsHtml() ?>
             <?php endif; ?>
-		</div>
+            <div class="search-form-reset-button">
+                <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Clear all search options</a>'; ?>
+            </div>
+        </div>
 
+    </div>
+
+	<!-- Right Panel -->
+	<div id="avantsearch-secondary">
         <?php if ($useElasticsearch): ?>
             <div class="search-help"><?php echo $helpText ?></div>
         <?php endif; ?>
-
-        <div class="search-form-reset-button">
-            <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Clear all search options</a>'; ?>
-        </div>
     </div>
 </form>
 </div>

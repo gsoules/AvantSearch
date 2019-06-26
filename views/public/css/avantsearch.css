@@ -138,7 +138,7 @@ input[type="checkbox"] {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	line-height: 28px;
 	margin: 12px 0 12px 0;
-	padding: 24px 16px 12px;
+	padding: 12px 16px 12px;
 	width: 100%;
 	box-sizing: border-box;
 }
@@ -192,11 +192,11 @@ input[type="checkbox"] {
 
 #search-stats-table {
 	text-align: right;
-	font-size: 13px;
+	font-size: 14px;
 }
 
 #search-stats-table tbody > tr > td {
-	padding-left: 4px;
+	padding-left: 8px;
 }
 
 .search-entry:first-of-type .advanced-search-joiner {
@@ -235,7 +235,7 @@ input[type="checkbox"] {
 }
 
 #search-button {
-	margin-bottom:  30px;
+	margin-bottom: 8px;
 }
 
 /* Make the search button appear at the top of the secondary column. */
@@ -284,6 +284,7 @@ input[type="checkbox"] {
 	content: "\f00d";
 	font-family: "FontAwesome";
 	font-size: 16px;
+	color: #777;
 }
 
 /* Next styles are for 'Clear all search filters' link and 'Go to Advanced Search' link */
@@ -298,8 +299,8 @@ input[type="checkbox"] {
 }
 
 .search-form-reset-button {
-	clear: both;
-	padding-top: 18px;
+	float: right;
+	padding-top: 4px;
 }
 
 /* === Search Results - Common to all Views ===

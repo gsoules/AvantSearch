@@ -26,7 +26,6 @@ class SearchResultsView
     protected $sortFieldElementId;
     protected $sortFields;
     protected $sortOrder;
-    protected $subjectSearch;
     protected $titles;
     protected $totalResults;
     protected $useElasticsearch;
