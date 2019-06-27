@@ -13,36 +13,33 @@ function createEntries($results, $searchResults, $indexFieldName)
         {
             $element = $result['_source']['element'];
             if (isset($element[$indexFieldName]))
-                $fieldValue = $element[$indexFieldName];
+                $fieldTexts = $element[$indexFieldName];
             else
-                $fieldValue = BLANK_FIELD_SUBSTITUTE;
+                $fieldTexts = [BLANK_FIELD_SUBSTITUTE];
 
-            // Split multiple values (e.g. AKA titles) into separate text values.
-            $texts = explode(ES_DOCUMENT_EOL, $fieldValue);
-
-            foreach ($texts as $text)
+            foreach ($fieldTexts as $fieldText)
             {
                 // Don't index blank fields.
-                if ($text == BLANK_FIELD_SUBSTITUTE)
+                if ($fieldText == BLANK_FIELD_SUBSTITUTE)
                     continue;
 
                 // For sorting purposes, remove all non alphanumeric and blank characters.
-                $cleanText = preg_replace('/[^a-z\d ]/i', '', $text);
+                $cleanText = preg_replace('/[^a-z\d ]/i', '', $fieldText);
 
                 $value = array(
-                    'text'=> $text,
+                    'text'=> $fieldText,
                     'clean-text' => strtolower($cleanText),
                     'url' => $result['_source']['url']['item'],
                     'count' => 1);
 
-                if (isset($resultValues[$text]))
+                if (isset($resultValues[$fieldText]))
                 {
                     // This text is already been seen. Bump its count.
-                    $resultValues[$text]['count'] += 1;
+                    $resultValues[$fieldText]['count'] += 1;
                 }
                 else
                 {
-                    $resultValues[$text] = $value;
+                    $resultValues[$fieldText] = $value;
                 }
             }
         }
@@ -51,25 +48,25 @@ function createEntries($results, $searchResults, $indexFieldName)
 
         foreach ($resultValues as $resultValue)
         {
-            $text = $resultValue['text'];
-            $entries[$text]['count'] = $resultValue['count'];
-            $entries[$text]['url'] = $resultValue['url'];
+            $fieldText = $resultValue['text'];
+            $entries[$fieldText]['count'] = $resultValue['count'];
+            $entries[$fieldText]['url'] = $resultValue['url'];
         }
     }
     else
     {
         foreach ($results as $result)
         {
-            $text = $result['text'];
+            $fieldText = $result['text'];
             $count = $result['count'];
 
-            if (isset($entries[$text]))
+            if (isset($entries[$fieldText]))
             {
-                $count += $entries[$text]['count'];
+                $count += $entries[$fieldText]['count'];
             }
 
-            $entries[$text]['count'] = $count;
-            $entries[$text]['id'] = $result['id'];
+            $entries[$fieldText]['count'] = $count;
+            $entries[$fieldText]['id'] = $result['id'];
         }
     }
 

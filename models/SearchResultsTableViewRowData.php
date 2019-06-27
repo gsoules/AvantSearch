@@ -159,7 +159,7 @@ class SearchResultsTableViewRowData
         // Create a link for the identifier.
         if ($this->useElasticsearch)
         {
-            $identifier = $item['_source']['element']['identifier'];
+            $identifier = $item['_source']['element']['identifier'][0];
             if ($this->sharedSearchingEnabled)
             {
                 $contributorId = $item['_source']['item']['contributor-id'];
@@ -199,14 +199,13 @@ class SearchResultsTableViewRowData
         {
             if (isset($item['_source']['element']['title']))
             {
-                $texts = $item['_source']['element']['title'];
+                $titles = $item['_source']['element']['title'];
             }
             else
             {
-                $texts = UNTITLED_ITEM;
+                $titles = [UNTITLED_ITEM];
             }
             $tooltip = ItemPreview::getItemLinkTooltip();
-            $titles = explode(ES_DOCUMENT_EOL, $texts);
             $itemUrl =  $item['_source']['url']['item'];
             $titleLink = "<a href='$itemUrl' title='$tooltip' target='_blank'>$titles[0]</a>";
             $this->elementValue['Title']['text'] = $titleLink;
@@ -377,8 +376,7 @@ class SearchResultsTableViewRowData
 
                     if (isset($elasticSearchElementTexts[$elasticsearchFieldName]))
                     {
-                        $texts = $elasticSearchElementTexts[$elasticsearchFieldName];
-                        $elementTexts = explode(PHP_EOL, $texts);
+                        $elementTexts = $elasticSearchElementTexts[$elasticsearchFieldName];
                     }
                 }
                 else

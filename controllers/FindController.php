@@ -128,13 +128,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $sort[] = ['sort.address-street' => $sortOrder];
             $sort[] = ['sort.address-number' => $sortOrder];
         }
-        else if (in_array($sortElementName, $integerSortElements))
-        {
-            $sort[] = ["sort.$fieldName" => $sortOrder];
-        }
         else
         {
-            $sort[] = ["element.$fieldName.keyword" => $sortOrder];
+            $sort[] = ["sort.$fieldName" => $sortOrder];
         }
 
         $sort[] = '_score';

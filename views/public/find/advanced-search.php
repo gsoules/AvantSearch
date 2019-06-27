@@ -1,4 +1,35 @@
 <?php
+function getAdvancedSearchArgs($useElasticsearch)
+{
+    if (isset($_GET['advanced']))
+    {
+        $searchArgs = $_GET['advanced'];
+
+        if ($useElasticsearch)
+        {
+            // Determine if the search args use an element Id instead of an element name. This will be the case for
+            // Advanced Search links that are for implicit links e.g. the links on an Item page to other items that
+            // have the same Subject, Creator, Type etc. Note that in this case it's always safe to use ItemMetadata to
+            // get the element name since an Item page is always running on the Omeka installation that uses those Ids.
+            foreach ($searchArgs as $index => $args)
+            {
+                $elementId = $args['element_id'];
+                if (ctype_digit($elementId))
+                {
+                    // The value is an Omeka element Id. Attempt to get the element's name.
+                    $elementName = ItemMetadata::getElementNameFromId($elementId);
+                    $searchArgs[$index]['element_id'] = $elementName;
+                }
+            }
+        }
+    }
+    else
+    {
+        $searchArgs = array(array('field' => '', 'type' => '', 'value' => ''));
+    }
+    return $searchArgs;
+}
+
 $advancedFormAttributes['id'] = 'search-filter-form';
 $advancedFormAttributes['action'] = url('find');
 $advancedFormAttributes['method'] = 'GET';
@@ -74,13 +105,8 @@ echo "<div id='avantsearch-container'>";
 				</div>
 				<div class="avantsearch-option-column inputs">
 					<?php
-					// If the form has been submitted, retain the number of search fields used and rebuild the form
-					if (!empty($_GET['advanced']))
-						$search = $_GET['advanced'];
-					else
-						$search = array(array('field' => '', 'type' => '', 'value' => ''));
-
-					foreach ($search as $i => $rows): ?>
+                    $search = getAdvancedSearchArgs($useElasticsearch);
+                    foreach ($search as $i => $rows): ?>
 						<div class="search-entry">
 							<?php
                             if (!$useElasticsearch)
