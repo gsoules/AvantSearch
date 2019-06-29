@@ -51,84 +51,73 @@ if (!$searchResults->hasLayoutL1())
 
 $class = strpos($data->itemThumbnailHtml, 'fallback') === false ? 'search-td-image ' : 'search-td-image-fallback';
 echo '<td class="' . $class . ' L1">';
+echo '<div class="search-result-detail">';
 echo $data->itemThumbnailHtml;
-echo '</td>';
 ?>
 
-<td class="search-td-title-detail L1">
+<div class="metadata">
     <div class="search-result-title">
         <?php echo $data->elementValue['Title']['text']; ?>
     </div>
-    <table class="search-results-detail-table">
-        <tr class="search-results-detail-row">
-            <?php if (!empty($column1)): ?>
-            <td class="search-results-detail-col1">
-                <?php
-                foreach ($column1 as $elementName)
-                {
-                    $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
-                    echo "<div>$text</div>";
-                }
+    <?php if (!empty($column1)): ?>
+        <?php
+        foreach ($column1 as $elementName)
+        {
+            $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
+            echo "<div>$text</div>";
+        }
 
-                // Determine if it's okay to show the edit link for this item.
-                $showEditLink = false;
-                if ($searchResults->useElasticsearch())
-                {
-                    if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
-                    {
-                        // This item was contributed by this installation.
-                        $itemId = $item['_source']['item']['id'];
-                        $showEditLink = $userCanEdit;
-                    }
-                }
-                else
-                {
-                    $itemId = $item->id;
-                    $showEditLink = $userCanEdit;
-                }
+        // Determine if it's okay to show the edit link for this item.
+        $showEditLink = false;
+        if ($searchResults->useElasticsearch())
+        {
+            if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
+            {
+                // This item was contributed by this installation.
+                $itemId = $item['_source']['item']['id'];
+                $showEditLink = $userCanEdit;
+            }
+        }
+        else
+        {
+            $itemId = $item->id;
+            $showEditLink = $userCanEdit;
+        }
 
-                if ($showEditLink)
-                {
-                    echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a></div>';
-                }
-                ?>
-            </td>
-            <?php endif; ?>
-            <?php if (!empty($column2)): ?>
-            <td class="search-results-detail-col2">
-                <?php
-                foreach ($column2 as $elementName)
-                {
-                    $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
-                    echo "<div>$text</div>";
-                }
-                ?>
-            </td>
-            <?php endif; ?>
-            <?php if ($hasDescription || $hasPdfHits): ?>
-            <td class="search-results-detail-col3">
-                <div>
-                    <?php
-                    if ($hasDescription)
-                    {
-                        echo $data->elementValue['Description']['detail'];
-                    }
-                    if ($hasPdfHits)
-                    {
-                        if ($hasDescription)
-                        {
-                            echo '<br/><br/>';
-                        }
-                        echo $data->elementValue['<pdf>']['detail'];
-                    }
-                    ?>
-                </div>
-            </td>
-            <?php endif; ?>
-        </tr>
-    </table>
-</td>
-
+        if ($showEditLink)
+        {
+            echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a></div>';
+        }
+        ?>
+    <?php endif; ?>
+    <?php if (!empty($column2)): ?>
+        <?php
+        foreach ($column2 as $elementName)
+        {
+            $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
+            echo "<div>$text</div>";
+        }
+        ?>
+    <?php endif; ?>
+</div>
+<?php if ($hasDescription || $hasPdfHits): ?>
+    <div class="detail-description">
+        <?php
+        if ($hasDescription)
+        {
+            echo $data->elementValue['Description']['detail'];
+        }
+        if ($hasPdfHits)
+        {
+            if ($hasDescription)
+            {
+                echo '<br/><br/>';
+            }
+            echo $data->elementValue['<pdf>']['detail'];
+        }
+        ?>
+    </div>
+<?php endif; ?>
 <?php
 echo '</tr>';
 ?>
