@@ -381,15 +381,13 @@ input[type="checkbox"] {
 #search-results-title {
 	margin: 0 0 8px 0;
 	color: #222;
-	font-size:16px;
+	font-size:15px;
 	font-weight:bold;
-	height: 26px;
 }
 
 .search-results-message-info {
 	font-weight: normal;
 	color: #1b7ec9;
-	display: inline-block;
 }
 
 .search-results-buttons {
@@ -398,7 +396,6 @@ input[type="checkbox"] {
 }
 
 #search-results-title span {
-	display: inline-block;
 	padding-top: 6px;
 }
 

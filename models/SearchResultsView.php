@@ -775,7 +775,7 @@ class SearchResultsView
 
     protected static function messageInfo($info)
     {
-        return ' <div class="search-results-message-info"> &nbsp;&ndash; ' . $info . '</div>';
+        return ' <span class="search-results-message-info"> &nbsp;&ndash; ' . $info . '</span>';
     }
 
     public function setError($message)

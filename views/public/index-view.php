@@ -241,7 +241,7 @@ $optionSelectorsHtml .= $searchResults->emitSelectorForIndex();
 
 echo head(array('title' => $resultsMessage));
 echo "<div id='search-results-container'>";
-echo "<div id='search-results-title'><span>$resultsMessage</span></div>";
+echo "<div id='search-results-title'>$resultsMessage</div>";
 
 echo $searchResults->emitSearchFilters($optionSelectorsHtml);
 
