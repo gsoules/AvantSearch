@@ -256,6 +256,28 @@ jQuery(document).ready(function()
 
     initializing = false;
 
+    var showingFacets = false;
+    jQuery('#search-facet-button').click(function (e)
+    {
+        // Show or hide the facets section when the button is clicked.
+        jQuery("#search-facet-sections").slideToggle(function()
+        {
+            if (showingFacets)
+            {
+                // Remove the inline style attribute that slideToggle adds so that CSS media queries which show/hide the
+                // button depending on the browser width can do their job. If the style is inline, the CSS won't work.
+                jQuery(this).removeAttr('style')
+            }
+
+            showingFacets = ! showingFacets;
+
+            // Change the button's arrow icon to indicate if the facets section is open or closed.
+            var button = jQuery("#search-facet-button");
+            button.removeClass(showingFacets ? 'search-facet-closed' : 'search-facet-open');
+            button.addClass(showingFacets ? 'search-facet-open' : 'search-facet-closed');
+        });
+    });
+
     jQuery('.search-show-more').click(function (e)
     {
         var remainingText = jQuery(this).prev();
