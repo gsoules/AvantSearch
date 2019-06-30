@@ -240,8 +240,8 @@ $optionSelectorsHtml .= $searchResults->emitSelectorForView();
 $optionSelectorsHtml .= $searchResults->emitSelectorForIndex();
 
 echo head(array('title' => $resultsMessage));
-echo "<div class='search-results-container'>";
-echo "<div class='search-results-title'><span>$resultsMessage</span></div>";
+echo "<div id='search-results-container'>";
+echo "<div id='search-results-title'><span>$resultsMessage</span></div>";
 
 echo $searchResults->emitSearchFilters($optionSelectorsHtml);
 
@@ -249,7 +249,6 @@ if ($totalResults)
 {
     if ($useElasticsearch)
     {
-       echo '<section id="elasticsearch-sidebar">';
         $query = $searchResults->getQuery();
         $facets = $searchResults->getFacets();
         echo $this->partial('/elasticsearch-facets.php', array(
@@ -258,7 +257,6 @@ if ($totalResults)
                 'totalResults' => $totalResults
             )
         );
-        echo '</section>';
         echo '<section id="elasticsearch-results">';
     }
 

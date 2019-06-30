@@ -241,7 +241,7 @@ class SearchResultsView
         $sharedClass = $shared ? ' search-option-shared' : '';
         $filterImagesClass = intval(AvantCommon::queryStringArg('filter')) == 1 ? ' images-only-fitler' : '';
 
-        $html = "<div class='search-selector'>";
+        $html = "<div id='search-$kind-selector' class='search-selector'>";
         $html .= "<button id='search-$kind-button' class='search-selector-button$filterImagesClass'></button>";
         $html .= "<div id='search-$kind-options' class='search-selector-options' style='display:none;'>";
         $html .= "<ul>";

@@ -1,7 +1,7 @@
 <?php
 $avantElasticsearchFacets = new AvantElasticsearchFacets();
 $findUrl = get_view()->url('/find');
-echo '<div id="facet-sidebar">';
+echo '<div id="search-facets">';
 if (empty($aggregations))
     $aggregations = array();
 echo $avantElasticsearchFacets->emitHtmlForFacetsSidebar($aggregations, $query, $totalResults, $findUrl);

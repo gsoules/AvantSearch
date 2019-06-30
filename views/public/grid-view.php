@@ -18,27 +18,25 @@ $optionSelectorsHtml .= $searchResults->emitSelectorForLimit();
 $optionSelectorsHtml .= $searchResults->emitSelectorForFilter();
 
 echo head(array('title' => $resultsMessage));
-echo "<div class='search-results-container'>";
+echo "<div id='search-results-container'>";
 $paginationLinks = pagination_links();
-echo "<div class='search-results-title'><span>$resultsMessage</span>$paginationLinks</div>";
+echo "<div id='search-results-title'><span>$resultsMessage</span>$paginationLinks</div>";
 
 echo $searchResults->emitSearchFilters($optionSelectorsHtml);
 ?>
 
 <?php if ($totalResults): ?>
     <?php if ($useElasticsearch): ?>
-        <section id="elasticsearch-sidebar">
-            <?php
-            $query = $searchResults->getQuery();
-            $facets = $searchResults->getFacets();
-            echo $this->partial('/elasticsearch-facets.php', array(
-                    'query' => $query,
-                    'aggregations' => $facets,
-                    'totalResults' => $totalResults
-                )
-            );
-            ?>
-        </section>
+        <?php
+        $query = $searchResults->getQuery();
+        $facets = $searchResults->getFacets();
+        echo $this->partial('/elasticsearch-facets.php', array(
+                'query' => $query,
+                'aggregations' => $facets,
+                'totalResults' => $totalResults
+            )
+        );
+        ?>
         <section id="elasticsearch-results">
     <?php endif; ?>
     <div>

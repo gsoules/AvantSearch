@@ -151,12 +151,10 @@ class SearchResultsFilters
             $this->emitElasticsearchFilters();
         }
 
-        $class = 'search-filter-bar-layout';
-        $html = "<div id='search-filter-bar'>";
-        $html .= $this->filterCount> 0 ? "<div class='search-filter-bar-message'>$this->filterMessage</div>" : '';
-        $html .= "<div class='$class'>{$resultControlsHtml}</div>";
-        $html .= '</div>';
-
+        $html = $this->filterCount> 0 ? "<div id='search-filters-message'>$this->filterMessage</div>" : '';
+        $html .= "<div id='search-selector-bar'>";
+        $html .= "<div id='search-selectors'>{$resultControlsHtml}</div>";
+        $html .= "</div>";
         return $html;
     }
 

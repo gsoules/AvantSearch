@@ -93,7 +93,7 @@ function setSelectedOption(kind, prefix, newOptionId)
     jQuery('#search-' + kind + '-options').slideUp('fast');
 
     // Show the selected option in the button title.
-    var buttonTitle = selectorTitle[kind].replace('%s', '<b>' + selectedOption.text() + '</b>');
+    var buttonTitle = selectorTitle[kind].replace('%s', '<span class="search-selector-button-value">' + selectedOption.text() + '</span>');
     jQuery('#search-' + kind + '-button').html(buttonTitle);
 
     if (kind === LAYOUT)
