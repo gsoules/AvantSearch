@@ -196,18 +196,23 @@ class AvantSearch
         $findUrl = url('/find') . $queryString;
         $advancedSearchUrl = url('/find/advanced') . $queryString;
 
+        $menu = public_nav_main();
+        $menuHtml = $menu->render();
+
         // Initialize the search box with the text of the last query submitted.
-        // The search-clear <span> overlays an X in the far right of the search box to let you clear the string.
+        // The search-erase <span> overlays an X in the far right of the search box to let you erase the string.
         $html = '<div id="search-container">';
+        if (!empty($menuHtml))
+            $html .= '<a id="nav-toggle"><span></span></a>';
         $html .= '<form id="search-form" name="search-form" action="' . $findUrl . '" method="get" class="search-form">';
-        $html .= '<span class="search-clear">';
+        $html .= '<span class="search-erase">';
         $html .= '<input id="query" type="text" name="query" value="' . $query . '" title="Search" autofocus placeholder="' . $placeholderText . '">';
 
         // Emit the hidden <input> tags needed to put query string argument values into the form.
         $html .= self::getSearchFormInputsHtml();
 
         // Emit the X at far right used to clear the search box.
-        $html .= '<span id="search-clear-icon">&#10006;</span></span>';
+        $html .= '<span id="search-erase-icon">&#10006;</span></span>';
 
         // Emit the search button.
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button>';
@@ -215,7 +220,7 @@ class AvantSearch
 
         // Emit the Advanced Search link.
         if (!$isAdvancedSearchPage)
-            $html .= '<a href="' . $advancedSearchUrl . '" class="search-link">' . $linkText . '</a>';
+            $html .= '<a href="' . $advancedSearchUrl . '" id="advanced-search-link">' . $linkText . '</a>';
 
         $html .= '</div>';
         $html .= '</form>';

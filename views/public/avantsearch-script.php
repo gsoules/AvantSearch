@@ -4,7 +4,7 @@
         var avantSearchForm = '<?php echo AvantSearch::getSearchFormHtml(); ?>';
         jQuery('#search-container').replaceWith(avantSearchForm);
 
-        jQuery("#search-clear-icon").click(function()
+        jQuery("#search-erase-icon").click(function()
         {
             var query = jQuery('#query');
             query.val('');
@@ -14,10 +14,10 @@
 </script>
 
 <style>
-    span.search-clear {
+    span.search-erase {
         position: relative;
     }
-    span.search-clear span {
+    span.search-erase span {
         position: absolute;
         display: block;
         top: 5px;

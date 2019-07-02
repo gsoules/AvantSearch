@@ -55,10 +55,10 @@ echo '<div class="search-result-detail">';
 echo $data->itemThumbnailHtml;
 ?>
 
+<div class="search-result-title">
+    <?php echo $data->elementValue['Title']['text']; ?>
+</div>
 <div class="metadata">
-    <div class="search-result-title">
-        <?php echo $data->elementValue['Title']['text']; ?>
-    </div>
     <?php if (!empty($column1)): ?>
         <?php
         foreach ($column1 as $elementName)

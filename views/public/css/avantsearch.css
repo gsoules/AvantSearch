@@ -705,9 +705,10 @@ a.search-reset-link:hover {
 --------------------------------------------------------- */
 .search-result-detail {
 	display: grid;
-	grid-template-columns: 20% 1fr;
-	grid-gap: 12px;
+	grid-template-columns: 25% 1fr;
+	grid-gap: 8px;
 	grid-template-areas:
+		"title	title"
 		"thumbnail metadata"
 		"description description";
 }
@@ -718,6 +719,11 @@ a.search-reset-link:hover {
 
 .metadata {
 	grid-area: metadata;
+	padding: 0 8px;
+}
+
+.search-result-title {
+	grid-area: title;
 }
 
 .detail-description {
@@ -794,9 +800,7 @@ a.search-reset-link:hover {
 .search-result-title {
 	border-bottom: 1px dotted #ccc;
 	font-size: 120%;
-	margin-top: 4px;
-	margin-bottom: 10px;
-	padding-bottom: 6px;
+	padding-left: 8px;
 }
 
 .search-results-detail-table {
