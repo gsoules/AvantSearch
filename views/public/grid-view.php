@@ -63,7 +63,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
         </section>
     <?php endif; ?>
     <?php
-    echo pagination_links();
+    echo "<div id='search-pagination-bottom'>$paginationLinks</div>";
     echo '</div>';
     ?>
 <?php else: ?>
