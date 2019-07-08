@@ -477,6 +477,12 @@ a.search-reset-link:hover {
 	padding: 0 4px;
 }
 
+/* Don't show the selector dropdown values on the narrowest devices. */
+.search-selector-button-value {
+	display: none;
+	font-weight: bold;
+}
+
 .search-selector-button:hover {
 	background-color: #dbdbdb;
 }
@@ -490,10 +496,6 @@ a.search-reset-link:hover {
 	font-family: "FontAwesome";
 	padding-left: 6px;
 	float: right;
-}
-
-.search-selector-button-value {
-	font-weight: bold;
 }
 
 #search-filter-button.images-only-fitler {
@@ -1176,6 +1178,70 @@ a.search-reset-link:hover {
 			"bottom";
 }
 
+#search-results-title {
+	grid-area: title;
+}
+
+#search-filters-message {
+	grid-area: message;
+}
+
+#search-selector-bar {
+	grid-area: filter;
+}
+
+#search-facets {
+	grid-area: facets;
+}
+
+#search-facet-sections {
+	display: none;
+}
+
+#search-facet-title {
+	display: none;
+}
+
+#elasticsearch-results {
+	grid-area: results;
+}
+
+#search-table-view {
+	grid-area: results;
+}
+
+#search-pagination-bottom {
+	grid-area: bottom;
+}
+
+#search-facet-button {
+	display: block;
+}
+
+/* Don't show these selectors on the narrowest devices. */
+#search-layout-selector {
+	display: none;
+}
+
+#search-sort-selector {
+	display: none;
+}
+
+@media screen and (min-width: 500px) {
+	/* Display search selectors that are hidden on the narrowest devices. */
+	#search-layout-selector {
+		display: block;
+	}
+
+	#search-sort-selector {
+		display: block;
+	}
+
+	#search-filter-selector {
+		display: block;
+	}
+}
+
 @media screen and (min-width: 600px) {
 	#elasticsearch-results-container {
 		grid-template-columns: 180px 1fr;
@@ -1185,6 +1251,25 @@ a.search-reset-link:hover {
 				"filter	 filter"
 				"facets	 results"
 				".		 bottom";
+	}
+
+	#search-facet-sections {
+		display: block;
+	}
+
+	#search-facet-title {
+		display: block;
+	}
+
+	#search-facet-button {
+		display: none;
+	}
+}
+
+@media screen and (min-width: 825px) {
+	/* Display the value of search selector dropdowns. At narrower widths, values are hidden to save horizontal space. */
+	.search-selector-button-value {
+		display: inline-block;
 	}
 }
 
