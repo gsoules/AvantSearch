@@ -73,9 +73,15 @@ function createEntries($results, $searchResults, $indexFieldName)
     return $entries;
 }
 
-function emitEntries($entries, $indexFieldElementId, $searchResults)
+function emitEntries($entries, $indexFieldElementId, $indexElementName, $searchResults)
 {
     $currentHeading = '';
+
+    if (empty($entries))
+    {
+        $noEntriesMessage = __('No entries are indexed by %s', $indexElementName);
+        echo "<h3>$noEntriesMessage</h3>";
+    }
 
     foreach ($entries as $entryText => $entry)
     {
@@ -240,7 +246,7 @@ $optionSelectorsHtml .= $searchResults->emitSelectorForView();
 $optionSelectorsHtml .= $searchResults->emitSelectorForIndex();
 
 echo head(array('title' => $resultsMessage));
-echo "<div id='search-results-container'>";
+echo "<div id='{$searchResults->getSearchResultsContainerName()}'>";
 echo "<div id='search-results-title'>$resultsMessage</div>";
 
 echo $searchResults->emitSearchFilters($optionSelectorsHtml);
@@ -268,7 +274,7 @@ if ($totalResults)
     }
 
     echo '<div id="search-index-view-headings">';
-    emitEntries($entries, $indexFieldElementId, $searchResults);
+    emitEntries($entries, $indexFieldElementId, $elementName, $searchResults);
     echo "</div>";
 
     if ($showLetterIndex)

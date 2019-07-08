@@ -717,7 +717,7 @@ a.search-reset-link:hover {
 	grid-area: thumbnail;
 }
 
-.metadata {
+.search-result-metadata {
 	grid-area: metadata;
 	padding: 0 8px;
 }
@@ -1151,6 +1151,64 @@ a.search-reset-link:hover {
 .relationships-table-view .search-td-relationship {
 	padding-left: 20px;
 	width: 64%;
+}
+
+#elasticsearch-results-container {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-areas:
+			"title"
+			"message"
+			"filter"
+			"facets"
+			"results"
+			"bottom";
+}
+
+#sqlsearch-results-container {
+	display: grid;
+	grid-template-columns: 1fr;
+	grid-template-areas:
+			"title"
+			"message"
+			"filter"
+			"results"
+			"bottom";
+}
+
+@media screen and (min-width: 600px) {
+	#elasticsearch-results-container {
+		grid-template-columns: 180px 1fr;
+		grid-template-areas:
+				"title	 title"
+				"message message"
+				"filter	 filter"
+				"facets	 results"
+				".		 bottom";
+	}
+}
+
+@media screen and (min-width: 960px) {
+	.search-result-detail {
+		grid-template-columns: 20% 1fr 1fr;
+		grid-gap: 8px;
+		grid-template-areas:
+				"title 	   title	title"
+				"thumbnail metadata description";
+	}
+}
+
+@media screen and (min-width: 1200px) {
+	#elasticsearch-results-container {
+		grid-template-columns: 280px 1fr;
+	}
+
+	.search-result-detail {
+		grid-template-columns: 15% 1fr 1fr 1fr;
+		grid-template-areas:
+				"title 	   title	title	    title"
+				"thumbnail metadata description description";
+	}
 }
 
 /* === CSS for Width less than 844px ===

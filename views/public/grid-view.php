@@ -18,7 +18,8 @@ $optionSelectorsHtml .= $searchResults->emitSelectorForLimit();
 $optionSelectorsHtml .= $searchResults->emitSelectorForFilter();
 
 echo head(array('title' => $resultsMessage));
-echo "<div id='search-results-container'>";
+echo "<div id='{$searchResults->getSearchResultsContainerName()}'>";
+
 $paginationLinks = pagination_links();
 echo "<div id='search-results-title'><span>$resultsMessage</span>$paginationLinks</div>";
 

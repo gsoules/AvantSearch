@@ -107,6 +107,11 @@ function setSelectedOption(kind, prefix, newOptionId)
     var newUrl;
     var oldUrl = document.location.href;
 
+    if (getQueryStringArg('query').length === 0 && getQueryStringArg('keywords').length === 0)
+    {
+        oldUrl += '?query=';
+    }
+
     if (newOptionId === oldOptionId)
     {
         // Either the user clicked on the same option as was already selected, or this is selector initialization.
