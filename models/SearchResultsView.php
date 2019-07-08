@@ -541,6 +541,11 @@ class SearchResultsView
         return isset($_GET['filter']) ? intval($_GET['filter'] == 1) : self::DEFAULT_SEARCH_FILTER ;
     }
 
+    public function getSearchResultsContainerName()
+    {
+        return $this->useElasticsearch ? 'elasticsearch-results-container' : 'sqlsearch-results-container';
+    }
+
     public static function getSearchResultsMessage($totalResults, $fuzzy)
     {
         $isIndexView = AvantCommon::queryStringArg('view') == SearchResultsViewFactory::INDEX_VIEW_ID;

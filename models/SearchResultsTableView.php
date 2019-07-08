@@ -191,27 +191,18 @@ class SearchResultsTableView extends SearchResultsView
     protected function getOptionDataForDetailLayout()
     {
         $detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
-        $useElasticsearch = AvantSearch::useElasticsearch();
-        if ($useElasticsearch)
-        {
-            // When using Elasticsearch only one metadata element column appears because the search results
-            // area is narrower because of the space taken on the left for filtering by facets.  When not
-            // using Elasticsearch, honor the AvantSearch configuration options that allow 1 or 2 columns.
-            $mergedLayoutData = array();
-            foreach ($detailLayoutData as $elements)
-            {
-                foreach ($elements as $elementId => $element)
-                {
-                    $mergedLayoutData[0][$elementId] = $element;
-                }
-            }
 
-            return $mergedLayoutData;
-        }
-        else
+        // Merge old AvantSearch configuration options that allowed 2 columns into 1 column.
+        $mergedLayoutData = array();
+        foreach ($detailLayoutData as $elements)
         {
-            return $detailLayoutData;
+            foreach ($elements as $elementId => $element)
+            {
+                $mergedLayoutData[0][$elementId] = $element;
+            }
         }
+
+        return $mergedLayoutData;
     }
 
     public function getSelectedLayoutId()

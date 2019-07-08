@@ -218,6 +218,9 @@ class SearchConfig extends ConfigOptions
             $detailLayoutData = self::getOptionDataForDetailLayout();
             $detailLayoutOption = '';
 
+
+            // Older versions of AvantSearch allowed two comma-separated detail rows (for two detail columns)
+            // so loop over the rows in case this data has not yet been saved as a single row (for one column).
             foreach ($detailLayoutData as $detailRow)
             {
                 if (!empty($detailLayoutOption))
@@ -230,7 +233,7 @@ class SearchConfig extends ConfigOptions
                 {
                     if (!empty($row))
                     {
-                        $row .= ', ';
+                        $row .= PHP_EOL;
                     }
                     $row .= $columnName;
                 }
@@ -357,31 +360,26 @@ class SearchConfig extends ConfigOptions
     public static function saveOptionDataForDetailLayout()
     {
         $detailRows = array();
-        $detailLayouts = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_DETAIL_LAYOUT]));
-        $row = 0;
-        foreach ($detailLayouts as $detailLayout)
+        $detailLayout = array_map('trim', explode(PHP_EOL, $_POST[self::OPTION_DETAIL_LAYOUT]));
+
+        foreach ($detailLayout as $elementName)
         {
-            if (empty($detailLayout))
+            if (empty($elementName))
                 continue;
 
-            $elementNames = array_map('trim', explode(',', $detailLayout));
-            foreach ($elementNames as $elementName)
+            if (self::isPseudoElement($elementName))
             {
-                if (empty($elementName))
-                    continue;
-
-                if (self::isPseudoElement($elementName))
-                {
-                    $elementId = $elementName;
-                }
-                else
-                {
-                    $elementId = ItemMetadata::getElementIdForElementName($elementName);
-                    self::errorIfNotElement($elementId, CONFIG_LABEL_DETAIL_LAYOUT, $elementName);
-                }
-                $detailRows[$row][] = $elementId;
+                $elementId = $elementName;
             }
-            $row++;
+            else
+            {
+                $elementId = ItemMetadata::getElementIdForElementName($elementName);
+                self::errorIfNotElement($elementId, CONFIG_LABEL_DETAIL_LAYOUT, $elementName);
+            }
+
+            // Older versions of AvantSearch allowed two comma-separated detail rows (for two detail columns)
+            // so for backward compatibility, save the data in the 1st row of an array with only one row.
+            $detailRows[0][] = $elementId;
         }
 
         set_option(self::OPTION_DETAIL_LAYOUT, json_encode($detailRows));

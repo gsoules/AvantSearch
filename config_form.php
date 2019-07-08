@@ -13,6 +13,7 @@ $layoutsOption = SearchConfig::getOptionTextForLayouts();
 $layoutsOptionRows = max(2, count(explode(PHP_EOL, $layoutsOption)));
 
 $detailLayoutOption = SearchConfig::getOptionTextForDetailLayout();
+$detailLayoutRows = max(2, count(explode(PHP_EOL, $detailLayoutOption)));
 
 $integerSortingOption = SearchConfig::getOptionTextForIntegerSorting();
 $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)));
@@ -73,7 +74,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
     </div>
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Detail layout elements."); ?></p>
-        <?php echo $view->formTextarea(SearchConfig::OPTION_DETAIL_LAYOUT, $detailLayoutOption, array('rows' => '2')); ?>
+        <?php echo $view->formTextarea(SearchConfig::OPTION_DETAIL_LAYOUT, $detailLayoutOption, array('rows' => $detailLayoutRows)); ?>
     </div>
 </div>
 
