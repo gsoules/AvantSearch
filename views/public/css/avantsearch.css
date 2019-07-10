@@ -266,37 +266,6 @@ input[type="checkbox"] {
 	margin-top: 2px;
 }
 
-.search-view-option {
-	height: 36px;
-}
-
-.search-images-only-option {
-	clear: both;
-}
-
-.search-view-options {
-	clear: both;
-	padding-top:8px;
-	padding-bottom:12px;
-}
-
-.search-view-options input {
-	height: 28px;
-}
-
-.search-view-options label {
-	height: 28px;
-	line-height: 28px;
-	margin-bottom: 0;
-	padding-top: 0;
-}
-
-.search-view-options select {
-	height: 28px;
-	line-height: 28px;
-	margin: 0 0 0 6px;
-}
-
 /* Display 'Clear all search filters' graphic before link */
 .search-form-reset-button::after {
 	content: "\f00d";
@@ -323,16 +292,6 @@ input[type="checkbox"] {
 
 /* === Search Results - Common to all Views ===
 --------------------------------------------------------- */
-/* Position Modify Search button */
-.modify-search-button {
-	float: right;
-	margin-bottom: 4px;
-	text-align: center;
-}
-
-.modify-search-button button {
-	min-width: 165px;
-}
 
 .search-result {
 	padding-left:4px;
@@ -390,11 +349,6 @@ input[type="checkbox"] {
 	color: #1b7ec9;
 }
 
-.search-results-buttons {
-	float: right;
-	width: 30%;
-}
-
 #search-results-title span {
 	padding-top: 6px;
 }
@@ -419,13 +373,7 @@ input[type="checkbox"] {
 	border-radius:5px;
 }
 
-#search-filter-bar {
-	clear: both;
-	padding-top: 0;
-	padding-bottom: 12px;
-}
-
-#search-filter-bar .search-filters-message {
+.search-filters-message {
 	font-size:14px;
 	margin-bottom: 8px;
 	border-radius: 5px;
@@ -868,7 +816,7 @@ a.search-reset-link:hover {
 /* The whole index view */
 #search-index-view-headings {
 	clear: both;
-	column-count: 2;
+	column-count: 1;
 	margin-bottom: 12px;
 }
 
@@ -917,6 +865,7 @@ a.search-reset-link:hover {
     margin-bottom: 16px;
     height: 25px;
 	font-size: 12px;
+	display: none;
 }
 
 .search-index-view-index li {
@@ -1281,6 +1230,15 @@ a.search-reset-link:hover {
 				"title 	   title	title"
 				"thumbnail metadata description";
 	}
+
+	#search-index-view-headings {
+		column-count: 2;
+	}
+
+	/* Only show alphabet search list index on wider devices */
+	.search-index-view-index {
+		display: block;
+	}
 }
 
 @media screen and (min-width: 1200px) {
@@ -1294,6 +1252,14 @@ a.search-reset-link:hover {
 				"title 	   title	title	    title"
 				"thumbnail metadata description description";
 	}
+
+	#search-filter-form #avantsearch-primary {
+		width: 40%;
+	}
+
+	#search-filter-form #avantsearch-secondary {
+		width: 57%;
+	}
 }
 
 /* === CSS for Width less than 844px ===
@@ -1304,24 +1270,8 @@ a.search-reset-link:hover {
 		float: left;
 	}
 
-	/* use .search-selector instead */
-	.search-index-view-column-toggle,
-	.search-selector-options-panel {
-		clear: both;
-		margin-left: 0;
-	}
-
-	#search-filter-bar {
-		display: block;
-	}
-
 	#search-entry .advanced-search-joiner {
 	    	width: 30%;
-	}
-
-	.modify-search-button {
-		clear: both;
-		float: left;
 	}
 }
 
@@ -1332,49 +1282,27 @@ a.search-reset-link:hover {
 		margin-left: 0;
 		width: 100%;
 	}
-
-	.search-results-buttons {
-		float: left;
-		margin-bottom: 6px;
-	}
-
-	.search-selector {
-		margin-left: 0;
-	}
 }
 
 /* === CSS for Width < 600px ===
 --------------------------------------------------------- */
 @media screen and (max-width: 600px) {
-  .search-td-image img {
-  	width: 100px;
-  }
+	.search-td-title {
+		width: 100px;
+	}
 
-  .search-td-title {
-  	width: 100px;
-  }
+	#search-entry .advanced-search-joiner {
+		width: 30%;
+	}
 
-  #search-entry .advanced-search-joiner {
-    width: 30%;
-  }
+	#search-filter-form #avantsearch-primary,
+	#search-filter-form #avantsearch-secondary {
+		width: 100%;
+	}
 
-  #search-filter-form #avantsearch-primary,
-  #search-filter-form #avantsearch-secondary {
-  	width: 100%;
-  }
+	#search-filter-form #search-form-section {
+		width: 100%;
 
-  #search-filter-form #search-form-section {
-  	width: 100%;
-
-  }
-
-  .search-view-option {
-  	width: 100%;
-  }
-
-	/* Hide alphabet search list index on phones */
-	.search-index-view-index {
-		display: none;
 	}
 
 	/* Advanced Search form */
@@ -1417,10 +1345,6 @@ a.search-reset-link:hover {
 
 	.search-filter-form input[type=text] {
 		width: 100%;
-	}
-
-	#search-index-view-headings {
-		column-count: 1;
 	}
 }
 
