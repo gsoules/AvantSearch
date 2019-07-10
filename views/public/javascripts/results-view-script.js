@@ -29,7 +29,7 @@ function deselectSelectorOptions(kind)
 
 function getQueryStringArg(arg)
 {
-    var pairs = document.location.search.substring(1).split("&");
+    var pairs = getQueryStringPairs();
     for (i = 0; i < pairs.length; i++)
     {
         var pair = pairs[i];
@@ -38,6 +38,25 @@ function getQueryStringArg(arg)
             return pair.substring(eq + 1);
     }
     return "";
+}
+
+function getQueryStringPairs()
+{
+    var pairs = '';
+    var q = document.location.search;
+    if (q.length > 0)
+    {
+        // Ignore the leading '?'.
+        var s = q.substring(1);
+        pairs = s.split("&");
+    }
+    return pairs;
+}
+
+function hasQueryStringArgs()
+{
+    var argsCount = getQueryStringPairs().length;
+    return argsCount > 0;
 }
 
 function initSelector(kind, prefix)
@@ -107,8 +126,9 @@ function setSelectedOption(kind, prefix, newOptionId)
     var newUrl;
     var oldUrl = document.location.href;
 
-    if (getQueryStringArg('query').length === 0 && getQueryStringArg('keywords').length === 0)
+    if (!hasQueryStringArgs())
     {
+        // Add an empty query are because so that other args can be added using '&',
         oldUrl += '?query=';
     }
 
