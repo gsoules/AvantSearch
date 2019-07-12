@@ -113,10 +113,21 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         if (!isset($params['sort']))
         {
-            return $sort;
+            if ($searchResults->allowSortByRelevance())
+            {
+                // Return empty string to indicate sort by relevance.
+                return $sort;
+            }
+            else
+            {
+                // Default to sort by title when no sort order specified and not allowed to sort by relevance.
+                $sortElementName = 'Title';
+            }
         }
-
-        $sortElementName = $searchResults->getElementNameForQueryArg('sort');
+        else
+        {
+            $sortElementName = $searchResults->getElementNameForQueryArg('sort');
+        }
 
         $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
 

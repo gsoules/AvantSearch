@@ -15,6 +15,7 @@ $user = current_user();
 $userCanEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin');
 $identifierAliasName = ItemMetadata::getIdentifierAliasElementName();
 $checkboxFieldData = plugin_is_active('AvantElements') ? ElementsConfig::getOptionDataForCheckboxField() : array();
+$allowSortByRelevance = $searchResults->allowSortByRelevance();
 
 $filterId = $searchResults->getSelectedFilterId();
 $layoutId = $searchResults->getSelectedLayoutId();
@@ -76,6 +77,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
                     'column1' => $column1,
                     'column2' => $column2,
                     'identifierAliasName' => $identifierAliasName,
+                    'allowSortByRelevance' => $allowSortByRelevance,
                     'checkboxFieldData' => $checkboxFieldData,
                     'userCanEdit' => $userCanEdit)
             );

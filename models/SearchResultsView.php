@@ -10,6 +10,7 @@ class SearchResultsView
     const KEYWORD_CONDITION_BOOLEAN = 3;
 
     protected $advancedSearchFields;
+    protected $allowSortByRelevance;
     protected $condition;
     protected $conditionName;
     protected $error;
@@ -56,6 +57,15 @@ class SearchResultsView
                 $this->useElasticsearch = false;
             }
         }
+
+        // Only allow sorting by relevance when keywords are providing because they are what relevance scoring is based on.
+        // Allow other search parameters are filters that narrow the result set and don't affect the score at all or very much.
+        $this->allowSortByRelevance = !empty(AvantCommon::queryStringArg('query')) || !empty(AvantCommon::queryStringArg('keywords'));
+    }
+
+    public function allowSortByRelevance()
+    {
+        return $this->allowSortByRelevance;
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -671,6 +681,8 @@ class SearchResultsView
     public function getSelectedSortId()
     {
         $sortFieldName = $this->getElementNameForQueryArg('sort', 'relevance');
+        if ($sortFieldName == 'relevance' && !$this->allowSortByRelevance())
+            $sortFieldName = 'Title';
         $sortFields = $this->getSortFields();
         $sortId = array_search ($sortFieldName, $sortFields);
         return $sortId === false ? array_search('relevance', $sortFields) : $sortId;
@@ -697,8 +709,11 @@ class SearchResultsView
         {
             $this->sortFields = $this->getTableLayoutColumns();
 
-            // Prepend the relevance option as the first choice.
-            array_unshift($this->sortFields, __('relevance'));
+            if ($this->allowSortByRelevance())
+            {
+                // Prepend the relevance option as the first choice.
+                array_unshift($this->sortFields, __('relevance'));
+            }
         }
         return $this->sortFields;
     }

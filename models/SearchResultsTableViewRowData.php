@@ -6,6 +6,7 @@
 
 class SearchResultsTableViewRowData
 {
+    protected $allowSortByRelevance;
     protected $avantElasticsearch;
     protected $columnsData;
     protected $checkboxFieldData;
@@ -17,13 +18,14 @@ class SearchResultsTableViewRowData
     protected $sharedSearchingEnabled;
     protected $useElasticsearch;
 
-    public function __construct($item, SearchResultsTableView $searchResults, $identifierAliasName, $checkboxFieldData)
+    public function __construct($item, SearchResultsTableView $searchResults, $identifierAliasName, $allowSortByRelevance, $checkboxFieldData)
     {
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
         $this->useElasticsearch = $searchResults->useElasticsearch();
         $this->sharedSearchingEnabled = $searchResults->sharedSearchingEnabled();
         $this->identifierAliasName = $identifierAliasName;
+        $this->allowSortByRelevance = $allowSortByRelevance;
         $this->checkboxFieldData = $checkboxFieldData;
 
         $this->initializeData($item);
@@ -421,11 +423,7 @@ class SearchResultsTableViewRowData
                 $tags = '';
             }
 
-            // Only show score to logged in user.
-            //$score = $this->userIsAdmin() ? $item['_score'] : '';
-
-            $score = $item['_score'];
-            $score = number_format($score, 2);
+            $score = $this->allowSortByRelevance ?  number_format($item['_score'], 2) : '';
             $fileAttachmentHits = $this->generateFileAttachmentHits($item);
         }
         else
