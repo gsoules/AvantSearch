@@ -225,7 +225,7 @@ $showLetterIndex = $totalResults > 1000;
 
 if ($useElasticsearch)
 {
-    $elementName = AvantCommon::queryStringArg('index', 'Title');
+    $elementName = $searchResults->getElementNameForQueryArg('index');
     $indexFieldElementId = $elementName;
     $indexFieldName = (new AvantElasticsearch())->convertElementNameToElasticsearchFieldName($elementName);
 }

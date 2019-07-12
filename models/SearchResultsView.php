@@ -94,7 +94,7 @@ class SearchResultsView
 
     public function emitHeaderRow($headerColumns)
     {
-        $sortFieldName = $this->getSortFieldName();
+        $sortFieldName = isset($_GET['sort']) ? $_GET['sort'] : '';;
         $sortOrder = $this->getSortOrder();
 
         $headerRow = '';
@@ -413,6 +413,34 @@ class SearchResultsView
         return $elementId;
     }
 
+    public function getElementNameForQueryArg($argName)
+    {
+        $elementSpecifier = isset($_GET[$argName]) ? $_GET[$argName] : '';
+
+        // Accept either an element Id or an element name as the element specifier. This provides backwards
+        // compatibility with AvantSearch 2.0 which used element Ids for sort and Index View index specifiers.
+        if (intval($elementSpecifier) == 0)
+        {
+            // The specifier is not an element Id. Assume that it's an element name. Attempt to get its element Id.
+            $elementId = ItemMetadata::getElementIdForElementName($elementSpecifier);
+            $elementName = $elementId == 0 ? '' : $elementSpecifier;
+        }
+        else
+        {
+            // The specifier is a number. Verify that it's an element Id by attempting to get the element's name.
+            $elementName = ItemMetadata::getElementNameFromId($elementSpecifier);
+        }
+
+        if (empty($elementName))
+        {
+            // Either no element arg was specified or its element Id or name is invalid. Use the Title as a default.
+            // This should only happen if someone modified the query string to change the specifier.
+            $elementName = ItemMetadata::getTitleElementName();
+        }
+
+        return $elementName;
+    }
+
     public function getError()
     {
         return $this->error;
@@ -421,12 +449,6 @@ class SearchResultsView
     public function getFacets()
     {
         return $this->facets;
-    }
-
-    public function getIndexFieldName()
-    {
-        $indexSpecifier = isset($_GET['index']) ? $_GET['index'] : '';
-        return $indexSpecifier;
     }
 
     public function getIndexFields()
@@ -617,7 +639,7 @@ class SearchResultsView
 
     public function getSelectedIndexId()
     {
-        $indexFieldName = $this->getIndexFieldName();
+        $indexFieldName = $this->getElementNameForQueryArg('index');
         $indexFields = $this->getIndexFields();
         $indexId = array_search($indexFieldName, $indexFields);
         return $indexId === false ? array_search('Title', $indexFields) : $indexId;
@@ -648,7 +670,7 @@ class SearchResultsView
 
     public function getSelectedSortId()
     {
-        $sortFieldName = $this->getSortFieldName();
+        $sortFieldName = $this->getElementNameForQueryArg('sort');
         $sortFields = $this->getSortFields();
         $sortId = array_search ($sortFieldName, $sortFields);
         return $sortId === false ? array_search('relevance', $sortFields) : $sortId;
@@ -667,12 +689,6 @@ class SearchResultsView
         $this->sortFieldElementId = $this->getElementIdForQueryArg('sort');
 
         return $this->sortFieldElementId;
-    }
-
-    public function getSortFieldName()
-    {
-        $sortSpecifier = isset($_GET['sort']) ? $_GET['sort'] : '';
-        return $sortSpecifier;
     }
 
     public function getSortFields()

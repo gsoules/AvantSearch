@@ -107,7 +107,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->view->assign(array('searchResults' => $searchResults));
     }
 
-    private function getElasticsearchSortParams($params)
+    private function getElasticsearchSortParams($params, $searchResults)
     {
         $sort = [];
 
@@ -116,9 +116,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             return $sort;
         }
 
-        $integerSortElements = SearchConfig::getOptionDataForIntegerSorting();
+        $sortElementName = $searchResults->getElementNameForQueryArg('sort');
 
-        $sortElementName = $params['sort'];
         $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
 
         $sortOrder = isset($params['order']) && $params['order'] == 'd' ? 'desc' : 'asc';
@@ -197,15 +196,21 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $queryParams = $this->getQueryParams();
 
-        $id = ItemMetadata::getItemIdFromIdentifier($queryParams['query']);
-        if ($id)
+        // Determine if the query exactly matches an item identifier. Don't do this for shared searching
+        // because multiple items from different contributors could have the same identifier.
+        if (!$this->sharedSearchingEnabled)
         {
-            // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
-            AvantSearch::redirectToShowPageForItem($id);
+            $id = ItemMetadata::getItemIdFromIdentifier($queryParams['query']);
+            if ($id)
+            {
+                // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
+                AvantSearch::redirectToShowPageForItem($id);
+            }
         }
 
         $limit = $this->recordsPerPage;
-        $sort = $this->getElasticsearchSortParams($params);
+        $sort = $this->getElasticsearchSortParams($params, $searchResults);
+        $indexId = $searchResults->getElementNameForQueryArg('index');
 
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
         $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');
@@ -216,6 +221,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $queryParams,
             $limit,
             $sort,
+            $indexId,
             $public,
             $this->sharedSearchingEnabled,
             $fuzzy);
@@ -255,6 +261,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                         $queryParams,
                         $limit,
                         $sort,
+                        $indexId,
                         $public,
                         $this->sharedSearchingEnabled,
                         $fuzzy);
