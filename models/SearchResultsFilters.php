@@ -139,6 +139,7 @@ class SearchResultsFilters
 
         $this->getKeywordsArg($useElasticsearch);
         $this->getAdvancedSearchArgs($requestArray, $useElasticsearch);
+        $this->getTagsArg();
         $this->getYearRangeArgs();
 
         $this->filterMessage .= __('You searched for: ');
@@ -275,6 +276,20 @@ class SearchResultsFilters
         }
 
         $this->basicArgsArray[$argName]['display'] = $keywords . $qualifier;
+    }
+
+    protected function getTagsArg()
+    {
+        // This methods supports Digital Archive 2.0 where 'tags' was a separate query string arg instead of an
+        // Advanced Search pseudo element.
+
+        $tags = AvantCommon::queryStringArg('tags');
+
+        if (!empty($tags))
+        {
+            $this->basicArgsArray['tags']['value'] = $tags;
+            $this->basicArgsArray['tags']['display'] = __('Tags: ') . $tags;
+        }
     }
 
     protected function getYearRangeArgs()
