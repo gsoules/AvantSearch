@@ -413,7 +413,7 @@ class SearchResultsView
         return $elementId;
     }
 
-    public function getElementNameForQueryArg($argName)
+    public function getElementNameForQueryArg($argName, $defaultName = 'Title')
     {
         $elementSpecifier = isset($_GET[$argName]) ? $_GET[$argName] : '';
 
@@ -435,7 +435,7 @@ class SearchResultsView
         {
             // Either no element arg was specified or its element Id or name is invalid. Use the Title as a default.
             // This should only happen if someone modified the query string to change the specifier.
-            $elementName = ItemMetadata::getTitleElementName();
+            $elementName = $defaultName;
         }
 
         return $elementName;
@@ -543,7 +543,7 @@ class SearchResultsView
         // Make sure that the limit is valid.
         $limitOptions = $this->getResultsLimitOptions();
         if (!in_array($this->limit, $limitOptions))
-            $this->limit = reset($limitOptions);
+            $this->limit = 25;
 
         return $this->limit;
     }
@@ -670,7 +670,7 @@ class SearchResultsView
 
     public function getSelectedSortId()
     {
-        $sortFieldName = $this->getElementNameForQueryArg('sort');
+        $sortFieldName = $this->getElementNameForQueryArg('sort', 'relevance');
         $sortFields = $this->getSortFields();
         $sortId = array_search ($sortFieldName, $sortFields);
         return $sortId === false ? array_search('relevance', $sortFields) : $sortId;
