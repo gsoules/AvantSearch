@@ -539,6 +539,7 @@ a.search-reset-link:hover {
 .search-pagination-nav {
 	float: right;
 	position: relative;
+	height: 12px;
 }
 
 .search-pagination-nav ul {
