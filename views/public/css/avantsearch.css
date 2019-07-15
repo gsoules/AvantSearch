@@ -673,6 +673,10 @@ a.search-reset-link:hover {
 	padding: 0 8px;
 }
 
+.search-result-metadata div {
+	padding-bottom: 2px;
+}
+
 .search-result-title {
 	grid-area: title;
 }

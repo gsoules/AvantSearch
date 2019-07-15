@@ -115,13 +115,14 @@ function emitEntries($entries, $indexFieldElementId, $indexElementName, $searchR
         $count = $entry['count'];
         if ($count === 1)
         {
+            // Emit a link directly to the item's show page.
             if ($searchResults->useElasticsearch())
             {
-                $link = "<a href='{$entry['url']}'>$entryText</a>";
+                $target = $searchResults->sharedSearchingEnabled() ? " target='blank'" : '';
+                $link = "<a href='{$entry['url']}' $target>$entryText</a>";
             }
             else
             {
-                // Emit a link directly to the item's show page.
                 $item = get_record_by_id('Item', $entry['id']);
                 $link = link_to($item, null, $entryText);
             }

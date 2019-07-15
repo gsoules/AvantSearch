@@ -65,7 +65,8 @@ class SearchResultsView
 
     public function allowSortByRelevance()
     {
-        return $this->allowSortByRelevance;
+        return true;
+        //return $this->allowSortByRelevance;
     }
 
     public static function createColumnClass($columnName, $tag)

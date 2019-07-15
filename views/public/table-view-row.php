@@ -64,7 +64,8 @@ echo $data->itemThumbnailHtml;
         foreach ($column1 as $elementName)
         {
             $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
-            echo "<div>$text</div>";
+            if (!empty($text))
+                echo "<div>$text</div>";
         }
 
         // Determine if it's okay to show the edit link for this item.

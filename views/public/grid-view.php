@@ -45,16 +45,18 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
         <?php
         foreach ($results as $item)
         {
+
             if ($useElasticsearch)
             {
-                $itemPreview = new ItemPreview($item, true, $searchResults->sharedSearchingEnabled());
-                echo $itemPreview->emitItemPreviewForGrid();
+                $sharedSearchingEnabled = $searchResults->sharedSearchingEnabled();
+                $itemPreview = new ItemPreview($item, true, $sharedSearchingEnabled);
+                echo $itemPreview->emitItemPreviewForGrid($sharedSearchingEnabled);
             }
             else
             {
                 set_current_record('Item', $item);
                 $itemPreview = new ItemPreview($item);
-                echo $itemPreview->emitItemPreviewForGrid();
+                echo $itemPreview->emitItemPreviewForGrid(false);
             }
         }
         ?>
