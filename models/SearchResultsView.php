@@ -11,13 +11,18 @@ class SearchResultsView
 
     protected $advancedSearchFields;
     protected $allowSortByRelevance;
+    protected $columnsData;
     protected $condition;
     protected $conditionName;
+    protected $detailLayoutData;
     protected $error;
     protected $facets;
+    protected $filterId;
     protected $indexFields;
+    protected $layoutsData;
     protected $localIndexIsEnabled = false;
     protected $keywords;
+    protected $layoutId;
     protected $limit;
     protected $query;
     protected $results;
@@ -40,6 +45,12 @@ class SearchResultsView
         $this->error = '';
         $this->resultsAreFuzzy = false;
 
+        $this->setColumnsData();
+        $this->setDataForDetailLayout();
+        $this->setLayoutsData();
+        $this->addDescriptionColumn();
+
+
         $this->useElasticsearch = AvantSearch::useElasticsearch();
         if ($this->useElasticsearch)
         {
@@ -58,15 +69,102 @@ class SearchResultsView
             }
         }
 
-        // Only allow sorting by relevance when keywords are providing because they are what relevance scoring is based on.
-        // Allow other search parameters are filters that narrow the result set and don't affect the score at all or very much.
+        // Only allow sorting by relevance when keywords are provided because they are what relevance scoring is based on.
+        // Other search parameters are filters that narrow the result set and don't affect the score at all or very much.
         $this->allowSortByRelevance = !empty(AvantCommon::queryStringArg('query')) || !empty(AvantCommon::queryStringArg('keywords'));
+    }
+
+    protected function addDescriptionColumn()
+    {
+        // Make sure there's a Description column because it's needed by the L1 detail layout.
+        // There will be no Description column if none of the layouts include it as a column.
+        $hasDescriptionColumn = false;
+        foreach ($this->columnsData as $column)
+        {
+            if ($column['name'] == 'Description')
+            {
+                $hasDescriptionColumn = true;
+                break;
+            }
+        }
+        if (!$hasDescriptionColumn)
+        {
+            $this->columnsData['Description'] = self::createColumn('Description', 0);
+        }
+    }
+
+    protected function addDetailLayoutColumns()
+    {
+        foreach ($this->detailLayoutData as $row)
+        {
+            foreach ($row as $elementId => $elementName)
+            {
+                if ($elementName == '<tags>' || $elementName == '<score>')
+                {
+                    // Tags and Score are special cased elsewhere as pseudo elements.
+                    continue;
+                }
+                if (!$this->columnsDataContains($elementName))
+                {
+                    // This column is specified in the Detail Layout option, but is not listed in the Columns option.
+                    $this->columnsData[$elementName] = self::createColumn($elementName, 0);
+                }
+            }
+        }
+    }
+
+    protected function addLayoutIdsToColumns()
+    {
+        foreach ($this->layoutsData as $idNumber => $layout)
+        {
+            foreach ($layout['columns'] as $columnName)
+            {
+                if (!SearchConfig::userHasAccessToLayout($layout))
+                {
+                    // Don't add admin layouts for non-admin users.
+                    continue;
+                }
+
+                if ($idNumber == 1 && ($columnName == 'Identifier' || $columnName == 'Title'))
+                {
+                    // L1 is treated differently so don't add it to the Identifier or Title columns.
+                    continue;
+                }
+
+                if (!$this->columnsDataContains($columnName))
+                {
+                    // This column is specified in the Layouts option, but is not listed in the Columns option.
+                    $this->columnsData[$columnName] = self::createColumn($columnName, 0);
+                }
+                $this->columnsData[$columnName]['layouts'][] = "L$idNumber";
+            }
+        }
     }
 
     public function allowSortByRelevance()
     {
-        return true;
-        //return $this->allowSortByRelevance;
+        return $this->allowSortByRelevance;
+    }
+
+    public function columnsDataContains($columnName)
+    {
+        foreach ($this->columnsData as $columnData)
+        {
+            if ($columnData['name'] == $columnName)
+                return true;
+        }
+        return false;
+    }
+
+    public static function createColumn($name, $width, $align = '')
+    {
+        $column = array();
+        $column['alias'] = $name;
+        $column['width'] = $width;
+        $column['align'] = $align;
+        $column['layouts'] = array();
+        $column['name'] = $name;
+        return $column;
     }
 
     public static function createColumnClass($columnName, $tag)
@@ -77,6 +175,25 @@ class SearchResultsView
         $columnClass = str_replace('#', '', $columnClass);
         $columnClass = "search-$tag-$columnClass";
         return $columnClass;
+    }
+
+    protected function createLayout($name, $columns)
+    {
+        $layout['name'] = $name;
+        $layout['admin'] = false;
+        $layout['columns'] = $columns;
+        return $layout;
+    }
+
+    public static function createLayoutClasses($column)
+    {
+        $classes = '';
+        foreach ($column['layouts'] as $layoutID)
+        {
+            $classes .= $layoutID . ' ';
+        }
+
+        return trim($classes);
     }
 
     public function emitClassAttribute($className1, $className2 = '')
@@ -212,6 +329,24 @@ class SearchResultsView
         return $this->emitSelector('index', 'I', $indexFields, true);
     }
 
+    public function emitSelectorForLayout($layoutsData)
+    {
+        $options = array();
+
+        foreach ($layoutsData as $id => $layout)
+        {
+            if (!SearchConfig::userHasAccessToLayout($layout))
+            {
+                // Omit admin layouts for non-admin users.
+                continue;
+            }
+
+            $options["L$id"] = $layout['name'];
+        }
+
+        return $this->emitSelectorHtml('layout', $options, true);
+    }
+
     public function emitSelectorForLimit()
     {
         $limits = $this->getResultsLimitOptions();
@@ -270,6 +405,21 @@ class SearchResultsView
         $html .= "</div>";
 
         return $html;
+    }
+
+    protected function filterPrivateDetailLayoutData()
+    {
+        foreach ($this->detailLayoutData as $key => $row)
+        {
+            foreach ($row as $elementId => $elementName)
+            {
+                if (in_array($elementName, $this->privateElementsData) && empty(current_user()))
+                {
+                    // This element is private and no user is logged in. Remove it from the layout.
+                    unset($this->detailLayoutData[$key][$elementId]);
+                }
+            }
+        }
     }
 
     public function getAdvancedSearchConditions($useElasticsearch)
@@ -396,6 +546,16 @@ class SearchResultsView
         return $fields;
     }
 
+    public function getColumnsData()
+    {
+        return $this->columnsData;
+    }
+
+    public function getDetailLayoutData()
+    {
+        return $this->detailLayoutData;
+    }
+
     public function getElementIdForQueryArg($argName)
     {
         $elementSpecifier = isset($_GET[$argName]) ? $_GET[$argName] : '';
@@ -471,6 +631,28 @@ class SearchResultsView
         return $this->indexFields;
     }
 
+    public function getLayoutsData()
+    {
+        return $this->layoutsData;
+    }
+
+    protected function getOptionDataForDetailLayout()
+    {
+        $detailLayoutData = SearchConfig::getOptionDataForDetailLayout();
+
+        // Merge old AvantSearch configuration options that allowed 2 columns into 1 column.
+        $mergedLayoutData = array();
+        foreach ($detailLayoutData as $elements)
+        {
+            foreach ($elements as $elementId => $element)
+            {
+                $mergedLayoutData[0][$elementId] = $element;
+            }
+        }
+
+        return $mergedLayoutData;
+    }
+
     public function getKeywords()
     {
         if (isset($this->keywords))
@@ -527,6 +709,18 @@ class SearchResultsView
             '0' => __('All fields'),
             '1' => __('Titles only')
         );
+    }
+
+    public function getLayoutIdFirst()
+    {
+        $keys = array_keys($this->layoutsData);
+        return empty($keys) ? 0 : min($keys);
+    }
+
+    public function getLayoutIdLast()
+    {
+        $keys = array_keys($this->layoutsData);
+        return empty($keys) ? 0 : max($keys);
     }
 
     public function getQuery()
@@ -656,6 +850,24 @@ class SearchResultsView
         return $indexId === false ? array_search('Title', $indexFields) : $indexId;
     }
 
+    public function getSelectedLayoutId()
+    {
+        if (isset($this->layoutId))
+            return $this->layoutId;
+
+        $firstLayoutId = $this->getLayoutIdFirst();
+        $lastLayoutId =$this->getLayoutIdLast();
+
+        $id = isset($_GET['layout']) ? intval($_GET['layout']) : $firstLayoutId;
+
+        // Make sure that the layout Id is valid.
+        if ($id < $firstLayoutId || $id > $lastLayoutId)
+            $id = $firstLayoutId;
+
+        $this->layoutId = $id;
+        return $this->layoutId;
+    }
+
     public function getSelectedLimitId()
     {
         return $this->getResultsLimit();
@@ -760,18 +972,18 @@ class SearchResultsView
                 $allowedFields = array_diff($allFields, $privateFields);
             }
 
-            // The allowed fields array now contain all the fields the user can see, but we need to eliminate any
-            // that the admin has not configured them to see in the Columns option in AvantSearch, some of which
-            // will be public and others private.
-            $columns = SearchConfig::getOptionDataForColumns();
-            foreach ($columns as $column)
+            // The allowed fields array now contain  a list of each field the user could see if the fields appeared in
+            // one of the layouts. Create a separate list of just the fields being displayed.
+            foreach ($this->columnsData as $columnName => $columnData)
             {
-                $columnFields[] = $column['name'];
+                $displayedFields[] = $columnName;
             }
 
-            // Reduce the list of the allowed fields to only those configured as columns. If the user is not logged in,
-            // the allowed fields won't contain private fields and thus no private fields will end up in the final list.
-            $allowedFields = array_intersect($allowedFields, $columnFields);
+            // Reduce the list of the allowed fields to only those that appear in a layout. If the user is not logged in,
+            // some of the displayed fields allowed fields won't be in the allowed fields list because those fields are
+            // only allowed, and thus displayed, when a user is logged in. Thus the final allowed list contains all the
+            // displayed fields that the user is allowed to see.
+            $allowedFields = array_intersect($allowedFields, $displayedFields);
         }
 
         return $allowedFields;
@@ -810,9 +1022,93 @@ class SearchResultsView
         return SearchResultsViewFactory::getViewShortName($this->getViewId());
     }
 
+    public function hasLayoutL1()
+    {
+        return isset($this->layoutsData[1]);
+    }
+
     protected static function messageInfo($info)
     {
         return ' <span class="search-results-message-info"> &nbsp;&ndash; ' . $info . '</span>';
+    }
+
+    public function setColumnsData()
+    {
+        if ($this->sharedSearchingEnabled())
+        {
+            $columnNames = $this->getTableLayoutColumns();
+            foreach ($columnNames as $columnName)
+            {
+                $columns[] = self::createColumn($columnName, 0);
+            }
+        }
+        else
+        {
+            $columns = SearchConfig::getOptionDataForColumns();
+        }
+
+        foreach ($columns as $column)
+        {
+            $this->columnsData[$column['name']] = $column;
+        }
+    }
+
+    protected function setDataForDetailLayout()
+    {
+        if ($this->sharedSearchingEnabled())
+        {
+            // Get the detail layout columns from the AvantElasticsearch config.ini file.
+            $config = AvantElasticsearch::getAvantElasticsearcConfig();
+            $columnsList = $config ? $config-> shared_detail_layout : array();
+            $columnNames = array_map('trim', explode(',', $columnsList));
+            foreach ($columnNames as $name)
+            {
+                $detailData[0][] = $name;
+            }
+            $this->detailLayoutData = $detailData;
+        }
+        else
+        {
+            $this->detailLayoutData = $this->getOptionDataForDetailLayout();
+        }
+
+        $this->addDetailLayoutColumns();
+    }
+
+    protected function setLayoutsData()
+    {
+        if ($this->sharedSearchingEnabled())
+        {
+            $this->layoutsData = $layoutsData = array();
+
+            // Get the shared layouts from the AvantElasticsearch config.ini file.
+            $config = AvantElasticsearch::getAvantElasticsearcConfig();
+            $layouts = $config ? $config-> shared_layouts : array();
+            foreach ($layouts as $layout)
+            {
+                $parts = array_map('trim', explode(',', $layout));
+                if (count($parts) < 2)
+                    continue;
+                $columns = array();
+                $layoutId = intval($parts[0]);
+                $name = $parts[1];
+                for ($index = 2; $index < count($parts); $index++)
+                {
+                    $columns[] = $parts[$index];
+                }
+                $layoutsData[$layoutId] = $this->createLayout($name, $columns);
+                unset($columns);
+            }
+
+            $this->layoutsData = $layoutsData;
+        }
+        else
+        {
+            $this->layoutsData = SearchConfig::getOptionDataForLayouts();
+            self::filterPrivateDetailLayoutData();
+        }
+
+        $this->addLayoutIdsToColumns();
     }
 
     public function setError($message)
