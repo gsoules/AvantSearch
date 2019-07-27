@@ -175,9 +175,27 @@ class AvantSearch
         return $elementTexts;
     }
 
+    public static function getHiddenInputsForAdvancedSearch()
+    {
+        // Don't specify any query string args that are needed for an advanced search query. No args means preserves all
+        // args, including applied facets, when going back and forth between Advanced Search and search results.
+        $allowedInputs = array();
+
+        return self::getSearchFormInputsHtml($allowedInputs);
+    }
+
+    public static function getHiddenInputsForSimpleSearch()
+    {
+        // Specify which query string args are needed for a simple search query. This will cause other
+        // args, in particular those for applied facets, to be discarded.
+        $allowedInputs = array('filter', 'index', 'layout', 'limit', 'order', 'site', 'sort', 'view');
+
+        return self::getSearchFormInputsHtml($allowedInputs);
+    }
+
     public static function getSearchFilterResetLink($url)
     {
-        return '<a href="' . $url . '" title="Remove filter" class="search-reset-link">' . '&#10006;' . '</a>';
+        return '<a href="' . $url . '" title="Remove filter" class="search-reset-link search-link">' . '&#10006;' . '</a>';
     }
 
     public static function getSearchFormHtml()
@@ -209,7 +227,7 @@ class AvantSearch
         $html .= '<input id="query" type="text" name="query" value="' . $query . '" title="Search" autofocus placeholder="' . $placeholderText . '">';
 
         // Emit the hidden <input> tags needed to put query string argument values into the form.
-        $html .= self::getSearchFormInputsHtml();
+        $html .= self::getHiddenInputsForSimpleSearch();
 
         // Emit the X at far right used to clear the search box.
         $html .= '<span id="search-erase-icon">&#10006;</span></span>';
@@ -229,12 +247,16 @@ class AvantSearch
         return $html;
     }
 
-    public static function getSearchFormInputsHtml()
+    public static function getSearchFormInputsHtml($allowedInputs)
     {
+        // This method generates hidden <input> tags to be included in the <form> that is posted for the simple search
+        // form or the Advanced Search form. In both cases, some or all of the args from the query string need to be
+        // converted to corresponding <input> tags since a posted form cannot be used to pass along query string args.
+
         $html = '';
 
-        // Get the query string arguments that will need corresponding hidden <input> tags.
-        $hiddenParams = array();
+        // Get the query string arguments, some of which will need corresponding hidden <input> tags.
+        $queryArgs = array();
         $entries = explode('&', http_build_query($_GET));
         foreach ($entries as $entry)
         {
@@ -243,20 +265,23 @@ class AvantSearch
                 continue;
             }
             list($key, $value) = explode('=', $entry);
-            $hiddenParams[urldecode($key)] = urldecode($value);
+            $queryArgs[urldecode($key)] = urldecode($value);
         }
 
-        // Specify which query string arguments will get corresponding <input> tags.
-        $hiddenInputs = array('filter', 'index', 'layout', 'limit', 'order', 'site', 'sort', 'view');
-
-        // Emit hidden <input> tags.
-        foreach ($hiddenParams as $key => $value)
+        foreach ($queryArgs as $key => $value)
         {
-            if (in_array($key, $hiddenInputs))
-            {
-                $html .= '<input id="search-form-' . $key . '" type="hidden" name="' . $key . '" value="' . $value . '">';
-            }
+            // Skip any query string args that should not be used for querying.
+            if ($key == 'query' || $key =='keywords')
+                continue;
+            if (strpos($key, 'advanced') === 0)
+                continue;
+            if (!empty($allowedInputs) && !in_array($key, $allowedInputs))
+                continue;
+
+            // Emit a hidden <input> tag for this arg that is needed for querying.
+            $html .= '<input id="search-form-' . $key . '" type="hidden" name="' . $key . '" value="' . $value . '">';
         }
+
         return $html;
     }
 
