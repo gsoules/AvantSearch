@@ -233,8 +233,7 @@ class AvantSearch
     {
         $html = '';
 
-        // Get the query string arguments that were passed to Advanced Search so that they can get passed
-        // back to the search results page as hidden <input> tags when the search button is clicked.
+        // Get the query string arguments that will need corresponding hidden <input> tags.
         $hiddenParams = array();
         $entries = explode('&', http_build_query($_GET));
         foreach ($entries as $entry)
@@ -247,10 +246,16 @@ class AvantSearch
             $hiddenParams[urldecode($key)] = urldecode($value);
         }
 
+        // Specify which query string arguments will get corresponding <input> tags.
+        $hiddenInputs = array('filter', 'index', 'layout', 'limit', 'order', 'site', 'sort', 'view');
+
         // Emit hidden <input> tags.
         foreach ($hiddenParams as $key => $value)
         {
-            $html .= '<input id="search-form-' . $key . '" type="hidden" name="' . $key . '" value="' . $value . '">';
+            if (in_array($key, $hiddenInputs))
+            {
+                $html .= '<input id="search-form-' . $key . '" type="hidden" name="' . $key . '" value="' . $value . '">';
+            }
         }
         return $html;
     }
