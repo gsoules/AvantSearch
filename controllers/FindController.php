@@ -130,8 +130,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
 
         $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
-        if ($fieldName == 'description')
-            $fieldName = 'title';
 
         $sortOrder = isset($params['order']) && $params['order'] == 'd' ? 'desc' : 'asc';
 

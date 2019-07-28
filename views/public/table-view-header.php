@@ -23,12 +23,6 @@ foreach ($columnsData as $column)
         $classes = 'L1 ' . $classes;
     }
 
-    if ($columnName == 'Description')
-    {
-        // Don't allow sorting of the description column. It doesn't make sense and is problematic for Elasticsearch.
-        $sortable = false;
-    }
-
     if (empty($classes))
     {
         // An element that has no classes is not used in any layout.
