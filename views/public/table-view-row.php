@@ -5,7 +5,6 @@
 
 $data = new SearchResultsTableViewRowData($item, $searchResults, $identifierAliasName, $allowSortByRelevance, $checkboxFieldData);
 $columnsData = $searchResults->getColumnsData();
-$layoutData = $searchResults->getLayoutsData();
 
 $description = isset($data->elementValue['Description']['detail']) ? $data->elementValue['Description']['detail'] : '';
 $hasDescription = !empty($description);

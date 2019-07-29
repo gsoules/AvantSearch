@@ -45,7 +45,6 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
         <?php
         foreach ($results as $item)
         {
-
             if ($useElasticsearch)
             {
                 $sharedSearchingEnabled = $searchResults->sharedSearchingEnabled();

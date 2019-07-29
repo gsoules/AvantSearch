@@ -17,8 +17,19 @@ $identifierAliasName = ItemMetadata::getIdentifierAliasElementName();
 $checkboxFieldData = plugin_is_active('AvantElements') ? ElementsConfig::getOptionDataForCheckboxField() : array();
 $allowSortByRelevance = $searchResults->allowSortByRelevance();
 
-$filterId = $searchResults->getSelectedFilterId();
+$layoutData = $searchResults->getLayoutsData();
 $layoutId = $searchResults->getSelectedLayoutId();
+if (empty(current_user()))
+{
+    $layoutDefinition = $layoutsData[$layoutId];
+    if ($layoutDefinition['admin'])
+    {
+        // This is an admin layout, but no one is logged in. Switch to the L1 Details layout.
+        $layoutId = 1;
+    }
+}
+
+$filterId = $searchResults->getSelectedFilterId();
 $limitId = $searchResults->getSelectedLimitId();
 $siteId = $searchResults->getSelectedSiteId();
 $sortId = $searchResults->getSelectedSortId();

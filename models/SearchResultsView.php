@@ -847,7 +847,15 @@ class SearchResultsView
         $indexFieldName = $this->getElementNameForQueryArg('index');
         $indexFields = $this->getIndexFields();
         $indexId = array_search($indexFieldName, $indexFields);
-        return $indexId === false ? array_search('Title', $indexFields) : $indexId;
+        return $indexId === false ? array_search('title', $indexFields) : $indexId;
+    }
+
+    public function getSelectedIndexFieldName()
+    {
+        $indexFieldName = $this->getElementNameForQueryArg('index');
+        $indexFields = $this->getIndexFields();
+        $indexId = array_search($indexFieldName, $indexFields);
+        return $indexId === false ? 'Title' : $indexFieldName;
     }
 
     public function getSelectedLayoutId()

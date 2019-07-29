@@ -34,12 +34,12 @@ class SearchResultsTableViewRowData
     protected function generateDescription($item)
     {
         $hasHighlights = false;
-        if ($this->useElasticsearch && isset($item['highlight']['element.description']))
+        if ($this->useElasticsearch && isset($item['highlight']['common.description']))
         {
             // Replace the original description text with the highlighted text from Elasticsearch.
             $hasHighlights = true;
             $descriptionText = '';
-            $highlights = $item['highlight']['element.description'];
+            $highlights = $item['highlight']['common.description'];
             foreach ($highlights as $highlight)
             {
 
@@ -161,7 +161,7 @@ class SearchResultsTableViewRowData
         // Create a link for the identifier.
         if ($this->useElasticsearch)
         {
-            $identifier = $item['_source']['element']['identifier'][0];
+            $identifier = $item['_source']['common']['identifier'][0];
             if ($this->sharedSearchingEnabled)
             {
                 $contributorId = $item['_source']['item']['contributor-id'];
@@ -199,9 +199,9 @@ class SearchResultsTableViewRowData
 
         if ($this->useElasticsearch)
         {
-            if (isset($item['_source']['element']['title']))
+            if (isset($item['_source']['common']['title']))
             {
-                $titles = $item['_source']['element']['title'];
+                $titles = $item['_source']['common']['title'];
             }
             else
             {
@@ -356,10 +356,15 @@ class SearchResultsTableViewRowData
 
     protected function readMetadata($item)
     {
-        $elasticSearchElementTexts = $this->useElasticsearch ? $item['_source']['element'] : null;
+        $elasticSearchElementTexts = null;
 
         if ($this->useElasticsearch)
         {
+            $commonFieldTexts = isset($item['_source']['common']) ? $item['_source']['common'] : array();
+            $localFieldTexts = isset($item['_source']['local']) ? $item['_source']['local'] : array();
+            $privateFieldTexts = isset($item['_source']['private']) ? $item['_source']['private'] : array();
+            $elasticSearchElementTexts = array_merge($commonFieldTexts, $localFieldTexts, $privateFieldTexts);
+
             $this->avantElasticsearch = new AvantElasticsearch();
             $this->getItemFieldTextsHtml($item);
         }

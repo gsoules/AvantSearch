@@ -11,9 +11,13 @@ function createEntries($results, $searchResults, $indexFieldName)
 
         foreach ($results as $result)
         {
-            $element = $result['_source']['element'];
-            if (isset($element[$indexFieldName]))
-                $fieldTexts = $element[$indexFieldName];
+            $source = $result['_source'];
+            if (isset($source['common'][$indexFieldName]))
+                $fieldTexts = $source['common'][$indexFieldName];
+            else if (isset($source['local'][$indexFieldName]))
+                $fieldTexts = $source['local'][$indexFieldName];
+            else if (isset($source['private'][$indexFieldName]))
+                $fieldTexts = $source['private'][$indexFieldName];
             else
                 $fieldTexts = [BLANK_FIELD_SUBSTITUTE];
 
@@ -29,7 +33,7 @@ function createEntries($results, $searchResults, $indexFieldName)
                 $value = array(
                     'text'=> $fieldText,
                     'clean-text' => strtolower($cleanText),
-                    'url' => $result['_source']['url']['item'],
+                    'url' => $source['url']['item'],
                     'count' => 1);
 
                 if (isset($resultValues[$fieldText]))
@@ -226,9 +230,8 @@ $showLetterIndex = $totalResults > 1000;
 
 if ($useElasticsearch)
 {
-    $elementName = $searchResults->getElementNameForQueryArg('index');
-    $indexFieldElementId = $elementName;
-    $indexFieldName = (new AvantElasticsearch())->convertElementNameToElasticsearchFieldName($elementName);
+    $indexFieldName = $searchResults->getSelectedIndexFieldName();
+    $indexFieldName = (new AvantElasticsearch())->convertElementNameToElasticsearchFieldName($indexFieldName);
 }
 else
 {
@@ -275,7 +278,7 @@ if ($totalResults)
     }
 
     echo '<div id="search-index-view-headings">';
-    emitEntries($entries, $indexFieldElementId, $elementName, $searchResults);
+    emitEntries($entries, $indexId, $indexFieldName, $searchResults);
     echo "</div>";
 
     if ($showLetterIndex)
