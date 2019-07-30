@@ -221,7 +221,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $limit = $this->recordsPerPage;
         $sort = $this->getElasticsearchSortParams($params, $searchResults);
-        $indexFieldName = $searchResults->getSelectedIndexFieldName();
+        $indexElementName = $searchResults->getSelectedIndexElementName();
 
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
         $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');
@@ -232,7 +232,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $queryParams,
             $limit,
             $sort,
-            $indexFieldName,
+            $indexElementName,
             $public,
             $this->sharedSearchingEnabled,
             $fuzzy);
@@ -272,7 +272,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                         $queryParams,
                         $limit,
                         $sort,
-                        $indexFieldName,
+                        $indexElementName,
                         $public,
                         $this->sharedSearchingEnabled,
                         $fuzzy);

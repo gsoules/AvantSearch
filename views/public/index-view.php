@@ -1,77 +1,82 @@
 <?php
 /* @var $searchResults SearchResultsIndexView */
 
-function createEntries($results, $searchResults, $indexFieldName)
+function createEntriesFromElasticsearchResults($results, $searchResults, $indexFieldName)
 {
     $entries = array();
 
-    if ($searchResults->useElasticsearch())
+    $resultValues = array();
+
+    foreach ($results as $result)
     {
-        $resultValues = array();
+        // Get the index field texts for this result.
+        $source = $result['_source'];
+        if (isset($source['common'][$indexFieldName]))
+            $fieldTexts = $source['common'][$indexFieldName];
+        else if (isset($source['local'][$indexFieldName]))
+            $fieldTexts = $source['local'][$indexFieldName];
+        else if (isset($source['private'][$indexFieldName]))
+            $fieldTexts = $source['private'][$indexFieldName];
+        else
+            $fieldTexts = [BLANK_FIELD_SUBSTITUTE];
 
-        foreach ($results as $result)
+        // Create an entry for each text. For example if the index is Creator, and the result has multiple creators,
+        // each creator text will have a separate entry in the index view.
+        foreach ($fieldTexts as $fieldText)
         {
-            $source = $result['_source'];
-            if (isset($source['common'][$indexFieldName]))
-                $fieldTexts = $source['common'][$indexFieldName];
-            else if (isset($source['local'][$indexFieldName]))
-                $fieldTexts = $source['local'][$indexFieldName];
-            else if (isset($source['private'][$indexFieldName]))
-                $fieldTexts = $source['private'][$indexFieldName];
-            else
-                $fieldTexts = [BLANK_FIELD_SUBSTITUTE];
+            // Don't index blank fields.
+            if ($fieldText == BLANK_FIELD_SUBSTITUTE)
+                continue;
 
-            foreach ($fieldTexts as $fieldText)
+            // For sorting purposes, remove all non alphanumeric and blank characters.
+            $cleanText = preg_replace('/[^a-z\d ]/i', '', $fieldText);
+
+            $value = array(
+                'text'=> $fieldText,
+                'clean-text' => strtolower($cleanText),
+                'url' => $source['url']['item'],
+                'count' => 1);
+
+            if (isset($resultValues[$fieldText]))
             {
-                // Don't index blank fields.
-                if ($fieldText == BLANK_FIELD_SUBSTITUTE)
-                    continue;
-
-                // For sorting purposes, remove all non alphanumeric and blank characters.
-                $cleanText = preg_replace('/[^a-z\d ]/i', '', $fieldText);
-
-                $value = array(
-                    'text'=> $fieldText,
-                    'clean-text' => strtolower($cleanText),
-                    'url' => $source['url']['item'],
-                    'count' => 1);
-
-                if (isset($resultValues[$fieldText]))
-                {
-                    // This text is already been seen. Bump its count.
-                    $resultValues[$fieldText]['count'] += 1;
-                }
-                else
-                {
-                    $resultValues[$fieldText] = $value;
-                }
+                // This text is already been seen. Bump its count.
+                $resultValues[$fieldText]['count'] += 1;
             }
-        }
-
-        usort($resultValues, 'entryTextComparator');
-
-        foreach ($resultValues as $resultValue)
-        {
-            $fieldText = $resultValue['text'];
-            $entries[$fieldText]['count'] = $resultValue['count'];
-            $entries[$fieldText]['url'] = $resultValue['url'];
+            else
+            {
+                $resultValues[$fieldText] = $value;
+            }
         }
     }
-    else
+
+    usort($resultValues, 'entryTextComparator');
+
+    foreach ($resultValues as $resultValue)
     {
-        foreach ($results as $result)
+        $fieldText = $resultValue['text'];
+        $entries[$fieldText]['count'] = $resultValue['count'];
+        $entries[$fieldText]['url'] = $resultValue['url'];
+    }
+
+    return $entries;
+}
+
+function createEntriesFromSqlResults($results, $searchResults)
+{
+    $entries = array();
+
+    foreach ($results as $result)
+    {
+        $fieldText = $result['text'];
+        $count = $result['count'];
+
+        if (isset($entries[$fieldText]))
         {
-            $fieldText = $result['text'];
-            $count = $result['count'];
-
-            if (isset($entries[$fieldText]))
-            {
-                $count += $entries[$fieldText]['count'];
-            }
-
-            $entries[$fieldText]['count'] = $count;
-            $entries[$fieldText]['id'] = $result['id'];
+            $count += $entries[$fieldText]['count'];
         }
+
+        $entries[$fieldText]['count'] = $count;
+        $entries[$fieldText]['id'] = $result['id'];
     }
 
     return $entries;
@@ -230,14 +235,14 @@ $showLetterIndex = $totalResults > 1000;
 
 if ($useElasticsearch)
 {
-    $indexFieldName = $searchResults->getSelectedIndexFieldName();
-    $indexFieldName = (new AvantElasticsearch())->convertElementNameToElasticsearchFieldName($indexFieldName);
+    $indexElementName = $searchResults->getSelectedIndexElementName();
+    $indexFieldName = (new AvantElasticsearch())->convertElementNameToElasticsearchFieldName($indexElementName);
 }
 else
 {
     $indexFieldElementId = $searchResults->getIndexFieldElementId();
     $element = get_db()->getTable('Element')->find($indexFieldElementId);
-    $indexFieldName = empty($element) ? '' : $element['name'];
+    $indexElementName = empty($element) ? '' : $element['name'];
 }
 
 $indexId = $searchResults->getSelectedIndexId();
@@ -268,9 +273,14 @@ if ($totalResults)
             )
         );
         echo '<section id="elasticsearch-results">';
+
+        $entries = createEntriesFromElasticsearchResults($results, $searchResults, $indexFieldName);
+    }
+    else
+    {
+        $entries = createEntriesFromSqlResults($results, $searchResults);
     }
 
-    $entries = createEntries($results, $searchResults, $indexFieldName);
 
     if ($showLetterIndex)
     {
@@ -278,7 +288,7 @@ if ($totalResults)
     }
 
     echo '<div id="search-index-view-headings">';
-    emitEntries($entries, $indexId, $indexFieldName, $searchResults);
+    emitEntries($entries, $indexId, $indexElementName, $searchResults);
     echo "</div>";
 
     if ($showLetterIndex)

@@ -844,18 +844,18 @@ class SearchResultsView
 
     public function getSelectedIndexId()
     {
-        $indexFieldName = $this->getElementNameForQueryArg('index');
-        $indexFields = $this->getIndexFields();
-        $indexId = array_search($indexFieldName, $indexFields);
-        return $indexId === false ? array_search('title', $indexFields) : $indexId;
+        $indexElementName = $this->getElementNameForQueryArg('index');
+        $indexElements = $this->getIndexFields();
+        $indexId = array_search($indexElementName, $indexElements);
+        return $indexId === false ? array_search('Title', $indexElements) : $indexId;
     }
 
-    public function getSelectedIndexFieldName()
+    public function getSelectedIndexElementName()
     {
-        $indexFieldName = $this->getElementNameForQueryArg('index');
+        $indexElementName = $this->getElementNameForQueryArg('index');
         $indexFields = $this->getIndexFields();
-        $indexId = array_search($indexFieldName, $indexFields);
-        return $indexId === false ? 'Title' : $indexFieldName;
+        $indexId = array_search($indexElementName, $indexFields);
+        return $indexId === false ? 'Title' : $indexElementName;
     }
 
     public function getSelectedLayoutId()
