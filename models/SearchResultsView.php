@@ -37,6 +37,7 @@ class SearchResultsView
     protected $useElasticsearch;
     protected $viewId;
     protected $viewName;
+    protected $visibleElementNames;
 
     function __construct()
     {
@@ -44,14 +45,8 @@ class SearchResultsView
         $this->searchFilters = new SearchResultsFilters($this);
         $this->error = '';
         $this->resultsAreFuzzy = false;
-
-        $this->setColumnsData();
-        $this->setDataForDetailLayout();
-        $this->setLayoutsData();
-        $this->addDescriptionColumn();
-
-
         $this->useElasticsearch = AvantSearch::useElasticsearch();
+
         if ($this->useElasticsearch)
         {
             $this->sharedIndexIsEnabled = (bool)get_option(ElasticsearchConfig::OPTION_ES_SHARE) == true;
@@ -68,6 +63,11 @@ class SearchResultsView
                 $this->useElasticsearch = false;
             }
         }
+
+        $this->setColumnsData();
+        $this->setDataForDetailLayout();
+        $this->setLayoutsData();
+        $this->addDescriptionColumn();
 
         // Only allow sorting by relevance when keywords are provided because they are what relevance scoring is based on.
         // Other search parameters are filters that narrow the result set and don't affect the score at all or very much.
@@ -93,7 +93,7 @@ class SearchResultsView
         }
     }
 
-    protected function addDetailLayoutColumns()
+    protected function addDetailLayoutElementsToColumnsData()
     {
         foreach ($this->detailLayoutData as $row)
         {
@@ -113,7 +113,7 @@ class SearchResultsView
         }
     }
 
-    protected function addLayoutIdsToColumns()
+    protected function addLayoutIdsToColumnsData()
     {
         foreach ($this->layoutsData as $idNumber => $layout)
         {
@@ -409,11 +409,15 @@ class SearchResultsView
 
     protected function filterPrivateDetailLayoutData()
     {
+        $excludePrivateElements = empty(current_user());
+        if (!$excludePrivateElements)
+            return;
+
         foreach ($this->detailLayoutData as $key => $row)
         {
             foreach ($row as $elementId => $elementName)
             {
-                if (in_array($elementName, $this->privateElementsData) && empty(current_user()))
+                if (in_array($elementName, $this->privateElementsData) && $excludePrivateElements)
                 {
                     // This element is private and no user is logged in. Remove it from the layout.
                     unset($this->detailLayoutData[$key][$elementId]);
@@ -463,6 +467,8 @@ class SearchResultsView
         if (isset($this->advancedSearchFields))
             return $this->advancedSearchFields;
 
+        $sharedSearchingEnabled = $this->sharedSearchingEnabled();
+
         // Get the names of the private elements that the admin configured for AvantCommon.
         $privateFields = array();
         foreach ($this->privateElementsData as $elementId => $name)
@@ -472,6 +478,20 @@ class SearchResultsView
 
         $allFields = self::getAllFields();
         $publicFields = array_diff($allFields, $privateFields);
+        if ($sharedSearchingEnabled)
+        {
+            // Filter public fields to only those that are common among all contributors.
+            $avantElasticsearch = new AvantElasticsearch();
+            $commonSearchFields = $avantElasticsearch->getFieldNamesOfCommonElements();
+            foreach ($publicFields as $elementId => $elementName)
+            {
+                $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
+                if (!in_array($elasticsearchFieldName, $commonSearchFields))
+                {
+                    unset($publicFields[$elementId]);
+                }
+            }
+        }
 
         if ($this->useElasticsearch)
         {
@@ -485,7 +505,7 @@ class SearchResultsView
 
         $options = array('' => __('Select Below'));
 
-        if (!empty(current_user()) && !empty($privateFields))
+        if (!empty(current_user()) && !empty($privateFields) && !$sharedSearchingEnabled)
         {
             // When a user is logged in, display the public fields first, then the private fields.
             // We do this so that commonly used public fields like Title don't end up at the very
@@ -626,7 +646,7 @@ class SearchResultsView
     {
         if (!isset($this->indexFields))
         {
-            $this->indexFields = $this->getTableLayoutColumns();
+            $this->indexFields = $this->getNamesOfVisibleElements();
         }
         return $this->indexFields;
     }
@@ -721,6 +741,60 @@ class SearchResultsView
     {
         $keys = array_keys($this->layoutsData);
         return empty($keys) ? 0 : max($keys);
+    }
+
+    public function getNamesOfVisibleElements()
+    {
+        if (empty($this->visibleElementNames))
+        {
+            $includePrivateFields = !empty(current_user());
+
+            if ($this->sharedSearchingEnabled())
+            {
+                $config = AvantElasticsearch::getAvantElasticsearcConfig();
+                $columnsList = $config ? $config-> common_sort_columns : array();
+                $allowedFields = array_map('trim', explode(',', $columnsList));
+            }
+            else
+            {
+                // Get all the fields defined for this installation.
+                $allFields = self::getAllFields();
+
+                if ($includePrivateFields)
+                {
+                    $allowedFields = $allFields;
+                }
+                else
+                {
+                    // Derive just the public fields. Start by getting the private fields.
+                    $privateFields = array();
+                    foreach ($this->privateElementsData as $elementId => $name)
+                    {
+                        $privateFields[$elementId] = $name;
+                    }
+
+                    // Determine which fields are public by removing the private fields from all fields.
+                    $allowedFields = array_diff($allFields, $privateFields);
+                }
+
+                // The allowed fields array now contain  a list of each field the user could see if the fields appeared in
+                // one of the layouts. Create a separate list of just the fields being displayed.
+                foreach ($this->columnsData as $columnName => $columnData)
+                {
+                    $displayedFields[] = $columnName;
+                }
+
+                // Reduce the list of the allowed fields to only those that appear in a layout. If the user is not logged in,
+                // some of the displayed fields allowed fields won't be in the allowed fields list because those fields are
+                // only allowed, and thus displayed, when a user is logged in. Thus the final allowed list contains all the
+                // displayed fields that the user is allowed to see.
+                $allowedFields = array_intersect($allowedFields, $displayedFields);
+            }
+
+            $this->visibleElementNames = $allowedFields;
+        }
+
+        return $this->visibleElementNames;
     }
 
     public function getQuery()
@@ -937,7 +1011,7 @@ class SearchResultsView
     {
         if (!isset($this->sortFields))
         {
-            $this->sortFields = $this->getTableLayoutColumns();
+            $this->sortFields = $this->getNamesOfVisibleElements();
 
             if ($this->allowSortByRelevance())
             {
@@ -955,55 +1029,6 @@ class SearchResultsView
 
         $this->sortOrder = isset($_GET['order']) ? $_GET['order'] : 'a';
         return $this->sortOrder;
-    }
-
-    public function getTableLayoutColumns()
-    {
-        $includePrivateFields = !empty(current_user());
-
-        if ($this->sharedSearchingEnabled())
-        {
-            $config = AvantElasticsearch::getAvantElasticsearcConfig();
-            $columnsList = $config ? $config-> shared_sort_columns : array();
-            $allowedFields = array_map('trim', explode(',', $columnsList));
-        }
-        else
-        {
-            // Get all the fields defined for this installation.
-            $allFields = self::getAllFields();
-
-            if ($includePrivateFields)
-            {
-                $allowedFields = $allFields;
-            }
-            else
-            {
-                // Derive just the public fields. Start by getting the private fields.
-                $privateFields = array();
-                foreach ($this->privateElementsData as $elementId => $name)
-                {
-                    $privateFields[$elementId] = $name;
-                }
-
-                // Determine which fields are public by removing the private fields from all fields.
-                $allowedFields = array_diff($allFields, $privateFields);
-            }
-
-            // The allowed fields array now contain  a list of each field the user could see if the fields appeared in
-            // one of the layouts. Create a separate list of just the fields being displayed.
-            foreach ($this->columnsData as $columnName => $columnData)
-            {
-                $displayedFields[] = $columnName;
-            }
-
-            // Reduce the list of the allowed fields to only those that appear in a layout. If the user is not logged in,
-            // some of the displayed fields allowed fields won't be in the allowed fields list because those fields are
-            // only allowed, and thus displayed, when a user is logged in. Thus the final allowed list contains all the
-            // displayed fields that the user is allowed to see.
-            $allowedFields = array_intersect($allowedFields, $displayedFields);
-        }
-
-        return $allowedFields;
     }
 
     public function getTotalResults()
@@ -1053,7 +1078,7 @@ class SearchResultsView
     {
         if ($this->sharedSearchingEnabled())
         {
-            $columnNames = $this->getTableLayoutColumns();
+            $columnNames = $this->getNamesOfVisibleElements();
             foreach ($columnNames as $columnName)
             {
                 $columns[] = self::createColumn($columnName, 0);
@@ -1072,24 +1097,8 @@ class SearchResultsView
 
     protected function setDataForDetailLayout()
     {
-        if ($this->sharedSearchingEnabled())
-        {
-            // Get the detail layout columns from the AvantElasticsearch config.ini file.
-            $config = AvantElasticsearch::getAvantElasticsearcConfig();
-            $columnsList = $config ? $config-> shared_detail_layout : array();
-            $columnNames = array_map('trim', explode(',', $columnsList));
-            foreach ($columnNames as $name)
-            {
-                $detailData[0][] = $name;
-            }
-            $this->detailLayoutData = $detailData;
-        }
-        else
-        {
-            $this->detailLayoutData = $this->getOptionDataForDetailLayout();
-        }
-
-        $this->addDetailLayoutColumns();
+        $this->detailLayoutData = $this->getOptionDataForDetailLayout();
+        $this->addDetailLayoutElementsToColumnsData();
     }
 
     protected function setLayoutsData()
@@ -1122,10 +1131,10 @@ class SearchResultsView
         else
         {
             $this->layoutsData = SearchConfig::getOptionDataForLayouts();
-            self::filterPrivateDetailLayoutData();
         }
 
-        $this->addLayoutIdsToColumns();
+        self::filterPrivateDetailLayoutData();
+        $this->addLayoutIdsToColumnsData();
     }
 
     public function setError($message)
