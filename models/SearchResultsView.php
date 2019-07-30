@@ -745,6 +745,14 @@ class SearchResultsView
 
         $this->limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
 
+        if ($this->limit == 0)
+        {
+            // The limit gets saved in a cookie so that it can be set for search results that are displayed when the user
+            // clicks an implicit link on an Item page. If we don't do this, or if cookies are disabled, the limit in
+            // that case will be the default.
+            $this->limit = isset($_COOKIE['LIMIT-ID']) ? intval($_COOKIE['LIMIT-ID']) : 0;
+        }
+
         // Make sure that the limit is valid.
         $limitOptions = $this->getResultsLimitOptions();
         if (!in_array($this->limit, $limitOptions))
@@ -889,7 +897,8 @@ class SearchResultsView
         }
         else
         {
-            $id = isset($_COOKIE['SITE']) ? intval($_COOKIE['SITE']) : 0;
+            // The site Id is not currently being saved in a cookie, but it might in the future.
+            $id = isset($_COOKIE['SITE-ID']) ? intval($_COOKIE['SITE-ID']) : 0;
         }
 
         // Make sure that the site Id is valid.

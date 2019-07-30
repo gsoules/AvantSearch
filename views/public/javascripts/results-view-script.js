@@ -94,7 +94,6 @@ function removeQueryStringArg(argName, oldUrl)
 
 function saveCookie(kind, id)
 {
-    // Save the selection in a cookie even though we are not using cookies at this time.
     Cookies.set(kind.toUpperCase() + '-ID', id, {expires: 7});
 }
 
@@ -169,7 +168,12 @@ function setSelectedOption(kind, prefix, newOptionId)
         newOptionValue = newOptionId;
     }
 
-    saveCookie(kind, newOptionValue);
+    if (kind === LIMIT)
+    {
+        // Remember the limit so that it can be set for search results that are displayed when the user clicks an
+        // implicit link on an Item page. If we don't do this, the limit in that case will be the default.
+        saveCookie(kind, newOptionValue);
+    }
 
     // Construct an updated query string to reflect the newly selected option.
     var oldOptionArgPattern = new RegExp('&' + kind + '=' + oldOptionValue);
