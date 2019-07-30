@@ -21,15 +21,12 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     protected function find()
     {
-        $this->getRequest()->setParamSources(array('_GET'));
-        $params = $this->getAllParams();
-
         $viewId = AvantCommon::queryStringArg('view', SearchResultsViewFactory::TABLE_VIEW_ID);
         if (!array_key_exists($viewId, SearchResultsViewFactory::getViewOptions()))
             $viewId = SearchResultsViewFactory::TABLE_VIEW_ID;
 
         $searchResults = SearchResultsViewFactory::createSearchResultsView($viewId);
-        $params['results'] = $searchResults;
+        $queryArgs = $searchResults->removeInvalidAdvancedQueryArgs($_GET);
         $useElasticsearch = $searchResults->useElasticsearch();
         $exceptionMessage = '';
 
@@ -50,11 +47,11 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
             if ($useElasticsearch)
             {
-                $this->performQueryUsingElasticsearch($params, $searchResults);
+                $this->performQueryUsingElasticsearch($queryArgs, $searchResults);
             }
             else
             {
-                $this->performQueryUsingSql($params, $currentPage);
+                $this->performQueryUsingSql($queryArgs, $searchResults, $currentPage);
             }
 
         }
@@ -107,11 +104,11 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->view->assign(array('searchResults' => $searchResults));
     }
 
-    private function getElasticsearchSortParams($params, $searchResults)
+    private function getElasticsearchSortParams($queryArgs, $searchResults)
     {
         $sort = [];
 
-        if (!isset($params['sort']))
+        if (!isset($queryArgs['sort']))
         {
             if ($searchResults->allowSortByRelevance())
             {
@@ -131,7 +128,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
 
-        $sortOrder = isset($params['order']) && $params['order'] == 'd' ? 'desc' : 'asc';
+        $sortOrder = isset($queryArgs['order']) && $queryArgs['order'] == 'd' ? 'desc' : 'asc';
 
         if ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
         {
@@ -148,40 +145,44 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         return $sort;
     }
 
-    private function getQueryParams()
+    private function reformQueryArgFacets($queryArgs)
     {
-        $parts = $this->_request->getQuery();
+        // Ensure that the reformed args have a 'query' parameter whether it's empty or not.
+        $queryValue = isset($queryArgs['query']) ? $queryArgs['query'] : '';
+        $reformedQueryArgs = ['query' => $queryValue];
+        unset($queryArgs['query']);
 
-        // Set the query parameter and then remove it from the parts since it's not a facet.
-        $params = [
-            'query' => isset($parts['query']) ? $parts['query'] : ''
-        ];
-        unset($parts['query']);
-
-        // Update the parameters with each root or leaf facet in the query string.
-        foreach ($parts as $part => $values)
+        // Reform each root or leaf facet in the query string e.g. to change
+        //    root_subject[0] = "Businesses"
+        //    root_type[0] = "Image"
+        // to
+        //    root['subject'][0] = "Businesses"
+        //    root['type'][0] = "Image"
+        //
+        // so that all roots and all leafs are under a common 'root' or 'leaf' parent.
+        foreach ($queryArgs as $arg => $values)
         {
-            $isRoot = strpos($part, FACET_KIND_ROOT) === 0;
-            $isLeaf = strpos($part, FACET_KIND_LEAF) === 0;
+            $isRoot = strpos($arg, FACET_KIND_ROOT) === 0;
+            $isLeaf = strpos($arg, FACET_KIND_LEAF) === 0;
 
             if ($isRoot)
             {
-                $this->getQueryParamsForFacet($params, $part, $values, FACET_KIND_ROOT);
+                $this->getQueryParamsForFacet($reformedQueryArgs, $arg, $values, FACET_KIND_ROOT);
             }
             else if ($isLeaf)
             {
-                $this->getQueryParamsForFacet($params, $part, $values, FACET_KIND_LEAF);
+                $this->getQueryParamsForFacet($reformedQueryArgs, $arg, $values, FACET_KIND_LEAF);
             }
             else
             {
-                $params[$part] = $values;
+                $reformedQueryArgs[$arg] = $values;
             }
         }
 
-        return $params;
+        return $reformedQueryArgs;
     }
 
-    private function getQueryParamsForFacet(&$params, $facet, $values, $kind)
+    private function getQueryParamsForFacet(&$reformedQueryArgs, $facet, $values, $kind)
     {
         $prefix = "{$kind}_";
         if (!is_array($values))
@@ -192,10 +193,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             return;
         }
         $facetId = substr($facet, strlen($prefix));
-        $params[$kind][$facetId] = $values;
+        $reformedQueryArgs[$kind][$facetId] = $values;
     }
 
-    protected function performQueryUsingElasticsearch($params, $searchResults, $attempt = 1)
+    protected function performQueryUsingElasticsearch($queryArgs, $searchResults, $attempt = 1)
     {
         /* @var $searchResults SearchResultsView */
 
@@ -205,13 +206,14 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         // See if the user wants to see shared search results or only those for this installation.
         $this->sharedSearchingEnabled = $this->avantElasticsearchQueryBuilder->isUsingSharedIndex();
 
-        $queryParams = $this->getQueryParams();
+        // Reformat the query args so that facets are under 'root' or 'leaf' parents.
+        $reformedQueryArgs = $this->reformQueryArgFacets($queryArgs);
 
         // Determine if the query exactly matches an item identifier. Don't do this for shared searching
         // because multiple items from different contributors could have the same identifier.
         if (!$this->sharedSearchingEnabled)
         {
-            $id = ItemMetadata::getItemIdFromIdentifier($queryParams['query']);
+            $id = ItemMetadata::getItemIdFromIdentifier($reformedQueryArgs['query']);
             if ($id)
             {
                 // The query is a valid item Identifier. Go to the item's show page instead of displaying search results.
@@ -220,7 +222,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
 
         $limit = $this->recordsPerPage;
-        $sort = $this->getElasticsearchSortParams($params, $searchResults);
+        $sort = $this->getElasticsearchSortParams($queryArgs, $searchResults);
         $indexElementName = $searchResults->getSelectedIndexElementName();
 
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
@@ -229,7 +231,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $fuzzy = false;
 
         $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQuery(
-            $queryParams,
+            $reformedQueryArgs,
             $limit,
             $sort,
             $indexElementName,
@@ -240,7 +242,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $results = null;
         $this->totalRecords = 0;
         $this->records = array();
-        $searchResults->setQuery($queryParams);
+        $searchResults->setQuery($reformedQueryArgs);
         $searchResults->setFacets(array());
 
         $this->avantElasticsearchClient = new AvantElasticsearchClient();
@@ -251,7 +253,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             if ($results == null)
             {
                 // A null results means an exception occurred. This is different than a result of zero hits.
-                $this->retryQueryUsingElasticsearch($params, $searchResults, $attempt);
+                $this->retryQueryUsingElasticsearch($queryArgs, $searchResults, $attempt);
             }
             else
             {
@@ -262,14 +264,14 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                     $this->records = $results['hits']['hits'];
                     $searchResults->setFacets($results['aggregations']);
                 }
-                else if (!empty($queryParams['query']) ||  !empty($queryParams['keywords']))
+                else if (!empty($reformedQueryArgs['query']) || !empty($reformedQueryArgs['keywords']))
                 {
                     // The search produced no results. Try again with fuzzy searching. This code does not execute if
                     // there are no search terms as is the case when all conditions are Advanced Search filters such
                     // as Creator contains some value or some field not empty. In those cases, fuzzy search does not apply.
                     $fuzzy = true;
                     $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQuery(
-                        $queryParams,
+                        $reformedQueryArgs,
                         $limit,
                         $sort,
                         $indexElementName,
@@ -294,16 +296,17 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
     }
 
-    protected function performQueryUsingSql($params, $currentPage)
+    protected function performQueryUsingSql($queryArgs, $searchResults, $currentPage)
     {
         // Perform the query using the built-in Omeka mechanism for advanced search.
         // That code will eventually call this plugin's hookItemsBrowseSql() method.
+        $queryArgs['results'] = $searchResults;
         $this->_helper->db->setDefaultModelName('Item');
-        $this->records = $this->_helper->db->findBy($params, $this->recordsPerPage, $currentPage);
-        $this->totalRecords = $this->_helper->db->count($params);
+        $this->records = $this->_helper->db->findBy($queryArgs, $this->recordsPerPage, $currentPage);
+        $this->totalRecords = $this->_helper->db->count($queryArgs);
     }
 
-    protected function retryQueryUsingElasticsearch($params, $searchResults, $attempt)
+    protected function retryQueryUsingElasticsearch($queryArgs, $searchResults, $attempt)
     {
         $e = $this->avantElasticsearchClient->getLastException();
         if (get_class($e) == 'Elasticsearch\Common\Exceptions\NoNodesAvailableException')
@@ -320,7 +323,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                 if ($this->avantElasticsearchClient->ready())
                 {
                     $attempt++;
-                    $this->performQueryUsingElasticsearch($params, $searchResults, $attempt);
+                    $this->performQueryUsingElasticsearch($queryArgs, $searchResults, $attempt);
                 }
             }
         }

@@ -462,9 +462,9 @@ class SearchResultsView
         return $conditions;
     }
 
-    public function getAdvancedSearchFields()
+    public function getAdvancedSearchFields($asOptionList = true)
     {
-        if (isset($this->advancedSearchFields))
+        if (!empty($this->advancedSearchFields))
             return $this->advancedSearchFields;
 
         $sharedSearchingEnabled = $this->sharedSearchingEnabled();
@@ -503,7 +503,10 @@ class SearchResultsView
             asort($publicFields);
         }
 
-        $options = array('' => __('Select Below'));
+        $fields = array();
+
+        if ($asOptionList)
+            $fields[''] = __('Select Below');
 
         if (!empty(current_user()) && !empty($privateFields) && !$sharedSearchingEnabled)
         {
@@ -512,17 +515,35 @@ class SearchResultsView
             // bottom of the list and require scrolling to select.
             foreach ($publicFields as $elementId => $fieldName)
             {
-                if ($this->useElasticsearch)
-                    $options[__('Public Fields')][$fieldName] = $fieldName;
+                if ($asOptionList)
+                {
+                    if ($this->useElasticsearch)
+                        $fields[__('Public Fields')][$fieldName] = $fieldName;
+                    else
+                        $fields[__('Public Fields')][$elementId] = $fieldName;
+                }
                 else
-                    $options[__('Public Fields')][$elementId] = $fieldName;
+                {
+                    $fields[] = $fieldName;
+                }
             }
             foreach ($privateFields as $elementId => $fieldName)
             {
-                if ($this->useElasticsearch)
-                    $options[__('Admin Fields')][$fieldName] = $fieldName;
+                if ($asOptionList)
+                {
+                    if ($this->useElasticsearch)
+                    {
+                        $fields[__('Admin Fields')][$fieldName] = $fieldName;
+                    }
+                    else
+                    {
+                        $fields[__('Admin Fields')][$elementId] = $fieldName;
+                    }
+                }
                 else
-                  $options[__('Admin Fields')][$elementId] = $fieldName;
+                {
+                    $fields[] = $fieldName;
+                }
             }
         }
         else
@@ -530,13 +551,13 @@ class SearchResultsView
             foreach ($publicFields as $elementId => $fieldName)
             {
                 if ($this->useElasticsearch)
-                    $options[$fieldName] = $fieldName;
+                    $fields[$fieldName] = $fieldName;
                 else
-                    $options[$elementId] = $fieldName;
+                    $fields[$elementId] = $fieldName;
             }
         }
 
-        $this->advancedSearchFields = $options;
+        $this->advancedSearchFields = $fields;
         return $this->advancedSearchFields;
     }
 
@@ -1072,6 +1093,36 @@ class SearchResultsView
     protected static function messageInfo($info)
     {
         return ' <span class="search-results-message-info"> &nbsp;&ndash; ' . $info . '</span>';
+    }
+
+    public function removeInvalidAdvancedQueryArgs($queryArgs)
+    {
+        if (!$this->useElasticsearch)
+            return $queryArgs;
+
+        // This method removes any Advanced Search query args that are not allowed. It deals with these two cases:
+        // - A user was logged in and did an Advanced Search using private elements. Then they logged out.
+        // - A user was searching This Site and did an Advanced Search using local elements. Then they switched to Shared Sites.
+        // In both cases, the elements that were previously valid are still args in the query string, but are no longer
+        // valid and therefore have to be ignored.
+
+        // Get the list of advanced search elements that are currently valid.
+        $advancedSearchFields = $this->getAdvancedSearchFields(false);
+
+        if (isset($queryArgs['advanced']))
+        {
+            foreach ($queryArgs['advanced'] as $key => $advancedArg)
+            {
+                $elementName = $advancedArg['element_id'];
+                if (!in_array($elementName, $advancedSearchFields))
+                {
+                    // This arg is not currently valid so remove it from the query args.
+                    unset($queryArgs['advanced'][$key]);
+                }
+            }
+        }
+
+        return $queryArgs;
     }
 
     public function setColumnsData()

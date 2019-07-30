@@ -134,11 +134,8 @@ class SearchResultsFilters
     {
         $useElasticsearch = $this->searchResults->useElasticsearch();
 
-        $request = Zend_Controller_Front::getInstance()->getRequest();
-        $requestArray = $request->getParams();
-
         $this->getKeywordsArg($useElasticsearch);
-        $this->getAdvancedSearchArgs($requestArray, $useElasticsearch);
+        $this->getAdvancedSearchArgs($useElasticsearch);
         $this->getTagsArg();
         $this->getYearRangeArgs();
 
@@ -159,20 +156,20 @@ class SearchResultsFilters
         return $html;
     }
 
-    protected function getAdvancedSearchArgs(array $requestArray, $useElasticsearch)
+    protected function getAdvancedSearchArgs($useElasticsearch)
     {
-        if (!array_key_exists('advanced', $requestArray))
-            return;
-
+        $queryArgs = $this->searchResults->removeInvalidAdvancedQueryArgs($_GET);
+        $advancedQueryArgs = isset($queryArgs['advanced']) ? $queryArgs['advanced'] : array();
         $advancedIndex = 0;
-        foreach ($requestArray['advanced'] as $i => $row)
+
+        foreach ($advancedQueryArgs as $advancedArg)
         {
-            if (empty($row['element_id']) || empty($row['type']))
+            if (empty($advancedArg['element_id']) || empty($advancedArg['type']))
             {
                 continue;
             }
 
-            $elementId = $row['element_id'];
+            $elementId = $advancedArg['element_id'];
 
             if (ctype_digit($elementId))
             {
@@ -190,11 +187,11 @@ class SearchResultsFilters
                 continue;
             }
 
-            $type = __($row['type']);
+            $type = __($advancedArg['type']);
             $advancedValue = $elementName . ': ' . $type;
-            if (isset($row['terms']) && $type != 'is empty' && $type != 'is not empty')
+            if (isset($advancedArg['terms']) && $type != 'is empty' && $type != 'is not empty')
             {
-                $terms = $row['terms'];
+                $terms = $advancedArg['terms'];
 
                 // Put single quotes around the terms unless they are already wrapped in double quotes.
                 $phraseMatch = strpos($terms, '"') === 0 && strrpos($terms, '"') === strlen($terms) - 1;
@@ -208,7 +205,7 @@ class SearchResultsFilters
 
             if ($advancedIndex && !$useElasticsearch)
             {
-                if (isset($row['joiner']) && $row['joiner'] === 'or')
+                if (isset($advancedArg['joiner']) && $advancedArg['joiner'] === 'or')
                 {
                     $advancedValue = __('OR') . ' ' . $advancedValue;
                 }
