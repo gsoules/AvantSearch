@@ -1,7 +1,7 @@
 <?php
 /* @var $searchResults SearchResultsIndexView */
 
-function createEntriesFromElasticsearchResults($results, $searchResults, $indexFieldName)
+function createEntriesFromElasticsearchResults($results, $indexFieldName)
 {
     $entries = array();
 
@@ -274,7 +274,7 @@ if ($totalResults)
         );
         echo '<section id="elasticsearch-results">';
 
-        $entries = createEntriesFromElasticsearchResults($results, $searchResults, $indexFieldName);
+        $entries = createEntriesFromElasticsearchResults($results, $indexFieldName);
     }
     else
     {
