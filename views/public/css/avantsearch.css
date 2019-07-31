@@ -672,31 +672,33 @@ a.search-reset-link:hover {
 	grid-area: metadata;
 	display: grid;
 	grid-template-columns: 100%;
-	padding: 0 8px;
+	grid-template-rows: auto 1fr auto;
+	/*padding: 0 8px;*/
 	background-color: #f8c0ff;
 }
 
 .search-result-metadata-row {
 	display: grid;
-	grid-template-columns: repeat( auto-fit, minmax(250px, 1fr) );
+	grid-template-columns: 110px 1fr;
 	grid-gap: 8px;
 	grid-template-areas:
 			"mlabel	mvalue";
-	padding: 0 8px;
-	background-color: #abdaff;
+	/*padding: 0 8px;*/
+	/*background-color: #abdaff;*/
 }
 
 .search-result-metadata-element {
 	grid-area: mlabel;
 	color: #777;
 	font-variant: small-caps;
-	background-color: #d2ffd8;
+	/*background-color: #d2ffd8;*/
+	text-align: right;
 }
 
 .search-result-metadata-text {
 	grid-area: mvalue;
 	color: #000;
-	padding-left: 4px;
+	/*padding-left: 4px;*/
 	background-color: #faf394;
 }
 
@@ -1266,13 +1268,6 @@ a.search-reset-link:hover {
 @media screen and (min-width: 1200px) {
 	#elasticsearch-results-container {
 		grid-template-columns: 280px 1fr;
-	}
-
-	.search-result-detail {
-		grid-template-columns: 15% 1fr 1fr 1fr;
-		grid-template-areas:
-				"title 	   title	title	    title"
-				"thumbnail metadata description description";
 	}
 
 	#search-filter-form #avantsearch-primary {
