@@ -672,9 +672,11 @@ a.search-reset-link:hover {
 	grid-area: metadata;
 	display: grid;
 	grid-template-columns: 100%;
-	grid-template-rows: auto 1fr auto;
+	grid-auto-rows: min-content;
+	grid-gap: 2px;
+	/*grid-template-rows: auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto;*/
 	/*padding: 0 8px;*/
-	background-color: #f8c0ff;
+	/*background-color: #f8c0ff;*/
 }
 
 .search-result-metadata-row {
@@ -699,7 +701,7 @@ a.search-reset-link:hover {
 	grid-area: mvalue;
 	color: #000;
 	/*padding-left: 4px;*/
-	background-color: #faf394;
+	/*background-color: #faf394;*/
 }
 
 .search-result-metadata div {
