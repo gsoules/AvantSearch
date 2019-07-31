@@ -2,7 +2,6 @@
 
 class AvantSearch_FindController extends Omeka_Controller_AbstractActionController
 {
-    private $avantElasticsearchQueryBuilder;
     private $avantElasticsearchClient;
     private $facetDefinitions;
     private $totalRecords = 0;
@@ -23,6 +22,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
     protected function find()
     {
+        /* @var $searchResultsView SearchResultsView */
+
         // Get the View Id from the query string, make sure it's valid, and construct a SearchResultsView object.
         $viewId = AvantCommon::queryStringArg('view', SearchResultsViewFactory::TABLE_VIEW_ID);
         if (!array_key_exists($viewId, SearchResultsViewFactory::getViewOptions()))
@@ -42,15 +43,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
 
         // Perform the query.
-        $exceptionMessage = $this->performQuery($searchResultsView);
-
-        // Check if an error occurred.
-        if (!empty($exceptionMessage))
-        {
-            $this->totalRecords = 0;
-            $this->records = array();
-            $searchResultsView->setError($exceptionMessage);
-        }
+        $this->performQuery($searchResultsView);
 
         // Add pagination data to the registry for use by the pagination_links() function.
         Zend_Registry::set('pagination', array(
@@ -65,13 +58,16 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->view->assign(array('searchResults' => $searchResultsView));
     }
 
-    private function getElasticsearchSortParams($queryArgs, $searchResults)
+    private function getElasticsearchSortParams($queryBuilder, $queryArgs, $searchResultsView)
     {
+        /* @var $queryBuilder AvantElasticsearchQueryBuilder */
+        /* @var $searchResultsView SearchResultsView */
+
         $sort = [];
 
         if (!isset($queryArgs['sort']))
         {
-            if ($searchResults->allowSortByRelevance())
+            if ($searchResultsView->allowSortByRelevance())
             {
                 // Return empty string to indicate sort by relevance.
                 return $sort;
@@ -84,10 +80,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
         else
         {
-            $sortElementName = $searchResults->getElementNameForQueryArg('sort');
+            $sortElementName = $searchResultsView->getElementNameForQueryArg('sort');
         }
 
-        $fieldName = $this->avantElasticsearchQueryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
+        $fieldName = $queryBuilder->convertElementNameToElasticsearchFieldName($sortElementName);
 
         $sortOrder = isset($queryArgs['order']) && $queryArgs['order'] == 'd' ? 'desc' : 'asc';
 
@@ -120,64 +116,33 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $reformedQueryArgs[$kind][$facetId] = $values;
     }
 
-    protected function performQuery($searchResults)
+    protected function performQuery($searchResultsView)
     {
-        $exceptionMessage = '';
-
-        try
+        if ($this->useElasticsearch)
         {
-            if ($this->useElasticsearch)
-            {
-                $this->performQueryUsingElasticsearch($searchResults);
-            }
-            else
-            {
-                $this->performQueryUsingSql($searchResults);
-            }
-
+            $queryBuilder = new AvantElasticsearchQueryBuilder();
+            $this->performQueryUsingElasticsearch($queryBuilder, $searchResultsView);
         }
-        catch (Zend_Db_Statement_Mysqli_Exception $e)
+        else
         {
-            $exceptionMessage = $e->getMessage();
+            $this->performQueryUsingSql($searchResultsView);
         }
-        catch (\Elasticsearch\Common\Exceptions\NoNodesAvailableException $e)
-        {
-            $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
-        }
-        catch (\Elasticsearch\Common\Exceptions\Forbidden403Exception $e)
-        {
-            $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
-        }
-        catch (\Elasticsearch\Common\Exceptions\BadRequest400Exception $e)
-        {
-            $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
-        }
-        catch (\Elasticsearch\Common\Exceptions\Missing404Exception $e)
-        {
-            $exceptionMessage = $this->getElasticsearchExceptionMessage($e);
-        }
-        catch (Exception $e)
-        {
-            $exceptionMessage = $e->getMessage();
-        }
-
-        return $exceptionMessage;
     }
 
-    protected function performQueryUsingElasticsearch($searchResults, $attempt = 1)
+    protected function performQueryUsingElasticsearch($queryBuilder, $searchResultsView, $attempt = 1)
     {
-        /* @var $searchResults SearchResultsView */
+        /* @var $queryBuilder AvantElasticsearchQueryBuilder */
+        /* @var $searchResultsView SearchResultsView */
 
-        $this->avantElasticsearchQueryBuilder = new AvantElasticsearchQueryBuilder();
-        $this->facetDefinitions = $this->avantElasticsearchQueryBuilder->getFacetDefinitions();
+        $this->facetDefinitions = $queryBuilder->getFacetDefinitions();
 
         // See if the user wants to see shared search results or only those for this installation.
-        $this->sharedSearchingEnabled = $this->avantElasticsearchQueryBuilder->isUsingSharedIndex();
+        $this->sharedSearchingEnabled = $queryBuilder->isUsingSharedIndex();
 
         // Get the query args and then filter out any Advanced Search args that are not valid for this query.
         // Then reformat any facet args to create 'root' and 'leaf' parent args.
         $allQueryArgs = $_GET;
-        $validQueryArgs = $searchResults->removeInvalidAdvancedQueryArgs($allQueryArgs);
+        $validQueryArgs = $searchResultsView->removeInvalidAdvancedQueryArgs($allQueryArgs);
         $queryArgs = $this->reformQueryArgFacets($validQueryArgs);
 
         // Determine if the query exactly matches an item identifier. Don't do this for shared searching
@@ -193,15 +158,15 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         }
 
         $limit = $this->recordsPerPage;
-        $sort = $this->getElasticsearchSortParams($queryArgs, $searchResults);
-        $indexElementName = $searchResults->getSelectedIndexElementName();
+        $sort = $this->getElasticsearchSortParams($queryBuilder, $queryArgs, $searchResultsView);
+        $indexElementName = $searchResultsView->getSelectedIndexElementName();
         $fuzzy = false;
 
         // Query only public items when no user is logged in, or when the user is not allowed to see non-public items.
         $public = empty(current_user()) || !is_allowed('Items', 'showNotPublic');
 
         // Construct the query to be sent to Elasticsearch.
-        $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQuery(
+        $searchQueryParams = $queryBuilder->constructSearchQuery(
             $queryArgs,
             $limit,
             $sort,
@@ -213,43 +178,59 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $results = null;
         $this->totalRecords = 0;
         $this->records = array();
-        $searchResults->setQuery($queryArgs);
-        $searchResults->setFacets(array());
+        $searchResultsView->setQuery($queryArgs);
+        $searchResultsView->setFacets(array());
 
         $this->avantElasticsearchClient = new AvantElasticsearchClient();
 
         if ($this->avantElasticsearchClient->ready())
         {
-            // Perform the actual search and get back the results.
+            // Perform the actual search and prepare the results for viewing.
             $results = $this->avantElasticsearchClient->search($searchQueryParams);
-            $this->processSearchResults($searchResults, $attempt, $results, $queryArgs, $limit, $sort, $indexElementName, $public);
+            $this->prepareSearchResults($queryBuilder, $searchResultsView, $attempt, $results, $queryArgs, $limit, $sort, $indexElementName, $public);
         }
         else
         {
-            $searchResults->setError(__('Unable to communicate with the ES server'));
+            $searchResultsView->setSearchErrorCodeAndMessage(1, __('Unable to communicate with the ES server'));
         }
     }
 
-    protected function performQueryUsingSql($searchResults)
+    protected function performQueryUsingSql($searchResultsView)
     {
+        /* @var $searchResultsView SearchResultsView */
+
         // Perform a SQL query using the built-in Omeka mechanism for advanced search.
         // That Omeka code will eventually call the AvantSearch plugin's hookItemsBrowseSql() method.
 
+        $exceptionMessage = '';
         $currentPage = $this->getParam('page', 1);
         $this->getRequest()->setParamSources(array('_GET'));
         $params = $this->getAllParams();
-        $params['results'] = $searchResults;
-        $this->_helper->db->setDefaultModelName('Item');
-        $this->records = $this->_helper->db->findBy($params, $this->recordsPerPage, $currentPage);
-        $this->totalRecords = $this->_helper->db->count($params);
-    }
+        $params['results'] = $searchResultsView;
 
-    protected function processSearchResults($searchResults, $attempt, array $results, array $queryArgs, $limit, array $sort, $indexElementName, $public)
+        try
+        {
+            $this->_helper->db->setDefaultModelName('Item');
+            $this->records = $this->_helper->db->findBy($params, $this->recordsPerPage, $currentPage);
+            $this->totalRecords = $this->_helper->db->count($params);
+        }
+        catch (Exception $e)
+        {
+            $this->totalRecords = 0;
+            $this->records = array();
+            $searchResultsView->setSearchErrorCodeAndMessage(2, $e->getMessage());
+        }
+ }
+
+    protected function prepareSearchResults($queryBuilder, $searchResultsView, $attempt, $results, $queryArgs, $limit, $sort, $indexElementName, $public)
     {
+        /* @var $queryBuilder AvantElasticsearchQueryBuilder */
+        /* @var $searchResultsView SearchResultsView */
+
         if ($results == null)
         {
             // A null results means an exception occurred. This is different than a result of zero hits.
-            $this->retryQueryUsingElasticsearch($queryArgs, $searchResults, $attempt);
+            $this->retryQueryUsingElasticsearch($searchResultsView, $attempt);
         }
         else
         {
@@ -258,7 +239,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             {
                 // The search produced at least one result.
                 $this->records = $results['hits']['hits'];
-                $searchResults->setFacets($results['aggregations']);
+                $searchResultsView->setFacets($results['aggregations']);
             }
             else
             {
@@ -268,7 +249,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                     // there are no search terms as is the case when all conditions are Advanced Search filters such
                     // as Creator contains some value or some field not empty. In those cases, fuzzy search does not apply.
                     $fuzzy = true;
-                    $searchQueryParams = $this->avantElasticsearchQueryBuilder->constructSearchQuery(
+                    $searchQueryParams = $queryBuilder->constructSearchQuery(
                         $queryArgs,
                         $limit,
                         $sort,
@@ -282,8 +263,8 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                     {
                         $this->totalRecords = $results["hits"]["total"];
                         $this->records = $results['hits']['hits'];
-                        $searchResults->setFacets($results['aggregations']);
-                        $searchResults->setResultsAreFuzzy(true);
+                        $searchResultsView->setFacets($results['aggregations']);
+                        $searchResultsView->setResultsAreFuzzy(true);
                     }
                 }
             }
@@ -327,30 +308,33 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         return $reformedQueryArgs;
     }
 
-    protected function retryQueryUsingElasticsearch($queryArgs, $searchResults, $attempt)
+    protected function retryQueryUsingElasticsearch($searchResultsView, $attempt)
     {
+        /* @var $searchResultsView SearchResultsView */
+
         $e = $this->avantElasticsearchClient->getLastException();
         if (get_class($e) == 'Elasticsearch\Common\Exceptions\NoNodesAvailableException')
         {
             // This is the ‘No alive nodes found in your cluster’ exception.
             if ($attempt == 3)
             {
-                $searchResults->setError(__('Unable to connect with the server. <a href="">Try Again</a>'));
+                $searchResultsView->setSearchErrorCodeAndMessage(3, __('Unable to connect with the server. <a href="">Try Again</a>'));
             }
             else
             {
+                // Just in case there is something wrong with the client object, destroy and recreate it, and try again.
                 unset($this->avantElasticsearchClient);
                 $this->avantElasticsearchClient = new AvantElasticsearchClient();
                 if ($this->avantElasticsearchClient->ready())
                 {
                     $attempt++;
-                    $this->performQueryUsingElasticsearch($queryArgs, $searchResults, $attempt);
+                    $this->performQueryUsingElasticsearch($searchResultsView, $attempt);
                 }
             }
         }
         else
         {
-            $searchResults->setError($this->avantElasticsearchClient->getLastError());
+            $searchResultsView->setSearchErrorCodeAndMessage(4, $this->avantElasticsearchClient->getLastError());
         }
     }
 
