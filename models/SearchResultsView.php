@@ -1188,11 +1188,6 @@ class SearchResultsView
         $this->addLayoutIdsToColumnsData();
     }
 
-    public function setError($message)
-    {
-        $this->error = $message;
-    }
-
     public function setFacets($facets)
     {
         $this->facets = $facets;
@@ -1211,6 +1206,14 @@ class SearchResultsView
     public function setResultsAreFuzzy($fuzzy)
     {
         $this->resultsAreFuzzy = $fuzzy;
+    }
+
+    public function setSearchErrorCodeAndMessage($code, $message)
+    {
+        // Only display the actual message to a logged in user since it may contain information that public should not
+        // see, for instance, something related to SQL injection or something that exposes the implementation.
+        $displayedMessage = current_user() ? __("$message (CODE $code)") : __("An unexpected search error occurred (CODE $code)");
+        $this->error = $displayedMessage;
     }
 
     public function setTotalResults($totalResults)
