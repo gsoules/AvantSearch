@@ -300,10 +300,12 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
     {
         // Perform the query using the built-in Omeka mechanism for advanced search.
         // That code will eventually call this plugin's hookItemsBrowseSql() method.
-        $queryArgs['results'] = $searchResults;
+        $this->getRequest()->setParamSources(array('_GET'));
+        $params = $this->getAllParams();
+        $params['results'] = $searchResults;
         $this->_helper->db->setDefaultModelName('Item');
-        $this->records = $this->_helper->db->findBy($queryArgs, $this->recordsPerPage, $currentPage);
-        $this->totalRecords = $this->_helper->db->count($queryArgs);
+        $this->records = $this->_helper->db->findBy($params, $this->recordsPerPage, $currentPage);
+        $this->totalRecords = $this->_helper->db->count($params);
     }
 
     protected function retryQueryUsingElasticsearch($queryArgs, $searchResults, $attempt)
