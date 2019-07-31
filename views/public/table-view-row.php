@@ -64,7 +64,13 @@ echo $data->itemThumbnailHtml;
         {
             $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
             if (!empty($text))
-                echo "<div>$text</div>";
+            {
+                $newText = str_replace('search-results-detail-', 'search-result-metadata-', $text);
+                $newText = str_replace('>:<', '><', $newText);
+                $newText = str_replace('<span', '<div', $newText);
+                $newText = str_replace('</span', '</div', $newText);
+                echo "<div class='search-result-metadata-row'>$newText</div>";
+            }
         }
 
         // Determine if it's okay to show the edit link for this item.
