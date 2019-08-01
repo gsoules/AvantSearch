@@ -238,7 +238,7 @@ class AvantSearch
 
         // Emit the Advanced Search link.
         if (!$isAdvancedSearchPage)
-            $html .= '<a href="' . $advancedSearchUrl . '" id="advanced-search-link">' . $linkText . '</a>';
+            $html .= '<a href="' . $advancedSearchUrl . '" id="advanced-search-link" class="search-link">' . $linkText . '</a>';
 
         $html .= '</div>';
         $html .= '</form>';
