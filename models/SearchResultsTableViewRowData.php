@@ -38,12 +38,15 @@ class SearchResultsTableViewRowData
         {
             // Replace the original description text with the highlighted text from Elasticsearch.
             $hasHighlights = true;
-            $descriptionText = '';
+            $descriptionText = '...';
             $highlights = $item['highlight']['common.description'];
             foreach ($highlights as $highlight)
             {
-
                 $descriptionText .= $highlight;
+
+                // Add an ellipsis to make clear that this is a fragment.
+                $ellipsis = substr($descriptionText, -1) == '.' ? '..' : '...';
+                $descriptionText .= $ellipsis;
             }
         }
         else
