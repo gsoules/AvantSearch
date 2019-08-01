@@ -50,27 +50,20 @@ if (!$searchResults->hasLayoutL1())
 
 $class = strpos($data->itemThumbnailHtml, 'fallback') === false ? 'search-td-image ' : 'search-td-image-fallback';
 echo '<td class="' . $class . ' L1">';
-echo '<div class="search-result-detail">';
+echo '<div class="search-results-detail">';
 echo $data->itemThumbnailHtml;
 ?>
 
-<div class="search-result-title">
+<div class="search-results-title">
     <?php echo $data->elementValue['Title']['text']; ?>
 </div>
-<div class="search-result-metadata">
+<div class="search-results-metadata">
     <?php if (!empty($column1)): ?>
         <?php
         foreach ($column1 as $elementName)
         {
-            $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
-            if (!empty($text))
-            {
-                $newText = str_replace('search-results-detail-', 'search-result-metadata-', $text);
-                $newText = str_replace('>:<', '><', $newText);
-                $newText = str_replace('<span', '<div', $newText);
-                $newText = str_replace('</span', '</div', $newText);
-                echo "<div class='search-result-metadata-row'>$newText</div>";
-            }
+            $detailHtml = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
+            echo $detailHtml;
         }
 
         // Determine if it's okay to show the edit link for this item.
@@ -92,7 +85,11 @@ echo $data->itemThumbnailHtml;
 
         if ($showEditLink)
         {
-            echo '<div class="search-results-edit"><a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a></div>';
+            // The edit link will appear as though it were a metadata element name in the last row of metadata.
+            $editLink = '<div class="search-results-metadata-row">';
+            $editLink .= '<div class="search-results-edit search-results-metadata-element">';
+            $editLink .= '<a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a></div></div>';
+            echo $editLink;
         }
         ?>
     <?php endif; ?>

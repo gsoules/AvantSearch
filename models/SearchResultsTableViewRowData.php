@@ -94,7 +94,7 @@ class SearchResultsTableViewRowData
             }
         }
 
-        $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetail('Description', $descriptionText);
+        $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetailBlock('Description', '<br/>' . $descriptionText);
     }
 
     protected function generateFileAttachmentHits($item)
@@ -403,7 +403,7 @@ class SearchResultsTableViewRowData
                             $filteredText = PRIVATE_ITEM_PREFIX . $filteredText;
                         }
                     }
-                    $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetail($column['name'], $filteredText, $column['alias']);
+                    $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetailRow($column['name'], $filteredText, $column['alias']);
                 }
             }
             else
@@ -438,13 +438,13 @@ class SearchResultsTableViewRowData
         }
 
         $this->elementValue['<tags>']['text'] = '';
-        $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetail(__('Tags'),  $tags);
-        $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetail(__('Score'), $score);;
+        $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetailRow(__('Tags'),  $tags);
+        $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetailRow(__('Score'), $score);;
 
         if ($this->useElasticsearch && $fileAttachmentHits['count'] > 0)
         {
             $fileHitsSectionText = __('File Attachment%s', $fileAttachmentHits['count'] > 1 ? 's' : '');
-            $this->elementValue['<pdf>']['detail'] = $this->searchResults->emitFieldDetail($fileHitsSectionText, $fileAttachmentHits['text']);
+            $this->elementValue['<pdf>']['detail'] = $this->searchResults->emitFieldDetailBlock($fileHitsSectionText, $fileAttachmentHits['text']);
         }
     }
 

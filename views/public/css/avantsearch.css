@@ -354,7 +354,6 @@ input[type="checkbox"] {
 }
 
 .search-results-edit {
-	margin-top: 4px;
 	font-size: 14px;
 }
 
@@ -654,7 +653,7 @@ a.search-reset-link:hover {
 
 /* === SQL Search Results - Table View ===
 --------------------------------------------------------- */
-.search-result-detail {
+.search-results-detail {
 	display: grid;
 	grid-template-columns: 25% 1fr;
 	grid-gap: 8px;
@@ -668,47 +667,43 @@ a.search-reset-link:hover {
 	grid-area: thumbnail;
 }
 
-.search-result-metadata {
+.search-results-metadata {
 	grid-area: metadata;
 	display: grid;
 	grid-template-columns: 100%;
 	grid-auto-rows: min-content;
 	grid-gap: 2px;
-	/*grid-template-rows: auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto auto;*/
-	/*padding: 0 8px;*/
-	/*background-color: #f8c0ff;*/
 }
 
-.search-result-metadata-row {
+.search-results-metadata-row {
 	display: grid;
 	grid-template-columns: 110px 1fr;
 	grid-gap: 8px;
 	grid-template-areas:
-			"mlabel	mvalue";
-	/*padding: 0 8px;*/
-	/*background-color: #abdaff;*/
+			"elementcol	valuecol";
 }
 
-.search-result-metadata-element {
-	grid-area: mlabel;
-	color: #777;
-	font-variant: small-caps;
-	/*background-color: #d2ffd8;*/
+.search-results-metadata-element {
+	grid-area: elementcol;
 	text-align: right;
 }
 
-.search-result-metadata-text {
-	grid-area: mvalue;
+.search-results-metadata-text {
+	grid-area: valuecol;
 	color: #000;
-	/*padding-left: 4px;*/
-	/*background-color: #faf394;*/
 }
 
-.search-result-metadata div {
+.search-results-metadata-element,
+.search-results-detail-element {
+	color: #777;
+	font-variant: small-caps;
+}
+
+.search-results-metadata div {
 	padding-bottom: 2px;
 }
 
-.search-result-title {
+.search-results-title {
 	grid-area: title;
 }
 
@@ -783,7 +778,7 @@ a.search-reset-link:hover {
     width: 80px;
 }
 
-.search-result-title {
+.search-results-title {
 	border-bottom: 1px dotted #ccc;
 	font-size: 120%;
 	padding-left: 8px;
@@ -1219,7 +1214,7 @@ a.search-reset-link:hover {
 
 @media screen and (min-width: 600px) {
 	#elasticsearch-results-container {
-		grid-template-columns: 180px 1fr;
+		grid-template-columns: minmax(180px, 18%) 1fr;
 		grid-template-areas:
 				"title	 title"
 				"message message"
@@ -1249,7 +1244,7 @@ a.search-reset-link:hover {
 }
 
 @media screen and (min-width: 960px) {
-	.search-result-detail {
+	.search-results-detail {
 		grid-template-columns: 20% 1fr 1fr;
 		grid-gap: 8px;
 		grid-template-areas:
@@ -1268,10 +1263,6 @@ a.search-reset-link:hover {
 }
 
 @media screen and (min-width: 1200px) {
-	#elasticsearch-results-container {
-		grid-template-columns: 280px 1fr;
-	}
-
 	#search-filter-form #avantsearch-primary {
 		width: 40%;
 	}

@@ -212,12 +212,26 @@ class SearchResultsView
         return $classAttribute;
     }
 
-    public function emitFieldDetail($elementName, $text, $alias = '')
+    public function emitFieldDetailBlock($elementName, $text, $alias = '')
     {
+        if (empty($text))
+            return '';
         $class = 'search-results-detail-element';
+        $displayedName = empty($alias) ? $elementName : $alias;
+        $block = "<span class='$class'>$displayedName</span>:<span class=\"search-results-detail-text\">$text</span>";
+        return $block;
+    }
+
+    public function emitFieldDetailRow($elementName, $text, $alias = '')
+    {
+        if (empty($text))
+            return '';
+        $class = 'search-results-metadata-element';
         $class .= in_array($elementName, $this->privateElementsData) ? ' private-element' : '';
         $displayedName = empty($alias) ? $elementName : $alias;
-        return $text ? "<span class='$class'>$displayedName</span>:<span class=\"search-results-detail-text\">$text</span>" : '';
+        $row = "<div class='$class'>$displayedName:</div><div class=\"search-results-metadata-text\">$text</div>";
+        $row = "<div class='search-results-metadata-row'>$row</div>";
+        return $row;
     }
 
     public function emitHeaderRow($headerColumns)
