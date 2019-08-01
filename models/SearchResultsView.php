@@ -1118,7 +1118,8 @@ class SearchResultsView
         // - A user was logged in and did an Advanced Search using private elements. Then they logged out.
         // - A user was searching This Site and did an Advanced Search using local elements. Then they switched to Shared Sites.
         // In both cases, the elements that were previously valid are still args in the query string, but are no longer
-        // valid and therefore have to be ignored.
+        // valid and therefore have to be ignored. Note that this method ignores elements that are specified as element
+        // Ids as is the case for queries that come from the user clicking an implicit link on an Item view page.
 
         // Get the list of advanced search elements that are currently valid.
         $advancedSearchFields = $this->getAdvancedSearchFields(false);
@@ -1128,9 +1129,11 @@ class SearchResultsView
             foreach ($queryArgs['advanced'] as $key => $advancedArg)
             {
                 $elementName = $advancedArg['element_id'];
-                if (!in_array($elementName, $advancedSearchFields))
+                $isElementId = ctype_digit($elementName);
+
+                if (!$isElementId && !in_array($elementName, $advancedSearchFields))
                 {
-                    // This arg is not currently valid so remove it from the query args.
+                    // This element name is not currently valid so remove it from the query args.
                     unset($queryArgs['advanced'][$key]);
                 }
             }
