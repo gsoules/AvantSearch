@@ -94,7 +94,12 @@ class SearchResultsTableViewRowData
             }
         }
 
-        $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetailBlock('Description', '<br/>' . $descriptionText);
+        if (!empty($descriptionText))
+        {
+            // Make the description appear on the next line below its label.
+            $descriptionText = '<br/>' . $descriptionText;
+        }
+        $this->elementValue['Description']['detail'] = $this->searchResults->emitFieldDetailBlock(__('Description'), $descriptionText);
     }
 
     protected function generateFileAttachmentHits($item)
