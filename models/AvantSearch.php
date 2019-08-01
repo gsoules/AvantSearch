@@ -186,9 +186,12 @@ class AvantSearch
 
     public static function getHiddenInputsForSimpleSearch()
     {
-        // Specify which query string args are needed for a simple search query. This will cause other
-        // args, in particular those for applied facets, to be discarded.
-        $allowedInputs = array('filter', 'index', 'layout', 'limit', 'order', 'site', 'sort', 'view');
+        // Specify which query string args are needed for a simple search query. This will cause other args, in
+        // particular those for applied facets, to be discarded. Note that 'sort' is excluded from the list so that
+        // results from a new simple search are always returned by relevance and not whatever sort order was
+        // was meaningful for the previous result set. The 'filter' option is excluded as well so that you get back
+        // all the results, not just those containing images.
+        $allowedInputs = array('index', 'layout', 'limit', 'order', 'site', 'view');
 
         return self::getSearchFormInputsHtml($allowedInputs);
     }
