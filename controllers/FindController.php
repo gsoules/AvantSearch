@@ -318,7 +318,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             }
             else
             {
-                if ($this->totalRecords >= 1)
+                if ($results["hits"]["total"] >= 1)
                 {
                     // Record this search which produced one or more results.
                     $this->recordSuccessfulSearch($searchResultsView, $results);
