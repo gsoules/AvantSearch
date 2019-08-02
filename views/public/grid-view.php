@@ -40,8 +40,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
         ?>
         <section id="elasticsearch-results">
     <?php endif; ?>
-    <div>
-        <ul class="item-preview grid-view">
+    <div class="grid-view">
         <?php
         foreach ($results as $item)
         {
@@ -59,7 +58,6 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
             }
         }
         ?>
-        </ul>
     </div>
     <?php if ($useElasticsearch): ?>
         </section>

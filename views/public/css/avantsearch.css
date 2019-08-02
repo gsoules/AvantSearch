@@ -831,6 +831,36 @@ a.search-reset-link:hover {
 	cursor: pointer;
 }
 
+.grid-view {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+}
+
+.grid-view-cell {
+	padding: 0 8px 12px 8px;
+}
+
+.grid-view-cell .element-text {
+	font-size: 13px;
+}
+
+.grid-view-cell .contributor-id {
+	color: #666666;
+	font-weight: normal;
+	font-size: 11px
+}
+
+.grid-view-cell img {
+	max-width: 100%;
+}
+
+.grid-view-cell img {
+	background: #fff;
+	border: 1px solid #ccc;
+	box-shadow: 4px 4px 6px 0 rgba(0,0,0,0.25);
+	box-sizing:border-box;
+	padding: 2px;
+}
 
 /* === Search Results - Index View ===
 --------------------------------------------------------- */
@@ -1210,6 +1240,10 @@ a.search-reset-link:hover {
 	#search-filter-selector {
 		display: block;
 	}
+
+	.grid-view {
+		grid-template-columns: 1fr 1fr 1fr;
+	}
 }
 
 @media screen and (min-width: 600px) {
@@ -1241,6 +1275,10 @@ a.search-reset-link:hover {
 	.search-selector-button-value {
 		display: inline-block;
 	}
+
+	.grid-view {
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+	}
 }
 
 @media screen and (min-width: 960px) {
@@ -1260,6 +1298,10 @@ a.search-reset-link:hover {
 	.search-index-view-index {
 		display: block;
 	}
+
+	.grid-view {
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+	}
 }
 
 @media screen and (min-width: 1200px) {
@@ -1269,6 +1311,16 @@ a.search-reset-link:hover {
 
 	#search-filter-form #avantsearch-secondary {
 		width: 57%;
+	}
+
+	.grid-view {
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+	}
+}
+
+@media screen and (min-width: 1400px) {
+	.grid-view {
+		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
 	}
 }
 
