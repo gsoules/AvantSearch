@@ -833,7 +833,7 @@ a.search-reset-link:hover {
 
 .grid-view {
 	display: grid;
-	grid-template-columns: 1fr 1fr;
+	grid-template-columns: repeat(2, 1fr);
 }
 
 .grid-view-cell {
@@ -1248,7 +1248,7 @@ a.search-reset-link:hover {
 
 @media screen and (min-width: 600px) {
 	#elasticsearch-results-container {
-		grid-template-columns: minmax(180px, 18%) 1fr;
+		grid-template-columns: minmax(180px, 300px) 1fr;
 		grid-template-areas:
 				"title	 title"
 				"message message"
@@ -1300,7 +1300,7 @@ a.search-reset-link:hover {
 	}
 
 	.grid-view {
-		grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+		grid-template-columns: repeat(5, 1fr);
 	}
 }
 
@@ -1314,13 +1314,43 @@ a.search-reset-link:hover {
 	}
 
 	.grid-view {
-		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+		/*grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;*/
+		grid-template-columns: repeat(6, 1fr);
 	}
 }
 
 @media screen and (min-width: 1400px) {
 	.grid-view {
-		grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr 1fr;
+		grid-template-columns: repeat(7, 1fr);
+	}
+}
+
+@media screen and (min-width: 1600px) {
+	.grid-view {
+		grid-template-columns: repeat(8, 1fr);
+	}
+}
+@media screen and (min-width: 1800px) {
+	.grid-view {
+		grid-template-columns: repeat(8, 1fr);
+	}
+}
+
+@media screen and (min-width: 2000px) {
+	.grid-view {
+		grid-template-columns: repeat(10, 1fr);
+	}
+}
+
+@media screen and (min-width: 2200px) {
+	.grid-view {
+		grid-template-columns: repeat(11, 1fr);
+	}
+}
+
+@media screen and (min-width: 2400px) {
+	.grid-view {
+		grid-template-columns: repeat(12, 1fr);
 	}
 }
 
