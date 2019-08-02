@@ -1248,7 +1248,7 @@ a.search-reset-link:hover {
 
 @media screen and (min-width: 600px) {
 	#elasticsearch-results-container {
-		grid-template-columns: minmax(180px, 300px) 1fr;
+		grid-template-columns: minmax(180px, 12%) 1fr;
 		grid-template-areas:
 				"title	 title"
 				"message message"
