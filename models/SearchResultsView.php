@@ -236,7 +236,7 @@ class SearchResultsView
 
     public function emitHeaderRow($headerColumns)
     {
-        $sortFieldName = isset($_GET['sort']) ? $_GET['sort'] : '';;
+        $sortFieldName = AvantCommon::queryStringArg('sort');
         $sortOrder = $this->getSortOrder();
 
         $headerRow = '';
@@ -613,7 +613,7 @@ class SearchResultsView
 
     public function getElementIdForQueryArg($argName)
     {
-        $elementSpecifier = isset($_GET[$argName]) ? $_GET[$argName] : '';
+        $elementSpecifier = AvantCommon::queryStringArg($argName);
 
         // Accept either an element Id or an element name as the element specifier. This provides backwards
         // compatibility with AvantSearch 2.0 which used element Ids for sort and Index View index specifiers.
@@ -641,7 +641,7 @@ class SearchResultsView
 
     public function getElementNameForQueryArg($argName, $defaultName = 'Title')
     {
-        $elementSpecifier = isset($_GET[$argName]) ? $_GET[$argName] : '';
+        $elementSpecifier = AvantCommon::queryStringArg($argName);
 
         // Accept either an element Id or an element name as the element specifier. This provides backwards
         // compatibility with AvantSearch 2.0 which used element Ids for sort and Index View index specifiers.
@@ -714,11 +714,11 @@ class SearchResultsView
             return $this->keywords;
 
         // Get keywords that were specified on the Advanced Search page.
-        $this->keywords = isset($_GET['keywords']) ? $_GET['keywords'] : '';
+        $this->keywords = AvantCommon::queryStringArg('keywords');
 
         // Check if keywords came from the Simple Search text box.
         if (empty($this->keywords))
-            $this->keywords = isset($_GET['query']) ? $_GET['query'] : '';
+            $this->keywords = AvantCommon::queryStringArg('query');
 
         return $this->keywords;
     }
@@ -728,7 +728,7 @@ class SearchResultsView
         if (isset($this->condition))
             return $this->condition;
 
-        $this->condition = isset($_GET['condition']) ?  intval($_GET['condition']) : self::DEFAULT_KEYWORDS_CONDITION ;
+        $this->condition = AvantCommon::queryStringArg('condition', self::DEFAULT_KEYWORDS_CONDITION);
 
         if (!array_key_exists($this->condition, $this->getKeywordsConditionOptions()))
             $this->condition = self::DEFAULT_KEYWORDS_CONDITION;
@@ -852,15 +852,7 @@ class SearchResultsView
         if (isset($this->limit))
             return $this->limit;
 
-        $this->limit = isset($_GET['limit']) ? intval($_GET['limit']) : 0;
-
-        if ($this->limit == 0)
-        {
-            // The limit gets saved in a cookie so that it can be set for search results that are displayed when the user
-            // clicks an implicit link on an Item page. If we don't do this, or if cookies are disabled, the limit in
-            // that case will be the default.
-            $this->limit = isset($_COOKIE['LIMIT-ID']) ? intval($_COOKIE['LIMIT-ID']) : 0;
-        }
+        $this->limit = AvantCommon::queryStringArgOrCookie('limit', 'LIMIT-ID', 0);
 
         // Make sure that the limit is valid.
         $limitOptions = $this->getResultsLimitOptions();
@@ -882,7 +874,7 @@ class SearchResultsView
 
     public function getSearchFiles()
     {
-        return isset($_GET['filter']) ? intval($_GET['filter'] == 1) : self::DEFAULT_SEARCH_FILTER ;
+        return AvantCommon::queryStringArg('filter', self::DEFAULT_SEARCH_FILTER);
     }
 
     public function getSearchResultsContainerName()
@@ -944,13 +936,14 @@ class SearchResultsView
         if (isset($this->titles))
             return $this->titles;
 
-        $this->titles = isset($_GET['titles']) ? intval($_GET['titles'] == 1) : self::DEFAULT_SEARCH_TITLES ;
+        $this->titles = AvantCommon::queryStringArg('titles', self::DEFAULT_SEARCH_TITLES);
+
         return $this->titles;
     }
 
     public function getSelectedFilterId()
     {
-        $id = isset($_GET['filter']) ? intval($_GET['filter']) : 0;
+        $id = AvantCommon::queryStringArg('filter', 0);
 
         // Make sure that the layout Id is valid.
         if ($id < 0 || $id > 1)
@@ -983,7 +976,7 @@ class SearchResultsView
         $firstLayoutId = $this->getLayoutIdFirst();
         $lastLayoutId =$this->getLayoutIdLast();
 
-        $id = isset($_GET['layout']) ? intval($_GET['layout']) : $firstLayoutId;
+        $id = AvantCommon::queryStringArg('layout', $firstLayoutId);
 
         // Make sure that the layout Id is valid.
         if ($id < $firstLayoutId || $id > $lastLayoutId)
@@ -1000,17 +993,9 @@ class SearchResultsView
 
     public function getSelectedSiteId()
     {
-        if (isset($_GET['site']))
-        {
-            $id = intval($_GET['site']);
-        }
-        else
-        {
-            // The site Id is not currently being saved in a cookie, but it might in the future.
-            $id = isset($_COOKIE['SITE-ID']) ? intval($_COOKIE['SITE-ID']) : 0;
-        }
+        $id = AvantCommon::queryStringArgOrCookie('site', 'SITE-ID', 0);
 
-        // Make sure that the site Id is valid.
+        // Make sure that the site Id is valid. The only valid values are 0 (local site) and 1 (shared site).
         if ($id < 0 || $id > 1)
             $id = 0;
 
@@ -1062,7 +1047,7 @@ class SearchResultsView
         if (isset($this->sortOrder))
             return $this->sortOrder;
 
-        $this->sortOrder = isset($_GET['order']) ? $_GET['order'] : 'a';
+        $this->sortOrder = AvantCommon::queryStringArg('order', 'a');
         return $this->sortOrder;
     }
 
