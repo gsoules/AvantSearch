@@ -168,10 +168,12 @@ function setSelectedOption(kind, prefix, newOptionId)
         newOptionValue = newOptionId;
     }
 
-    if (kind === LIMIT)
+    if (kind === LIMIT || kind === SITE)
     {
-        // Remember the limit so that it can be set for search results that are displayed when the user clicks an
-        // implicit link on an Item page. If we don't do this, the limit in that case will be the default.
+        // Remember the limit and site so that they can be set for search results that are displayed when the user clicks
+        // an implicit link on an Item page. If we don't do this, the limit and and site revert to the defaults which
+        // is confusing e.g. when you have been seeing 100 results from Shared Sites and then you are seeing only 25
+        // from This Site.
         saveCookie(kind, newOptionValue);
     }
 
