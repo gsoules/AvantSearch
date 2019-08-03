@@ -1214,7 +1214,7 @@ class SearchResultsView
     {
         // Only display the actual message to a logged in user since it may contain information that public should not
         // see, for instance, something related to SQL injection or something that exposes the implementation.
-        $displayedMessage = current_user() ? __("$message (CODE $code)") : __("An unexpected error occurred ($code)");
+        $displayedMessage = current_user() ? __("$message (CODE $code)") : __("The search could not be performed (CODE $code)");
         $this->error = $displayedMessage;
     }
 
