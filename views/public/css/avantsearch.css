@@ -17,11 +17,11 @@
 }
 
 #no-results {
-	clear: both;
 	height: 300px;
 }
 
 #no-results p {
+	position: absolute;
 	margin-top: 0px;
 }
 
