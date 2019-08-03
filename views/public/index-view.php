@@ -127,8 +127,8 @@ function emitEntries($entries, $indexFieldElementId, $indexElementName, $searchR
             // Emit a link directly to the item's show page.
             if ($searchResults->useElasticsearch())
             {
-                $target = $searchResults->sharedSearchingEnabled() ? " target='blank'" : '';
-                $link = "<a href='{$entry['url']}' $target>$entryText</a>";
+                $url = $entry['url'];
+                $link = "<a href='$url' target='_blank'>$entryText</a>";
             }
             else
             {
@@ -140,16 +140,18 @@ function emitEntries($entries, $indexFieldElementId, $indexElementName, $searchR
         else
         {
             // Emit a link to produce search results showing all items for this entry.
-            if (!empty($indexFieldElementId))
-            {
-                $searchCondition = 'is exactly';
-                $url = $searchResults->emitIndexEntryUrl($entryText, $indexFieldElementId, $searchCondition);
-                echo "<a href=\"$url\">$entryText</a>";
-            }
-            else
+            if (empty($indexFieldElementId) && empty($indexElementName))
             {
                 // This case would only be true if someone hand-edited the query emitted by the advanced search page.
                 echo "$entryText";
+            }
+            else
+            {
+                if (empty($indexElementName))
+                    $indexElementName = $indexFieldElementId;
+                $searchCondition = 'is exactly';
+                $url = $searchResults->emitIndexEntryUrl($entryText, $indexElementName, $searchCondition);
+                echo "<a href='$url' target='_blank'>$entryText</a>";
             }
             if ($count)
             {
