@@ -66,7 +66,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         $this->performQuery($searchResultsView);
 
         // Add pagination data to the registry for use by the pagination_links() function.
-        $currentPage = $this->getParam('page', 1);
+        $currentPage = abs(intval($this->getParam('page', 1)));
         Zend_Registry::set('pagination', array(
             'page' => $currentPage,
             'per_page' => $this->recordsPerPage,
