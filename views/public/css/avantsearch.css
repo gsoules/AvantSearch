@@ -655,7 +655,7 @@ a.search-reset-link:hover {
 --------------------------------------------------------- */
 .search-results-detail {
 	display: grid;
-	grid-template-columns: 25% 1fr;
+	grid-template-columns: minmax(140px, 25%) 1fr;
 	grid-gap: 8px;
 	grid-template-areas:
 		"title	title"
@@ -1283,7 +1283,7 @@ a.search-reset-link:hover {
 
 @media screen and (min-width: 960px) {
 	.search-results-detail {
-		grid-template-columns: 20% 1fr 1fr;
+		grid-template-columns: minmax(140px, 20%) 1fr 1fr;
 		grid-gap: 8px;
 		grid-template-areas:
 				"title 	   title	title"
@@ -1312,7 +1312,6 @@ a.search-reset-link:hover {
 	#search-filter-form #avantsearch-secondary {
 		width: 57%;
 	}
-
 	.grid-view {
 		/*grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;*/
 		grid-template-columns: repeat(6, 1fr);
@@ -1326,6 +1325,10 @@ a.search-reset-link:hover {
 }
 
 @media screen and (min-width: 1600px) {
+	.search-results-detail {
+		grid-template-columns: minmax(140px, 15%) 1fr 1fr;
+	}
+
 	.grid-view {
 		grid-template-columns: repeat(8, 1fr);
 	}
