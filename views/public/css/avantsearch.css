@@ -655,12 +655,13 @@ a.search-reset-link:hover {
 --------------------------------------------------------- */
 .search-results-detail {
 	display: grid;
-	grid-template-columns: minmax(140px, 25%) 1fr;
+	grid-template-columns: 1fr;
 	grid-gap: 8px;
 	grid-template-areas:
-		"title	title"
-		"thumbnail metadata"
-		"description description";
+		"title"
+		"thumbnail"
+		"metadata"
+		"description";
 }
 
 .item-image {
@@ -677,7 +678,7 @@ a.search-reset-link:hover {
 
 .search-results-metadata-row {
 	display: grid;
-	grid-template-columns: 140px 1fr;
+	grid-template-columns: 90px 1fr;
 	grid-gap: 8px;
 	grid-template-areas:
 			"elementcol	valuecol";
@@ -1255,6 +1256,18 @@ a.search-reset-link:hover {
 				"filter	 filter"
 				"facets	 results"
 				".		 bottom";
+	}
+
+	.search-results-detail {
+		grid-template-columns: minmax(140px, 25%) 1fr;
+		grid-template-areas:
+				"title	title"
+				"thumbnail metadata"
+				"description description";
+	}
+
+	.search-results-metadata-row {
+		grid-template-columns: 140px 1fr;
 	}
 
 	#search-facet-sections {
