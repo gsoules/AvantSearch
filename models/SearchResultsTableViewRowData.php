@@ -455,17 +455,4 @@ class SearchResultsTableViewRowData
             $this->elementValue['<pdf>']['detail'] = $this->searchResults->emitFieldDetailBlock($fileHitsSectionText, $fileAttachmentHits['text']);
         }
     }
-
-    protected function userIsAdmin()
-    {
-        $user = current_user();
-
-        if (empty($user))
-            return false;
-
-        if ($user->role == 'researcher')
-            return false;
-
-        return true;
-    }
 }
