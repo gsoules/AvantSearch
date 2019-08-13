@@ -490,6 +490,13 @@ class SearchResultsView
             $privateFields[$elementId] = $name;
         }
 
+        if ($this->useElasticsearch)
+        {
+            $privateFields['<public>'] = 'Public';
+        }
+
+        asort($privateFields);
+
         $allFields = self::getAllFields();
         $publicFields = array_diff($allFields, $privateFields);
         if ($sharedSearchingEnabled)
