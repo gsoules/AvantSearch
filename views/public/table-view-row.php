@@ -88,7 +88,9 @@ echo $data->itemThumbnailHtml;
             // The edit link will appear as though it were a metadata element name in the last row of metadata.
             $editLink = '<div class="search-results-metadata-row">';
             $editLink .= '<div class="search-results-edit search-results-metadata-element">';
-            $editLink .= '<a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a></div></div>';
+            $editLink .= '<a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a> | ';
+            $editLink .= '<a href="' . admin_url('/avant/show/' . $itemId) . '" target="_blank">' . __('View') . '</a>';
+            $editLink .= '</div></div>';
             echo $editLink;
         }
         ?>
