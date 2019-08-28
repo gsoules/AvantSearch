@@ -31,8 +31,17 @@ class SearchResultsFilters
         // Get all the arguments from the query string.
         $queryArgs = explode('&', http_build_query($_GET));
 
-        foreach ($this->advancedArgsArray as $advancedIndex => $advancedArg)
+        // Get just the Advanced Search arguments, each of which is an array of element_id, type, and terms.
+        $advancedQueryStringArgs = isset($_GET['advanced']) ? $_GET['advanced'] : array();
+        $advancedArgsIndex = 0;
+
+        // Examine each Advanced Search argument to determine if it should be removed from the query string.
+        foreach ($advancedQueryStringArgs as $advancedQueryStringArgsIndex => $advancedQueryStringArg)
         {
+            // Get the text for this argument that will appear as a removable filter.
+            $advancedArg = $this->advancedArgsArray[$advancedArgsIndex];
+            $advancedArgsIndex++;
+
             // Make a copy of the arguments array that the following code can modify without affecting the original.
             $args = $queryArgs;
 
@@ -46,10 +55,11 @@ class SearchResultsFilters
                 // Create a prefix for this arg based on its index e.g. 'advanced[0'. Note that the arg is encoded and
                 // so the prefix will actually look like 'advanced%5B0' The prefix length includes index length.
                 $advancedPrefix = urlencode('advanced[');
-                $prefixLength = strlen($advancedPrefix) + ($advancedIndex <= 9 ? 1 : 2);
+                $prefixLength = strlen($advancedPrefix) + ($advancedQueryStringArgsIndex <= 9 ? 1 : 2);
                 $prefix = substr($pair, 0, $prefixLength);
+                $argPrefix = "$advancedPrefix$advancedQueryStringArgsIndex";
 
-                if (strpos($prefix, "$advancedPrefix$advancedIndex") === 0)
+                if (strpos($prefix, $argPrefix) === 0)
                 {
                     // Remove this arg from the copy of the query args array.
                     unset($args[$argsIndex]);
