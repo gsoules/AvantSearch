@@ -273,6 +273,9 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         if (get_class($e) == 'Elasticsearch\Common\Exceptions\NoNodesAvailableException')
         {
             // This is the ‘No alive nodes found in your cluster’ exception. Make additional attempts to succeed.
+            $subject = 'Query String: ' . urldecode(http_build_query($_GET));
+            AvantCommon::sendEmailToAdministrator('Search Error', "Search failed on attempt $attempt", $subject);
+
             if ($attempt == 3)
             {
                 $searchResultsView->setSearchErrorCodeAndMessage(3, __('Unable to connect with the server. <a href="">Try Again</a>'));
