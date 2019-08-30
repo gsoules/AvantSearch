@@ -157,6 +157,7 @@ class SearchResultsTableViewRowData
                 // Insert a horizontal ellipsis character in front of the hit.
                 $highlightText .= " &hellip;$highlight";
             }
+            $highlightText .= '<br/>';
         }
 
         $hits['count'] = count($fileNames);
