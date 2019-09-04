@@ -85,12 +85,11 @@ echo $data->itemThumbnailHtml;
 
         if ($showEditLink)
         {
-            // The edit link will appear as though it were a metadata element name in the last row of metadata.
+            // The edit link will appear as though it were a metadata element value in the last row of metadata.
             $editLink = '<div class="search-results-metadata-row">';
-            $editLink .= '<div class="search-results-edit search-results-metadata-element">';
-            $editLink .= '<a href="' . admin_url('/items/edit/' . $itemId) . '" target="_blank">' . __('Edit') . '</a> | ';
-            $editLink .= '<a href="' . admin_url('/avant/show/' . $itemId) . '" target="_blank">' . __('View') . '</a>';
-            $editLink .= '</div></div>';
+            $editLink .= AvantCommon::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true);
+
+            $editLink .= '</div>';
             echo $editLink;
         }
         ?>
