@@ -85,9 +85,18 @@ echo $data->itemThumbnailHtml;
 
         if ($showEditLink)
         {
+            $s3Link = '';
+            $showS3Link = plugin_is_active('AvantS3') && !$searchResults->sharedSearchingEnabled() && $searchResults->useElasticsearch();
+            if ($showS3Link)
+            {
+                $identifier = $item['_source']['common']['identifier'][0];
+                $s3Link = ' | ' . AvantAdmin::emitS3Link($identifier);
+            }
+
             // The edit link will appear as though it were a metadata element value in the last row of metadata.
             $editLink = '<div class="search-results-metadata-row">';
-            $editLink .= AvantCommon::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true);
+            $editLink .= AvantCommon::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true, $s3Link);
+
 
             $editLink .= '</div>';
             echo $editLink;
