@@ -210,12 +210,16 @@ class AvantSearch
         $action = $request->getActionName();
         $isAdvancedSearchPage = $action == 'advanced-search' && $useElasticsearch;
 
-        $linkText = __('Advanced Search');
+        $advancedSearchLinkText = __('Advanced Search');
         $placeholderText = __('Enter keywords to search for');
         $query = isset($_GET['query']) && !$isAdvancedSearchPage ? htmlspecialchars($_GET['query'], ENT_QUOTES) : '';
         $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
         $findUrl = url('/find') . $queryString;
         $advancedSearchUrl = url('/find/advanced') . $queryString;
+
+        $recentlyViewedItemsLinkText = __('Recent Items');
+        //$recentlyViewedItemsUrl = AvantAdmin::emitRecentlyViewedItemsLink();
+        $recentlyViewedItemsUrl = '';
 
         $menu = public_nav_main();
         $menuHtml = $menu->render();
@@ -241,7 +245,12 @@ class AvantSearch
 
         // Emit the Advanced Search link.
         if (!$isAdvancedSearchPage)
-            $html .= '<a href="' . $advancedSearchUrl . '" id="advanced-search-link" class="search-link">' . $linkText . '</a>';
+        {
+            $html .= '<a href="' . $advancedSearchUrl . '" id="advanced-search-link" class="search-link">' . $advancedSearchLinkText . '</a>';
+
+            if (!empty($recentlyViewedItemsUrl))
+                $html .= '<a href="' . $recentlyViewedItemsUrl . '" id="recently-viewed-items-link" class="search-link">' . $recentlyViewedItemsLinkText . '</a>';
+        }
 
         $html .= '</div>';
         $html .= '</form>';
