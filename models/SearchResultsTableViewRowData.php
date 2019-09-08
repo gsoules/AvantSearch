@@ -408,7 +408,7 @@ class SearchResultsTableViewRowData
                     {
                         $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 0;
 
-                        $showS3Link = plugin_is_active('AvantS3') && !$this->sharedSearchingEnabled;
+                        $showS3Link = plugin_is_active('AvantS3') && AvantCommon::userIsAdmin() && !$this->sharedSearchingEnabled;
                         if ($showS3Link)
                         {
                             $filteredText .= ' ' . AvantAdmin::emitS3Link($filteredText);
