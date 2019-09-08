@@ -320,9 +320,18 @@ jQuery(document).ready(function()
 
     jQuery('.search-results-make-recent').click(function (e)
     {
-        var itemId = jQuery(this).attr('data-id');
-        saveRecentItemId(itemId);
-        jQuery(this).hide('slow');
+        var flag = jQuery(this);
+        var itemId = flag.attr('data-id');
+        if (flag.hasClass('flagged'))
+        {
+            removeRecentlyVisitedItem(itemId);
+            flag.removeClass('flagged');
+        }
+        else
+        {
+            addRecentlyVisitedItem(itemId);
+            flag.addClass('flagged');
+        }
     });
 
 });

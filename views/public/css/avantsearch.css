@@ -1120,11 +1120,19 @@ a.search-reset-link:hover {
 
 .search-results-make-recent {
 	cursor: pointer;
+	color: #bababa;
+}
+
+.search-results-make-recent.flagged {
 	color: #588caf;
 }
 
+.search-results-make-recent.flagged:hover {
+	color: #6fa3c7;
+}
+
 .search-results-make-recent:hover {
-	color: #639abd;
+	color: #9f9f9f;
 }
 
 .search-results-make-recent:after {
