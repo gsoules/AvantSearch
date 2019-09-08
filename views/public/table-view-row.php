@@ -67,37 +67,32 @@ echo $data->itemThumbnailHtml;
         }
 
         // Determine if it's okay to show the edit link for this item.
-        $showEditLink = false;
+        $showAdminLinks = false;
         if ($searchResults->useElasticsearch())
         {
             if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
             {
                 // This item was contributed by this installation.
                 $itemId = $item['_source']['item']['id'];
-                $showEditLink = $userCanEdit;
+                $showAdminLinks = $userCanEdit;
             }
         }
         else
         {
             $itemId = $item->id;
-            $showEditLink = $userCanEdit;
+            $showAdminLinks = $userCanEdit;
         }
 
-        if ($showEditLink)
+        if ($showAdminLinks)
         {
-            $s3Link = '';
-            $showS3Link = plugin_is_active('AvantS3') && !$searchResults->sharedSearchingEnabled() && $searchResults->useElasticsearch();
-            if ($showS3Link)
-            {
-                $identifier = $item['_source']['common']['identifier'][0];
-                $s3Link = ' | ' . AvantAdmin::emitS3Link($identifier);
-            }
+            // These links will appear as though it were a metadata element value in the last row of metadata.
 
-            // The edit link will appear as though it were a metadata element value in the last row of metadata.
+            $recentLink = '';
+            if (!array_key_exists($itemId, $recentlyViewedItems))
+                $recentLink = "<span data-id='$itemId' class='search-results-make-recent'>&nbsp;&nbsp;<a></a></span>";
+
             $editLink = '<div class="search-results-metadata-row">';
-            $editLink .= AvantCommon::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true, $s3Link);
-
-
+            $editLink .= AvantCommon::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true, true, $recentLink);
             $editLink .= '</div>';
             echo $editLink;
         }

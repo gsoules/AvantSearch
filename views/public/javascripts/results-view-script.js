@@ -317,4 +317,12 @@ jQuery(document).ready(function()
         remainingText.css('display', wasShowing ? 'none' : 'inline');
         jQuery(this).text(wasShowing ? ' [' + SHOW_MORE + ']' : ' [' + SHOW_LESS + ']');
     });
+
+    jQuery('.search-results-make-recent').click(function (e)
+    {
+        var itemId = jQuery(this).attr('data-id');
+        saveRecentItemId(itemId);
+        jQuery(this).hide('slow');
+    });
+
 });

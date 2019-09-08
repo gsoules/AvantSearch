@@ -1118,6 +1118,24 @@ a.search-reset-link:hover {
 	padding-top: 0;
 }
 
+.search-results-make-recent {
+	cursor: pointer;
+	color: #588caf;
+}
+
+.search-results-make-recent:hover {
+	color: #639abd;
+}
+
+.search-results-make-recent:after {
+	content: "\f024";
+	font-family: "FontAwesome";
+}
+
+.admin-links a,
+.admin-links a:visited {
+	color: var(--link-color);
+}
 
 /* Relationships View */
 

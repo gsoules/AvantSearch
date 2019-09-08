@@ -16,6 +16,7 @@ $userCanEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin
 $identifierAliasName = ItemMetadata::getIdentifierAliasElementName();
 $checkboxFieldData = plugin_is_active('AvantElements') ? ElementsConfig::getOptionDataForCheckboxField() : array();
 $allowSortByRelevance = $searchResults->allowSortByRelevance();
+$recentlyViewedItems = AvantCommon::getRecentlyViewedItems();
 
 $layoutData = $searchResults->getLayoutsData();
 $layoutId = $searchResults->getSelectedLayoutId();
@@ -90,7 +91,8 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
                     'identifierAliasName' => $identifierAliasName,
                     'allowSortByRelevance' => $allowSortByRelevance,
                     'checkboxFieldData' => $checkboxFieldData,
-                    'userCanEdit' => $userCanEdit)
+                    'userCanEdit' => $userCanEdit,
+                    'recentlyViewedItems' => $recentlyViewedItems)
             );
         }
         ?>

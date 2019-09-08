@@ -217,10 +217,6 @@ class AvantSearch
         $findUrl = url('/find') . $queryString;
         $advancedSearchUrl = url('/find/advanced') . $queryString;
 
-        $recentlyViewedItemsLinkText = __('Recent Items');
-        //$recentlyViewedItemsUrl = AvantAdmin::emitRecentlyViewedItemsLink();
-        $recentlyViewedItemsUrl = '';
-
         $menu = public_nav_main();
         $menuHtml = $menu->render();
 
@@ -247,9 +243,6 @@ class AvantSearch
         if (!$isAdvancedSearchPage)
         {
             $html .= '<a href="' . $advancedSearchUrl . '" id="advanced-search-link" class="search-link">' . $advancedSearchLinkText . '</a>';
-
-            if (!empty($recentlyViewedItemsUrl))
-                $html .= '<a href="' . $recentlyViewedItemsUrl . '" id="recently-viewed-items-link" class="search-link">' . $recentlyViewedItemsLinkText . '</a>';
         }
 
         $html .= '</div>';
