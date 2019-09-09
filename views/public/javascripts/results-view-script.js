@@ -317,21 +317,4 @@ jQuery(document).ready(function()
         remainingText.css('display', wasShowing ? 'none' : 'inline');
         jQuery(this).text(wasShowing ? ' [' + SHOW_MORE + ']' : ' [' + SHOW_LESS + ']');
     });
-
-    jQuery('.search-results-make-recent').click(function (e)
-    {
-        var flag = jQuery(this);
-        var itemId = flag.attr('data-id');
-        if (flag.hasClass('flagged'))
-        {
-            removeRecentlyVisitedItem(itemId);
-            flag.removeClass('flagged');
-        }
-        else
-        {
-            addRecentlyVisitedItem(itemId);
-            flag.addClass('flagged');
-        }
-    });
-
 });

@@ -243,6 +243,12 @@ class AvantSearch
         if (!$isAdvancedSearchPage)
         {
             $html .= '<a href="' . $advancedSearchUrl . '" id="advanced-search-link" class="search-link">' . $advancedSearchLinkText . '</a>';
+
+            if (!empty(AvantAdmin::getRecentlyViewedItems()))
+            {
+                $recentlyViewedItemsLinkText = __('Recent Items');
+                $html .= '<a href="' . public_url('/avant/recent') . '">' . $recentlyViewedItemsLinkText . '</a>';
+            }
         }
 
         $html .= '</div>';

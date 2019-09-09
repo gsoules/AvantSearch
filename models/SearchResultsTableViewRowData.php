@@ -406,14 +406,19 @@ class SearchResultsTableViewRowData
                 {
                     if ($elementName == 'Identifier')
                     {
-                        $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 0;
 
                         $showS3Link = plugin_is_active('AvantS3') && AvantCommon::userIsAdmin() && !$this->sharedSearchingEnabled;
                         if ($showS3Link)
                         {
-                            $filteredText .= ' ' . AvantAdmin::emitS3Link($filteredText);
+                            $identifier = $filteredText;
+                            $filteredText .= ' ' . AvantAdmin::emitS3Link($identifier);
                         }
 
+                        $itemId = $this->useElasticsearch ? $item['_source']['item']['id'] : $item->id;
+                        $flag = AvantAdmin::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItems());
+                        $filteredText .= ' ' . $flag;
+
+                        $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 0;
                         if (!$public)
                         {
                             $filteredText = PRIVATE_ITEM_PREFIX . $filteredText;

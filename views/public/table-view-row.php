@@ -86,21 +86,8 @@ echo $data->itemThumbnailHtml;
         if ($showAdminLinks)
         {
             // These links will appear as though it were a metadata element value in the last row of metadata.
-
-            if (array_key_exists($itemId, $recentlyViewedItems))
-            {
-                $flagged = ' flagged';
-                $tooltip = __('Remove from recently visited items list');
-            }
-            else
-            {
-                $flagged = '';
-                $tooltip = __('Add to recently visited items list');
-            }
-            $recentFlag = "<span data-id='$itemId' class='search-results-make-recent$flagged' title='$tooltip'>&nbsp;&nbsp;<a></a></span>";
-
             $editLink = '<div class="search-results-metadata-row">';
-            $editLink .= AvantAdmin::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true, $recentFlag);
+            $editLink .= AvantAdmin::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true);
             $editLink .= '</div>';
             echo $editLink;
         }

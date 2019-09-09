@@ -859,6 +859,16 @@ a.search-reset-link:hover {
 	padding: 2px;
 }
 
+.grid-view-cell a:link,
+.grid-view-cell a:visited {
+	color: var(--preview-link-color);
+	text-decoration: none;
+}
+
+.grid-view-cell a:hover {
+	color: var(--preview-link-hover-color);
+}
+
 /* === Search Results - Index View ===
 --------------------------------------------------------- */
 /* The whole index view */
@@ -1116,33 +1126,6 @@ a.search-reset-link:hover {
 #search-metadata .search-item-row {
 	border: 0 none;
 	padding-top: 0;
-}
-
-.search-results-make-recent {
-	cursor: pointer;
-	color: #bababa;
-}
-
-.search-results-make-recent.flagged {
-	color: #588caf;
-}
-
-.search-results-make-recent.flagged:hover {
-	color: #6fa3c7;
-}
-
-.search-results-make-recent:hover {
-	color: #9f9f9f;
-}
-
-.search-results-make-recent:after {
-	content: "\f024";
-	font-family: "FontAwesome";
-}
-
-.admin-links a,
-.admin-links a:visited {
-	color: var(--link-color);
 }
 
 /* Relationships View */

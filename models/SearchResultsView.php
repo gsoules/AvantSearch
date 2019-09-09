@@ -25,6 +25,7 @@ class SearchResultsView
     protected $layoutId;
     protected $limit;
     protected $query;
+    protected $recentlyViewedItems;
     protected $results;
     protected $resulstAreFuzzy;
     protected $searchFilters;
@@ -72,6 +73,8 @@ class SearchResultsView
         // Only allow sorting by relevance when keywords are provided because they are what relevance scoring is based on.
         // Other search parameters are filters that narrow the result set and don't affect the score at all or very much.
         $this->allowSortByRelevance = !empty(AvantCommon::queryStringArg('query')) || !empty(AvantCommon::queryStringArg('keywords'));
+
+        $this->recentlyViewedItems = AvantAdmin::getRecentlyViewedItems();
     }
 
     protected function addDescriptionColumn()
@@ -842,6 +845,11 @@ class SearchResultsView
     public function getQuery()
     {
         return $this->query;
+    }
+
+    public function getRecentlyViewedItems()
+    {
+        return $this->recentlyViewedItems;
     }
 
     public function getResults()
