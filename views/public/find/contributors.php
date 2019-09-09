@@ -5,7 +5,8 @@ $stats = '';
 
 if ($useElasticsearch)
 {
-    $stats = AvantElasticsearch::generateContributorStatistics();
+    $indexName = AvantElasticsearch::getNameOfSharedIndex();
+    $stats = AvantElasticsearch::generateContributorStatistics($indexName);
 }
 
 $pageTitle = __('Contributors');

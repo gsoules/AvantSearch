@@ -199,6 +199,11 @@ input[type="checkbox"] {
 	padding-left: 8px;
 }
 
+.contributor-table-organization {
+	text-align: left;
+	width: 300px;
+}
+
 .search-entry:first-of-type .advanced-search-joiner {
   	display: none;
 }
