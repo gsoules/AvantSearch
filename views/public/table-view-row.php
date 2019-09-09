@@ -97,10 +97,10 @@ echo $data->itemThumbnailHtml;
                 $flagged = '';
                 $tooltip = __('Add to recently visited items list');
             }
-            $recentLink = "<span data-id='$itemId' class='search-results-make-recent$flagged' title='$tooltip'>&nbsp;&nbsp;<a></a></span>";
+            $recentFlag = "<span data-id='$itemId' class='search-results-make-recent$flagged' title='$tooltip'>&nbsp;&nbsp;<a></a></span>";
 
             $editLink = '<div class="search-results-metadata-row">';
-            $editLink .= AvantCommon::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true, true, $recentLink);
+            $editLink .= AvantAdmin::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true, $recentFlag);
             $editLink .= '</div>';
             echo $editLink;
         }
