@@ -242,13 +242,10 @@ class AvantSearch
         // Emit the Advanced Search link.
         if (!$isAdvancedSearchPage)
         {
-            $html .= '<a href="' . $advancedSearchUrl . '" id="advanced-search-link" class="search-link">' . $advancedSearchLinkText . '</a>';
+            $html .= '<a id="advanced-search-link" href="' . $advancedSearchUrl . '" class="search-link">' . $advancedSearchLinkText . '</a>';
 
-            if (!empty(AvantAdmin::getRecentlyViewedItems()))
-            {
-                $recentlyViewedItemsLinkText = __('Recent Items');
-                $html .= '<a href="' . public_url('/avant/recent') . '">' . $recentlyViewedItemsLinkText . '</a>';
-            }
+            $recentlyViewedItemsLinkText = __('Recent Items');
+            $html .= '<a id="recent-items-link" href="' . public_url('/avant/recent') . '">' . $recentlyViewedItemsLinkText . '</a>';
         }
 
         $html .= '</div>';

@@ -10,6 +10,11 @@
             query.val('');
             query.focus();
         });
+
+        // Show or hide the 'Recent Items' link (see comments in recent-items-script.js updateCookie function).
+        var recentItemsCount = getRecentItemIdsFromCookie().length;
+        var recentItemLink = jQuery('#recent-items-link');
+        recentItemsCount === 0 ? recentItemLink.hide() : recentItemLink.show();
     });
 </script>
 

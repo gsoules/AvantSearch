@@ -394,10 +394,13 @@ class SearchResultsTableViewRowData
                     {
                         $elementTexts = $elasticSearchElementTexts[$elasticsearchFieldName];
                     }
+
+                    $isLocalItem = $item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId();
                 }
                 else
                 {
                     $elementTexts = ItemMetadata::getAllElementTextsForElementName($item, $elementName);
+                    $isLocalItem = true;
                 }
 
                 $filteredText = $this->getElementTextsAsHtml($item, $elementName, $elementTexts, true);
@@ -406,17 +409,18 @@ class SearchResultsTableViewRowData
                 {
                     if ($elementName == 'Identifier')
                     {
-
-                        $showS3Link = plugin_is_active('AvantS3') && AvantCommon::userIsAdmin() && !$this->sharedSearchingEnabled;
-                        if ($showS3Link)
+                        if ($isLocalItem)
                         {
-                            $identifier = $filteredText;
-                            $filteredText .= ' ' . AvantAdmin::emitS3Link($identifier);
-                        }
+                            if (plugin_is_active('AvantS3') && AvantCommon::userIsAdmin())
+                            {
+                                $identifier = $filteredText;
+                                $filteredText .= ' ' . AvantAdmin::emitS3Link($identifier);
+                            }
 
-                        $itemId = $this->useElasticsearch ? $item['_source']['item']['id'] : $item->id;
-                        $flag = AvantAdmin::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItems());
-                        $filteredText .= ' ' . $flag;
+                            $itemId = $this->useElasticsearch ? $item['_source']['item']['id'] : $item->id;
+                            $flag = AvantAdmin::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItems());
+                            $filteredText .= ' ' . $flag;
+                        }
 
                         $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 0;
                         if (!$public)
