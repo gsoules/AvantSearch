@@ -48,7 +48,6 @@ class SearchQueryBuilder
             $this->buildKeywordWhere($keywords, $condition, $titleOnly);
 
         $this->buildSortOrder($primaryField, $sortOrder, $isIndexQuery);
-        $this->buildWhereDateRange();
 
         // Circumvent a bug in Table_Item::applySearchFilters which groups by items.id twice.
         $this->select->reset(Zend_Db_Select::GROUP);
@@ -285,34 +284,6 @@ class SearchQueryBuilder
 
         // Change the order to sort first by the user-chosen sort field and second by the Title field.
         $this->setSelectOrder($primaryColumnName, $sortOrder, !$isIndexQuery, $secondaryColumnName, $secondaryColumnSortOrder);
-    }
-
-    protected function buildWhereDateRange()
-    {
-        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
-        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
-
-        if (!empty($yearStartElementName) && !empty($_GET['year_start']))
-        {
-            $yearStart = intval(trim($_GET['year_start']));
-
-            $element = $this->db->getTable('Element')->findByElementSetNameAndElementName('Item Type Metadata', $yearStartElementName);
-            $this->select->joinLeft(array('_year_start' => $this->db->ElementText),
-                "_year_start.record_id = items.id AND _year_start.record_type = 'Item' AND _year_start.element_id = $element->id", array());
-
-            $this->select->where("_year_start.text >= '$yearStart'");
-        }
-
-        if (!empty($yearEndElementName) && !empty($_GET['year_end']))
-        {
-            $yearEnd = intval(trim($_GET['year_end']));
-
-            $element = $this->db->getTable('Element')->findByElementSetNameAndElementName('Item Type Metadata', $yearEndElementName);
-            $this->select->joinLeft(array('_year_end' => $this->db->ElementText),
-                "_year_end.record_id = items.id AND _year_end.record_type = 'Item' AND _year_end.element_id = $element->id", array());
-
-            $this->select->where("_year_end.text <= '$yearEnd'");
-        }
     }
 
     protected function columnValueForStreetNameSort($columnName, $alias)

@@ -100,17 +100,6 @@ class SearchConfig extends ConfigOptions
         return $data;
     }
 
-    public static function getOptionSupportedDateRange()
-    {
-        $yearStartElementName = CommonConfig::getOptionTextForYearStart();
-        $yearEndElementName = CommonConfig::getOptionTextForYearEnd();
-        $yearStartElementId = ItemMetadata::getElementIdForElementName($yearStartElementName);
-        $yearEndElementId = ItemMetadata::getElementIdForElementName($yearEndElementName);
-        $dateElementId = ItemMetadata::getElementIdForElementName('Date');
-
-        return ($yearStartElementId != 0 && $yearEndElementId != 0 && $dateElementId != 0);
-    }
-
     public static function getOptionSupportedAddressSorting()
     {
         // Determine if this database supports the REGEXP_REPLACE function which is needed to perform

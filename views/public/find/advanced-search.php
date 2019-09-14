@@ -47,7 +47,6 @@ $searchTitlesOnly = $searchResultsTable->getSearchTitles();
 $condition = $searchResults->getKeywordsCondition();
 
 $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
-$showDateRangeOption = SearchConfig::getOptionSupportedDateRange();
 
 $useElasticsearch = AvantSearch::useElasticsearch();
 
@@ -179,15 +178,15 @@ echo "<div id='avantsearch-container'>";
         </div>
         <?php endif; ?>
 
-        <?php if ($showDateRangeOption || $useElasticsearch): ?>
+        <?php if ($useElasticsearch): ?>
         <div class="search-form-section">
             <div class="avantsearch-label-column">
                 <?php echo $this->formLabel('year-range', __('Years')); ?>
             </div>
             <div class="avantsearch-year-range">
-                <label><?php echo $useElasticsearch ? __('Start') : CommonConfig::getOptionTextForYearStart(); ?></label>
+                <label><?php echo __('Start');?></label>
                 <?php echo $this->formText('year_start', @$_REQUEST['year_start'], array('id' => 'year-start', 'title' => 'Four digit start year')); ?>
-                <label><?php echo $useElasticsearch ? __('End') : CommonConfig::getOptionTextForYearEnd(); ?></label>
+                <label><?php echo __('End'); ?></label>
                 <?php echo $this->formText('year_end', @$_REQUEST['year_end'], array('id' => 'year-end', 'title' => 'Four digit end year')); ?>
             </div>
 		</div>
