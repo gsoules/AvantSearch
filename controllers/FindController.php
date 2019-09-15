@@ -102,6 +102,13 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
         else
         {
             $sortElementName = $searchResultsView->getElementNameForQueryArg('sort');
+            $sortFields = $searchResultsView->getSortFields();
+            if (!in_array($sortElementName, $sortFields))
+            {
+                // This is not a sortable field because no layout contains it as a column.  This could happen
+                // when using an outdated query string contains sorts by a field that used to be sortable.
+                $sortElementName = 'Title';
+            }
         }
 
         $sortOrder = isset($this->queryArgs['order']) && $this->queryArgs['order'] == 'd' ? 'desc' : 'asc';

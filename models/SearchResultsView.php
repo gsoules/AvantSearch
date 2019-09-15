@@ -1022,6 +1022,15 @@ class SearchResultsView
         $sortFieldName = $this->getElementNameForQueryArg('sort', 'relevance');
         if ($sortFieldName == 'relevance' && !$this->allowSortByRelevance())
             $sortFieldName = 'Title';
+        else
+        {
+            $sortFields = $this->getSortFields();
+            if (!in_array($sortFieldName, $sortFields))
+            {
+                // This is not a sortable field because no layout contains it as a column.
+                $sortFieldName = 'Title';
+            }
+        }
         $sortFields = $this->getSortFields();
         $sortId = array_search ($sortFieldName, $sortFields);
         return $sortId === false ? array_search('relevance', $sortFields) : $sortId;
