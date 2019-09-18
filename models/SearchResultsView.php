@@ -927,10 +927,14 @@ class SearchResultsView
             {
                 $last = $pageNumber * $perPage;
                 $first = $last - $perPage + 1;
-                if ($last > $totalResults)
-                    $last = $totalResults;
-
-                $message = "$first - $last of $totalResults " . __('results');
+                if ($first > $totalResults)
+                    $message = __('Invalid page number %s', $pageNumber);
+                else
+                {
+                    if ($last > $totalResults)
+                        $last = $totalResults;
+                    $message = "$first - $last of $totalResults " . __('results');
+                }
             }
         }
 
