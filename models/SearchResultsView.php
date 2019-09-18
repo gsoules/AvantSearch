@@ -1020,8 +1020,14 @@ class SearchResultsView
     public function getSelectedSortId()
     {
         $sortFieldName = $this->getElementNameForQueryArg('sort', 'relevance');
+
         if ($sortFieldName == 'relevance' && !$this->allowSortByRelevance())
-            $sortFieldName = 'Title';
+        {
+            if ($this->sharedSearchingEnabled())
+                $sortFieldName = 'Title';
+            else
+                $sortFieldName = ItemMetadata::getIdentifierElementName();
+        }
         else
         {
             $sortFields = $this->getSortFields();

@@ -95,8 +95,18 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             }
             else
             {
-                // Default to sort by title when no sort order specified and not allowed to sort by relevance.
-                $sortElementName = 'Title';
+                if ($this->sharedSearchingEnabled)
+                {
+                    $sortElementName = 'Title';
+                }
+                else
+                {
+                    // Default to sort by identifier descending when no sort order specified and not allowed to sort by
+                    // relevance. This causes the most recently added items to appear first because they have the largest
+                    // identifier numbers.
+                    $sortElementName = ItemMetadata::getIdentifierElementName();
+                    $this->queryArgs['order'] = 'd';
+                }
             }
         }
         else
