@@ -35,11 +35,6 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             $this->fuzzy);
     }
 
-    public function contributorsAction()
-    {
-        return;
-    }
-
     protected function find()
     {
         /* @var $searchResultsView SearchResultsView */
