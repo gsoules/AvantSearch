@@ -113,18 +113,21 @@ input[type="checkbox"] {
 	width: 100%;
 }
 
-#search-filter-form #avantsearch-primary {
-	box-sizing: border-box;
-    	float:left;
-    	width: 60%;
+#avantsearch-container {
+	display: grid;
+	grid-template-columns: 500px auto;
 }
 
-#search-filter-form #avantsearch-secondary {
+#avantsearch-primary {
+	grid-column: 1;
+	box-sizing: border-box;
+}
+
+#avantsearch-secondary {
+	grid-column: 2;
 	border-left: none;
-	float: right;
 	margin-top: 12px;
 	padding: 0 0 1.5em 1.5em;
-	width: 37%;
 	word-wrap: break-word;
 }
 
@@ -193,11 +196,12 @@ input[type="checkbox"] {
 #search-stats-table {
 	text-align: right;
 	font-size: 14px;
+	width: auto;
 	max-width: 700px;
 }
 
 #search-stats-table tbody > tr > td {
-	padding-left: 8px;
+	padding-left: 24px;
 }
 
 .contributor-table-organization {
@@ -251,8 +255,8 @@ input[type="checkbox"] {
 }
 
 /* Date fields */
-#search-filter-form #date-start,
-#search-filter-form #date-end {
+#date-start,
+#date-end {
 	margin-right: 1px;
 	width: 15%
 }
@@ -1333,15 +1337,7 @@ a.search-reset-link:hover {
 }
 
 @media screen and (min-width: 1200px) {
-	#search-filter-form #avantsearch-primary {
-		width: 40%;
-	}
-
-	#search-filter-form #avantsearch-secondary {
-		width: 57%;
-	}
 	.grid-view {
-		/*grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;*/
 		grid-template-columns: repeat(6, 1fr);
 	}
 }
@@ -1401,6 +1397,10 @@ a.search-reset-link:hover {
 /* === CSS for Width between 844 and 768px (Tablet Portrait) ===
 --------------------------------------------------------- */
 @media screen and (max-width: 768px) {
+	#avantsearch-container {
+		grid-template-columns: 400px auto;
+	}
+
 	.search-form-section .avantsearch-option-column {
 		margin-left: 0;
 		width: 100%;
@@ -1410,6 +1410,10 @@ a.search-reset-link:hover {
 /* === CSS for Width < 600px ===
 --------------------------------------------------------- */
 @media screen and (max-width: 600px) {
+	#avantsearch-secondary {
+		grid-column: 1;
+	}
+
 	.search-td-title {
 		width: 100px;
 	}
@@ -1418,16 +1422,10 @@ a.search-reset-link:hover {
 		width: 30%;
 	}
 
-	#search-filter-form #avantsearch-primary,
-	#search-filter-form #avantsearch-secondary {
-		width: 100%;
-	}
-
-	#search-filter-form #search-form-section {
+	#search-form-section {
 		width: 100%;
 
 	}
-
 	/* Advanced Search form */
 	#search-filter-form .eight.columns {
 		width: 92%;
@@ -1437,7 +1435,6 @@ a.search-reset-link:hover {
 /* === CSS for Width < 480px ===
 --------------------------------------------------------- */
 @media screen and (max-width: 480px) {
-
 	.search-entry {
 		margin-bottom: 1.5em;
 	}
