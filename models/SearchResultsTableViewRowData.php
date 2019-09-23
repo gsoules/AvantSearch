@@ -418,7 +418,7 @@ class SearchResultsTableViewRowData
                             }
 
                             $itemId = $this->useElasticsearch ? $item['_source']['item']['id'] : $item->id;
-                            $flag = AvantAdmin::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItems());
+                            $flag = AvantAdmin::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItemIds());
                             $filteredText .= ' ' . $flag;
                         }
 

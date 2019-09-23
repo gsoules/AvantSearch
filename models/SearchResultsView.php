@@ -25,7 +25,7 @@ class SearchResultsView
     protected $layoutId;
     protected $limit;
     protected $query;
-    protected $recentlyViewedItems;
+    protected $recentlyViewedItemIds;
     protected $results;
     protected $resulstAreFuzzy;
     protected $searchFilters;
@@ -74,7 +74,7 @@ class SearchResultsView
         // Other search parameters are filters that narrow the result set and don't affect the score at all or very much.
         $this->allowSortByRelevance = !empty(AvantCommon::queryStringArg('query')) || !empty(AvantCommon::queryStringArg('keywords'));
 
-        $this->recentlyViewedItems = AvantAdmin::getRecentlyViewedItems();
+        $this->recentlyViewedItemIds = AvantAdmin::getRecentlyViewedItemIds();
     }
 
     protected function addDescriptionColumn()
@@ -847,9 +847,9 @@ class SearchResultsView
         return $this->query;
     }
 
-    public function getRecentlyViewedItems()
+    public function getRecentlyViewedItemIds()
     {
-        return $this->recentlyViewedItems;
+        return $this->recentlyViewedItemIds;
     }
 
     public function getResults()
