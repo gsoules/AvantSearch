@@ -99,7 +99,7 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
                     // Default to sort by identifier descending when no sort order specified and not allowed to sort by
                     // relevance. This causes the most recently added items to appear first because they have the largest
                     // identifier numbers.
-                    $sortElementName = ItemMetadata::getIdentifierElementName();
+                    $sortElementName = ItemMetadata::getIdentifierAliasElementName();
                     $this->queryArgs['order'] = 'd';
                 }
             }

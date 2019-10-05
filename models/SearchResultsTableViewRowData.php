@@ -378,6 +378,7 @@ class SearchResultsTableViewRowData
             $this->getItemFieldTextsHtml($item);
         }
 
+        $identifierElementName = ItemMetadata::getIdentifierAliasElementName();
         foreach ($this->columnsData as $column)
         {
             $elementName = $column['name'];
@@ -407,7 +408,7 @@ class SearchResultsTableViewRowData
 
                 if ($elementName != 'Description')
                 {
-                    if ($elementName == 'Identifier')
+                    if ($elementName == $identifierElementName)
                     {
                         if ($isLocalItem)
                         {
