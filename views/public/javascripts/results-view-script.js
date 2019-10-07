@@ -185,6 +185,12 @@ function setSelectedOption(kind, prefix, newOptionId)
 
     if (kind !== LAYOUT)
     {
+        if (kind === SORT && isNaN(newOptionId))
+        {
+            // Protect against server-side logic that could pass an invalid sort value causing the page to reload repeatedly.
+            return;
+        }
+
         if (kind === SORT && newOptionId === 0)
         {
             // To sort by relevance, remove the sort and order args.
