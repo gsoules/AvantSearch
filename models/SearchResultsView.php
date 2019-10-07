@@ -1030,7 +1030,7 @@ class SearchResultsView
             if ($this->sharedSearchingEnabled())
                 $sortFieldName = 'Title';
             else
-                $sortFieldName = ItemMetadata::getIdentifierElementName();
+                $sortFieldName = ItemMetadata::getIdentifierAliasElementName();
         }
         else
         {
