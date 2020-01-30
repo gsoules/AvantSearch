@@ -11,7 +11,7 @@ class SearchResultsView
 
     protected $advancedSearchFields;
     protected $allowSortByRelevance;
-    protected $columnsData;
+    protected $columnsData = array();
     protected $condition;
     protected $conditionName;
     protected $detailLayoutData;
