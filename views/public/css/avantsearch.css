@@ -1188,14 +1188,6 @@ a.search-reset-link:hover {
 }
 
 #sqlsearch-results-container {
-	display: grid;
-	grid-template-columns: 1fr;
-	grid-template-areas:
-			"title"
-			"message"
-			"filter"
-			"results"
-			"bottom";
 }
 
 #search-results-title {
