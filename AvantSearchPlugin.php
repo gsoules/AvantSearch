@@ -94,12 +94,6 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookPublicHead($args)
     {
         queue_css_file('avantsearch');
-
-        if (AvantSearch::useElasticsearch())
-        {
-            queue_js_file('js.cookie');
-        }
-
         AvantSearch::emitSearchResultsTableCss();
     }
 }

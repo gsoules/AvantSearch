@@ -52,7 +52,6 @@ $useElasticsearch = AvantSearch::useElasticsearch();
 
 $pageTitle = __('Advanced Search');
 
-queue_js_file('js.cookie');
 echo head(array('title' => $pageTitle, 'bodyclass' => 'avantsearch-advanced'));
 echo "<div><h1>$pageTitle</h1></div>";
 ?>
