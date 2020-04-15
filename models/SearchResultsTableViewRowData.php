@@ -183,7 +183,7 @@ class SearchResultsTableViewRowData
         else
         {
             $idLink = link_to_item(ItemMetadata::getItemIdentifierAlias($item));
-            $public = $item->public == 0;
+            $public = $item->public == 1;
         }
 
         if (!$public)
@@ -246,7 +246,10 @@ class SearchResultsTableViewRowData
 
     public static function getElementDetail($data, $elementName)
     {
-        return $data->elementValue[$elementName]['detail'];
+        $detail = '';
+        if (isset($data->elementValue[$elementName]['detail']))
+            $detail = $data->elementValue[$elementName]['detail'];
+        return $detail;
     }
 
     protected function getElementTextsAsHtml($item, $elementName, $elementTexts, $filtered)
@@ -423,7 +426,7 @@ class SearchResultsTableViewRowData
                             $filteredText .= ' ' . $flag;
                         }
 
-                        $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 0;
+                        $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 1;
                         if (!$public)
                         {
                             $filteredText = PRIVATE_ITEM_PREFIX . $filteredText;
