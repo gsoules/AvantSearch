@@ -250,21 +250,31 @@ echo "<div><h1>$pageTitle</h1></div>";
 
         jQuery('#search-filter-form').submit(function()
         {
-            // Disable fields that should not get emitted as part of the query string because:
-            // * The user provided no value, or
-            // * The default value is selected and does not need to be in the query string
+            // Determine if the user added a search field, but didn't select an Omeka element name.
+            // For each such field, remove all of its HTML elements (joiner, Omeka element, condition, and value)
+            // so that none will get submitted when the Search button gets clicked.
 
-            var field0Id = jQuery("select[name='advanced[0][element_id]']");
-            var field0Condition = jQuery("select[name='advanced[0][type]']");
-            if (field0Id.val() === '' || field0Condition.val() === '')
+            // Loop over each <div> that contains the SELECT and INPUT tags for a field.
+            let searchEntries = jQuery(".search-entry");
+            for (let i = 0; i < searchEntries.length; i++)
             {
-                var field0Joiner = jQuery("select[name='advanced[0][joiner]']");
-                var field0Value = jQuery("input[name='advanced[0][terms]']");
-
-                field0Joiner.prop("disabled", true);
-                field0Id.prop("disabled", true);
-                field0Condition.prop("disabled", true);
-                field0Value.prop("disabled", true);
+                // Walk the elements to find the SELECT for the Omeka element name. It has class 'advanced-search-element'.
+                let searchEntry = searchEntries[i];
+                let children = searchEntry.childNodes;
+                for (let child in children)
+                {
+                    if (children.hasOwnProperty(child))
+                    {
+                        let entryElement = children[child];
+                        if (entryElement.className === 'advanced-search-element' && entryElement.value === '')
+                        {
+                            // The SELECT has no value. Remove the containing <div> for the field.
+                            // This has the effect of undoing the user having added a new field.
+                            searchEntry.remove();
+                            break;
+                        }
+                    }
+                }
             }
 
             disableEmptyField('#keywords');
