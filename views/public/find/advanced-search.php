@@ -35,8 +35,14 @@ $advancedFormAttributes['action'] = url('find');
 $advancedFormAttributes['method'] = 'GET';
 $advancedSubmitButtonText = __('Search');
 
-$helpTextFileName = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'elasticsearch-help.html';
-$helpText = file_get_contents($helpTextFileName);
+$useElasticsearch = AvantSearch::useElasticsearch();
+
+$helpText = '';
+if ($useElasticsearch)
+{
+    $helpTextFileName = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'elasticsearch-help.html';
+    $helpText = file_get_contents($helpTextFileName);
+}
 
 // Instantiate search results objects needed to get option values.
 $searchResults = new SearchResultsView();
@@ -47,8 +53,6 @@ $searchTitlesOnly = $searchResultsTable->getSearchTitles();
 $condition = $searchResults->getKeywordsCondition();
 
 $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
-
-$useElasticsearch = AvantSearch::useElasticsearch();
 
 $pageTitle = __('Advanced Search');
 
@@ -248,7 +252,7 @@ echo "<div><h1>$pageTitle</h1></div>";
         {
             // Disable fields that should not get emitted as part of the query string because:
             // * The user provided no value, or
-            // * The default value is selected as does not need to be in the query string
+            // * The default value is selected and does not need to be in the query string
 
             var field0Id = jQuery("select[name='advanced[0][element_id]']");
             var field0Condition = jQuery("select[name='advanced[0][type]']");
