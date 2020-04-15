@@ -356,6 +356,8 @@ class SearchConfig extends ConfigOptions
             if (empty($elementName))
                 continue;
 
+            self::errorIf($elementName == 'Title', CONFIG_LABEL_DETAIL_LAYOUT, __('The Title element cannot be used in the Detail Layout.'));
+
             if (self::isPseudoElement($elementName))
             {
                 $elementId = $elementName;
