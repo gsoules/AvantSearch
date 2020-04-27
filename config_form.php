@@ -83,7 +83,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
         <label><?php echo CONFIG_LABEL_INTEGER_SORTING; ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __("Columns that should be sorted as integers."); ?></p>
+        <p class="explanation"><?php echo __("Columns that should be sorted as integers. Can be used with mixed values (integer and text). Requires Elasticsearch reindex."); ?></p>
         <?php echo $view->formTextarea(SearchConfig::OPTION_INTEGER_SORTING, $integerSortingOption, array('rows' => $integerSortingOptionRows)); ?>
     </div>
 </div>

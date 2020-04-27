@@ -147,7 +147,7 @@ function emitEntries($entries, $indexFieldElementId, $indexElementName, $searchR
             }
             else
             {
-                if (empty($indexElementName))
+                if (empty($indexElementName) || !$searchResults->useElasticsearch())
                     $indexElementName = $indexFieldElementId;
                 $searchCondition = 'is exactly';
                 $url = $searchResults->emitIndexEntryUrl($entryText, $indexElementName, $searchCondition);
