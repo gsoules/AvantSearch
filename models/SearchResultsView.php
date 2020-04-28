@@ -1023,7 +1023,8 @@ class SearchResultsView
 
     public function getSelectedSortId()
     {
-        $sortFieldName = $this->getElementNameForQueryArg('sort', 'relevance');
+        $defaultName = $this->useElasticsearch ? 'relevance' : 'Title';
+        $sortFieldName = $this->getElementNameForQueryArg('sort', $defaultName);
 
         if ($sortFieldName == 'relevance' && !$this->allowSortByRelevance())
         {
