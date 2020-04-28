@@ -195,10 +195,8 @@ echo "<div><h1>$pageTitle</h1></div>";
 
             <div id="search-button" class="panel">
                 <input type="submit" class="submit button" value="<?php echo $advancedSubmitButtonText; ?>">
-                <?php if ($useElasticsearch): ?>
-                    <!-- Emit the hidden <input> tags needed to put query string argument values into the form. -->
-                    <?php echo AvantSearch::getHiddenInputsForAdvancedSearch() ?>
-                <?php endif; ?>
+                <!-- Emit the hidden <input> tags needed to put query string argument values into the form. -->
+                <?php echo AvantSearch::getHiddenInputsForAdvancedSearch() ?>
             </div>
             <div class="search-form-reset-button">
                 <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Clear all search options</a>'; ?>
