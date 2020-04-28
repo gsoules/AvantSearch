@@ -127,7 +127,7 @@ function setSelectedOption(kind, prefix, newOptionId)
 
     if (!hasQueryStringArgs())
     {
-        // Add an empty query are because so that other args can be added using '&',
+        // Add an empty query arg so that other args can be added using '&',
         oldUrl += '?query=';
     }
 
