@@ -691,7 +691,9 @@ class SearchResultsView
     {
         if (!isset($this->indexFields))
         {
-            $this->indexFields = $this->getNamesOfVisibleElements();
+            # Get all visible elements, not just those that appear in a layout.
+            $restrictToLayoutElements = false;
+            $this->indexFields = $this->getNamesOfVisibleElements($restrictToLayoutElements);
         }
         return $this->indexFields;
     }
@@ -788,7 +790,7 @@ class SearchResultsView
         return empty($keys) ? 0 : max($keys);
     }
 
-    public function getNamesOfVisibleElements()
+    public function getNamesOfVisibleElements($restrictToLayoutElements = true)
     {
         if (empty($this->visibleElementNames))
         {
@@ -822,18 +824,22 @@ class SearchResultsView
                     $allowedFields = array_diff($allFields, $privateFields);
                 }
 
-                // The allowed fields array now contain  a list of each field the user could see if the fields appeared in
-                // one of the layouts. Create a separate list of just the fields being displayed.
-                foreach ($this->columnsData as $columnName => $columnData)
+                if ($restrictToLayoutElements)
                 {
-                    $displayedFields[] = $columnName;
-                }
+                    // The allowed fields array now contain a list of each field the user is allowed to see.
+                    // Create a separate list of just the fields that appear in one of the layouts.
+                    foreach ($this->columnsData as $columnName => $columnData)
+                    {
+                        $displayedFields[] = $columnName;
+                    }
 
-                // Reduce the list of the allowed fields to only those that appear in a layout. If the user is not logged in,
-                // some of the displayed fields allowed fields won't be in the allowed fields list because those fields are
-                // only allowed, and thus displayed, when a user is logged in. Thus the final allowed list contains all the
-                // displayed fields that the user is allowed to see.
-                $allowedFields = array_intersect($allowedFields, $displayedFields);
+                    // Reduce the list of the allowed fields to only those that appear in a layout. This restriction
+                    // keeps the user from selecting a field that doesn't make sense, e.g. to sort by a column that is
+                    // not shown. If the user is not logged in, some of the allowed fields won't be in the allowed
+                    // fields list because those fields are only allowed, and thus displayed, when a user is logged in.
+                    // The final allowed list contains all the displayed fields that the user is allowed to use.
+                    $allowedFields = array_intersect($allowedFields, $displayedFields);
+                }
             }
 
             $this->visibleElementNames = $allowedFields;
