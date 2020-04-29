@@ -287,10 +287,7 @@ class SearchResultsFilters
 
     protected function getTagsArg()
     {
-        // This methods supports Digital Archive 2.0 where 'tags' was a separate query string arg instead of an
-        // Advanced Search pseudo element.
-
-        $tags = AvantCommon::queryStringArg('tags');
+        $tags = $this->searchResults->getTags();
 
         if (!empty($tags))
         {
@@ -301,8 +298,8 @@ class SearchResultsFilters
 
     protected function getYearRangeArgs()
     {
-        $yearStart = AvantCommon::queryStringArg('year_start', 0);
-        $yearEnd = AvantCommon::queryStringArg('year_end', 0);
+        $yearStart = $this->searchResults->getYearStart();
+        $yearEnd = $this->searchResults->getYearEnd();
 
         if ($yearStart > 0)
         {

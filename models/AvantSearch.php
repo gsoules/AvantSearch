@@ -279,7 +279,7 @@ class AvantSearch
         foreach ($queryArgs as $key => $value)
         {
             // Skip any query string args that should not be used for querying.
-            if ($key == 'query' || $key =='keywords')
+            if ($key == 'query' || $key == 'keywords' || $key == 'tags' || $key == 'year_start' || $key == 'year_end')
                 continue;
             if (strpos($key, 'advanced') === 0)
                 continue;

@@ -51,6 +51,9 @@ $searchResultsTable = new SearchResultsTableView();
 $keywords = $searchResults->getKeywords();
 $searchTitlesOnly = $searchResultsTable->getSearchTitles();
 $condition = $searchResults->getKeywordsCondition();
+$tags = $searchResults->getTags();
+$yearStart = $searchResults->getYearStart();
+$yearEnd = $searchResults->getYearEnd();
 
 $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
 
@@ -73,28 +76,28 @@ echo "<div><h1>$pageTitle</h1></div>";
                     </div>
                 </div>
                 <?php if (!$useElasticsearch): ?>
-                <?php if ($showTitlesOption): ?>
-                <div class="search-field">
-                    <div class="avantsearch-label-column">
-                        <?php echo $this->formLabel('title-only', __('Search in')); ?><br>
-                    </div>
-                    <div class="avantsearch-option-column">
-                        <div class="search-radio-buttons">
-                            <?php echo $this->formRadio('titles', $searchTitlesOnly, null, $searchResults->getKeywordSearchTitlesOptions()); ?>
+                    <?php if ($showTitlesOption): ?>
+                        <div class="search-field">
+                            <div class="avantsearch-label-column">
+                                <?php echo $this->formLabel('title-only', __('Search in')); ?><br>
+                            </div>
+                            <div class="avantsearch-option-column">
+                                <div class="search-radio-buttons">
+                                    <?php echo $this->formRadio('titles', $searchTitlesOnly, null, $searchResults->getKeywordSearchTitlesOptions()); ?>
+                                </div>
+                            </div>
+                        </div>
+                    <?php endif; ?>
+                    <div class="search-field">
+                        <div class="avantsearch-label-column">
+                            <?php echo $this->formLabel('keyword-conditions', __('Condition')); ?><br>
+                        </div>
+                        <div class="avantsearch-option-column">
+                            <div class="search-radio-buttons">
+                                <?php echo $this->formRadio('condition', $condition, null, $searchResults->getKeywordsConditionOptions()); ?>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <?php endif; ?>
-                <div class="search-field">
-                    <div class="avantsearch-label-column">
-                        <?php echo $this->formLabel('keyword-conditions', __('Condition')); ?><br>
-                    </div>
-                    <div class="avantsearch-option-column">
-                        <div class="search-radio-buttons">
-                            <?php echo $this->formRadio('condition', $condition, null, $searchResults->getKeywordsConditionOptions()); ?>
-                        </div>
-                    </div>
-                </div>
                 <?php endif; ?>
             </div>
 
@@ -166,6 +169,18 @@ echo "<div><h1>$pageTitle</h1></div>";
                 <button type="button" class="add_search"><?php echo __('Add field'); ?></button>
             </div>
 
+            <div class="search-form-section">
+                <div class="avantsearch-label-column">
+                    <?php echo $this->formLabel('year-range', __('Years')); ?>
+                </div>
+                <div class="avantsearch-year-range">
+                    <label><?php echo __('Start');?></label>
+                    <?php echo $this->formText('year_start', $yearStart, array('id' => 'year-start', 'title' => 'Four digit start year')); ?>
+                    <label><?php echo __('End'); ?></label>
+                    <?php echo $this->formText('year_end', $yearEnd, array('id' => 'year-end', 'title' => 'Four digit end year')); ?>
+                </div>
+            </div>
+
             <?php if (!$useElasticsearch): ?>
             <div class="search-form-section">
                 <div>
@@ -173,22 +188,8 @@ echo "<div><h1>$pageTitle</h1></div>";
                         <?php echo $this->formLabel('tag-search', __('Tags')); ?>
                     </div>
                     <div class="avantsearch-option-column inputs">
-                        <?php echo $this->formText('tags', @$_REQUEST['tags'], array('size' => '40', 'id' => 'tags')); ?>
+                        <?php echo $this->formText('tags', $tags, array('size' => '40', 'id' => 'tags')); ?>
                     </div>
-                </div>
-            </div>
-            <?php endif; ?>
-
-            <?php if ($useElasticsearch): ?>
-            <div class="search-form-section">
-                <div class="avantsearch-label-column">
-                    <?php echo $this->formLabel('year-range', __('Years')); ?>
-                </div>
-                <div class="avantsearch-year-range">
-                    <label><?php echo __('Start');?></label>
-                    <?php echo $this->formText('year_start', @$_REQUEST['year_start'], array('id' => 'year-start', 'title' => 'Four digit start year')); ?>
-                    <label><?php echo __('End'); ?></label>
-                    <?php echo $this->formText('year_end', @$_REQUEST['year_end'], array('id' => 'year-end', 'title' => 'Four digit end year')); ?>
                 </div>
             </div>
             <?php endif; ?>

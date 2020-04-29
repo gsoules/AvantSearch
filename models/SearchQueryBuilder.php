@@ -43,6 +43,7 @@ class SearchQueryBuilder
 
         // Construct the query.
         $this->buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery);
+        $this->buildWhereDateRange();
 
         if ($isKeywordQuery)
             $this->buildKeywordWhere($keywords, $condition, $titleOnly);
@@ -284,6 +285,31 @@ class SearchQueryBuilder
 
         // Change the order to sort first by the user-chosen sort field and second by the Title field.
         $this->setSelectOrder($primaryColumnName, $sortOrder, !$isIndexQuery, $secondaryColumnName, $secondaryColumnSortOrder);
+    }
+
+    protected function buildWhereDateRange()
+    {
+        $dateElement = $this->db->getTable('Element')->findByElementSetNameAndElementName('Dublin Core', 'Date');
+
+        if (!empty($_GET['year_start']))
+        {
+            $yearStart = intval(trim($_GET['year_start']));
+
+            $this->select->joinLeft(array('_year_start' => $this->db->ElementText),
+                "_year_start.record_id = items.id AND _year_start.record_type = 'Item' AND _year_start.element_id = $dateElement->id", array());
+
+            $this->select->where("_year_start.text >= '$yearStart'");
+        }
+
+        if (!empty($_GET['year_end']))
+        {
+            $yearEnd = intval(trim($_GET['year_end']));
+
+            $this->select->joinLeft(array('_year_end' => $this->db->ElementText),
+                "_year_end.record_id = items.id AND _year_end.record_type = 'Item' AND _year_end.element_id = $dateElement->id", array());
+
+            $this->select->where("_year_end.text <= '$yearEnd'");
+        }
     }
 
     protected function columnValueForStreetNameSort($columnName, $alias)

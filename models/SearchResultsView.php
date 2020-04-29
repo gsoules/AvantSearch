@@ -31,12 +31,14 @@ class SearchResultsView
     protected $sortFieldElementId;
     protected $sortFields;
     protected $sortOrder;
+    protected $tags;
     protected $titles;
     protected $totalResults;
     protected $useElasticsearch;
     protected $viewId;
-    protected $viewName;
     protected $visibleElementNames;
+    protected $yearEnd;
+    protected $yearStart;
 
     function __construct()
     {
@@ -948,6 +950,16 @@ class SearchResultsView
         return $message;
     }
 
+    public function getTags()
+    {
+        if (isset($this->tags))
+            return $this->tags;
+
+        $this->tags = AvantCommon::queryStringArg('tags');
+
+        return $this->tags;
+    }
+
     public function getSearchTitles()
     {
         if (isset($this->titles))
@@ -1089,22 +1101,29 @@ class SearchResultsView
         return $this->totalResults;
     }
 
+    public function getYearEnd()
+    {
+        if (isset($this->yearEnd))
+            return $this->yearEnd;
+
+        $this->yearEnd = AvantCommon::queryStringArg('year_end');
+
+        return $this->yearEnd;
+    }
+
+    public function getYearStart()
+    {
+        if (isset($this->yearStart))
+            return $this->yearStart;
+
+        $this->yearStart = AvantCommon::queryStringArg('year_start');
+
+        return $this->yearStart;
+    }
+
     public function getViewId()
     {
         return $this->viewId;
-    }
-
-    public function getViewName()
-    {
-        if (isset($this->viewName))
-            return $this->viewName;
-
-        // Force the view Id to be gotten if it hasn't been already;
-        $viewName = $this->getViewId();
-
-        $this->viewName = $this->getViewOptions()[$viewName];
-
-        return $this->viewName;
     }
 
     public function getViewOptions()
