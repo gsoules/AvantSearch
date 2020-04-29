@@ -8,8 +8,7 @@ $resultsMessage = SearchResultsView::getSearchResultsMessage($totalResults, $sea
 
 $layoutsData = $searchResults->getLayoutsData();
 $detailLayoutData = $searchResults->getDetailLayoutData();
-$column1 =  isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
-$column2 =  isset($detailLayoutData[1]) ? $detailLayoutData[1] : array();
+$detailElements = isset($detailLayoutData[0]) ? $detailLayoutData[0] : array();
 
 $user = current_user();
 $userCanEdit = !empty($user) && ($user->role == 'super' || $user->role == 'admin');
@@ -85,8 +84,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
                 array(
                     'item' => $result,
                     'searchResults' => $searchResults,
-                    'column1' => $column1,
-                    'column2' => $column2,
+                    'detailElements' => $detailElements,
                     'identifierAliasName' => $identifierAliasName,
                     'allowSortByRelevance' => $allowSortByRelevance,
                     'checkboxFieldData' => $checkboxFieldData,

@@ -17,7 +17,6 @@ class SearchResultsView
     protected $detailLayoutData;
     protected $error;
     protected $facets;
-    protected $filterId;
     protected $indexFields;
     protected $layoutsData;
     protected $localIndexIsEnabled = false;
@@ -27,7 +26,6 @@ class SearchResultsView
     protected $query;
     protected $recentlyViewedItemIds;
     protected $results;
-    protected $resulstAreFuzzy;
     protected $searchFilters;
     protected $sharedIndexIsEnabled = false;
     protected $sortFieldElementId;

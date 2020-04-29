@@ -47,80 +47,65 @@ if (!$searchResults->hasLayoutL1())
 }
 
 // The code that follows emits the L1 Detail layout which is a table a column of the overall layout table.
-
 $class = strpos($data->itemThumbnailHtml, 'fallback') === false ? 'search-td-image ' : 'search-td-image-fallback';
 echo '<td class="' . $class . ' L1">';
 echo '<div class="search-results-detail">';
 echo $data->itemThumbnailHtml;
-?>
+echo '<div class="search-results-title">';
+echo $data->elementValue['Title']['text']; echo '</div>';
+echo '<div class="search-results-metadata">';
 
-<div class="search-results-title">
-    <?php echo $data->elementValue['Title']['text']; ?>
-</div>
-<div class="search-results-metadata">
-    <?php if (!empty($column1)): ?>
-        <?php
-        foreach ($column1 as $elementName)
-        {
-            $detailHtml = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
-            echo $detailHtml;
-        }
+if (!empty($detailElements))
+{
+    foreach ($detailElements as $elementName)
+    {
+        $detailHtml = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
+        echo $detailHtml;
+    }
 
-        // Determine if it's okay to show the edit link for this item.
-        $showAdminLinks = false;
-        if ($searchResults->useElasticsearch())
+    // Determine if it's okay to show the edit link for this item.
+    $showAdminLinks = false;
+    if ($searchResults->useElasticsearch())
+    {
+        if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
         {
-            if ($item['_source']['item']['contributor-id'] == ElasticsearchConfig::getOptionValueForContributorId())
-            {
-                // This item was contributed by this installation.
-                $itemId = $item['_source']['item']['id'];
-                $showAdminLinks = $userCanEdit;
-            }
-        }
-        else
-        {
-            $itemId = $item->id;
+            // This item was contributed by this installation.
+            $itemId = $item['_source']['item']['id'];
             $showAdminLinks = $userCanEdit;
         }
+    }
+    else
+    {
+        $itemId = $item->id;
+        $showAdminLinks = $userCanEdit;
+    }
 
-        if ($showAdminLinks)
-        {
-            // These links will appear as though it were a metadata element value in the last row of metadata.
-            $editLink = '<div class="search-results-metadata-row">';
-            $editLink .= AvantAdmin::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true);
-            $editLink .= '</div>';
-            echo $editLink;
-        }
-        ?>
-    <?php endif; ?>
-    <?php if (!empty($column2)): ?>
-        <?php
-        foreach ($column2 as $elementName)
-        {
-            $text = SearchResultsTableViewRowData::getElementDetail($data, $elementName);
-            echo "<div>$text</div>";
-        }
-        ?>
-    <?php endif; ?>
-</div>
-<?php if ($hasDescription || $hasPdfHits): ?>
-    <div class="detail-description">
-        <?php
+    if ($showAdminLinks)
+    {
+        // These links will appear as though it were a metadata element value in the last row of metadata.
+        $editLink = '<div class="search-results-metadata-row">';
+        $editLink .= AvantAdmin::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true);
+        $editLink .= '</div>';
+        echo $editLink;
+    }
+}
+echo '</div>';
+if ($hasDescription || $hasPdfHits)
+{
+    echo '<div class="detail-description">';
+    if ($hasDescription)
+    {
+        echo $data->elementValue['Description']['detail'];
+    }
+    if ($hasPdfHits)
+    {
         if ($hasDescription)
         {
-            echo $data->elementValue['Description']['detail'];
+            echo '<br/><br/>';
         }
-        if ($hasPdfHits)
-        {
-            if ($hasDescription)
-            {
-                echo '<br/><br/>';
-            }
-            echo $data->elementValue['<pdf>']['detail'];
-        }
-        ?>
-    </div>
-<?php endif; ?>
-<?php
+        echo $data->elementValue['<pdf>']['detail'];
+    }
+    echo '</div>';
+}
 echo '</tr>';
 ?>
