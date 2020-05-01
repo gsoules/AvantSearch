@@ -223,7 +223,7 @@ $useElasticsearch = $searchResults->useElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
 
-if ($totalResults <= AvantSearch::MAX_SEARCH_RESULTS)
+if ($totalResults <= AvantSearch::MAX_SEARCH_RESULTS || !$useElasticsearch)
 {
     $resultsMessage = SearchResultsView::getSearchResultsMessage($totalResults, $searchResults->getResultsAreFuzzy());
 }
