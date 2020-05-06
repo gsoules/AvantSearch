@@ -375,7 +375,15 @@ class SearchResultsTableViewRowData
             $commonFieldTexts = isset($item['_source']['common']) ? $item['_source']['common'] : array();
             $localFieldTexts = isset($item['_source']['local']) ? $item['_source']['local'] : array();
             $privateFieldTexts = isset($item['_source']['private']) ? $item['_source']['private'] : array();
-            $elasticSearchElementTexts = array_merge($commonFieldTexts, $localFieldTexts, $privateFieldTexts);
+
+            // Merge the three texts lists into one. Normally, the set of elements in each list would be mutually
+            // exclusive, however, if the Common Vocabulary feature is in use and the results are from a shared
+            // search, the common and local lists can both contain values for the Subject and Type elements. The
+            // local list has the original value and the common list has the translated value. In order to display
+            // the translated value in the search result, the order of the array_merge parameters must have common
+            // follow local so that the common values for Subject and Type will overwrite the local values. If you
+            // wanted to display the original values, local would follow common.
+            $elasticSearchElementTexts = array_merge($localFieldTexts, $commonFieldTexts, $privateFieldTexts);
 
             $this->avantElasticsearch = new AvantElasticsearch();
             $this->getItemFieldTextsHtml($item);
