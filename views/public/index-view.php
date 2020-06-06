@@ -24,8 +24,9 @@ function createEntriesFromElasticsearchResults($results, $indexFieldName)
         // each creator text will have a separate entry in the index view.
         foreach ($fieldTexts as $fieldText)
         {
-            // Don't index blank fields.
-            if ($fieldText == BLANK_FIELD_SUBSTITUTE)
+            // Decide whether to index blank fields. It's hardcoded for now, but could be a configuration option.
+            $dontIndexBlankFields = false;
+            if ($fieldText == BLANK_FIELD_SUBSTITUTE && $dontIndexBlankFields)
                 continue;
 
             // For sorting purposes, remove all non alphanumeric and blank characters.
