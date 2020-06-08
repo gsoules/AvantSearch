@@ -704,6 +704,16 @@ a.search-reset-link:hover {
 	color: #000;
 }
 
+.search-results-metadata-text ul {
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+}
+
+.search-results-metadata-text li {
+	padding-bottom: 3px;
+}
+
 .search-results-metadata-element,
 .search-results-detail-element {
 	color: #333;

@@ -299,12 +299,10 @@ class SearchResultsTableViewRowData
         // Create a single string containing all of the element's text values. Note that when using Elasticsearch,
         // $elementTexts is an array of the element's field-texts. When not using Elasticsearch, its an array of
         // ElementText objects.
+        $texts .= '<ul>';
         foreach ($elementTexts as $key => $elementText)
         {
-            if ($key != 0)
-            {
-                $texts .= '<br/>';
-            }
+            $texts .= '<li>';
 
             $text = $elementText;
 
@@ -329,7 +327,10 @@ class SearchResultsTableViewRowData
             }
 
             $texts .= $containsHtml ? $text : html_escape($text);
+
+            $texts .= '</li>';
         }
+        $texts .= '</ul>';
 
         return $texts;
     }
@@ -447,7 +448,7 @@ class SearchResultsTableViewRowData
 
                             $itemId = $this->useElasticsearch ? $item['_source']['item']['id'] : $item->id;
                             $flag = AvantAdmin::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItemIds());
-                            $filteredText .= ' ' . $flag;
+                            $filteredText = str_replace('</li></ul>', " $flag</li></ul>", $filteredText);
                         }
 
                         $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 1;
