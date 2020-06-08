@@ -34,12 +34,12 @@ class SearchResultsTableViewRowData
     protected function generateDescription($item)
     {
         $hasHighlights = false;
-        if ($this->useElasticsearch && isset($item['highlight']['common.description']))
+        if ($this->useElasticsearch && isset($item['highlight']['common-fields.description']))
         {
             // Replace the original description text with the highlighted text from Elasticsearch.
             $hasHighlights = true;
             $descriptionText = '...';
-            $highlights = $item['highlight']['common.description'];
+            $highlights = $item['highlight']['common-fields.description'];
             foreach ($highlights as $highlight)
             {
                 $descriptionText .= $highlight;
@@ -170,7 +170,7 @@ class SearchResultsTableViewRowData
         // Create a link for the identifier.
         if ($this->useElasticsearch)
         {
-            $identifier = $item['_source']['common']['identifier'][0];
+            $identifier = $item['_source']['core-fields']['identifier'][0];
             if ($this->sharedSearchingEnabled)
             {
                 $contributorId = $item['_source']['item']['contributor-id'];
@@ -208,9 +208,9 @@ class SearchResultsTableViewRowData
 
         if ($this->useElasticsearch)
         {
-            if (isset($item['_source']['common']['title']))
+            if (isset($item['_source']['core-fields']['title']))
             {
-                $titles = $item['_source']['common']['title'];
+                $titles = $item['_source']['core-fields']['title'];
             }
             else
             {
@@ -372,19 +372,15 @@ class SearchResultsTableViewRowData
 
         if ($this->useElasticsearch)
         {
-            $commonFieldTexts = isset($item['_source']['common']) ? $item['_source']['common'] : array();
-            $localFieldTexts = isset($item['_source']['local']) ? $item['_source']['local'] : array();
-            $privateFieldTexts = isset($item['_source']['private']) ? $item['_source']['private'] : array();
+            $coreFieldTexts = isset($item['_source']['core-fields']) ? $item['_source']['core-fields'] : array();
+            $localFieldTexts = isset($item['_source']['local-fields']) ? $item['_source']['local-fields'] : array();
+            $privateFieldTexts = isset($item['_source']['private-fields']) ? $item['_source']['private-fields'] : array();
+            $elasticSearchElementTexts = array_merge($localFieldTexts, $coreFieldTexts, $privateFieldTexts);
 
-            // Merge the three texts lists into one. Normally, the set of elements in each list would be mutually
-            // exclusive, however, if the Common Vocabulary feature is in use and the results are from a shared
-            // search, the common and local lists can both contain values for the Subject, Type, amd Place elements.
-            // The local list has the original values and the common list has the translated values. The order of the
-            // array_merge parameters determines which list takes precedence because values in the second array
-            // clobber corresponding values in the first array.
-            $primaryFieldTexts = $this->sharedSearchingEnabled ? $commonFieldTexts : $localFieldTexts;
-            $secondaryFieldTexts = $this->sharedSearchingEnabled ? $localFieldTexts : $commonFieldTexts;
-            $elasticSearchElementTexts = array_merge($secondaryFieldTexts, $primaryFieldTexts, $privateFieldTexts);
+            foreach ($elasticSearchElementTexts as $fieldName => $texts)
+            {
+                sort($elasticSearchElementTexts[$fieldName]);
+            }
 
             $this->avantElasticsearch = new AvantElasticsearch();
             $this->getItemFieldTextsHtml($item);

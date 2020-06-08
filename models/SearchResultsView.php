@@ -506,7 +506,7 @@ class SearchResultsView
         {
             // Filter public fields to only those that are common among all contributors.
             $avantElasticsearch = new AvantElasticsearch();
-            $commonSearchFields = $avantElasticsearch->getFieldNamesOfCommonElements();
+            $commonSearchFields = $avantElasticsearch->getFieldNamesOfCoreElements();
             foreach ($publicFields as $elementId => $elementName)
             {
                 $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
