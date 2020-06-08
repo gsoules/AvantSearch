@@ -90,18 +90,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             }
             else
             {
-                if ($this->sharedSearchingEnabled)
-                {
-                    $sortElementName = 'Title';
-                }
-                else
-                {
-                    // Default to sort by identifier descending when no sort order specified and not allowed to sort by
-                    // relevance. This causes the most recently added items to appear first because they have the largest
-                    // identifier numbers.
-                    $sortElementName = ItemMetadata::getIdentifierAliasElementName();
-                    $this->queryArgs['order'] = 'd';
-                }
+                // Default to sort by modified date descending when no sort order specified and not allowed to sort by
+                // relevance. This causes the most recently modified items to appear first.
+                $sortElementName = '<modified>';
+                $this->queryArgs['order'] = 'd';
             }
         }
         else
@@ -118,7 +110,11 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $sortOrder = isset($this->queryArgs['order']) && $this->queryArgs['order'] == 'd' ? 'desc' : 'asc';
 
-        if ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
+        if ($sortElementName == '<modified>')
+        {
+            $sort[] = ["item.modified" => $sortOrder];
+        }
+        elseif ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))
         {
             $sort[] = ['sort.address-street' => $sortOrder];
             $sort[] = ['sort.address-number' => $sortOrder];
