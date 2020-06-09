@@ -92,13 +92,13 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
             {
                 // Default to sort by modified date descending when no sort order specified and not allowed to sort by
                 // relevance. This causes the most recently modified items to appear first.
-                $sortElementName = '<modified>';
-                $this->queryArgs['order'] = 'd';
+                $sortElementName = 'modified';
             }
         }
         else
         {
             $sortElementName = $searchResultsView->getElementNameForQueryArg('sort');
+
             $sortFields = $searchResultsView->getSortFields();
             if (!in_array($sortElementName, $sortFields))
             {
@@ -110,8 +110,10 @@ class AvantSearch_FindController extends Omeka_Controller_AbstractActionControll
 
         $sortOrder = isset($this->queryArgs['order']) && $this->queryArgs['order'] == 'd' ? 'desc' : 'asc';
 
-        if ($sortElementName == '<modified>')
+        if ($sortElementName == 'modified')
         {
+            // Special case for modified so that the order is descending if not specified.
+            $sortOrder = isset($this->queryArgs['order']) && $this->queryArgs['order'] == 'a' ? 'asc' : 'desc';
             $sort[] = ["item.modified" => $sortOrder];
         }
         elseif ($sortElementName == 'Address' && get_option(SearchConfig::OPTION_ADDRESS_SORTING))

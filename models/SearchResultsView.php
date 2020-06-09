@@ -653,6 +653,12 @@ class SearchResultsView
     {
         $elementSpecifier = AvantCommon::queryStringArg($argName);
 
+        if ($argName == 'sort' && $elementSpecifier == 'modified')
+        {
+            // Special case handling for sort modified since 'modified' is not an element.
+            return 'modified';
+        }
+
         // Accept either an element Id or an element name as the element specifier. This provides backwards
         // compatibility with AvantSearch 2.0 which used element Ids for sort and Index View index specifiers.
         if (intval($elementSpecifier) == 0)
@@ -800,7 +806,15 @@ class SearchResultsView
             {
                 $config = AvantElasticsearch::getAvantElasticsearcConfig();
                 $columnsList = $config ? $config-> common_sort_columns : array();
-                $allowedFields = array_map('trim', explode(',', $columnsList));
+                $parts = array_map('trim', explode(',', $columnsList));
+
+                // Create an array of column names where this first index is 1 instead of 0.
+                // We do this because 0 means 'relevance' when the list is used for sort columns.
+                $allowedFields = array();
+                foreach ($parts as $index => $part)
+                {
+                    $allowedFields[$index + 1] = $part;
+                }
             }
             else
             {
@@ -1039,15 +1053,13 @@ class SearchResultsView
 
     public function getSelectedSortId()
     {
-        $defaultName = $this->useElasticsearch ? 'relevance' : 'Title';
+        $defaultName = $this->useElasticsearch ? 'relevance' : 'modified';
         $sortFieldName = $this->getElementNameForQueryArg('sort', $defaultName);
 
         if ($sortFieldName == 'relevance' && !$this->allowSortByRelevance())
         {
-            if ($this->sharedSearchingEnabled())
-                $sortFieldName = 'Title';
-            else
-                $sortFieldName = ItemMetadata::getIdentifierAliasElementName();
+            // Default to sort by modified date descending.
+            $sortFieldName = 'modified';
         }
         else
         {
@@ -1087,9 +1099,21 @@ class SearchResultsView
             if ($this->allowSortByRelevance())
             {
                 // Prepend the relevance option as the first choice.
-                array_unshift($this->sortFields, __('relevance'));
+                array_unshift($this->sortFields, 'relevance');
+            }
+
+            // Remove the Description field since sorting on the description isn't useful and clutters the list.
+            $key = array_search ('Description', $this->sortFields);
+            if ($key !== false)
+                unset($this->sortFields[$key]);
+
+            if ($this->useElasticsearch)
+            {
+                // Explicitly add the modified option since it's not an element.
+                $this->sortFields[] = 'modified';
             }
         }
+
         return $this->sortFields;
     }
 

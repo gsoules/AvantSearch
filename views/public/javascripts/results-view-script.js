@@ -185,22 +185,31 @@ function setSelectedOption(kind, prefix, newOptionId)
 
     if (kind !== LAYOUT)
     {
-        if (kind === SORT && isNaN(newOptionId))
+        if (kind === SORT)
         {
-            // Protect against server-side logic that could pass an invalid sort value causing the page to reload repeatedly.
-            return;
-        }
-
-        if (kind === SORT && newOptionId === 0)
-        {
-            // To sort by relevance, remove the sort and order args.
-            oldSortPattern = new RegExp('&sort=' + newOptionValue);
-            newUrl = newUrl.replace(oldSortPattern, '');
-            var orderValue = getQueryStringArg('order');
-            if (orderValue.length)
+            if (isNaN(newOptionId))
             {
-                oldOrderPattern = new RegExp('&order=' + orderValue);
-                newUrl = newUrl.replace(oldOrderPattern, '');
+                // Protect against server-side logic that could pass an invalid sort value causing the page to reload repeatedly.
+                return;
+            }
+
+            if (newOptionId === 0)
+            {
+                // To sort by relevance, remove the sort and order args.
+                oldSortPattern = new RegExp('&sort=' + newOptionValue);
+                newUrl = newUrl.replace(oldSortPattern, '');
+                var orderValue = getQueryStringArg('order');
+                if (orderValue.length)
+                {
+                    oldOrderPattern = new RegExp('&order=' + orderValue);
+                    newUrl = newUrl.replace(oldOrderPattern, '');
+                }
+            }
+            else
+            {
+                // The user has chosen a new sort option. Remove the order arg so that the default order will apply.
+                // This is especially important if they chose the 'modified' option since it's default order is descending.
+                newUrl = removeQueryStringArg('order', newUrl);
             }
         }
 
