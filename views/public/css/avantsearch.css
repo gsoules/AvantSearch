@@ -704,17 +704,25 @@ a.search-reset-link:hover {
 	color: #000;
 }
 
-.search-results-metadata-text ul {
+.search-results-metadata-text ul,
+td.search-result ul {
 	list-style-type: none;
 	margin: 0;
 	padding: 0;
 }
 
-.search-results-metadata-text li {
+.search-results-metadata-text li,
+td.search-result ul li {
+
 	padding-bottom: 2px;
 }
 
-.search-results-metadata-text ul li.multiple-values {
+td.search-result ul li {
+	margin-right: 16px;
+}
+
+.search-results-metadata-text ul li.multiple-values,
+td.search-result ul li.multiple-values {
 	padding-top: 2px;
 	border-top: solid 1px #ccc;
 }
