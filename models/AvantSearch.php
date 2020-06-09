@@ -3,6 +3,8 @@ class AvantSearch
 {
     // This is the default maximum allowed by Elasticsearch and is also a reasonable max for SQL searches.
     const MAX_SEARCH_RESULTS = 10000;
+    const SORT_BY_MODIFIED = 'modified date';
+    const SORT_BY_RELEVANCE = 'relevance';
 
     public static function allowToggleBetweenLocalAndSharedSearching()
     {

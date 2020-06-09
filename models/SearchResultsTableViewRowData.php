@@ -287,50 +287,53 @@ class SearchResultsTableViewRowData
         {
             $elementSetName = ItemMetadata::getElementSetNameForElementName($elementName);
             $elementTexts = $item->getElementTexts($elementSetName, $elementName);
-            foreach ($elementTexts as $key => $elementText)
+            foreach ($elementTexts as $index => $elementText)
             {
                 if ($elementText['html'] == 1)
                 {
-                    $htmlTextIndices[] = $key;
+                    $htmlTextIndices[] = $index;
                 }
             }
         }
 
-        // Create a single string containing all of the element's text values. Note that when using Elasticsearch,
-        // $elementTexts is an array of the element's field-texts. When not using Elasticsearch, its an array of
-        // ElementText objects.
-        $texts .= '<ul>';
-        foreach ($elementTexts as $key => $elementText)
+        if ($elementTexts)
         {
-            $texts .= '<li>';
-
-            $text = $elementText;
-
-            // Determine if the element's text needs to be displayed as HTML.
-            $containsHtml = in_array($key, $htmlTextIndices);
-
-            if ($containsHtml && $this->useElasticsearch && !$this->sharedSearchingEnabled)
+            // Create a single string containing all of the element's text values. Note that when using Elasticsearch,
+            // $elementTexts is an array of the element's field-texts. When not using Elasticsearch, its an array of
+            // ElementText objects.
+            $texts .= '<ul>';
+            foreach ($elementTexts as $index => $elementText)
             {
-                // The Elasticsearch index does not contain the original HTML for element values, only an indication
-                // of which element texts contain HTML. Get the original HTML from the Omeka database. This can't be
-                // done for shared results because this installation can't access the other databases.
-                $itemId = $item['_source']['item']['id'];
-                $omekaItem = ItemMetadata::getItemFromId($itemId);
-                if ($omekaItem)
+                $texts .= $index == 0 ? '<li>' : '<li class="multiple-values">';
+
+                $text = $elementText;
+
+                // Determine if the element's text needs to be displayed as HTML.
+                $containsHtml = in_array($index, $htmlTextIndices);
+
+                if ($containsHtml && $this->useElasticsearch && !$this->sharedSearchingEnabled)
                 {
-                    // Verify that the item Id is ok. It might be invalid if the Elasticsearch index contains
-                    // shared data even though it's not supposed to, but that can happen during development
-                    // when testing local results behavior with a shared data.
-                    $elementTexts = ItemMetadata::getAllElementTextsForElementName($omekaItem, $elementName);
-                    $text = $elementTexts[$key];
+                    // The Elasticsearch index does not contain the original HTML for element values, only an indication
+                    // of which element texts contain HTML. Get the original HTML from the Omeka database. This can't be
+                    // done for shared results because this installation can't access the other databases.
+                    $itemId = $item['_source']['item']['id'];
+                    $omekaItem = ItemMetadata::getItemFromId($itemId);
+                    if ($omekaItem)
+                    {
+                        // Verify that the item Id is ok. It might be invalid if the Elasticsearch index contains
+                        // shared data even though it's not supposed to, but that can happen during development
+                        // when testing local results behavior with a shared data.
+                        $elementTexts = ItemMetadata::getAllElementTextsForElementName($omekaItem, $elementName);
+                        $text = $elementTexts[$index];
+                    }
                 }
+
+                $texts .= $containsHtml ? $text : html_escape($text);
+
+                $texts .= '</li>';
             }
-
-            $texts .= $containsHtml ? $text : html_escape($text);
-
-            $texts .= '</li>';
+            $texts .= '</ul>';
         }
-        $texts .= '</ul>';
 
         return $texts;
     }

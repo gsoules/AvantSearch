@@ -711,7 +711,12 @@ a.search-reset-link:hover {
 }
 
 .search-results-metadata-text li {
-	padding-bottom: 3px;
+	padding-bottom: 2px;
+}
+
+.search-results-metadata-text ul li.multiple-values {
+	padding-top: 2px;
+	border-top: solid 1px #ccc;
 }
 
 .search-results-metadata-element,

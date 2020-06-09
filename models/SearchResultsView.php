@@ -653,10 +653,10 @@ class SearchResultsView
     {
         $elementSpecifier = AvantCommon::queryStringArg($argName);
 
-        if ($argName == 'sort' && $elementSpecifier == 'modified')
+        if ($argName == 'sort' && $elementSpecifier == AvantSearch::SORT_BY_MODIFIED)
         {
             // Special case handling for sort modified since 'modified' is not an element.
-            return 'modified';
+            return AvantSearch::SORT_BY_MODIFIED;
         }
 
         // Accept either an element Id or an element name as the element specifier. This provides backwards
@@ -815,6 +815,7 @@ class SearchResultsView
                 {
                     $allowedFields[$index + 1] = $part;
                 }
+                asort($allowedFields);
             }
             else
             {
@@ -1053,13 +1054,13 @@ class SearchResultsView
 
     public function getSelectedSortId()
     {
-        $defaultName = $this->useElasticsearch ? 'relevance' : 'modified';
+        $defaultName = $this->useElasticsearch ? AvantSearch::SORT_BY_RELEVANCE : AvantSearch::SORT_BY_MODIFIED;
         $sortFieldName = $this->getElementNameForQueryArg('sort', $defaultName);
 
-        if ($sortFieldName == 'relevance' && !$this->allowSortByRelevance())
+        if ($sortFieldName == AvantSearch::SORT_BY_RELEVANCE && !$this->allowSortByRelevance())
         {
             // Default to sort by modified date descending.
-            $sortFieldName = 'modified';
+            $sortFieldName = AvantSearch::SORT_BY_MODIFIED;
         }
         else
         {
@@ -1072,7 +1073,7 @@ class SearchResultsView
         }
         $sortFields = $this->getSortFields();
         $sortId = array_search ($sortFieldName, $sortFields);
-        return $sortId === false ? array_search('relevance', $sortFields) : $sortId;
+        return $sortId === false ? array_search(AvantSearch::SORT_BY_RELEVANCE, $sortFields) : $sortId;
     }
 
     public function getSelectedViewId()
@@ -1096,12 +1097,6 @@ class SearchResultsView
         {
             $this->sortFields = $this->getNamesOfVisibleElements();
 
-            if ($this->allowSortByRelevance())
-            {
-                // Prepend the relevance option as the first choice.
-                array_unshift($this->sortFields, 'relevance');
-            }
-
             // Remove the Description field since sorting on the description isn't useful and clutters the list.
             $key = array_search ('Description', $this->sortFields);
             if ($key !== false)
@@ -1110,7 +1105,13 @@ class SearchResultsView
             if ($this->useElasticsearch)
             {
                 // Explicitly add the modified option since it's not an element.
-                $this->sortFields[] = 'modified';
+                $this->sortFields[] = AvantSearch::SORT_BY_MODIFIED;
+            }
+
+            if ($this->allowSortByRelevance())
+            {
+                //  Explicitly add the relevance option since it's not an element.
+                $this->sortFields[] = AvantSearch::SORT_BY_RELEVANCE;
             }
         }
 
