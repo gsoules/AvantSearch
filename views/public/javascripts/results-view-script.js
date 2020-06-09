@@ -230,8 +230,17 @@ function setSelectedOption(kind, prefix, newOptionId)
 
         if (kind === SITE)
         {
-            newUrl = removeQueryStringArg('layout', newUrl);
-            newUrl = removeQueryStringArg('sort', newUrl);
+            // The user is switching from the local site to the shared site or vice-versa. Create a new URL with only
+            // the query, limit, and view args remaining from the old query. This is necessary because when switching
+            // between sites, many of the values for the other options like facets, sort, and layout may not apply,
+            // and if not removed, would cause no results to be found.
+            newUrl = './find?query=' + getQueryStringArg('query');
+            let argValue = getQueryStringArg('limit');
+            if (argValue)
+                newUrl += '&limit=' + argValue;
+            argValue = getQueryStringArg('view');
+            if (argValue)
+                newUrl += '&view=' + argValue;
         }
             // Reload the page with the new arguments.
         window.location.href = newUrl;
