@@ -11,12 +11,12 @@ function createEntriesFromElasticsearchResults($results, $indexFieldName)
     {
         // Get the index field texts for this result.
         $source = $result['_source'];
-        if (isset($source['common'][$indexFieldName]))
-            $fieldTexts = $source['common'][$indexFieldName];
-        else if (isset($source['local'][$indexFieldName]))
-            $fieldTexts = $source['local'][$indexFieldName];
-        else if (isset($source['private'][$indexFieldName]))
-            $fieldTexts = $source['private'][$indexFieldName];
+        if (isset($source['core-fields'][$indexFieldName]))
+            $fieldTexts = $source['core-fields'][$indexFieldName];
+        else if (isset($source['local-fields'][$indexFieldName]))
+            $fieldTexts = $source['local-fields'][$indexFieldName];
+        else if (isset($source['private-fields'][$indexFieldName]))
+            $fieldTexts = $source['private-fields'][$indexFieldName];
         else
             $fieldTexts = [BLANK_FIELD_SUBSTITUTE];
 
