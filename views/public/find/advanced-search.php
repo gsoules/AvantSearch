@@ -82,6 +82,7 @@ else
 }
 
 $helpText = '';
+$facets = '';
 if ($useElasticsearch)
 {
     $helpTextFileName = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'elasticsearch-help.html';
@@ -106,12 +107,12 @@ $pageTitle = __('Advanced Search');
 echo head(array('title' => $pageTitle, 'bodyclass' => 'avantsearch-advanced'));
 echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
 ?>
-	<!-- Left Panel -->
 <div id='avantsearch-container'>
-    <div id="avantsearch-site-toggle">
-        <?php echo $siteToggle; ?>
-    </div>
+    <!-- Left Panel -->
 	<div id="avantsearch-primary">
+        <div id="avantsearch-site-toggle">
+            <?php echo $siteToggle; ?>
+        </div>
         <form <?php echo tag_attributes($advancedFormAttributes); ?>>
             <div class="search-form-section">
                 <div class="search-field">
