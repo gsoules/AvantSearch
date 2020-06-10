@@ -5,6 +5,8 @@ class AvantSearch
     const MAX_SEARCH_RESULTS = 10000;
     const SORT_BY_MODIFIED = 'modified date';
     const SORT_BY_RELEVANCE = 'relevance';
+    const SITE_THIS = 'This site';
+    const SITE_SHARED = 'All sites';
 
     public static function allowToggleBetweenLocalAndSharedSearching()
     {
@@ -293,6 +295,17 @@ class AvantSearch
         }
 
         return $html;
+    }
+
+    public static function getSelectedSiteId()
+    {
+        $id = AvantCommon::queryStringArgOrCookie('site', 'SITE-ID', 0);
+
+        // Make sure that the site Id is valid. The only valid values are 0 (local site) and 1 (shared site).
+        if ($id < 0 || $id > 1)
+            $id = 0;
+
+        return $id;
     }
 
     public static function getStorageEngineForSearchTextsTable()

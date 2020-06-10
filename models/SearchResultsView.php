@@ -376,8 +376,8 @@ class SearchResultsView
             return '';
 
         $sites = array(
-            __('This site'),
-            __('Shared sites'));
+            __(AvantSearch::SITE_THIS),
+            __(AvantSearch::SITE_SHARED));
 
         return $this->emitSelector('site', 'D', $sites);
     }
@@ -1043,13 +1043,7 @@ class SearchResultsView
 
     public function getSelectedSiteId()
     {
-        $id = AvantCommon::queryStringArgOrCookie('site', 'SITE-ID', 0);
-
-        // Make sure that the site Id is valid. The only valid values are 0 (local site) and 1 (shared site).
-        if ($id < 0 || $id > 1)
-            $id = 0;
-
-        return $id;
+        return AvantSearch::getSelectedSiteId();
     }
 
     public function getSelectedSortId()

@@ -37,6 +37,50 @@ $advancedSubmitButtonText = __('Search');
 
 $useElasticsearch = AvantSearch::useElasticsearch();
 
+if (AvantSearch::allowToggleBetweenLocalAndSharedSearching())
+{
+    // Get the query string and use brute force to remove the site arg if one exists.
+    $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
+    $queryString = str_replace('?site=0', '', $queryString);
+    $queryString = str_replace('?site=1', '', $queryString);
+    $queryString = str_replace('&site=0', '', $queryString);
+    $queryString = str_replace('&site=1', '', $queryString);
+
+    // Form the Advanced Search page URL.
+    $findUrl = url('/find') . $queryString;
+    $advancedSearchUrl = url('/find/advanced') . $queryString;
+
+    $thisSite = strtolower(AvantSearch::SITE_THIS);
+    $sharedSite = strtolower(AvantSearch::SITE_SHARED);
+    $siteBeingSearched = __(' of ');
+    $siteToggle = __('Switch to searching ');
+    $siteArg = strpos($queryString, '?') === false ? '?' : '&';
+    $siteArg .= 'site=';
+    $advancedSearchUrl .= $siteArg;
+
+    $statsUrl = url('/avant/dashboard') . $queryString;
+    $siteStats = "<a href='$statsUrl'>View site statistics</a>";
+
+    $searchingSharedSite = AvantSearch::getSelectedSiteId() == 1;
+
+    if ($searchingSharedSite)
+    {
+        $siteBeingSearched .= $sharedSite;
+        $siteToggle .= __('only ') . "<a href='{$advancedSearchUrl}0'>$thisSite</a>";
+    }
+    else
+    {
+        $siteBeingSearched .= $thisSite;
+        $siteToggle .= "<a href='{$advancedSearchUrl}1'>$sharedSite</a>";
+    }
+}
+else
+{
+    $siteBeingSearched = '';
+    $siteToggle = '';
+    $siteStats = '';
+}
+
 $helpText = '';
 if ($useElasticsearch)
 {
@@ -60,10 +104,14 @@ $showTitlesOption = get_option(SearchConfig::OPTION_TITLES_ONLY) == true;
 $pageTitle = __('Advanced Search');
 
 echo head(array('title' => $pageTitle, 'bodyclass' => 'avantsearch-advanced'));
-echo "<div><h1>$pageTitle</h1></div>";
+echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
 ?>
 	<!-- Left Panel -->
 <div id='avantsearch-container'>
+    <div id="avantsearch-links">
+        <span><?php echo $siteToggle; ?></span>
+        <span><?php echo $siteStats; ?></span>
+    </div>
 	<div id="avantsearch-primary">
         <form <?php echo tag_attributes($advancedFormAttributes); ?>>
             <div class="search-form-section">
