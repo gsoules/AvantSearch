@@ -16,10 +16,11 @@ class SearchResultsFilters
         $this->filterMessage = '';
     }
 
-    protected function createFilterWithRemoveX($filter, $resetUrl)
+    protected function createFilterWithRemoveX($filter, $resetUrl, $isFacet = false)
     {
         $link = AvantSearch::getSearchFilterResetLink($resetUrl);
-        $this->filterMessage .= "<span class='search-filter'>$filter$link</span>";
+        $facetClass = $isFacet ? ' search-facet' : '';
+        $this->filterMessage .= "<span class='search-filter$facetClass'>$filter$link</span>";
         $this->filterCount++;
     }
 
@@ -135,7 +136,7 @@ class SearchResultsFilters
         {
             foreach ($values['reset-url'] as $index => $url)
             {
-                $this->createFilterWithRemoveX($values['reset-text'][$index], $url);
+                $this->createFilterWithRemoveX($values['reset-text'][$index], $url, true);
             }
         }
     }
