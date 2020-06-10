@@ -131,14 +131,14 @@ input[type="checkbox"] {
 #avantsearch-primary {
 	grid-column: 1;
 	box-sizing: border-box;
-	margin-top: 12px;
+	margin-top: 0;
 	margin-left: 24px;
 }
 
 #avantsearch-secondary {
 	grid-column: 2;
 	border-left: none;
-	margin-top: 24px;
+	margin-top: 12px;
 	padding: 0 0 1.5em 2em;
 	word-wrap: break-word;
 }
@@ -175,6 +175,10 @@ input[type="checkbox"] {
 }
 
 .search-help {
+	border: solid 1px #ccc;
+	padding: 12px 12px;
+	background-color: #eee;
+	margin-right: 20px;
 }
 
 .search-help .help-title {
@@ -394,9 +398,13 @@ input[type="checkbox"] {
 	margin-right: 6px;
 	margin-bottom: 4px;
 	display: inline-block;
-	background-color: #d1e4f2;
+	background-color: #f1e4ff;
 	border: 1px solid #A8B7C4;
 	border-radius:5px;
+}
+
+.search-filter.search-facet {
+	background-color: #d1e4f2;
 }
 
 .search-filters-message {
