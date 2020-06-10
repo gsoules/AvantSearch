@@ -108,9 +108,8 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
 ?>
 	<!-- Left Panel -->
 <div id='avantsearch-container'>
-    <div id="avantsearch-links">
-        <span><?php echo $siteToggle; ?></span>
-        <span><?php echo $siteStats; ?></span>
+    <div id="avantsearch-site-toggle">
+        <?php echo $siteToggle; ?>
     </div>
 	<div id="avantsearch-primary">
         <form <?php echo tag_attributes($advancedFormAttributes); ?>>
@@ -253,6 +252,9 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
         </form>
     </div>
 	<div id="avantsearch-secondary">
+        <div id="avantsearch-site-stats">
+            <?php echo $siteStats; ?>
+        </div>
         <?php if ($useElasticsearch): ?>
             <div class="search-help"><?php echo $helpText ?></div>
         <?php endif; ?>

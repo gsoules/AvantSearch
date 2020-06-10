@@ -118,11 +118,14 @@ input[type="checkbox"] {
 	grid-template-columns: 500px auto;
 }
 
-#avantsearch-links {
-	display: flex;
-	justify-content: space-between;
+#avantsearch-site-toggle {
 	font-size: 115%;
 	padding: 8px 0;
+}
+
+#avantsearch-site-stats {
+	font-size: 115%;
+	padding-bottom: 16px;
 }
 
 #avantsearch-primary {
@@ -172,8 +175,16 @@ input[type="checkbox"] {
 }
 
 .search-help {
-	font-size: 16px;
+}
+
+.search-help .help-title {
 	font-weight: bold;
+	font-size: 18px;
+	margin-bottom: 8px;
+}
+
+.search-help .help-intro {
+	font-size: 14px;
 }
 
 .search-help > ul {
@@ -187,10 +198,11 @@ input[type="checkbox"] {
 
 .search-help > ul > li  {
 	padding-top: 14px;
+	padding-left: 16px;
 }
 
 .search-help > ul > li > span {
-	background-color: #ddd;
+	background-color: #f7f7f7;
 	padding: 2px 4px;
 	font-weight: bold;
 }
