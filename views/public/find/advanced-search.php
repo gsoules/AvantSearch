@@ -58,9 +58,6 @@ if (AvantSearch::allowToggleBetweenLocalAndSharedSearching())
     $siteArg .= 'site=';
     $advancedSearchUrl .= $siteArg;
 
-    $statsUrl = url('/avant/dashboard') . $queryString;
-    $siteStats = "<a href='$statsUrl'>View site statistics</a>";
-
     $searchingSharedSite = AvantSearch::getSelectedSiteId() == 1;
 
     if ($searchingSharedSite)
@@ -78,8 +75,10 @@ else
 {
     $siteBeingSearched = '';
     $siteToggle = '';
-    $siteStats = '';
 }
+
+$statsUrl = url('/avant/dashboard') . $queryString;
+$siteStats = "<a href='$statsUrl'>View site statistics</a>";
 
 $helpText = '';
 $facets = '';
