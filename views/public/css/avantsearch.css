@@ -179,6 +179,7 @@ input[type="checkbox"] {
 	padding: 12px 12px;
 	background-color: #eee;
 	margin-right: 20px;
+	width: 500px;
 }
 
 .search-help .help-title {
@@ -910,7 +911,7 @@ td.search-result ul li.multiple-values {
 }
 
 .grid-view-cell .contributor-id {
-	color: #666666;
+	color: #000;
 	font-weight: normal;
 	font-size: 11px
 }
