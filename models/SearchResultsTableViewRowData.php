@@ -377,17 +377,15 @@ class SearchResultsTableViewRowData
         if ($this->useElasticsearch)
         {
             $coreFieldTexts = isset($item['_source']['core-fields']) ? $item['_source']['core-fields'] : array();
+            $shadowFieldTexts = isset($item['_source']['shadow-fields']) ? $item['_source']['shadow-fields'] : array();
             $localFieldTexts = isset($item['_source']['local-fields']) ? $item['_source']['local-fields'] : array();
             $privateFieldTexts = isset($item['_source']['private-fields']) ? $item['_source']['private-fields'] : array();
 
             // Merge all the fields into a single array of field names, with each of those being an array of field values.
-            // When the results are for a shared search, and some of the local field values are mapped to Common
-            // Vocabulary terms, this merge will cause the local value for a term (contained in 'local-field') with
-            // the mapped value (contain in 'core-fields') so that both the local and common term appear in the search
-            // results. If that's not desirable behavior, these nested loops could be replaced with array_merge where
-            // $localFieldTexts is the first parameter and $coreFieldTexts is the second so that any core fields would
-            // clobber any local fields for the same element.
-            $allFieldTexts = [$coreFieldTexts, $localFieldTexts, $privateFieldTexts];
+            // When some of the local field values are mapped to Common Vocabulary terms, this merge will cause the
+            // local value for a term (contained in 'shadow-fields') with the mapped value (contained in 'core-fields')
+            // so that both the local and common term appear in the search results.
+            $allFieldTexts = [$coreFieldTexts, $shadowFieldTexts, $localFieldTexts, $privateFieldTexts];
             foreach ($allFieldTexts as $fieldTexts)
             {
                 foreach ($fieldTexts as $fieldName => $texts)
