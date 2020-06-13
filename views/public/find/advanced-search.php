@@ -39,22 +39,36 @@ $useElasticsearch = AvantSearch::useElasticsearch();
 
 if (AvantSearch::allowToggleBetweenLocalAndSharedSearching())
 {
-    // Get the query string and use brute force to remove the site arg if one exists.
+    // Get the query string and break it into individual args.
     $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
-    $queryString = str_replace('?site=0', '', $queryString);
-    $queryString = str_replace('?site=1', '', $queryString);
-    $queryString = str_replace('&site=0', '', $queryString);
-    $queryString = str_replace('&site=1', '', $queryString);
+    $args = explode('&', $queryString);
+
+    foreach ($args as $index => $arg)
+    {
+        // Remove the 'site' are if there is one since the code below will add it back toggled.
+        // Remove any facets args (they start with 'root_' or 'leaf_') since facets are not all the same
+        // between shared and local sites. If we don't remove them, and one of the facets does not exist in
+        // the toggled-to site, the user will get no results from the search.
+        $prefix = substr($arg, 0, 4);
+        if ($prefix == 'site' || $prefix == 'root' || $prefix == 'leaf')
+        {
+            unset($args[$index]);
+        }
+    }
+
+    // Reconstruct the query string from the remaining args.
+    $newQueryString = implode('&', $args);
 
     // Form the Advanced Search page URL.
-    $findUrl = url('/find') . $queryString;
-    $advancedSearchUrl = url('/find/advanced') . $queryString;
+    $findUrl = url('/find') . $newQueryString;
+    $advancedSearchUrl = url('/find/advanced') . $newQueryString;
 
     $thisSite = strtolower(AvantSearch::SITE_THIS);
     $sharedSite = strtolower(AvantSearch::SITE_SHARED);
     $siteBeingSearched = __(' of ');
     $siteToggle = __('Switch to searching ');
-    $siteArg = strpos($queryString, '?') === false ? '?' : '&';
+
+    $siteArg = strpos($newQueryString, '?') === false ? '?' : '&';
     $siteArg .= 'site=';
     $advancedSearchUrl .= $siteArg;
 
