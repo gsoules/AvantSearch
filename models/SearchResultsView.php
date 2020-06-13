@@ -36,7 +36,6 @@ class SearchResultsView
     protected $totalResults;
     protected $useElasticsearch;
     protected $viewId;
-    protected $visibleElementNames;
     protected $yearEnd;
     protected $yearStart;
 
@@ -798,69 +797,64 @@ class SearchResultsView
 
     public function getNamesOfVisibleElements($restrictToLayoutElements = true)
     {
-        if (empty($this->visibleElementNames))
+        $includePrivateFields = !empty(current_user());
+
+        if ($this->sharedSearchingEnabled())
         {
-            $includePrivateFields = !empty(current_user());
+            $config = AvantElasticsearch::getAvantElasticsearcConfig();
+            $columnsList = $config ? $config-> common_sort_columns : array();
+            $parts = array_map('trim', explode(',', $columnsList));
 
-            if ($this->sharedSearchingEnabled())
+            // Create an array of column names where this first index is 1 instead of 0.
+            // We do this because 0 means 'relevance' when the list is used for sort columns.
+            $allowedFields = array();
+            foreach ($parts as $index => $part)
             {
-                $config = AvantElasticsearch::getAvantElasticsearcConfig();
-                $columnsList = $config ? $config-> common_sort_columns : array();
-                $parts = array_map('trim', explode(',', $columnsList));
+                $allowedFields[$index + 1] = $part;
+            }
+            asort($allowedFields);
+        }
+        else
+        {
+            // Get all the fields defined for this installation.
+            $allFields = self::getAllFields();
 
-                // Create an array of column names where this first index is 1 instead of 0.
-                // We do this because 0 means 'relevance' when the list is used for sort columns.
-                $allowedFields = array();
-                foreach ($parts as $index => $part)
-                {
-                    $allowedFields[$index + 1] = $part;
-                }
-                asort($allowedFields);
+            if ($includePrivateFields)
+            {
+                $allowedFields = $allFields;
             }
             else
             {
-                // Get all the fields defined for this installation.
-                $allFields = self::getAllFields();
-
-                if ($includePrivateFields)
+                // Derive just the public fields. Start by getting the private fields.
+                $privateFields = array();
+                foreach ($this->privateElementsData as $elementId => $name)
                 {
-                    $allowedFields = $allFields;
-                }
-                else
-                {
-                    // Derive just the public fields. Start by getting the private fields.
-                    $privateFields = array();
-                    foreach ($this->privateElementsData as $elementId => $name)
-                    {
-                        $privateFields[$elementId] = $name;
-                    }
-
-                    // Determine which fields are public by removing the private fields from all fields.
-                    $allowedFields = array_diff($allFields, $privateFields);
+                    $privateFields[$elementId] = $name;
                 }
 
-                if ($restrictToLayoutElements)
-                {
-                    // The allowed fields array now contain a list of each field the user is allowed to see.
-                    // Create a separate list of just the fields that appear in one of the layouts.
-                    foreach ($this->columnsData as $columnName => $columnData)
-                    {
-                        $displayedFields[] = $columnName;
-                    }
-
-                    // Reduce the list of the allowed fields to only those that appear in a layout. This restriction
-                    // keeps the user from selecting a field that doesn't make sense, e.g. to sort by a column that is
-                    // not shown. If the user is not logged in, some of the allowed fields won't be in the allowed
-                    // fields list because those fields are only allowed, and thus displayed, when a user is logged in.
-                    // The final allowed list contains all the displayed fields that the user is allowed to use.
-                    $allowedFields = array_intersect($allowedFields, $displayedFields);
-                }
+                // Determine which fields are public by removing the private fields from all fields.
+                $allowedFields = array_diff($allFields, $privateFields);
             }
 
-            $this->visibleElementNames = $allowedFields;
+            if ($restrictToLayoutElements)
+            {
+                // The allowed fields array now contain a list of each field the user is allowed to see.
+                // Create a separate list of just the fields that appear in one of the layouts.
+                foreach ($this->columnsData as $columnName => $columnData)
+                {
+                    $displayedFields[] = $columnName;
+                }
+
+                // Reduce the list of the allowed fields to only those that appear in a layout. This restriction
+                // keeps the user from selecting a field that doesn't make sense, e.g. to sort by a column that is
+                // not shown. If the user is not logged in, some of the allowed fields won't be in the allowed
+                // fields list because those fields are only allowed, and thus displayed, when a user is logged in.
+                // The final allowed list contains all the displayed fields that the user is allowed to use.
+                $allowedFields = array_intersect($allowedFields, $displayedFields);
+            }
         }
 
-        return $this->visibleElementNames;
+        return $allowedFields;
     }
 
     public function getQuery()
