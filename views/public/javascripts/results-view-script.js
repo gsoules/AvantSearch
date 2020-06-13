@@ -12,7 +12,7 @@ selectorTitle[INDEX] = 'Index by: %s';
 selectorTitle[LAYOUT] = 'Layout: %s';
 selectorTitle[LIMIT] = 'Per page: %s';
 selectorTitle[SORT] = 'Sort by: %s';
-selectorTitle[SITE] = 'Search: %s';
+selectorTitle[SITE] = 'Searching: %s';
 selectorTitle[VIEW] = 'View: %s';
 
 var initializing = true;
@@ -40,14 +40,14 @@ function getQueryStringArg(arg)
     return "";
 }
 
-function getQueryStringPairs()
+function getQueryStringPairs(queryString)
 {
-    var pairs = '';
-    var q = document.location.search;
+    let q = (typeof queryString == 'undefined') ?  document.location.search : queryString;
+    let pairs = '';
     if (q.length > 0)
     {
         // Ignore the leading '?'.
-        var s = q.substring(1);
+        let s = q.substring(1);
         pairs = s.split("&");
     }
     return pairs;
@@ -230,17 +230,25 @@ function setSelectedOption(kind, prefix, newOptionId)
 
         if (kind === SITE)
         {
-            // The user is switching from the local site to the shared site or vice-versa. Create a new URL with only
-            // the query, limit, and view args remaining from the old query. This is necessary because when switching
-            // between sites, many of the values for the other options like facets, sort, and layout may not apply,
-            // and if not removed, would cause no results to be found.
-            newUrl = './find?query=' + getQueryStringArg('query');
-            let argValue = getQueryStringArg('limit');
-            if (argValue)
-                newUrl += '&limit=' + argValue;
-            argValue = getQueryStringArg('view');
-            if (argValue)
-                newUrl += '&view=' + argValue;
+            // The user is switching from the local site to the shared site or vice-versa.
+            // Remove any facets args (they start with 'root_' or 'leaf_') since facets are not all the same
+            // between shared and local sites. If we don't remove them, and one of the facets does not exist in
+            // the switched-to site, the user will get no results from the search.
+            let pairs = getQueryStringPairs(newUrl);
+            let filteredPairs = [];
+            for (i = 0; i < pairs.length; i++)
+            {
+                let arg = pairs[i];
+                let prefix = arg.substring(0, 4);
+                if (prefix === 'root' || prefix === 'leaf')
+                {
+                    // Skip facet arg.
+                    continue;
+                }
+                filteredPairs.push(arg);
+            }
+
+            newUrl = 'find?' + filteredPairs.join('&');
         }
             // Reload the page with the new arguments.
         window.location.href = newUrl;
