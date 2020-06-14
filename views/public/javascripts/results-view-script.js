@@ -40,9 +40,9 @@ function getQueryStringArg(arg)
     return "";
 }
 
-function getQueryStringPairs(queryString)
+function getQueryStringPairs()
 {
-    let q = (typeof queryString == 'undefined') ?  document.location.search : queryString;
+    let q = document.location.search;
     let pairs = '';
     if (q.length > 0)
     {
@@ -94,7 +94,7 @@ function removeQueryStringArg(argName, oldUrl)
 
 function saveCookie(kind, id)
 {
-    Cookies.set(kind.toUpperCase() + '-ID', id, {expires: 7});
+    Cookies.set(kind.toUpperCase() + '-ID', id, {expires: 7, sameSite: 'lax'});
 }
 
 function setSelectedOption(kind, prefix, newOptionId)
@@ -234,7 +234,9 @@ function setSelectedOption(kind, prefix, newOptionId)
             // Remove any facets args (they start with 'root_' or 'leaf_') since facets are not all the same
             // between shared and local sites. If we don't remove them, and one of the facets does not exist in
             // the switched-to site, the user will get no results from the search.
-            let pairs = getQueryStringPairs(newUrl);
+            let parts = newUrl.split('?');
+            let queryString = parts[1];
+            let pairs = queryString.split('&');
             let filteredPairs = [];
             for (i = 0; i < pairs.length; i++)
             {
