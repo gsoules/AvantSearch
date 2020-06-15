@@ -395,11 +395,12 @@ input[type="checkbox"] {
 .search-filter {
 	color: #444;
 	font-size:13px;
+	font-weight: bold;
 	padding: 4px 8px 4px 8px;
 	margin-right: 6px;
 	margin-bottom: 4px;
 	display: inline-block;
-	background-color: #f1e4ff;
+	background-color: #daf2d1;
 	border: 1px solid #A8B7C4;
 	border-radius:5px;
 }
