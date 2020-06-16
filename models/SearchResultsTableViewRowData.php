@@ -31,6 +31,11 @@ class SearchResultsTableViewRowData
         $this->initializeData($item);
     }
 
+    private function appendSymbolToListItem($symbol, $listHtml)
+    {
+        return str_replace('</li></ul>', " $symbol</li></ul>", $listHtml);
+    }
+
     protected function generateDescription($item)
     {
         $hasHighlights = false;
@@ -439,6 +444,13 @@ class SearchResultsTableViewRowData
                 {
                     if ($elementName == $identifierElementName)
                     {
+                        $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 1;
+                        if (!$public)
+                        {
+                            // Display an asterisk after the identifier to indicate that the item is private.
+                            $filteredText = $this->appendSymbolToListItem(PRIVATE_ITEM_PREFIX, $filteredText);
+                        }
+
                         if ($isLocalItem)
                         {
                             if (plugin_is_active('AvantS3') && AvantCommon::userIsAdmin())
@@ -447,15 +459,10 @@ class SearchResultsTableViewRowData
                                 $filteredText .= ' ' . AvantAdmin::emitS3Link($identifier);
                             }
 
+                            // Display a flag after the item to indicate if it's been recently visited.
                             $itemId = $this->useElasticsearch ? $item['_source']['item']['id'] : $item->id;
                             $flag = AvantAdmin::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItemIds());
-                            $filteredText = str_replace('</li></ul>', " $flag</li></ul>", $filteredText);
-                        }
-
-                        $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 1;
-                        if (!$public)
-                        {
-                            $filteredText = PRIVATE_ITEM_PREFIX . $filteredText;
+                            $filteredText = $this->appendSymbolToListItem($flag, $filteredText);
                         }
                     }
                     $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetailRow($column['name'], $filteredText, $column['alias']);
