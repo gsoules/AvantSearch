@@ -444,6 +444,13 @@ class SearchResultsTableViewRowData
                 {
                     if ($elementName == $identifierElementName)
                     {
+                        if ($this->sharedSearchingEnabled)
+                        {
+                            $contributorId = $item['_source']['item']['contributor-id'];
+                            $identifier = $elementTexts[0];
+                            $filteredText = str_replace($identifier, $contributorId . '-' . $identifier, $filteredText);
+                        }
+
                         $public = $this->useElasticsearch ? $item['_source']['item']['public'] : $item->public == 1;
                         if (!$public)
                         {
