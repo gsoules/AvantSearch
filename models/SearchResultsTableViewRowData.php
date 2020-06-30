@@ -39,12 +39,12 @@ class SearchResultsTableViewRowData
     protected function generateDescription($item)
     {
         $hasHighlights = false;
-        if ($this->useElasticsearch && isset($item['highlight']['common-fields.description']))
+        if ($this->useElasticsearch && isset($item['highlight']['core-fields.description']))
         {
             // Replace the original description text with the highlighted text from Elasticsearch.
             $hasHighlights = true;
             $descriptionText = '...';
-            $highlights = $item['highlight']['common-fields.description'];
+            $highlights = $item['highlight']['core-fields.description'];
             foreach ($highlights as $highlight)
             {
                 $descriptionText .= $highlight;
@@ -455,8 +455,9 @@ class SearchResultsTableViewRowData
                         {
                             if (plugin_is_active('AvantS3') && AvantCommon::userIsAdmin())
                             {
-                                $identifier = $filteredText;
-                                $filteredText .= ' ' . AvantAdmin::emitS3Link($identifier);
+                                $identifier = $elementTexts[0];
+                                $s3 = AvantAdmin::emitS3Link($identifier);
+                                $filteredText = ' ' . $this->appendSymbolToListItem($s3, $filteredText);;
                             }
 
                             // Display a flag after the item to indicate if it's been recently visited.
