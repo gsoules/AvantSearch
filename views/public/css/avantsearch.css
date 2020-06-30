@@ -1,8 +1,3 @@
-:root {
-	--link-color: #3d5a98;
-	--link-hover-color: #7596b9;
-}
-
 /* Override any theme's attempt to force field/option pairs to not be side-by-side. */
 #content .inputs {
 	clear: none !important;
@@ -123,9 +118,15 @@ input[type="checkbox"] {
 	padding: 8px 0;
 }
 
+#avantsearch-site-toggle a {
+	font-weight: bold;
+	text-decoration: underline;
+}
+
 #avantsearch-site-stats {
 	font-size: 115%;
 	padding-bottom: 16px;
+	text-decoration: underline;
 }
 
 #avantsearch-primary {
@@ -179,7 +180,7 @@ input[type="checkbox"] {
 	padding: 12px 12px;
 	background-color: #eee;
 	margin-right: 20px;
-	width: 500px;
+	max-width: 500px;
 }
 
 .search-help .help-title {
@@ -210,13 +211,6 @@ input[type="checkbox"] {
 	background-color: #f7f7f7;
 	padding: 2px 4px;
 	font-weight: bold;
-}
-
-#search-stats-title
-{
-	color: var(--header-color);
-	font-size: 20px;
-	font-weight: normal;
 }
 
 #search-stats-table {
@@ -930,12 +924,12 @@ td.search-result ul li.multiple-values {
 
 .grid-view-cell a:link,
 .grid-view-cell a:visited {
-	color: var(--preview-link-color);
+	color: var(--link-color);
 	text-decoration: none;
 }
 
 .grid-view-cell a:hover {
-	color: var(--preview-link-hover-color);
+	color: var(--link-hover-color);
 }
 
 /* === Search Results - Index View ===
