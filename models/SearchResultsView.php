@@ -384,6 +384,7 @@ class SearchResultsView
     public function emitSelectorForSort()
     {
         $sortFields = $this->getSortFields();
+        asort($sortFields);
         return $this->emitSelector('sort', 'S', $sortFields, true);
     }
 
@@ -812,7 +813,6 @@ class SearchResultsView
             {
                 $allowedFields[$index + 1] = $part;
             }
-            asort($allowedFields);
         }
         else
         {
