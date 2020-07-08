@@ -2,6 +2,13 @@
 
 Provides extended searching and search results capabilities for an Omeka Classic installation.
 
+---
+```
+This documentation is for Release v2.1.0. The unreleased code is under development and
+should be used for reference purposes only.
+```
+---
+
 ## Table of Contents
 
 - [Dependencies](https://github.com/gsoules/AvantSearch#dependencies)
