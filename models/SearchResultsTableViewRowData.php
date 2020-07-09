@@ -463,13 +463,13 @@ class SearchResultsTableViewRowData
                             if (plugin_is_active('AvantS3') && AvantCommon::userIsAdmin())
                             {
                                 $identifier = $elementTexts[0];
-                                $s3 = AvantAdmin::emitS3Link($identifier);
+                                $s3 = AvantCommon::emitS3Link($identifier);
                                 $filteredText = ' ' . $this->appendSymbolToListItem($s3, $filteredText);;
                             }
 
                             // Display a flag after the item to indicate if it's been recently visited.
                             $itemId = $this->useElasticsearch ? $item['_source']['item']['id'] : $item->id;
-                            $flag = AvantAdmin::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItemIds());
+                            $flag = AvantCommon::emitFlagItemAsRecent($itemId, $this->searchResults->getRecentlyViewedItemIds());
                             $filteredText = $this->appendSymbolToListItem($flag, $filteredText);
                         }
                     }

@@ -84,7 +84,7 @@ if (!empty($detailElements))
     {
         // These links will appear as though it were a metadata element value in the last row of metadata.
         $editLink = '<div class="search-results-metadata-row">';
-        $editLink .= AvantAdmin::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true);
+        $editLink .= AvantCommon::emitAdminLinksHtml($itemId, 'search-results-metadata-text', true);
         $editLink .= '</div>';
         echo $editLink;
     }

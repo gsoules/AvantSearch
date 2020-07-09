@@ -73,7 +73,7 @@ class SearchResultsView
         // Other search parameters are filters that narrow the result set and don't affect the score at all or very much.
         $this->allowSortByRelevance = !empty(AvantCommon::queryStringArg('query')) || !empty(AvantCommon::queryStringArg('keywords'));
 
-        $this->recentlyViewedItemIds = AvantAdmin::getRecentlyViewedItemIds();
+        $this->recentlyViewedItemIds = AvantCommon::getRecentlyViewedItemIds();
     }
 
     protected function addDescriptionColumn()
