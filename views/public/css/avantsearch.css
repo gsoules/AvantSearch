@@ -394,21 +394,14 @@ input[type="checkbox"] {
 	margin-right: 6px;
 	margin-bottom: 4px;
 	display: inline-block;
-	background-color: #daf2d1;
+	background-color: #d1e4f2;
 	border: 1px solid #A8B7C4;
 	border-radius:5px;
 }
 
 .search-filter.search-facet {
 	background-color: #d1e4f2;
-}
-
-.search-filters-message {
-	font-size:14px;
-	margin-bottom: 8px;
-	border-radius: 5px;
-	padding: 8px 4px 4px 8px;
-	border: 1px solid #ccc;
+	border: 2px solid #1a77bd;
 }
 
 a.search-reset-link {
