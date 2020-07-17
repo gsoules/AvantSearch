@@ -18,7 +18,8 @@ foreach ($columnsData as $column)
     $classes = SearchResultsTableView::createLayoutClasses($column);
     $sortable = true;
 
-    if ($columnName == 'Title')
+    $sortColumn = isset($_GET['sort']) ? $_GET['sort'] : '';
+    if ($columnName == $sortColumn)
     {
         $classes = 'L1 ' . $classes;
     }
