@@ -1266,6 +1266,8 @@ td.search-result ul li.multiple-values {
 
 #search-pagination-bottom {
 	grid-area: bottom;
+	margin-top: 6px;
+	margin-bottom: 6px;
 }
 
 #search-facet-button {
