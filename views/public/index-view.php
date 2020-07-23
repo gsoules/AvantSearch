@@ -1,24 +1,57 @@
 <?php
 /* @var $searchResults SearchResultsIndexView */
 
-function createEntriesFromElasticsearchResults($results, $indexFieldName)
+function createEntriesFromElasticsearchResults($results, $indexFieldName, $sharedSearchingEnabled)
 {
     $entries = array();
-
     $resultValues = array();
+
+    $requireCommonVocabulary = $sharedSearchingEnabled && plugin_is_active('AvantVocabulary');
+    $commonTerms = null;
+
+    // Determine if index terms must be limited to those in the common vocabulary. This will be
+    // true when sharing is enabled and the index field is one of the common vocabulary fields.
+    if ($requireCommonVocabulary)
+    {
+        $kindName = ucfirst($indexFieldName);
+        $vocabularyFields = AvantVocabulary::getVocabularyFields();
+        if (array_key_exists($kindName, $vocabularyFields))
+        {
+            $kind = $vocabularyFields[$kindName];
+            $commonTerms = get_db()->getTable('VocabularyCommonTerms')->getAllCommonTermsForKind($kind);
+        }
+        else
+        {
+            $requireCommonVocabulary = false;
+        }
+    }
 
     foreach ($results as $result)
     {
         // Get the index field texts for this result.
         $source = $result['_source'];
         if (isset($source['core-fields'][$indexFieldName]))
+        {
             $fieldTexts = $source['core-fields'][$indexFieldName];
-        else if (isset($source['local-fields'][$indexFieldName]))
-            $fieldTexts = $source['local-fields'][$indexFieldName];
-        else if (isset($source['private-fields'][$indexFieldName]))
-            $fieldTexts = $source['private-fields'][$indexFieldName];
+            if ($requireCommonVocabulary)
+            {
+                foreach ($fieldTexts as $index => $fieldText)
+                {
+                    // Determine if this text is in the common vocabulary. If not, omit it from the index.
+                    if (!in_array($fieldText, $commonTerms))
+                         unset($fieldTexts[$index]);
+                }
+            }
+        }
         else
-            $fieldTexts = [BLANK_FIELD_SUBSTITUTE];
+        {
+            if (isset($source['local-fields'][$indexFieldName]))
+                $fieldTexts = $source['local-fields'][$indexFieldName];
+            else if (isset($source['private-fields'][$indexFieldName]))
+                $fieldTexts = $source['private-fields'][$indexFieldName];
+            else
+                $fieldTexts = [BLANK_FIELD_SUBSTITUTE];
+        }
 
         // Create an entry for each text. For example if the index is Creator, and the result has multiple creators,
         // each creator text will have a separate entry in the index view.
@@ -62,7 +95,7 @@ function createEntriesFromElasticsearchResults($results, $indexFieldName)
     return $entries;
 }
 
-function createEntriesFromSqlResults($results, $searchResults)
+function createEntriesFromSqlResults($results)
 {
     $entries = array();
 
@@ -277,11 +310,11 @@ if ($totalResults)
         );
         echo '<section id="elasticsearch-results">';
 
-        $entries = createEntriesFromElasticsearchResults($results, $indexFieldName);
+        $entries = createEntriesFromElasticsearchResults($results, $indexFieldName, $searchResults->sharedSearchingEnabled());
     }
     else
     {
-        $entries = createEntriesFromSqlResults($results, $searchResults);
+        $entries = createEntriesFromSqlResults($results);
     }
 
 
