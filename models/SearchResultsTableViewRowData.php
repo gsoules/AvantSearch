@@ -412,6 +412,7 @@ class SearchResultsTableViewRowData
             $this->getItemFieldTextsHtml($item);
         }
 
+        $showScore = AvantCommon::userIsAdmin();
         $identifierElementName = ItemMetadata::getIdentifierAliasElementName();
         foreach ($this->columnsData as $column)
         {
@@ -509,7 +510,9 @@ class SearchResultsTableViewRowData
 
         $this->elementValue['<tags>']['text'] = '';
         $this->elementValue['<tags>']['detail'] = $this->searchResults->emitFieldDetailRow(__('Tags'),  $tags);
-        $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetailRow(__('Score'), $score);;
+
+        if ($showScore)
+            $this->elementValue['<score>']['detail'] = $this->searchResults->emitFieldDetailRow(__('Score'), $score);;
 
         if ($this->useElasticsearch && $fileAttachmentHits['count'] > 0)
         {

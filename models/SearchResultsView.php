@@ -229,7 +229,7 @@ class SearchResultsView
         if (empty($text))
             return '';
         $class = 'search-results-metadata-element';
-        $class .= in_array($elementName, $this->privateElementsData) ? ' private-element' : '';
+        $class .= in_array($elementName, $this->privateElementsData) || $elementName == "Score" ? ' private-element' : '';
         $displayedName = empty($alias) ? $elementName : $alias;
         $row = "<div class='$class'>$displayedName:</div><div class=\"search-results-metadata-text\">$text</div>";
         $row = "<div class='search-results-metadata-row'>$row</div>";
