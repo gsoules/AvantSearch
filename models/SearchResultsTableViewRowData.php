@@ -381,15 +381,19 @@ class SearchResultsTableViewRowData
 
         if ($this->useElasticsearch)
         {
+            // This flag controls whether or not shadow fields are merged in with core-fields. When some of the site
+            // field values are mapped to Common Vocabulary terms, setting the flag true will merge the site value for a
+            // term (contained in 'shadow-fields') with the mapped value (contained in 'core-fields') so that both the
+            // site and common term appear in the search results. When the flag is false, only site values are shown for
+            // a site search, and only common values are shown for a shared search.
+            $showShadowFields = false;
+
             $coreFieldTexts = isset($item['_source']['core-fields']) ? $item['_source']['core-fields'] : array();
-            $shadowFieldTexts = isset($item['_source']['shadow-fields']) ? $item['_source']['shadow-fields'] : array();
+            $shadowFieldTexts = isset($item['_source']['shadow-fields']) && $showShadowFields ? $item['_source']['shadow-fields'] : array();
             $localFieldTexts = isset($item['_source']['local-fields']) ? $item['_source']['local-fields'] : array();
             $privateFieldTexts = isset($item['_source']['private-fields']) ? $item['_source']['private-fields'] : array();
 
             // Merge all the fields into a single array of field names, with each of those being an array of field values.
-            // When some of the local field values are mapped to Common Vocabulary terms, this merge will cause the
-            // local value for a term (contained in 'shadow-fields') with the mapped value (contained in 'core-fields')
-            // so that both the local and common term appear in the search results.
             $allFieldTexts = [$coreFieldTexts, $shadowFieldTexts, $localFieldTexts, $privateFieldTexts];
             foreach ($allFieldTexts as $fieldTexts)
             {
