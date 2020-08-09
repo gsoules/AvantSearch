@@ -8,11 +8,11 @@ const VIEW = 'view';
 
 var selectorTitle = [];
 selectorTitle[FILTER] = 'Items: %s';
-selectorTitle[INDEX] = 'Index by: %s';
+selectorTitle[INDEX] = 'Index By: %s';
 selectorTitle[LAYOUT] = 'Layout: %s';
-selectorTitle[LIMIT] = 'Per page: %s';
-selectorTitle[SORT] = 'Sort by: %s';
-selectorTitle[SITE] = 'Searching: %s';
+selectorTitle[LIMIT] = 'Per Page: %s';
+selectorTitle[SORT] = 'Sort By: %s';
+selectorTitle[SITE] = 'Search: %s';
 selectorTitle[VIEW] = 'View: %s';
 
 var initializing = true;

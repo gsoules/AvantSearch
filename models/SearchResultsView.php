@@ -334,7 +334,7 @@ class SearchResultsView
     {
         $filters = array(
             __('All'),
-            __('With images'));
+            __('With Images'));
 
         return $this->emitSelector('filter', 'F', $filters);
     }
@@ -555,13 +555,14 @@ class SearchResultsView
             {
                 if ($asOptionList)
                 {
+                    $groupName = __('Private Fields');
                     if ($this->useElasticsearch)
                     {
-                        $fields[__('Admin Fields')][$fieldName] = $fieldName;
+                        $fields[$groupName][$fieldName] = $fieldName;
                     }
                     else
                     {
-                        $fields[__('Admin Fields')][$elementId] = $fieldName;
+                        $fields[$groupName][$elementId] = $fieldName;
                     }
                 }
                 else

@@ -5,8 +5,8 @@ class AvantSearch
     const MAX_SEARCH_RESULTS = 10000;
     const SORT_BY_MODIFIED = 'modified date';
     const SORT_BY_RELEVANCE = 'relevance';
-    const SITE_THIS = 'This site';
-    const SITE_SHARED = 'All sites';
+    const SITE_THIS = 'This Site';
+    const SITE_SHARED = 'All Sites';
 
     public static function allowToggleBetweenLocalAndSharedSearching()
     {
@@ -202,7 +202,7 @@ class AvantSearch
 
     public static function getSearchFilterResetLink($url)
     {
-        return '<a href="' . $url . '" title="Remove filter" class="search-reset-link search-link">' . '&#10006;' . '</a>';
+        return '<a href="' . $url . '" title="Remove facet" class="search-reset-link search-link">' . '&#10006;' . '</a>';
     }
 
     public static function getSearchFormHtml()
