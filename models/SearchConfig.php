@@ -24,7 +24,7 @@ class SearchConfig extends ConfigOptions
     {
         echo '<p class="storage-engine learn-more">' . __('This installation uses the %s storage engine for keyword searching.</br>', $engine);
         echo "For improved search results, switch to the InnoDB storage engine. ";
-        echo "<a class='avantsearch-help' href='https://github.com/gsoules/AvantSearch#improving-search-results' target='_blank'>" . __('Learn more.') . "</a>";
+        echo "<a class='avantsearch-help' href='https://digitalarchive.us/plugins/avantsearch/#improving-search-results' target='_blank'>" . __('Learn more.') . "</a>";
         echo "</p>";
     }
 

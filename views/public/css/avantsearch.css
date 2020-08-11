@@ -217,7 +217,11 @@ input[type="checkbox"] {
 	text-align: right;
 	font-size: 14px;
 	width: auto;
-	max-width: 700px;
+}
+
+#search-stats-table-header {
+	text-align: center;
+	vertical-align: bottom;
 }
 
 #search-stats-table tbody > tr > td {

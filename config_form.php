@@ -26,7 +26,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 </style>
 
 <div class="plugin-help learn-more">
-    <a href="https://github.com/gsoules/AvantSearch#usage" target="_blank">Learn about the configuration options on this page</a>
+    <a href="https://digitalarchive.us/plugins/avantsearch/" target="_blank">Learn about the configuration options on this page</a>
 </div>
 
 <?php if ($storageEngine != 'InnoDB'): ?>
@@ -97,7 +97,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
             <p class="explanation"><?php echo __('Sort street addresses by street name, then by street number.'); ?></p>
             <?php echo $view->formCheckbox(SearchConfig::OPTION_ADDRESS_SORTING, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_ADDRESS_SORTING))); ?>
         <?php else: ?>
-            <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'address-sorting'); ?>
+            <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'address-sorting-option'); ?>
         <?php endif; ?>
     </div>
 </div>
