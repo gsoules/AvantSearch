@@ -129,6 +129,11 @@ input[type="checkbox"] {
 	text-decoration: underline;
 }
 
+#avantsearch-site-stats-help {
+	font-size: 110%;
+	text-decoration: underline;
+}
+
 #avantsearch-primary {
 	grid-column: 1;
 	box-sizing: border-box;
