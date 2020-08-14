@@ -91,13 +91,12 @@ else
     $siteToggle = '';
 }
 
-$statsUrl = url('/avant/dashboard') . $queryString;
-$siteStats = "<a href='$statsUrl'>View site statistics</a>";
-
 $helpText = '';
 $facets = '';
 if ($useElasticsearch)
 {
+    $statsUrl = url('/avant/dashboard') . $queryString;
+    $siteStats = "<a href='$statsUrl'>View site statistics</a>";
     $helpTextFileName = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'elasticsearch-help.html';
     $helpText = file_get_contents($helpTextFileName);
 }
@@ -266,10 +265,10 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
         </form>
     </div>
 	<div id="avantsearch-secondary">
-        <div id="avantsearch-site-stats">
-            <?php echo $siteStats; ?>
-        </div>
         <?php if ($useElasticsearch): ?>
+            <div id="avantsearch-site-stats">
+                <?php echo $siteStats; ?>
+            </div>
             <div class="search-help"><?php echo $helpText ?></div>
         <?php endif; ?>
     </div>
