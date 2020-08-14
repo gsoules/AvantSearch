@@ -817,7 +817,11 @@ td.search-result ul li.multiple-values {
 }
 
 .search-td-image-fallback img {
-	width: 100px;
+	width: 70px;
+}
+
+div.grid-view-cell .fallback-image {
+	width: 70px;
 }
 
 .item-preview .item-img.fallback-image {
