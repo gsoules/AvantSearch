@@ -214,7 +214,6 @@ class AvantSearch
         $action = $request->getActionName();
         $isAdvancedSearchPage = $action == 'advanced-search' && $useElasticsearch;
 
-        $advancedSearchLinkText = __('Advanced Search');
         $placeholderText = __('Enter keywords to search for');
         $query = isset($_GET['query']) && !$isAdvancedSearchPage ? htmlspecialchars($_GET['query'], ENT_QUOTES) : '';
         $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
@@ -241,16 +240,18 @@ class AvantSearch
 
         // Emit the search button.
         $html .= '<button id="submit_search" type="submit" value="Search">Search</button>';
-        $html .= '<div>';
+        $html .= '<div id="banner-links">';
+
+        // Emit the recent items and help links
+        $html .= '<a href="' . public_url('/avant/recent') . '" title="' . __('See your recently viewed items') . '">' . __('Recent Items') . '</a>';
+        $html .= '<a href="https://digitalarchive.us" target="_blank" title="' . __('Read the documentation in a separate window') . '" >' . __('Help') . '</a>';
 
         // Emit the Advanced Search link.
+        $advancedSearchLinkText = __('Advanced Search');
         if (!$isAdvancedSearchPage)
-        {
-            $html .= '<a id="advanced-search-link" href="' . $advancedSearchUrl . '" class="search-link">' . $advancedSearchLinkText . '</a>';
-
-            $recentlyViewedItemsLinkText = __('Recent Items');
-            $html .= '<a id="recent-items-link" href="' . public_url('/avant/recent') . '">' . $recentlyViewedItemsLinkText . '</a>';
-        }
+            $html .= '<a href="' . $advancedSearchUrl . '" class="search-link" title="' . __('Go to the Advanced Search page') . '">' . $advancedSearchLinkText . '</a>';
+        else
+            $html .= '<span id="advanced-search-link-disabled">' . $advancedSearchLinkText . '</span>';
 
         $html .= '</div>';
         $html .= '</form>';
