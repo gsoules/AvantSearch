@@ -1317,7 +1317,7 @@ div.grid-view-cell .fallback-image {
 
 @media screen and (min-width: 600px) {
 	#elasticsearch-results-container {
-		grid-template-columns: minmax(200px, 12%) 1fr;
+		grid-template-columns: minmax(220px, 12%) 1fr;
 		grid-template-areas:
 				"title	 title"
 				"message message"
