@@ -532,7 +532,7 @@ class SearchResultsView
         if ($asOptionList)
             $fields[''] = __('Select Below');
 
-        if (!empty(current_user()) && !empty($privateFields) && !$sharedSearchingEnabled)
+        if (!empty(current_user()) && !empty($privateFields))
         {
             // When a user is logged in, display the public fields first, then the private fields.
             // We do this so that commonly used public fields like Title don't end up at the very
@@ -556,13 +556,20 @@ class SearchResultsView
                 if ($asOptionList)
                 {
                     $groupName = __('Private Fields');
-                    if ($this->useElasticsearch)
+                    if ($sharedSearchingEnabled)
                     {
-                        $fields[$groupName][$fieldName] = $fieldName;
+                        $fields[$groupName][''] = 'HIDDEN FOR ALL SITES SEARCH';
                     }
                     else
                     {
-                        $fields[$groupName][$elementId] = $fieldName;
+                        if ($this->useElasticsearch)
+                        {
+                            $fields[$groupName][$fieldName] = $fieldName;
+                        }
+                        else
+                        {
+                            $fields[$groupName][$elementId] = $fieldName;
+                        }
                     }
                 }
                 else
