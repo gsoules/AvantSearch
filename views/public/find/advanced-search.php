@@ -174,9 +174,10 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                                 <?php
                                 if (!$useElasticsearch)
                                 {
+                                    $value = isset($rows['joiner']) ? $rows['joiner'] : null;
                                     echo $this->formSelect(
                                         "advanced[$i][joiner]",
-                                        @$rows['joiner'],
+                                        $value,
                                         array(
                                             'title' => __("Search Joiner"),
                                             'id' => null,
@@ -188,9 +189,10 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                                         )
                                     );
                                 }
+                                $value = isset($rows['element_id']) ? $rows['element_id'] : null;
                                 echo $this->formSelect(
                                     "advanced[$i][element_id]",
-                                    @$rows['element_id'],
+                                    $value,
                                     array(
                                         'title' => __("Search Field"),
                                         'id' => null,
@@ -208,9 +210,11 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                                     ),
                                     $searchResults->getAdvancedSearchConditions($useElasticsearch)
                                 );
+
+                                $value = isset($rows['terms']) ? $rows['terms'] : null;
                                 echo $this->formText(
                                     "advanced[$i][terms]",
-                                    @$rows['terms'],
+                                    $value,
                                     array(
                                         'size' => '20',
                                         'title' => __("Search Terms"),
