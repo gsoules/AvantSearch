@@ -1,6 +1,14 @@
 <?php
 /* @var $searchResults SearchResultsTableView */
 
+$createReport = plugin_is_active('AvantReport') && isset($_GET['report']);
+if ($createReport)
+{
+    $report = new AvantReport();
+    $report->createReportForSearchResults();
+    return;
+}
+
 $useElasticsearch = $searchResults->useElasticsearch();
 $results = $searchResults->getResults();
 $totalResults = $searchResults->getTotalResults();
@@ -94,6 +102,11 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
         ?>
         </tbody>
     </table>
+
+    <?php
+        echo get_specific_plugin_hook_output('AvantReport', 'public_search_results', array('view' => $this));
+    ?>
+
     <?php if ($useElasticsearch): ?>
         </section>
     <?php endif; ?>
