@@ -8,7 +8,7 @@ if ($createReport)
     $findUrl = url('/find') . $queryString;
     $report = new AvantReport();
     $report->createReportForSearchResults($searchResults, $findUrl);
-    return;
+    exit();
 }
 
 $useElasticsearch = $searchResults->useElasticsearch();
