@@ -4,8 +4,10 @@
 $createReport = plugin_is_active('AvantReport') && isset($_GET['report']);
 if ($createReport)
 {
+    $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
+    $findUrl = url('/find') . $queryString;
     $report = new AvantReport();
-    $report->createReportForSearchResults();
+    $report->createReportForSearchResults($searchResults, $findUrl);
     return;
 }
 
@@ -104,7 +106,9 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
     </table>
 
     <?php
-        echo get_specific_plugin_hook_output('AvantReport', 'public_search_results', array('view' => $this));
+        $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
+        $findUrl = url('/find') . $queryString;
+        echo get_specific_plugin_hook_output('AvantReport', 'public_search_results', array('view' => $this, 'url' => $findUrl));
     ?>
 
     <?php if ($useElasticsearch): ?>

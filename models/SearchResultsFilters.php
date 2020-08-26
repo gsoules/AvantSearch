@@ -5,7 +5,8 @@ class SearchResultsFilters
     protected $advancedArgsArray = array();
     protected $basicArgsArray = array();
     protected $filterCount;
-    protected $filterMessage;
+    protected $filterMessageHtml;
+    protected $filterMessageText;
     protected $searchResults;
 
     function __construct($searchResults)
@@ -13,14 +14,16 @@ class SearchResultsFilters
         /* @var $searchResults SearchResultsView */
         $this->searchResults = $searchResults;
         $this->filterCount = 0;
-        $this->filterMessage = '';
+        $this->filterMessageHtml = '';
+        $this->filterMessageText = '';
     }
 
     protected function createFilterWithRemoveX($filter, $resetUrl, $isFacet = false)
     {
         $link = AvantSearch::getSearchFilterResetLink($resetUrl);
         $facetClass = $isFacet ? ' search-facet' : '';
-        $this->filterMessage .= "<span class='search-filter$facetClass'>$filter$link</span>";
+        $this->filterMessageHtml .= "<span class='search-filter$facetClass'>$filter$link</span>";
+        $this->filterMessageText .= $filter . PHP_EOL;
         $this->filterCount++;
     }
 
@@ -141,32 +144,6 @@ class SearchResultsFilters
         }
     }
 
-    public function emitSearchFilters($resultControlsHtml)
-    {
-        $useElasticsearch = $this->searchResults->useElasticsearch();
-
-        $this->getKeywordsArg($useElasticsearch);
-        $this->getAdvancedSearchArgs($useElasticsearch);
-        $this->getTagsArg();
-        $this->getYearRangeArgs();
-
-        $this->filterMessage .= __('You searched for: ');
-
-        $this->emitBasicSearchFilters();
-        $this->emitAdvancedSearchFilters();
-
-        if ($useElasticsearch)
-        {
-            $this->emitElasticsearchFilters();
-        }
-
-        $html = $this->filterCount> 0 ? "<div id='search-filters-message'>$this->filterMessage</div>" : '';
-        $html .= "<div id='search-selector-bar'>";
-        $html .= "<div id='search-selectors'>{$resultControlsHtml}</div>";
-        $html .= "</div>";
-        return $html;
-    }
-
     protected function getAdvancedSearchArgs($useElasticsearch)
     {
         $queryArgs = $this->searchResults->removeInvalidAdvancedQueryArgs($_GET);
@@ -284,6 +261,43 @@ class SearchResultsFilters
         }
 
         $this->basicArgsArray[$argName]['display'] = $keywords . $qualifier;
+    }
+
+    protected function getSearchFilters()
+    {
+        $useElasticsearch = $this->searchResults->useElasticsearch();
+
+        $this->getKeywordsArg($useElasticsearch);
+        $this->getAdvancedSearchArgs($useElasticsearch);
+        $this->getTagsArg();
+        $this->getYearRangeArgs();
+
+        $this->filterMessageHtml .= __('You searched for: ');
+
+        $this->emitBasicSearchFilters();
+        $this->emitAdvancedSearchFilters();
+
+        if ($useElasticsearch)
+        {
+            $this->emitElasticsearchFilters();
+        }
+    }
+
+    public function getSearchFiltersHtml($resultControlsHtml)
+    {
+        $this->getSearchFilters();
+
+        $html = $this->filterCount> 0 ? "<div id='search-filters-message'>$this->filterMessageHtml</div>" : '';
+        $html .= "<div id='search-selector-bar'>";
+        $html .= "<div id='search-selectors'>{$resultControlsHtml}</div>";
+        $html .= "</div>";
+        return $html;
+    }
+
+    public function getSearchFiltersText()
+    {
+        $this->getSearchFilters();
+        return $this->filterMessageText;
     }
 
     protected function getTagsArg()

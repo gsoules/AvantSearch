@@ -316,7 +316,12 @@ class SearchResultsView
 
     public function emitSearchFilters($resultControlsHtml)
     {
-        return $this->searchFilters->emitSearchFilters($resultControlsHtml);
+        return $this->searchFilters->getSearchFiltersHtml($resultControlsHtml);
+    }
+
+    public function emitSearchFiltersText()
+    {
+        return $this->searchFilters->getSearchFiltersText();
     }
 
     protected function emitSelector($name, $prefix, array $values, $hightlightSharedOptions = false)
@@ -890,12 +895,21 @@ class SearchResultsView
         if (isset($this->limit))
             return $this->limit;
 
-        $this->limit = AvantCommon::queryStringArgOrCookie('limit', 'LIMIT-ID', 0);
+        $reportLimit = AvantCommon::queryStringArg('report', 0);
+        if ($reportLimit)
+        {
+            $this->limit = $reportLimit;
+        }
+        else
+        {
+            $this->limit = AvantCommon::queryStringArgOrCookie('limit', 'LIMIT-ID', 0);
 
-        // Make sure that the limit is valid.
-        $limitOptions = $this->getResultsLimitOptions();
-        if (!in_array($this->limit, $limitOptions))
-            $this->limit = 25;
+            // Make sure that the limit is valid.
+            $limitOptions = $this->getResultsLimitOptions();
+            if (!in_array($this->limit, $limitOptions))
+                $this->limit = 25;
+        }
+
 
         return $this->limit;
     }
