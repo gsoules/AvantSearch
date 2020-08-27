@@ -751,9 +751,8 @@ td.search-result ul li {
 
 .search-results-metadata-text ul li.multiple-values,
 td.search-result ul li.multiple-values {
-	padding-top: 2px;
-	border-top: solid 1px #ccc;
-	border-image: linear-gradient(to right, #ccc, white) 1 stretch;
+	padding-top: 0px;
+	border-top: solid 1px #dedede;
 }
 
 .search-results-metadata-element,
