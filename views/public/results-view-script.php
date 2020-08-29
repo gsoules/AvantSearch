@@ -36,7 +36,7 @@
         if (message.length > 0)
         {
             // Display a downloading message.
-            indicator.text(message + '...');
+            indicator.text(message);
             indicator.show();
             linkContainer.hide();
 

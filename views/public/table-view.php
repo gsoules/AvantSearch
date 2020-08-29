@@ -110,7 +110,8 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
     <?php
         $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
         $findUrl = url('/find') . $queryString;
-        echo get_specific_plugin_hook_output('AvantReport', 'public_search_results', array('total' => $totalResults, 'url' => $findUrl, 'error' => $reportCreationError));
+        $args = array('total' => $totalResults, 'url' => $findUrl, 'error' => $reportCreationError);
+        echo get_specific_plugin_hook_output('AvantReport', 'public_search_results', $args);
     ?>
 
     <?php if ($useElasticsearch): ?>
