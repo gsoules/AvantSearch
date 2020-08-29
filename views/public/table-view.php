@@ -2,12 +2,15 @@
 /* @var $searchResults SearchResultsTableView */
 
 $createReport = plugin_is_active('AvantReport') && isset($_GET['report']);
+$reportCreationError = '';
 if ($createReport)
 {
-    $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
     $report = new AvantReport();
-    $report->createReportForSearchResults($searchResults);
-    exit();
+    $error = $report->createReportForSearchResults($searchResults);
+    if ($error)
+        $reportCreationError = __('An error occurred while creating the PDF report: %s', $error);
+    else
+        exit();
 }
 
 $useElasticsearch = $searchResults->useElasticsearch();
@@ -107,7 +110,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml);
     <?php
         $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
         $findUrl = url('/find') . $queryString;
-        echo get_specific_plugin_hook_output('AvantReport', 'public_search_results', array('total' => $totalResults, 'url' => $findUrl));
+        echo get_specific_plugin_hook_output('AvantReport', 'public_search_results', array('total' => $totalResults, 'url' => $findUrl, 'error' => $reportCreationError));
     ?>
 
     <?php if ($useElasticsearch): ?>
