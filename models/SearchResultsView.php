@@ -1184,7 +1184,7 @@ class SearchResultsView
 
     protected static function messageInfo($info)
     {
-        return ' <span class="search-results-message-info"> &nbsp;&ndash; ' . $info . '</span>';
+        return ' &nbsp;&ndash; <span class="search-results-message-info">' . $info . '</span>';
     }
 
     public function removeInvalidAdvancedQueryArgs($queryArgs)

@@ -384,8 +384,8 @@ input[type="checkbox"] {
 }
 
 .search-results-message-info {
-	font-weight: normal;
-	color: #1b7ec9;
+	font-weight: bold;
+	color: #d42e2e;
 }
 
 #search-results-title span {

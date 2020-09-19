@@ -223,7 +223,7 @@ class SearchResultsTableViewRowData
             }
             $tooltip = ItemPreview::getItemLinkTooltip();
             $itemUrl =  $item['_source']['url']['item'];
-            $titleLink = "<a href='$itemUrl' title='$tooltip' target='_blank'>$titles[0]</a>";
+            $titleLink = "<a href='$itemUrl' data-tooltip='$tooltip' target='_blank'>$titles[0]</a>";
             $this->elementValue['Title']['text'] = $titleLink;
         }
         else
