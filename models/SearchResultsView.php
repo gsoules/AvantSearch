@@ -450,17 +450,18 @@ class SearchResultsView
 
     public function getAdvancedSearchConditions($useElasticsearch)
     {
+        // Use lower case strings to maintain language translation compatibility with these same terms used by Omeka search.
         $conditions = array(
-            'contains' => __('Contains'),
-            'does not contain' => __('Does not contain'),
-            'is empty' => __('Is empty'),
-            'is not empty' => __('Is not empty'),
-            'is exactly' => __('Is exactly'),
-            'is not exactly' => __('Is not exactly'),
-            'matches' => __('Matches'),
-            'does not match' => __('Does not match'),
-            'starts with' => __('Starts with'),
-            'ends with' => __('Ends with')
+            'contains' => __('contains'),
+            'does not contain' => __('does not contain'),
+            'is empty' => __('is empty'),
+            'is not empty' => __('is not empty'),
+            'is exactly' => __('is exactly'),
+            'is not exactly' => __('is not exactly'),
+            'matches' => __('matches'),
+            'does not match' => __('does not match'),
+            'starts with' => __('starts with'),
+            'ends with' => __('ends with')
         );
 
         if ($useElasticsearch)
