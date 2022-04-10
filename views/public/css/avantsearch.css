@@ -917,7 +917,7 @@ div.grid-view-cell .fallback-image {
 	font-size: 11px
 }
 
-.grid-view-cell img {
+.grid-view-cell .item-img img {
 	background: #fff;
 	border: 1px solid #ccc;
 	box-shadow: 4px 4px 6px 0 rgba(0,0,0,0.25);

@@ -243,7 +243,7 @@ class AvantSearch
         $html .= '<div id="banner-links">';
 
         // Emit the recent items and help links
-        $html .= '<a href="' . public_url('/avant/recent') . '" title="' . __('See your recently viewed items') . '">' . __('Recent Items') . '</a>';
+        $html .= '<a href="' . public_url('/avant/recent') . '" title="' . __('See your flagged items') . '">' . __('Flagged Items') . '</a>';
         $html .= '<a href="https://digitalarchive.us" target="_blank" title="' . __('Read the documentation in a separate window') . '" >' . __('Help') . '</a>';
 
         // Emit the Advanced Search link.
