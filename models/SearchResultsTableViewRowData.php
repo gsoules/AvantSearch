@@ -468,7 +468,7 @@ class SearchResultsTableViewRowData
                             if (plugin_is_active('AvantS3') && AvantCommon::userIsAdmin())
                             {
                                 $identifier = $elementTexts[0];
-                                $s3 = AvantCommon::emitS3Link($identifier);
+                                $s3 = AvantCommon::emitS3LinkForItem($identifier);
                                 $filteredText = ' ' . $this->appendSymbolToListItem($s3, $filteredText);;
                             }
 
