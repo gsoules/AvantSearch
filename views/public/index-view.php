@@ -250,7 +250,11 @@ function emitLetterIndex($entries)
 
 function entryTextComparator($object1, $object2)
 {
-    return $object1['clean-text'] > $object2['clean-text'];
+    $s1 = $object1['clean-text'];
+    $s2 = $object2['clean-text'];
+    if ($s1 == $s2)
+        return 0;
+    return $s1 > $s2 ? 1 : - 1;
 }
 
 $useElasticsearch = $searchResults->useElasticsearch();
