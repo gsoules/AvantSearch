@@ -37,6 +37,7 @@ $advancedSubmitButtonText = __('Search');
 
 $useElasticsearch = AvantSearch::useElasticsearch();
 
+$queryString = '';
 if (AvantSearch::allowToggleBetweenLocalAndSharedSearching())
 {
     // Get the query string and break it into individual args.
