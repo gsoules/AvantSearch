@@ -217,8 +217,14 @@ class AvantSearch
         $placeholderText = __('Enter keywords to search for');
         $query = isset($_GET['query']) && !$isAdvancedSearchPage ? htmlspecialchars($_GET['query'], ENT_QUOTES) : '';
         $queryString = empty($_SERVER['QUERY_STRING']) ? '' : '?' . $_SERVER['QUERY_STRING'];
-        $findUrl = url('/find') . $queryString;
         $advancedSearchUrl = url('/find/advanced') . $queryString;
+
+        // Switch to table view whenever doing a new search from the search form. This is done so
+        // that keyword hits in PDF files will be visible in the Description and File Attachment text.
+        $tableViewId = SearchResultsViewFactory::TABLE_VIEW_ID;
+        $queryString = preg_replace("/view=[0-9]/", "view=$tableViewId", $queryString);
+
+        $findUrl = url('/find') . $queryString;
 
         $menu = public_nav_main();
         $menuHtml = $menu->render();
@@ -234,6 +240,10 @@ class AvantSearch
 
         // Emit the hidden <input> tags needed to put query string argument values into the form.
         $html .= self::getHiddenInputsForSimpleSearch();
+
+        // Switch to table view.
+        $tableViewArg = 'name="view" value="' . $tableViewId . '"';
+        $html = preg_replace('/name="view" value="[0-9]"/', $tableViewArg, $html);
 
         // Emit the X at far right used to clear the search box.
         $html .= '<span id="search-erase-icon">&#10006;</span></span>';
