@@ -240,6 +240,7 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                 <button type="button" class="add_search"><?php echo __('Add field'); ?></button>
             </div>
 
+            <?php if (!$useElasticsearch): ?>
             <div class="search-form-section">
                 <div class="avantsearch-label-column">
                     <?php echo $this->formLabel('year-range', __('Years')); ?>
@@ -251,6 +252,7 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                     <?php echo $this->formText('year_end', $yearEnd, array('id' => 'year-end', 'title' => 'Four digit end year')); ?>
                 </div>
             </div>
+            <?php endif; ?>
 
             <?php if (!$useElasticsearch): ?>
             <div class="search-form-section">
