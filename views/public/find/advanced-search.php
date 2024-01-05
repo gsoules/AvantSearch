@@ -173,7 +173,7 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                         <?php
                         $search = getAdvancedSearchArgs($useElasticsearch);
                         foreach ($search as $i => $rows): ?>
-                            <div class="search-entry">
+                            <div class="search-entry" id="search-row-<?php echo $i; ?>" aria-label="<?php echo __('Row %s', $i+1); ?>">
                                 <?php
                                 if (!$useElasticsearch)
                                 {
@@ -184,6 +184,7 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                                         array(
                                             'title' => __("Search Joiner"),
                                             'id' => null,
+                                            'aria-labelledby' => 'search-narrow-by-fields-label search-row-' . $i . ' search-narrow-by-fields-joiner',
                                             'class' => 'advanced-search-joiner'
                                         ),
                                         array(
@@ -199,6 +200,7 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                                     array(
                                         'title' => __("Search Field"),
                                         'id' => null,
+                                        'aria-labelledby' => 'search-narrow-by-fields-label search-row-' . $i . ' search-narrow-by-fields-property',
                                         'class' => 'advanced-search-element'
                                     ),
                                     $searchResults->getAdvancedSearchFields()
@@ -209,6 +211,7 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                                     array(
                                         'title' => __("Search Type"),
                                         'id' => null,
+                                        'aria-labelledby' => 'search-narrow-by-fields-label search-row-' . $i . ' search-narrow-by-fields-type',
                                         'class' => 'advanced-search-type'
                                     ),
                                     $searchResults->getAdvancedSearchConditions($useElasticsearch)
@@ -222,12 +225,13 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                                         'size' => '20',
                                         'title' => __("Search Terms"),
                                         'id' => null,
+                                        'aria-labelledby' => 'search-narrow-by-fields-label search-row-' . $i . ' search-narrow-by-fields-terms',
                                         'class' => 'advanced-search-terms',
                                         'autofocus' => ''
                                     )
                                 );
                                 ?>
-                                <button type="button" class="remove_search" disabled="disabled"
+                                <button type="button" class="remove_search"aria-labelledby="search-narrow-by-fields-label search-row-<?php echo $i; ?> search-narrow-by-fields-remove-field" disabled="disabled"
                                         style="display: none;"><?php echo __('Remove field'); ?></button>
                             </div>
                         <?php endforeach; ?>
