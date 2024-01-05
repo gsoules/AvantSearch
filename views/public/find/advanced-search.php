@@ -13,6 +13,8 @@ function getAdvancedSearchArgs($useElasticsearch)
             // get the element name since an Item page is always running on the Omeka installation that uses those Ids.
             foreach ($searchArgs as $index => $args)
             {
+                if (!array_key_exists('element_id', $args))
+                    continue;
                 $elementId = $args['element_id'];
                 if (ctype_digit($elementId))
                 {

@@ -1207,6 +1207,8 @@ class SearchResultsView
         {
             foreach ($queryArgs['advanced'] as $key => $advancedArg)
             {
+                if (!array_key_exists('element_id', $advancedArg))
+                    continue;
                 $elementName = $advancedArg['element_id'];
                 $isElementId = ctype_digit($elementName);
 

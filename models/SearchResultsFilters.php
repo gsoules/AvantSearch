@@ -43,6 +43,8 @@ class SearchResultsFilters
         foreach ($advancedQueryStringArgs as $advancedQueryStringArgsIndex => $advancedQueryStringArg)
         {
             // Get the text for this argument that will appear as a removable filter.
+            if (!array_key_exists($advancedArgsIndex, $this->advancedArgsArray))
+                continue;
             $advancedArg = $this->advancedArgsArray[$advancedArgsIndex];
             $advancedArgsIndex++;
 
