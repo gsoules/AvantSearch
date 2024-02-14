@@ -193,12 +193,21 @@ class SearchQueryBuilder
                         $query .= "$word";
                     }
                 }
-                $where = "`search_texts`.`record_type` = 'Item' AND ";
-                $where .= "MATCH (`search_texts`.`$searchColumn`) AGAINST " . '(? IN BOOLEAN MODE)';
+
+                $where = "
+	                search_texts.record_type = 'Item' AND (
+                	MATCH (search_texts.text) AGAINST (? IN BOOLEAN MODE) OR
+	                MATCH (search_pdfs.pdf) AGAINST (? IN BOOLEAN MODE))";
                 break;
         }
 
-        $this->select->where($where, $query);
+        $db = get_db();
+        $searchTextsTable = array('search_texts' => "{$db->prefix}search_texts");
+        $searchPdfsTable = array('search_pdfs' => "{$db->prefix}search_pdfs");
+
+        $this->select
+            ->joinleft($searchPdfsTable, "search_texts.record_id = search_pdfs.record_id", array())
+            ->where($where, $query);
     }
 
     protected function buildSortOrder($sortField, $sortOrder, $isIndexQuery)
