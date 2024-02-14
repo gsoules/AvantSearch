@@ -202,7 +202,6 @@ class SearchQueryBuilder
         }
 
         $db = get_db();
-        $searchTextsTable = array('search_texts' => "{$db->prefix}search_texts");
         $searchPdfsTable = array('search_pdfs' => "{$db->prefix}search_pdfs");
 
         $this->select
