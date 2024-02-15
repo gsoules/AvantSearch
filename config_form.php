@@ -107,7 +107,7 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
         <label><?php echo CONFIG_LABEL_PDFSEARCH; ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __('Use PDF search.'); ?></p>
+        <p class="explanation"><?php echo __('Use PDF search. Turning this option off will delete the PDFs table. Turning it on again will recreate the table which can take a while.'); ?></p>
         <?php echo $view->formCheckbox(SearchConfig::OPTION_PDFSEARCH, true, array('checked' => (boolean)AvantSearch::usePdfSearch())); ?>
     </div>
 </div>
