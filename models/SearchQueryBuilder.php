@@ -155,7 +155,7 @@ class SearchQueryBuilder
 
     protected function buildKeywordWhere($query, $queryType, $titleOnly)
     {
-        $searchPdfs = true && !$titleOnly;
+        $searchPdfs = AvantSearch::usePdfSearch() && !$titleOnly;
         $searchColumn = $titleOnly ? 'title' : 'text';
         switch ($queryType)
         {

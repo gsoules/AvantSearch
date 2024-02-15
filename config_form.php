@@ -104,6 +104,16 @@ $integerSortingOptionRows = max(2, count(explode(PHP_EOL, $integerSortingOption)
 
 <div class="field">
     <div class="two columns alpha">
+        <label><?php echo CONFIG_LABEL_PDFSEARCH; ?></label>
+    </div>
+    <div class="inputs five columns omega">
+        <p class="explanation"><?php echo __('Use PDF search.'); ?></p>
+        <?php echo $view->formCheckbox(SearchConfig::OPTION_PDFSEARCH, true, array('checked' => (boolean)AvantSearch::usePdfSearch())); ?>
+    </div>
+</div>
+
+<div class="field">
+    <div class="two columns alpha">
         <label><?php echo CONFIG_LABEL_ELASTICSEARCH; ?></label>
     </div>
     <div class="inputs five columns omega">

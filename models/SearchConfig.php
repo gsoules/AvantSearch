@@ -6,6 +6,7 @@ define('CONFIG_LABEL_DETAIL_LAYOUT', __('Detail Layout'));
 define('CONFIG_LABEL_ELASTICSEARCH', __('Elasticsearch'));
 define('CONFIG_LABEL_INTEGER_SORTING', __('Integer Sorting'));
 define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
+define('CONFIG_LABEL_PDFSEARCH', __('PDF Search'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
 
@@ -17,6 +18,7 @@ class SearchConfig extends ConfigOptions
     const OPTION_ELASTICSEARCH = 'avantsearch_elasticsearch';
     const OPTION_INTEGER_SORTING = 'avantsearch_integer_sorting';
     const OPTION_LAYOUTS = 'avantsearch_layouts';
+    const OPTION_PDFSEARCH = 'avantsearch_pdfsearch';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
 
@@ -299,6 +301,7 @@ class SearchConfig extends ConfigOptions
         set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
         set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
         set_option(self::OPTION_ELASTICSEARCH, intval($_POST[self::OPTION_ELASTICSEARCH]));
+        set_option(self::OPTION_PDFSEARCH, intval($_POST[self::OPTION_PDFSEARCH]));
     }
 
     public static function saveOptionDataForColumns()
