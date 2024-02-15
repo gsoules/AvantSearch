@@ -122,7 +122,7 @@ class SearchPdf
             $itemFileNames[$id] .= $pdf['filename'];
         }
 
-        foreach ($itemFileNames as $item)
+        foreach ($itemFileNames as $itemId => $item)
         {
             $fileNames = explode(";", $item);
 
@@ -136,7 +136,7 @@ class SearchPdf
             if ($texts)
             {
                 $db = get_db();
-                $query = "INSERT INTO " . $db->SearchPdf . " (record_id, pdf) VALUES (" . $id . ",'" . $texts . "')";
+                $query = "INSERT INTO " . $db->SearchPdf . " (record_id, pdf) VALUES (" . $itemId . ",'" . $texts . "')";
                 $db->query($query);
             }
         }
