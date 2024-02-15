@@ -301,7 +301,28 @@ class SearchConfig extends ConfigOptions
         set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
         set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
         set_option(self::OPTION_ELASTICSEARCH, intval($_POST[self::OPTION_ELASTICSEARCH]));
-        set_option(self::OPTION_PDFSEARCH, intval($_POST[self::OPTION_PDFSEARCH]));
+
+        $oldPdfOption = intval(get_option(self::OPTION_PDFSEARCH));
+        $newPdfOption = intval($_POST[self::OPTION_PDFSEARCH]);
+
+        if ($oldPdfOption != $newPdfOption)
+        {
+            // The PDF option was toggled.
+            set_option(self::OPTION_PDFSEARCH, $newPdfOption);
+            $searchPdf = new SearchPdf();
+
+            if ($newPdfOption == 1)
+            {
+                // PDF search was enabled.
+                $searchPdf->createSearchPdfsTable();
+                $searchPdf->popuplateSearchPdfsTable();
+            }
+            else
+            {
+                // PDF search was disabled.
+                $searchPdf->dropSearchPdfsTable();
+            }
+        }
     }
 
     public static function saveOptionDataForColumns()
