@@ -314,13 +314,11 @@ class SearchConfig extends ConfigOptions
             if ($newPdfOption == 1)
             {
                 // PDF search was enabled.
-                $searchPdf->createSearchPdfsTable();
                 $searchPdf->popuplateSearchPdfsTable();
             }
             else
             {
                 // PDF search was disabled.
-                $searchPdf->dropSearchPdfsTable();
             }
         }
     }

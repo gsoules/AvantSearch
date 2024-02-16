@@ -2,28 +2,6 @@
 
 class SearchPdf
 {
-    public function createSearchPdfsTable()
-    {
-        $this->dropSearchPdfsTable();
-
-        $db = get_db();
-        $sql = "
-        CREATE TABLE IF NOT EXISTS `{$db->prefix}search_pdfs` (
-            `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
-            `record_id` int(10) unsigned NOT NULL,
-            `pdf` longtext COLLATE utf8_unicode_ci NOT NULL,
-            PRIMARY KEY (`id`),
-            FULLTEXT KEY `pdf` (`pdf`)
-        ) ENGINE=InnoDB  DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci";
-        $db->query($sql);
-    }
-
-    public function dropSearchPdfsTable()
-    {
-        $db = get_db();
-        $sql = "DROP TABLE IF EXISTS `{$db->prefix}search_pdfs`";
-        $db->query($sql);
-    }
     public static function extractTextFromPdf($filepath)
     {
         $path = escapeshellarg($filepath);
@@ -39,6 +17,7 @@ class SearchPdf
 
     protected function fetchItemPdfs()
     {
+        // Return a list of all the items that have PDF files attached to them.
         try
         {
             $db = get_db();
@@ -63,7 +42,7 @@ class SearchPdf
         return $items;
     }
 
-    protected function getItemFileText($id, $fileName)
+    protected function getItemFileText($fileName)
     {
         $filepath = $this->getItemPdfFilepath('original', $fileName);
 
@@ -122,23 +101,50 @@ class SearchPdf
             $itemFileNames[$id] .= $pdf['filename'];
         }
 
-        foreach ($itemFileNames as $itemId => $item)
-        {
+        // Process the text for each item's PDF files.
+        foreach ($itemFileNames as $itemId => $item) {
+            // Get the list of this item's PDF file names.
             $fileNames = explode(";", $item);
 
-            // Extract and catenate the text for each of the item's PDF files.
+            // Extract the text from each of the item's PDF files and concatenate them into one string.
             $texts = "";
             foreach ($fileNames as $filename)
-            {
-                $texts .= self::getItemFileText($id, $filename);
-            }
+                $texts .= self::getItemFileText($filename);
 
+            // Set the texts as the value of the item's special PDF element.
+            $item = ItemMetadata::getItemFromId($itemId);
+            $elementId = ItemMetadata::getElementIdForElementName('PDF');
+            ItemMetadata::updateElementText($item, $elementId, $texts);
+
+            // Append the PDF texts to the search_texts record for this item.
             if ($texts)
             {
                 $db = get_db();
-                $query = "INSERT INTO " . $db->SearchPdf . " (record_id, pdf) VALUES (" . $itemId . ",'" . $texts . "')";
+                $query = "UPDATE " . $db->SearchTexts. " SET text = concat(text,' $texts') WHERE record_id = $itemId";
                 $db->query($query);
             }
         }
     }
+
+    public function updatePdfElementAfterFileUploaded($item)
+    {
+        return;
+    }
+
+    public function updatePdfElementAfterItemSaved($item)
+    {
+        $texts = "";
+        $files = $item->Files;
+
+        foreach ($files as $file)
+        {
+            if ($file->mime_type != 'application/pdf')
+                continue;
+
+            $texts .= self::getItemFileText($file->filename);
+        }
+
+        return $texts;
+    }
+
 }
