@@ -155,16 +155,12 @@ class SearchQueryBuilder
 
     protected function buildKeywordWhere($query, $queryType, $titleOnly)
     {
-        $searchPdfs = AvantSearch::usePdfSearch() && !$titleOnly;
         $searchColumn = $titleOnly ? 'title' : 'text';
         switch ($queryType)
         {
             case SearchResultsView::KEYWORD_CONDITION_CONTAINS :
                 $query = "%$query%";
-                if ($searchPdfs)
-                    $where = "`search_texts`.`text` LIKE ? OR `search_pdfs`.`pdf` LIKE ?";
-                else
-                    $where = "`search_texts`.`$searchColumn` LIKE ?";
+                $where = "`search_texts`.`$searchColumn` LIKE ?";
                 break;
 
             case SearchResultsView::KEYWORD_CONDITION_BOOLEAN :
@@ -198,37 +194,13 @@ class SearchQueryBuilder
                     }
                 }
 
-                if ($searchPdfs)
-                {
-                    $where = "
-	                search_texts.record_type = 'Item' AND (
-                	MATCH (search_texts.text) AGAINST (? IN BOOLEAN MODE) OR
-	                MATCH (search_pdfs.pdf) AGAINST (? IN BOOLEAN MODE))";
-                }
-                else
-                {
-                    $where = "
-                    search_texts.record_type = 'Item' AND
-                    MATCH (search_texts.$searchColumn) AGAINST (? IN BOOLEAN MODE)";
-                }
+                $where = "
+                search_texts.record_type = 'Item' AND
+                MATCH (search_texts.$searchColumn) AGAINST (? IN BOOLEAN MODE)";
                 break;
         }
 
-        if ($searchPdfs)
-        {
-            // Use a left join to include all records in the search_texts table plus records that have PDF text.
-            // An inner join would not include search_text records that don't a record in the search_pdfs table.
-            $db = get_db();
-            $searchPdfsTable = array('search_pdfs' => "{$db->prefix}search_pdfs");
-            $this->select
-                ->joinleft($searchPdfsTable, "search_texts.record_id = search_pdfs.record_id", array())
-                ->where($where, $query);
-        }
-        else
-        {
-            // Only search the search_texts table.
-            $this->select->where($where, $query);
-        }
+        $this->select->where($where, $query);
     }
 
     protected function buildSortOrder($sortField, $sortOrder, $isIndexQuery)
