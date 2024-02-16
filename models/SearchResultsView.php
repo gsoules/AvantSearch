@@ -948,7 +948,7 @@ class SearchResultsView
 
         if ($totalResults == 0)
         {
-            $message = __('No items found');
+            $message = self::messageInfoPrefix(__('No items found'));
             $message .= self::messageInfo(__('Check the spelling of your keywords or try using fewer keywords.'));
         }
         else if ($totalResults == 1)
@@ -1185,7 +1185,12 @@ class SearchResultsView
 
     protected static function messageInfo($info)
     {
-        return ' &nbsp;&ndash; <span class="search-results-message-info">' . $info . '</span>';
+        return '<div class="search-results-message-info">' . $info . '</div>';
+    }
+
+    protected static function messageInfoPrefix($prefix)
+    {
+        return '<div class="search-results-message-info-prefix">' . $prefix . '</div>';
     }
 
     public function removeInvalidAdvancedQueryArgs($queryArgs)

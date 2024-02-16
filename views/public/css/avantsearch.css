@@ -386,6 +386,14 @@ input[type="checkbox"] {
 .search-results-message-info {
 	font-weight: bold;
 	color: #d42e2e;
+	margin-bottom: 12px;
+}
+
+.search-results-message-info-prefix {
+	font-size: 24px;
+	font-weight: bold;
+	color: #777;
+	margin-bottom: 12px;
 }
 
 #search-results-title span {
