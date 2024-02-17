@@ -385,14 +385,15 @@ input[type="checkbox"] {
 
 .search-results-message-info {
 	font-weight: bold;
-	color: #d42e2e;
-	margin-bottom: 12px;
+	color: #359621;
+	margin-bottom: 18px;
 }
 
 .search-results-message-info-prefix {
 	font-size: 24px;
 	font-weight: bold;
 	color: #777;
+	margin-top: 12px;
 	margin-bottom: 12px;
 }
 

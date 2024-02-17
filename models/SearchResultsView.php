@@ -314,9 +314,9 @@ class SearchResultsView
         return url("find?$queryString");
     }
 
-    public function emitSearchFilters($resultControlsHtml)
+    public function emitSearchFilters($resultControlsHtml, $showSelectorBar)
     {
-        return $this->searchFilters->getSearchFiltersHtml($resultControlsHtml);
+        return $this->searchFilters->getSearchFiltersHtml($resultControlsHtml, $showSelectorBar);
     }
 
     public function emitSearchFiltersText()

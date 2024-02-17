@@ -285,14 +285,19 @@ class SearchResultsFilters
         }
     }
 
-    public function getSearchFiltersHtml($resultControlsHtml)
+    public function getSearchFiltersHtml($resultControlsHtml, $showSelectorBar)
     {
         $this->getSearchFilters();
 
         $html = $this->filterCount> 0 ? "<div id='search-filters-message'>$this->filterMessageHtml</div>" : '';
-        $html .= "<div id='search-selector-bar'>";
-        $html .= "<div id='search-selectors'>{$resultControlsHtml}</div>";
-        $html .= "</div>";
+
+        if ($showSelectorBar)
+        {
+            $html .= "<div id='search-selector-bar'>";
+            $html .= "<div id='search-selectors'>{$resultControlsHtml}</div>";
+            $html .= "</div>";
+        }
+
         return $html;
     }
 

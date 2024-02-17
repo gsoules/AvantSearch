@@ -298,7 +298,7 @@ echo head(array('title' => $resultsMessage));
 echo "<div id='{$searchResults->getSearchResultsContainerName()}'>";
 echo "<div id='search-results-title'>$resultsMessage</div>";
 
-echo $searchResults->emitSearchFilters($optionSelectorsHtml);
+echo $searchResults->emitSearchFilters($optionSelectorsHtml, $totalResults > 0);
 
 if ($totalResults)
 {

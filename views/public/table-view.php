@@ -60,7 +60,7 @@ echo "<div id='{$searchResults->getSearchResultsContainerName()}'>";
 $paginationLinks = pagination_links();
 echo "<div id='search-results-title'><span>$resultsMessage</span>$paginationLinks</div>";
 
-echo $searchResults->emitSearchFilters($optionSelectorsHtml);
+echo $searchResults->emitSearchFilters($optionSelectorsHtml, $totalResults > 0);
 ?>
 
 <?php if ($totalResults): ?>
