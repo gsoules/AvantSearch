@@ -6,9 +6,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     protected $_hooks = array(
         'admin_head',
-        'after_delete_record',
-        'after_ingest_file',
-        'before_save_file',
+        'after_save_item',
         'before_save_item',
         'config',
         'config_form',
@@ -51,22 +49,11 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         queue_css_file('avantsearch-admin');
     }
 
-    public function hookAfterDeleteRecord($args)
-    {
-        return;
-    }
-
-    public function hookAfterIngestFile($args)
+    public function hookAfterSaveItem($args)
     {
         $item = $args['record'];
         $searchPdf = new searchPdf($item);
-        $searchPdf->updatePdfElementAfterFileUploaded($item);
-    }
-
-    public function hookBeforeSaveFile($args)
-    {
-        $this->item = $args['record'];
-        return;
+        $searchPdf->afterSaveItem($item);
     }
 
     public function hookBeforeSaveItem($args)
