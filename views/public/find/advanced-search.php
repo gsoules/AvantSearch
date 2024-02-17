@@ -103,6 +103,11 @@ if ($useElasticsearch)
     $helpTextFileName = AVANTELASTICSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'elasticsearch-help.html';
     $helpText = file_get_contents($helpTextFileName);
 }
+else
+{
+    $helpTextFileName = AVANTSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'sql-search-help.html';
+    $helpText = file_get_contents($helpTextFileName);
+}
 
 // Instantiate search results objects needed to get option values.
 $searchResults = new SearchResultsView();
@@ -282,8 +287,8 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
             <div id="avantsearch-site-stats">
                 <?php echo $siteStats; ?>
             </div>
-            <div class="search-help"><?php echo $helpText ?></div>
         <?php endif; ?>
+        <div class="search-help"><?php echo $helpText ?></div>
     </div>
 </div>
 
