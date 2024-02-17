@@ -292,6 +292,11 @@ class SearchConfig extends ConfigOptions
 
     public static function saveConfiguration()
     {
+        $oldPdfOption = intval(get_option(self::OPTION_PDFSEARCH));
+        $newPdfOption = intval($_POST[self::OPTION_PDFSEARCH]);
+        $elasticsearchOption = intval($_POST[self::OPTION_ELASTICSEARCH]);
+        self::errorIf((boolean)$newPdfOption && (boolean)$elasticsearchOption, "Error", __('You cannot choose both PDF Search and Elasticsearch.'));
+
         self::saveOptionDataForLayouts();
         self::saveOptionDataForColumns();
         self::saveOptionDataForDetailLayout();
@@ -300,26 +305,16 @@ class SearchConfig extends ConfigOptions
         set_option(self::OPTION_TITLES_ONLY, intval($_POST[self::OPTION_TITLES_ONLY]));
         set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
         set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
-        set_option(self::OPTION_ELASTICSEARCH, intval($_POST[self::OPTION_ELASTICSEARCH]));
-
-        $oldPdfOption = intval(get_option(self::OPTION_PDFSEARCH));
-        $newPdfOption = intval($_POST[self::OPTION_PDFSEARCH]);
+        set_option(self::OPTION_ELASTICSEARCH, $elasticsearchOption);
 
         if ($oldPdfOption != $newPdfOption)
         {
-            // The PDF option was toggled.
+            // The PDF option was toggled. If enabled, make the PDF text searchable. Do nothing if
+            // disabled. The user will need to run the Omeka search reindex to remove the PDF text.
             set_option(self::OPTION_PDFSEARCH, $newPdfOption);
             $searchPdf = new SearchPdf();
-
             if ($newPdfOption == 1)
-            {
-                // PDF search was enabled.
-                $searchPdf->popuplateSearchPdfsTable();
-            }
-            else
-            {
-                // PDF search was disabled.
-            }
+                $searchPdf->addPdfTextToSearchTextsTable();
         }
     }
 
