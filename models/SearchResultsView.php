@@ -145,7 +145,7 @@ class SearchResultsView
 
     public function allowSortByRelevance()
     {
-        return $this->allowSortByRelevance;
+        return $this->allowSortByRelevance && $this->useElasticsearch;
     }
 
     public function columnsDataContains($columnName)
