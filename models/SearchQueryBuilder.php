@@ -160,7 +160,9 @@ class SearchQueryBuilder
         {
             case SearchResultsView::KEYWORD_CONDITION_CONTAINS :
                 $query = "%$query%";
-                $where = "`search_texts`.`$searchColumn` LIKE ?";
+                $where = "
+                search_texts.record_type = 'Item' AND
+                search_texts.$searchColumn LIKE ?";
                 break;
 
             case SearchResultsView::KEYWORD_CONDITION_BOOLEAN :
