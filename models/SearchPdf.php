@@ -2,8 +2,53 @@
 
 class SearchPdf
 {
+    public function addPdfTextToSearchTextsTable()
+    {
+        // This method is called when the user enables PDF searching from the AvantSearch
+        // configuration page. It loops over every item, and for any that have PDF attachments,
+        // it appends the PDF text to the item's search_text table record.
+
+        // Get a list of all items that have a PDF attachment.
+        $pdfs = self::fetchItemPdfs();
+        $itemFileNames = array();
+
+        // Create an array have one entry for each unique item that has one or more PDF attachments.
+        foreach ($pdfs as $pdf)
+        {
+            $id = $pdf['id'];
+            $itemFileNames[$id] = "";
+        }
+
+        // Fill the array with a semicolon-separated list of the file names for each item that has a PDF.
+        foreach ($pdfs as $pdf)
+        {
+            $id = $pdf['id'];
+            if (strlen($itemFileNames[$id]) > 0)
+                $itemFileNames[$id] .= ";";
+            $itemFileNames[$id] .= $pdf['filename'];
+        }
+
+        // Loop over each item that has a PDF and append the PDF's text to the item's search_texts table record.
+        foreach ($itemFileNames as $itemId => $item)
+        {
+            // Get the list of this item's PDF file names.
+            $fileNames = explode(";", $item);
+
+            // Extract the text from each of the item's PDF files and concatenate them into one string.
+            $texts = "";
+            foreach ($fileNames as $filename)
+                $texts .= self::getItemFileText($filename);
+
+            // Append the text to the end of the item's search_texts table record.
+            $this->appendPdfTextsToSearchTexts($itemId, $texts);
+        }
+    }
+
     public function afterSaveItem($item)
     {
+        if (!AvantSearch::usePdfSearch())
+            return;
+
         // The item has just been saved and its search_texts table record has been updated with the item's
         // metadata element values. Any previous PDF texts in the record were overwritten in the process.
         // Any PDFs that were added or removed as part of the save have been uploaded or deleted. Note that
@@ -112,47 +157,5 @@ class SearchPdf
     protected function getItemPdfFilepath($directory, $filename)
     {
         return FILES_DIR . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $filename;
-    }
-
-    public function popuplateSearchPdfsTable()
-    {
-        // This method is only called when the user enables PDF searching from the AvantSearch
-        // configuration page. It loops over every item, and for any that have PDF attachments,
-        // it appends the PDF text to the item's search_text table record.
-
-        // Get a list of all items that have a PDF attachment.
-        $pdfs = self::fetchItemPdfs();
-        $itemFileNames = array();
-
-        // Create an array have one entry for each unique item that has one or more PDF attachments.
-        foreach ($pdfs as $pdf)
-        {
-            $id = $pdf['id'];
-            $itemFileNames[$id] = "";
-        }
-
-        // Fill the array with a semicolon-separated list of the file names for each item that has a PDF.
-        foreach ($pdfs as $pdf)
-        {
-            $id = $pdf['id'];
-            if (strlen($itemFileNames[$id]) > 0)
-                $itemFileNames[$id] .= ";";
-            $itemFileNames[$id] .= $pdf['filename'];
-        }
-
-        // Loop over each item that has a PDF and append the PDF's text to the item's search_texts table record.
-        foreach ($itemFileNames as $itemId => $item)
-        {
-            // Get the list of this item's PDF file names.
-            $fileNames = explode(";", $item);
-
-            // Extract the text from each of the item's PDF files and concatenate them into one string.
-            $texts = "";
-            foreach ($fileNames as $filename)
-                $texts .= self::getItemFileText($filename);
-
-            // Append the text to the end of the item's search_texts table record.
-            $this->appendPdfTextsToSearchTexts($itemId, $texts);
-        }
     }
 }
