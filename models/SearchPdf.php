@@ -2,6 +2,40 @@
 
 class SearchPdf
 {
+    public function afterSaveItem($item)
+    {
+        // The item has just been saved and its search_texts table record has been updated with the item's
+        // metadata element values. Any previous PDF texts in the record were overwritten in the process.
+        // Any PDFs that were added or removed as part of the save have been uploaded or deleted. Note that
+        // the search_texts table is updated by Mixin_Search::saveSearchText in Search.php.
+        //
+        // This method extracts the text from the item's current set of PDF attachments (even if none changed
+        // for this save) and appends the text to the search_texts table entry. Thus, each time an item is
+        // saved, both its latest metadata values and PDF texts are stored in the item's search_texts record.
+
+        $texts = "";
+        $files = $item->Files;
+
+        foreach ($files as $file)
+        {
+            if ($file->mime_type != 'application/pdf')
+                continue;
+
+            $texts .= self::getItemFileText($file->filename);
+        }
+
+        self::appendPdfTextsToSearchTexts($item->id, $texts);
+    }
+
+    public function appendPdfTextsToSearchTexts($itemId, $texts)
+    {
+        if (!$texts)
+            return;
+
+        $db = get_db();
+        $query = "UPDATE " . $db->SearchTexts . " SET text = concat(text,' $texts') WHERE record_id = $itemId";
+        $db->query($query);
+    }
     public static function extractTextFromPdf($filepath)
     {
         $path = escapeshellarg($filepath);
@@ -44,20 +78,20 @@ class SearchPdf
 
     protected function getItemFileText($fileName)
     {
+        // Get the file path. It should exist, but if not, just return an empty text string.
         $filepath = $this->getItemPdfFilepath('original', $fileName);
-
-        // The file should exist, but if not, continue as normal with an empty text string.
         if (!file_exists($filepath))
             return '';
 
+        // Get the file's PDF text.
         $text = self::extractTextFromPdf($filepath);
 
         if (!is_string($text))
         {
             // This can happen in these two cases and possibly others:
-            // 1. The PDF has no content, probably because it has not been OCR'd or it has no text.
+            // 1. The PDF has no content, probably because it has not been OCR'd, or it has no text.
             // 2. pdftotext is not installed on the host system and so the shell exec returned null.
-            // In either case, continue as normal with an empty text string.
+            // In either case, return an empty text string.
             return '';
         }
 
@@ -82,17 +116,22 @@ class SearchPdf
 
     public function popuplateSearchPdfsTable()
     {
+        // This method is only called when the user enables PDF searching from the AvantSearch
+        // configuration page. It loops over every item, and for any that have PDF attachments,
+        // it appends the PDF text to the item's search_text table record.
+
+        // Get a list of all items that have a PDF attachment.
         $pdfs = self::fetchItemPdfs();
         $itemFileNames = array();
 
-        // Create an array of elements, one for each unique item, containing an empty file name string.
+        // Create an array have one entry for each unique item that has one or more PDF attachments.
         foreach ($pdfs as $pdf)
         {
             $id = $pdf['id'];
             $itemFileNames[$id] = "";
         }
 
-        // Fill the array with a semicolon-separated list of file names for each item.
+        // Fill the array with a semicolon-separated list of the file names for each item that has a PDF.
         foreach ($pdfs as $pdf)
         {
             $id = $pdf['id'];
@@ -101,8 +140,9 @@ class SearchPdf
             $itemFileNames[$id] .= $pdf['filename'];
         }
 
-        // Process the text for each item's PDF files.
-        foreach ($itemFileNames as $itemId => $item) {
+        // Loop over each item that has a PDF and append the PDF's text to the item's search_texts table record.
+        foreach ($itemFileNames as $itemId => $item)
+        {
             // Get the list of this item's PDF file names.
             $fileNames = explode(";", $item);
 
@@ -111,40 +151,8 @@ class SearchPdf
             foreach ($fileNames as $filename)
                 $texts .= self::getItemFileText($filename);
 
-            // Set the texts as the value of the item's special PDF element.
-            $item = ItemMetadata::getItemFromId($itemId);
-            $elementId = ItemMetadata::getElementIdForElementName('PDF');
-            ItemMetadata::updateElementText($item, $elementId, $texts);
-
-            // Append the PDF texts to the search_texts record for this item.
-            if ($texts)
-            {
-                $db = get_db();
-                $query = "UPDATE " . $db->SearchTexts. " SET text = concat(text,' $texts') WHERE record_id = $itemId";
-                $db->query($query);
-            }
+            // Append the text to the end of the item's search_texts table record.
+            $this->appendPdfTextsToSearchTexts($itemId, $texts);
         }
     }
-
-    public function updatePdfElementAfterFileUploaded($item)
-    {
-        return;
-    }
-
-    public function updatePdfElementAfterItemSaved($item)
-    {
-        $texts = "";
-        $files = $item->Files;
-
-        foreach ($files as $file)
-        {
-            if ($file->mime_type != 'application/pdf')
-                continue;
-
-            $texts .= self::getItemFileText($file->filename);
-        }
-
-        return $texts;
-    }
-
 }
