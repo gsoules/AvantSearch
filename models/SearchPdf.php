@@ -2,6 +2,7 @@
 
 class SearchPdf
 {
+    protected $logFileName;
     public function addPdfTextToSearchTextsTable()
     {
         // This method is called when the user enables PDF searching from the AvantSearch
@@ -28,6 +29,9 @@ class SearchPdf
             $itemFileNames[$id] .= $pdf['filename'];
         }
 
+        // Create a new log file to record this process.
+        $this->logUpdateStart();
+
         // Loop over each item that has a PDF and append the PDF's text to the item's search_texts table record.
         foreach ($itemFileNames as $itemId => $item)
         {
@@ -41,6 +45,8 @@ class SearchPdf
 
             // Append the text to the end of the item's search_texts table record.
             $this->appendPdfTextsToSearchTexts($itemId, $texts);
+
+            $this->logUpdate($texts, $itemId, $fileNames);
         }
     }
 
@@ -157,5 +163,21 @@ class SearchPdf
     protected function getItemPdfFilepath($directory, $filename)
     {
         return FILES_DIR . DIRECTORY_SEPARATOR . $directory . DIRECTORY_SEPARATOR . $filename;
+    }
+
+    public function logUpdate(string $texts, int|string $itemId, array $filenames): void
+    {
+        $date = new DateTime();
+        $date->setTimezone(new DateTimeZone("America/New_York"));
+        $dateNow = $date->format('H:i:s');
+        $logEntry = strlen($texts) . "," . $dateNow . ",$itemId," . implode(',', $filenames) . "\n";
+        file_put_contents($this->logFileName, $logEntry, FILE_APPEND);
+    }
+
+    public function logUpdateStart()
+    {
+        // Create a new log file.
+        $this->logFileName = AVANTSEARCH_PLUGIN_DIR . DIRECTORY_SEPARATOR . 'log-pdf-search.csv';
+        file_put_contents($this->logFileName, "SIZE,TIME,ITEM,FILE\n");
     }
 }

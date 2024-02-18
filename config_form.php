@@ -115,7 +115,7 @@ if (AvantSearch::usePdfSearch())
         <label><?php echo CONFIG_LABEL_PDFSEARCH; ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __('Use PDF search. Turning this option on will add PDF texts to the search table which can take a very long time so be patient. Turning it off will not remove the PDF text. To remove it, run <b>Index Records</b> on the Omeka Settings > Search page.'); ?></p>
+        <p class="explanation"><?php echo __('Use PDF search. Turning this option on will add PDF texts to the search table which can take a very long time so be patient. Turning it off will not remove the PDF text. To remove it, run <b>Index Records</b> on the Omeka Settings > Search page. Do not enable the option more than once without running Index Records in between or else you will end up with duplicate PDF text in the search table.'); ?></p>
         <?php echo $view->formCheckbox(SearchConfig::OPTION_PDFSEARCH, true, $pdfOptionAttributes); ?>
     </div>
 </div>
