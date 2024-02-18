@@ -382,6 +382,6 @@ class AvantSearch
 
     public static function usePdfSearch()
     {
-        return get_option(SearchConfig::OPTION_PDFSEARCH);
+        return intval(get_option(SearchConfig::OPTION_PDFSEARCH));
     }
 }

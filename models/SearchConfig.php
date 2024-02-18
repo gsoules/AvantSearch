@@ -312,9 +312,11 @@ class SearchConfig extends ConfigOptions
             // The PDF option was toggled. If enabled, make the PDF text searchable. Do nothing if
             // disabled. The user will need to run the Omeka search reindex to remove the PDF text.
             set_option(self::OPTION_PDFSEARCH, $newPdfOption);
-            $searchPdf = new SearchPdf();
             if ($newPdfOption == 1)
+            {
+                $searchPdf = new SearchPdf();
                 $searchPdf->addPdfTextToSearchTextsTable();
+            }
         }
     }
 
