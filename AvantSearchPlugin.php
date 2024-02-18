@@ -1,5 +1,4 @@
 <?php
-
 define('AVANTSEARCH_PLUGIN_DIR', dirname(__FILE__));
 
 class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
@@ -54,7 +53,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     public function hookAfterSaveItem($args)
     {
         $item = $args['record'];
-        $searchPdf = new searchPdf($item);
+        $searchPdf = new SearchPdf($item);
         $searchPdf->afterSaveItem($item);
     }
 
