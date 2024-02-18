@@ -134,6 +134,11 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
             <?php echo $siteToggle; ?>
         </div>
         <form <?php echo tag_attributes($advancedFormAttributes); ?>>
+            <div id="search-button" class="panel">
+                <input type="submit" class="submit button" value="<?php echo $advancedSubmitButtonText; ?>">
+                <!-- Emit the hidden <input> tags needed to put query string argument values into the form. -->
+                <?php echo AvantSearch::getHiddenInputsForAdvancedSearch() ?>
+            </div>
             <div class="search-form-section">
                 <div class="search-field">
                     <div class="avantsearch-label-column">
@@ -271,12 +276,6 @@ echo "<div><h1>$pageTitle $siteBeingSearched</h1></div>";
                 </div>
             </div>
             <?php endif; ?>
-
-            <div id="search-button" class="panel">
-                <input type="submit" class="submit button" value="<?php echo $advancedSubmitButtonText; ?>">
-                <!-- Emit the hidden <input> tags needed to put query string argument values into the form. -->
-                <?php echo AvantSearch::getHiddenInputsForAdvancedSearch() ?>
-            </div>
             <div class="search-form-reset-button">
                 <?php echo '<a href="' . WEB_ROOT . '/find/advanced">Clear all search options</a>'; ?>
             </div>

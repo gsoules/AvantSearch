@@ -292,7 +292,7 @@ input[type="checkbox"] {
 }
 
 #search-button {
-	margin-top: 8px;
+	margin-bottom: 8px;
 	float: right;
 }
 
@@ -304,14 +304,6 @@ input[type="checkbox"] {
 .search-radio-buttons,
 .search-form-view-selector {
 	margin-top: 2px;
-}
-
-/* Display 'Clear all search filters' graphic before link */
-.search-form-reset-button::after {
-	content: "\f00d";
-	font-family: "FontAwesome";
-	font-size: 16px;
-	color: #777;
 }
 
 /* Next styles are for 'Clear all search filters' link and 'Go to Advanced Search' link */
@@ -326,7 +318,6 @@ input[type="checkbox"] {
 }
 
 .search-form-reset-button {
-	float: left;
 	padding-top: 4px;
 }
 
