@@ -123,13 +123,19 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml, $totalResults > 0);
     ?>
 <?php else: ?>
     <div id="no-results">
-        <p>
+        <div id="no-results-error">
             <?php
             $error = $searchResults->getError();
             if (!empty($error))
+            {
+                echo '<hr>';
+                echo '<div>' . __("Your keyword(s) caused a search error. This can happen if they contain unrecognized punctuation.") . '</div>';
+                echo '<div id="no-results-error-sql">';
                 echo $error;
+                echo '</div>';
+            }
             ?>
-        </p>
+        </div>
     </div>
 <?php endif; ?>
 <?php

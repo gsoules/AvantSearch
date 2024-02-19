@@ -17,7 +17,19 @@
 
 #no-results p {
 	position: absolute;
-	margin-top: 0px;
+	margin-top: 0;
+}
+
+#no-results-error {
+	margin-top: 24px;
+	color: #777;
+	font-weight: bold;
+}
+
+#no-results-error-sql {
+	margin-top: 12px;
+	color: #777;
+	font-weight: normal;
 }
 
 #search-filter-form {
