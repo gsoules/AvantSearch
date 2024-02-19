@@ -213,10 +213,15 @@ input[type="checkbox"] {
 	padding-left: 16px;
 }
 
-.search-help > ul > li > span {
+.search-help > ul > li > span,
+.search-help > ul > ul > li > span {
 	background-color: #f7f7f7;
 	padding: 2px 4px;
 	font-weight: bold;
+}
+
+.search-help > ul > ul > li {
+	padding-top: 8px;
 }
 
 #search-stats-table {

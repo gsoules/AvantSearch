@@ -1,7 +1,18 @@
 <div class="help-title">Search Tips</div>
 <ul>
-    <li><span>All words</span> A search for "water" finds "water" and "waters"</li>
-    <li><span>Contains</span> A search for "water" finds "seawater", "water" and "waters"</li>
-    <li><span>Boolean</span> A search for "water" finds "water""</li>
-    <li>For an open-ended year range such as <i>from</i> 1900 or <i>until</i> 1970, leave either Start or End blank</li>
+    <li><b>All words</b><br>All of the keywords must be present in the item. The keyword <span>water</span> matches "water" and "waterfall" but not "seawater".</li>
+    <li><b>Contains</b><br>The keyword or phrase must be contained in the item. A search for <span>water</span> finds "seawater", "water" and "waterfall".</li>
+    <li><b>Boolean</b><br>Allows use of these operators: <span>+</span>, <span>-</span>, <span>*</span>, <span>""</span> and <span>()</span>.</li>
+    <ul>
+        <li><span>apple banana</span> finds items that contain either or both words.</li>
+        <li><span>+apple +juice</span> finds items that contain both words.</li>
+        <li><span>+apple -macintosh</span> finds items that contain “apple” but not “macintosh”.</li>
+        <li><span>apple*</span> finds items that contain words such as “apple”, “apples”, “applesauce”, or “applet”.</li>
+        <li><span>"some words"</span> finds items that contain the exact phrase “some words” (for example, “some words of wisdom” but not “some choice words”).</li>
+        <li><span>+apple +(pie juice)</span> finds items that contain “apple” and “pie”, or “apple” and “juice”.</li>
+
+    </ul>
+</ul>
+<ul>
+    <li><b>Years</b><br>For an open-ended year range such as <i>from</i> 1900 or <i>until</i> 1970, leave either Start or End blank</li>
 </ul>
