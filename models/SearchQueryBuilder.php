@@ -81,7 +81,9 @@ class SearchQueryBuilder
             $this->select->where("items.id = 0");
         }
 
-        $sql = (string)$this->select; // For debugging only
+        // These are used only for interactive debugging so that you can see the generated SQL.
+        $where = implode($this->select->getPart(Zend_Db_Select::WHERE));
+        $sql = (string)$this->select;
     }
 
     protected function searchHasFilters()
