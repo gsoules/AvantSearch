@@ -792,8 +792,10 @@ class SearchResultsView
 
     public function getKeywordSearchTitlesOptions()
     {
+        $allFields = AvantSearch::usePdfSearch() ? __('All fields and PDFs') : __('All fields');
+
         return array(
-            '0' => __('All fields'),
+            '0' => $allFields,
             '1' => __('Titles only')
         );
     }
