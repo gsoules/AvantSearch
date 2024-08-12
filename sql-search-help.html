@@ -1,5 +1,6 @@
 <div class="help-title">Search Tips</div>
-<ul>
+<div style="font-weight:bold;margin-top:12px;">Keyword Search</div>
+<ul style="margin-top:-6px;">
     <li><b>All words</b><br>All of the keywords must be present in the item. The keyword <span>water</span> matches "water" and "waterfall" but not "seawater".</li>
     <li><b>Contains</b><br>The keyword or phrase must be contained in the item. A search for <span>water</span> finds "seawater", "water" and "waterfall".</li>
     <li><b>Boolean</b><br>Allows use of these keyword operators: <span>+</span>, <span>-</span>, <span>*</span>, <span>""</span> and <span>()</span>.</li>
@@ -10,11 +11,26 @@
         <li><span>apple*</span> finds items that contain words such as “apple”, “apples”, “applesauce”, or “applet”.</li>
         <li><span>"some words"</span> finds items that contain the exact phrase “some words” (for example, “some words of wisdom” but not “some choice words”).</li>
         <li><span>+apple +(pie juice)</span> finds items that contain “apple” and “pie”, or “apple” and “juice”.</li>
-
     </ul>
 </ul>
-<ul>
-    <li><b>Years</b><br>For an open-ended year range such as <i>from</i> 1900 or <i>until</i> 1970, leave either Start or End blank.
+<div style="font-weight:bold;margin-top:12px;">Fields Search</div>
+<ul style="margin-top:-6px;">
+    <li><b>Matches</b><br>Use the matches options to utilize MySQL regular expression features.</li>
+    <ul>
+        <li><span>|</span> separates multiple search terms. <span>apple|peach|pear</span> finds items where the field contains any or all of the terms.</li>
+        <li><span>[[:<:]]</span> matches the beginning of words.<span>[[:<:]]land</span> finds "land", "lands", and "landing", but not "england" or "island".</li>
+        <li><span>[[:>:]]</span> matches the ending of words.<span>land[[:>:]]</span> finds "england", "island", and "land", but not "lands" or "landing".</li>
+    </ul>
+    <li>You can combine options to further narrow results. For example Title does not match <span>[[:<:]]land</span> AND Title matches <span>land[[:>:]]</span> to find only items where the Title contains words that end with, but don't start with "land".</li>
+</ul>
+<div style="font-weight:bold;margin-top:12px;">Years</div>
+<ul style="margin-top:-6px;">
+    <li>For an open-ended year range such as <i>from</i> 1900 or <i>until</i> 1970, leave either Start or End blank.
     Items that use a year range as their Date, for example "1861-1865," will only be searched based on the first year in the range.
     Thus, a search for items in the range 1864 to 1865 will not find the example item.</li>
 </ul>
+<div style="font-weight:bold;margin-top:12px;">Tags</div>
+<ul style="margin-top:-6px;">
+    <li>Specify a single tag to find all items having that tag. Use commas to separate tags to find items that have all of those tags.</li>
+</ul>
+
