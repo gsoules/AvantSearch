@@ -496,7 +496,8 @@ a.search-reset-link:hover {
 
 .search-selector-button:after {
 	content: "\f0d7";
-	font-family: "FontAwesome";
+	font-family: "Font Awesome 5 Free";
+	font-weight: bold;
 	padding-left: 6px;
 	float: right;
 }
@@ -666,12 +667,13 @@ a.search-reset-link:hover {
 .search-pagination-next a:after {
 	content: "\f105";
 	text-indent: 0;
+	font-weight: bold;
 }
 
 .search-pagination-next a:after,
 .search-pagination-previous a:after {
 	color: var(--link-color);
-	font-family: "FontAwesome";
+	font-family: "Font Awesome 5 Free";
 	height: 24px;
 	left: 0;
 	position: absolute;
