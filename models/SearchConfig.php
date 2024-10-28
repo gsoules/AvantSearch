@@ -9,6 +9,7 @@ define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
 define('CONFIG_LABEL_PDFSEARCH', __('PDF Search'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
+define('CONFIG_LABEL_SEARCHBAR_ON_RESULTS',  __('Searchbar on results'));
 
 class SearchConfig extends ConfigOptions
 {
@@ -21,6 +22,7 @@ class SearchConfig extends ConfigOptions
     const OPTION_PDFSEARCH = 'avantsearch_pdfsearch';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
+    const OPTION_SEARCHBAR_ON_RESULTS = 'avantsearch_searchbar_on_results';
 
     public static function emitInnoDbMessage($engine)
     {
@@ -303,6 +305,7 @@ class SearchConfig extends ConfigOptions
         self::saveOptionDataForIntegerSorting();
 
         set_option(self::OPTION_TITLES_ONLY, intval($_POST[self::OPTION_TITLES_ONLY]));
+        set_option(self::OPTION_SEARCHBAR_ON_RESULTS, intval($_POST[self::OPTION_SEARCHBAR_ON_RESULTS]));
         set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
         set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
         set_option(self::OPTION_ELASTICSEARCH, $elasticsearchOption);

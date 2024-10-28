@@ -57,6 +57,12 @@ $optionSelectorsHtml .= $searchResults->emitSelectorForFilter();
 echo head(array('title' => $resultsMessage));
 echo "<div id='{$searchResults->getSearchResultsContainerName()}'>";
 
+if(get_option(SearchConfig::OPTION_SEARCHBAR_ON_RESULTS))
+{
+    include 'simple-searchbar.php';
+    // echo $this->partial('simple-searchbar.php', array('query' => $_REQUEST["keywords"]));
+}
+
 $paginationLinks = pagination_links();
 echo "<div id='search-results-title'><span>$resultsMessage</span>$paginationLinks</div>";
 
