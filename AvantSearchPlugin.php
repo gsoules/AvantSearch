@@ -7,6 +7,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     protected $_hooks = array(
         'admin_head',
+        'after_delete_item',
         'after_save_item',
         'before_save_item',
         'config',
@@ -50,11 +51,22 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         queue_css_file('avantsearch-admin');
     }
 
+    public function hookAfterDeleteItem($args)
+    {
+        $item = $args['record'];
+
+        $db = get_db();
+        $db->query("DELETE FROM omek_item_search_index WHERE item_id = $item->id");
+    }
     public function hookAfterSaveItem($args)
     {
         $item = $args['record'];
         $searchPdf = new SearchPdf($item);
         $searchPdf->afterSaveItem($item);
+
+        // Call stored procedure to refresh the search index row for this item.
+        $db = get_db();
+        $db->query("CALL populate_item_search_index($item->id)");
     }
 
     public function hookBeforeSaveItem($args)
