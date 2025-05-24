@@ -14,7 +14,7 @@ class SearchQueryBuilder
         $this->db = get_db();
     }
 
-    public function buildAdvancedSearchQuery($args, $isRelevanceQuery)
+    public function buildAdvancedSearchQuery($args, $isSimpleSearch)
     {
         $this->select = $args['select'];
         $this->smartSortingEnabled = get_option(SearchConfig::OPTION_ADDRESS_SORTING) == true;
@@ -40,6 +40,8 @@ class SearchQueryBuilder
         {
             $primaryField = $searchResults->getSortFieldElementId();
         }
+
+        $isRelevanceQuery = $isSimpleSearch && $primaryField == 0 && strlen($keywords) > 0;
 
         // Construct the query.
         $this->buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery, $isRelevanceQuery ? $keywords : "");

@@ -145,7 +145,7 @@ class SearchResultsView
 
     public function allowSortByRelevance()
     {
-        return $this->allowSortByRelevance && $this->useElasticsearch;
+        return $this->allowSortByRelevance;
     }
 
     public function columnsDataContains($columnName)
@@ -653,13 +653,6 @@ class SearchResultsView
             $elementId = empty($elementName) ? 0 : $elementSpecifier;
         }
 
-        if ($elementId == 0)
-        {
-            // Either no element arg was specified or its element Id or name is invalid. Use the Title as a default.
-            // This should only happen if someone modified the query string to change the specifier.
-            $elementId = ItemMetadata::getTitleElementId();
-        }
-
         return $elementId;
     }
 
@@ -1067,13 +1060,13 @@ class SearchResultsView
 
     public function getSelectedSortId()
     {
-        $defaultName = $this->useElasticsearch ? AvantSearch::SORT_BY_RELEVANCE : AvantSearch::SORT_BY_MODIFIED;
+        $defaultName = $this->useElasticsearch ? AvantSearch::SORT_BY_RELEVANCE : AvantSearch::SORT_BY_RELEVANCE;
         $sortFieldName = $this->getElementNameForQueryArg('sort', $defaultName);
 
         if ($sortFieldName == AvantSearch::SORT_BY_RELEVANCE && !$this->allowSortByRelevance())
         {
-            // Default to sort by modified date descending.
-            $sortFieldName = AvantSearch::SORT_BY_MODIFIED;
+            // When a relevance sort is not allowed (e.g. because there are no keywords) sort by title.
+            $sortFieldName = 'Title';
         }
         else
         {
