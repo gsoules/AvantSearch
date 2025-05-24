@@ -125,7 +125,7 @@ if (AvantSearch::usePdfSearch())
         <label><?php echo CONFIG_LABEL_RELEVANCE_SEARCH; ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __("Enable searching by relevance (item_search_index table must be installed and populated in DB. Stored procedure populate_item_search_index must be in DB)."); ?></p>
+        <p class="explanation"><?php echo __("Enable searching by relevance (table `relevance_texts` must exist and be populated. Stored procedure `update_relevance_texts_table` must exist)."); ?></p>
         <?php echo $view->formCheckbox(SearchConfig::OPTION_RELEVANCE_SEARCH, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_RELEVANCE_SEARCH))); ?>
     </div>
 </div>
