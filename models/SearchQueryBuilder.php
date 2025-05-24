@@ -138,8 +138,13 @@ class SearchQueryBuilder
 
         // Join the element-text table to bring in the value of the primary field. For Table View, the
         // primary field is the sort field. For Index View, it's the field being viewed.
-        $this->select->joinLeft(array('_primary_column' => $elementTextTable),
-            "_primary_column.record_id = items.id AND _primary_column.record_type = 'item' AND _primary_column.element_id = $primaryField");
+//        $this->select->joinLeft(array('_primary_column' => $elementTextTable),
+//            "_primary_column.record_id = items.id AND _primary_column.record_type = 'item' AND _primary_column.element_id = $primaryField");
+
+        ////////////////////////$this->select->joinLeft(array('search_texts' => $searchTextTable), "search_texts.record_id = items.id AND search_texts.record_type = 'Item'");
+
+        $this->select->joinLeft(array('i' => 'omek_item_search_index'), "i.item_id = items.id");
+
 
         // Everything is in place. Reconstruct the advanced joins, if any, for field queries.
         foreach ($from as $alias => $table)
@@ -149,10 +154,19 @@ class SearchQueryBuilder
             $this->select->joinLeft(array($alias => $table['tableName']), $table['joinCondition']);
         }
 
+        $tempQ = '+ralph* +stanley*';
+
         // Remove unneeded columns that got added automatically while adding joins. We only need items.id.
         $this->select->reset(Zend_Db_Select::COLUMNS);
         $this->select->columns('items.id');
         $this->select->columns('items.public');
+        $this->select->columns([
+        'custom_relevance' => new Zend_Db_Expr(
+            "LEAST(MATCH(i.title) AGAINST ('$tempQ' IN BOOLEAN MODE), 1.0) +
+              IF(i.is_reference = 1, 1.5, 0) +
+              LEAST(MATCH(i.description) AGAINST ('$tempQ' IN BOOLEAN MODE), 1.0)"
+            )
+        ]);
     }
 
     protected function buildKeywordWhere($query, $queryType, $titleOnly)
@@ -244,7 +258,7 @@ class SearchQueryBuilder
             // Sort the title on a virtual column that does not have leading double quote as the first
             // character. We do this so titles like "Fox Dens" don't sort above titles starting with 'A'.
             $primaryColumnName .= '_exp';
-            $this->select->columns($this->columnValueForTitleSort("_primary_column.text", $primaryColumnName));
+//            $this->select->columns($this->columnValueForTitleSort("_primary_column.text", $primaryColumnName));
         }
         elseif ($sortByAddress)
         {
@@ -455,6 +469,7 @@ class SearchQueryBuilder
             $order[] = "$secondaryColumnName $secondaryColumnSortOrder";
 
         // Reestablish a complete sort order.
-        $this->select->order($order);
+        //$this->select->order($order);
+        $this->select->order('custom_relevance DESC');
     }
 }
