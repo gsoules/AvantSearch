@@ -385,6 +385,12 @@ class AvantSearch
         return SearchConfig::getOptionSupportedElasticsearch() && get_option(SearchConfig::OPTION_ELASTICSEARCH);
     }
 
+    public static function useRelevanceSearch()
+    {
+        // Elasticsearch is enabled when AvantElasticsearch is installed and AvantSearch is configured to use it.
+        return (boolean)get_option(SearchConfig::OPTION_RELEVANCE_SEARCH);
+    }
+
     public static function usePdfSearch()
     {
         return intval(get_option(SearchConfig::OPTION_PDFSEARCH));

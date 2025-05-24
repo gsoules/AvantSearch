@@ -9,6 +9,7 @@ define('CONFIG_LABEL_LAYOUTS', __('Layouts'));
 define('CONFIG_LABEL_PDFSEARCH', __('PDF Search'));
 define('CONFIG_LABEL_RELATIONSHIPS_VIEW', __('Relationships View'));
 define('CONFIG_LABEL_TITLES_ONLY',  __('Titles Only'));
+define('CONFIG_LABEL_RELEVANCE_SEARCH',  __('Search by Relevance'));
 
 class SearchConfig extends ConfigOptions
 {
@@ -21,6 +22,7 @@ class SearchConfig extends ConfigOptions
     const OPTION_PDFSEARCH = 'avantsearch_pdfsearch';
     const OPTION_RELATIONSHIPS_VIEW = 'avantsearch_relationships_view';
     const OPTION_TITLES_ONLY = 'avantsearch_titles_only';
+    const OPTION_RELEVANCE_SEARCH = 'avantsearch_relevance';
 
     public static function emitInnoDbMessage($engine)
     {
@@ -102,6 +104,11 @@ class SearchConfig extends ConfigOptions
         return $data;
     }
 
+    public static function getOptionDataForRelevanceSearch()
+    {
+        return self::getOptionListData(self::OPTION_RELEVANCE_SEARCH);
+    }
+
     public static function getOptionSupportedAddressSorting()
     {
         // Determine if this database supports the REGEXP_REPLACE function which is needed to perform
@@ -131,6 +138,11 @@ class SearchConfig extends ConfigOptions
     }
 
     public static function getOptionSupportedElasticsearch()
+    {
+        return plugin_is_active('AvantElasticsearch');
+    }
+
+    public static function getOptionSupportedRelevanceSearch()
     {
         return plugin_is_active('AvantElasticsearch');
     }
@@ -284,6 +296,11 @@ class SearchConfig extends ConfigOptions
         return $layoutsOption;
     }
 
+    public static function getOptionTextForRelevanceSearch()
+    {
+        return self::getOptionListText(self::OPTION_RELEVANCE_SEARCH);
+    }
+
     protected static function isPseudoElement($name)
     {
         $pseudoElements = array('<tags>', '<score>');
@@ -295,6 +312,7 @@ class SearchConfig extends ConfigOptions
         $oldPdfOption = intval(get_option(self::OPTION_PDFSEARCH));
         $newPdfOption = intval($_POST[self::OPTION_PDFSEARCH]);
         $elasticsearchOption = intval($_POST[self::OPTION_ELASTICSEARCH]);
+        $relevanceSearchOption = intval($_POST[self::OPTION_RELEVANCE_SEARCH]);
         self::errorIf((boolean)$newPdfOption && (boolean)$elasticsearchOption, "Error", __('You cannot choose both PDF Search and Elasticsearch.'));
 
         self::saveOptionDataForLayouts();
@@ -306,6 +324,7 @@ class SearchConfig extends ConfigOptions
         set_option(self::OPTION_RELATIONSHIPS_VIEW, intval($_POST[self::OPTION_RELATIONSHIPS_VIEW]));
         set_option(self::OPTION_ADDRESS_SORTING, intval($_POST[self::OPTION_ADDRESS_SORTING]));
         set_option(self::OPTION_ELASTICSEARCH, $elasticsearchOption);
+        set_option(self::OPTION_RELEVANCE_SEARCH, $relevanceSearchOption);
 
         if ($oldPdfOption != $newPdfOption)
         {

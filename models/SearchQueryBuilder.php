@@ -41,7 +41,7 @@ class SearchQueryBuilder
             $primaryField = $searchResults->getSortFieldElementId();
         }
 
-        $isRelevanceQuery = $isSimpleSearch && $primaryField == 0 && strlen($keywords) > 0;
+        $isRelevanceQuery = AvantSearch::useRelevanceSearch() && $isSimpleSearch && $primaryField == 0 && strlen($keywords) > 0;
 
         // Construct the query.
         $this->buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery, $isRelevanceQuery ? $keywords : "");
