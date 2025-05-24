@@ -48,7 +48,7 @@ class SearchQueryBuilder
         if ($isKeywordQuery)
             $this->buildKeywordWhere($keywords, $condition, $titleOnly);
 
-        $this->buildSortOrder($primaryField, $sortOrder, $isIndexQuery);
+        $this->buildSortOrder($primaryField, $sortOrder, $isIndexQuery, $isRelevanceQuery);
 
         // Circumvent a bug in Table_Item::applySearchFilters which groups by items.id twice.
         $this->select->reset(Zend_Db_Select::GROUP);
@@ -162,17 +162,7 @@ class SearchQueryBuilder
         $this->select->columns('items.public');
 
         if ($isRelevanceQuery)
-        {
-            $args = $this->buildKeywordQuery($relevanceQuery, SearchResultsView::KEYWORD_CONDITION_ALL_WORDS, false);
-            $query = $args['query'];
-            $this->select->columns([
-                'custom_relevance' => new Zend_Db_Expr(
-                    "LEAST(MATCH(i.title) AGAINST ('$query' IN BOOLEAN MODE), 1.0) +
-              IF(i.is_reference = 1, 1.5, 0) +
-              LEAST(MATCH(i.description) AGAINST ('$query' IN BOOLEAN MODE), 1.0)"
-                )
-            ]);
-        }
+            $this->createRelevanceColumn($relevanceQuery);
     }
 
     protected function buildKeywordQuery($query, $queryType, $titleOnly)
@@ -233,7 +223,7 @@ class SearchQueryBuilder
         $this->select->where($args['where'], $args['query']);
     }
 
-    protected function buildSortOrder($sortField, $sortOrder, $isIndexQuery)
+    protected function buildSortOrder($sortField, $sortOrder, $isIndexQuery, $isRelevanceQuery)
     {
         $primaryColumnName = "_primary_column";
         $secondaryColumnName = null;
@@ -265,12 +255,16 @@ class SearchQueryBuilder
             $primaryColumnName = 'text';
         }
 
-        if ($sortByTitle)
+        if ($isRelevanceQuery)
+        {
+            $primaryColumnName = "";
+        }
+        elseif ($sortByTitle)
         {
             // Sort the title on a virtual column that does not have leading double quote as the first
             // character. We do this so titles like "Fox Dens" don't sort above titles starting with 'A'.
             $primaryColumnName .= '_exp';
-//            $this->select->columns($this->columnValueForTitleSort("_primary_column.text", $primaryColumnName));
+            $this->select->columns($this->columnValueForTitleSort("_primary_column.text", $primaryColumnName));
         }
         elseif ($sortByAddress)
         {
@@ -316,7 +310,7 @@ class SearchQueryBuilder
         }
 
         // Change the order to sort first by the user-chosen sort field and second by the Title field.
-        $this->setSelectOrder($primaryColumnName, $sortOrder, !$isIndexQuery, $secondaryColumnName, $secondaryColumnSortOrder);
+        $this->setSelectOrder($primaryColumnName, $sortOrder, !$isIndexQuery, $secondaryColumnName, $secondaryColumnSortOrder, $isRelevanceQuery);
     }
 
     protected function buildWhereDateRange()
@@ -410,6 +404,26 @@ class SearchQueryBuilder
         }
     }
 
+    public function createRelevanceColumn($relevanceQuery): void
+    {
+        $boostTitle = 4;
+        $boostDescription = 1;
+        $boostReference = 2;
+        $boostTitleAndReference = 3;
+
+        $args = $this->buildKeywordQuery($relevanceQuery, SearchResultsView::KEYWORD_CONDITION_ALL_WORDS, false);
+        $query = $args['query'];
+        $this->select->columns([
+            'custom_relevance' => new Zend_Db_Expr(
+                "
+                LEAST(MATCH(i.title) AGAINST ('$query' IN BOOLEAN MODE), 1.0) * $boostTitle +
+                LEAST(MATCH(i.description) AGAINST ('$query' IN BOOLEAN MODE), 1.0) * $boostDescription +
+                IF(i.is_reference = 1, $boostReference, 0) +
+                IF(i.is_reference = 1 AND MATCH(i.title) AGAINST ('$query' IN BOOLEAN MODE), $boostTitleAndReference, 0)"
+            )
+        ]);
+    }
+
     public static function isStopWord($word)
     {
         if (!ctype_alnum($word))
@@ -462,7 +476,7 @@ class SearchQueryBuilder
         return in_array($word, $stopwords);
     }
 
-    protected function setSelectOrder($primaryColumnName, $primaryColumnSortOrder, $sortNullElementsLast, $secondaryColumnName, $secondaryColumnSortOrder)
+    protected function setSelectOrder($primaryColumnName, $primaryColumnSortOrder, $sortNullElementsLast, $secondaryColumnName, $secondaryColumnSortOrder, $isRelevanceQuery)
     {
         // Remove the current order.
         $this->select->reset(Zend_Db_Select::ORDER);
@@ -481,7 +495,9 @@ class SearchQueryBuilder
             $order[] = "$secondaryColumnName $secondaryColumnSortOrder";
 
         // Reestablish a complete sort order.
-        //$this->select->order($order);
-        $this->select->order('custom_relevance DESC');
+        if ($isRelevanceQuery)
+            $this->select->order('custom_relevance DESC');
+        else
+            $this->select->order($order);
     }
 }
