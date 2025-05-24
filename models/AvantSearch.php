@@ -44,7 +44,7 @@ class AvantSearch
         }
 
         $queryBuilder = new SearchQueryBuilder();
-        $queryBuilder->buildAdvancedSearchQuery($args);
+        $queryBuilder->buildAdvancedSearchQuery($args, $simpleSearch);
     }
 
     public static function emitSearchResultsTableCss()

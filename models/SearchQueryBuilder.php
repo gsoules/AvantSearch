@@ -14,7 +14,7 @@ class SearchQueryBuilder
         $this->db = get_db();
     }
 
-    public function buildAdvancedSearchQuery($args)
+    public function buildAdvancedSearchQuery($args, $isRelevanceQuery)
     {
         $this->select = $args['select'];
         $this->smartSortingEnabled = get_option(SearchConfig::OPTION_ADDRESS_SORTING) == true;
@@ -42,7 +42,7 @@ class SearchQueryBuilder
         }
 
         // Construct the query.
-        $this->buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery);
+        $this->buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery, $isRelevanceQuery ? $keywords : "");
         $this->buildWhereDateRange();
 
         if ($isKeywordQuery)
@@ -101,7 +101,7 @@ class SearchQueryBuilder
         return $count >= 1;
     }
 
-    protected function buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery)
+    protected function buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery, $relevanceQuery)
     {
         // This method join the search_texts table which is used for keyword searches
         // with the items and elements tables which are used for field searches.
@@ -111,6 +111,8 @@ class SearchQueryBuilder
         $itemsTable = $this->db->Items;
         $filesTable = $this->db->Files;
         $elementTextTable = $this->db->ElementText;
+
+        $isRelevanceQuery = strlen($relevanceQuery) > 0;
 
         // To make this work we first have to delete the From and Column parts of the query and then put the
         // query back together the way we need it. First save the From part so that we can  use it later to
@@ -136,15 +138,15 @@ class SearchQueryBuilder
             $this->select->joinInner(array('files' => $filesTable), 'items.id = files.item_id');
         }
 
-        // Join the element-text table to bring in the value of the primary field. For Table View, the
-        // primary field is the sort field. For Index View, it's the field being viewed.
-//        $this->select->joinLeft(array('_primary_column' => $elementTextTable),
-//            "_primary_column.record_id = items.id AND _primary_column.record_type = 'item' AND _primary_column.element_id = $primaryField");
-
-        ////////////////////////$this->select->joinLeft(array('search_texts' => $searchTextTable), "search_texts.record_id = items.id AND search_texts.record_type = 'Item'");
+        if (!$isRelevanceQuery)
+        {
+            // Join the element-text table to bring in the value of the primary field. For Table View, the
+            // primary field is the sort field. For Index View, it's the field being viewed.
+            $this->select->joinLeft(array('_primary_column' => $elementTextTable),
+                "_primary_column.record_id = items.id AND _primary_column.record_type = 'item' AND _primary_column.element_id = $primaryField");
+        }
 
         $this->select->joinLeft(array('i' => 'omek_item_search_index'), "i.item_id = items.id");
-
 
         // Everything is in place. Reconstruct the advanced joins, if any, for field queries.
         foreach ($from as $alias => $table)
@@ -154,22 +156,26 @@ class SearchQueryBuilder
             $this->select->joinLeft(array($alias => $table['tableName']), $table['joinCondition']);
         }
 
-        $tempQ = '+ralph* +stanley*';
-
         // Remove unneeded columns that got added automatically while adding joins. We only need items.id.
         $this->select->reset(Zend_Db_Select::COLUMNS);
         $this->select->columns('items.id');
         $this->select->columns('items.public');
-        $this->select->columns([
-        'custom_relevance' => new Zend_Db_Expr(
-            "LEAST(MATCH(i.title) AGAINST ('$tempQ' IN BOOLEAN MODE), 1.0) +
+
+        if ($isRelevanceQuery)
+        {
+            $args = $this->buildKeywordQuery($relevanceQuery, SearchResultsView::KEYWORD_CONDITION_ALL_WORDS, false);
+            $query = $args['query'];
+            $this->select->columns([
+                'custom_relevance' => new Zend_Db_Expr(
+                    "LEAST(MATCH(i.title) AGAINST ('$query' IN BOOLEAN MODE), 1.0) +
               IF(i.is_reference = 1, 1.5, 0) +
-              LEAST(MATCH(i.description) AGAINST ('$tempQ' IN BOOLEAN MODE), 1.0)"
-            )
-        ]);
+              LEAST(MATCH(i.description) AGAINST ('$query' IN BOOLEAN MODE), 1.0)"
+                )
+            ]);
+        }
     }
 
-    protected function buildKeywordWhere($query, $queryType, $titleOnly)
+    protected function buildKeywordQuery($query, $queryType, $titleOnly)
     {
         $searchColumn = $titleOnly ? 'title' : 'text';
         switch ($queryType)
@@ -218,7 +224,13 @@ class SearchQueryBuilder
                 break;
         }
 
-        $this->select->where($where, $query);
+        return ['where' => $where, 'query' => $query];
+    }
+
+    protected function buildKeywordWhere($query, $queryType, $titleOnly)
+    {
+        $args = $this->buildKeywordQuery($query, $queryType, $titleOnly);
+        $this->select->where($args['where'], $args['query']);
     }
 
     protected function buildSortOrder($sortField, $sortOrder, $isIndexQuery)
