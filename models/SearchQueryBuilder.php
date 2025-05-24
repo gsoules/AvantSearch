@@ -113,7 +113,7 @@ class SearchQueryBuilder
         $itemsTable = $this->db->Items;
         $filesTable = $this->db->Files;
         $elementTextTable = $this->db->ElementText;
-        $relevanceTextTable = $this->db->RelevanceText;
+        $relevanceTextTable = AvantSearch::useRelevanceSearch() ? $this->db->RelevanceText : "";
 
         $isRelevanceQuery = strlen($relevanceQuery) > 0;
 
@@ -141,15 +141,17 @@ class SearchQueryBuilder
             $this->select->joinInner(array('files' => $filesTable), 'items.id = files.item_id');
         }
 
-        if (!$isRelevanceQuery)
+        if ($isRelevanceQuery)
+        {
+            $this->select->joinLeft(array('relevance' => $relevanceTextTable), "relevance.item_id = items.id");
+        }
+        else
         {
             // Join the element-text table to bring in the value of the primary field. For Table View, the
             // primary field is the sort field. For Index View, it's the field being viewed.
             $this->select->joinLeft(array('_primary_column' => $elementTextTable),
                 "_primary_column.record_id = items.id AND _primary_column.record_type = 'item' AND _primary_column.element_id = $primaryField");
         }
-
-        $this->select->joinLeft(array('relevance' => $relevanceTextTable), "relevance.item_id = items.id");
 
         // Everything is in place. Reconstruct the advanced joins, if any, for field queries.
         foreach ($from as $alias => $table)

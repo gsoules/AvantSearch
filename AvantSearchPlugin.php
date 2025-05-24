@@ -53,12 +53,15 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
     public function hookAfterDeleteItem($args)
     {
-        $item = $args['record'];
+        if (AvantSearch::useRelevanceSearch())
+        {
+            $item = $args['record'];
 
-        // Remove the item's text from the relevance text table.
-        $db = get_db();
-        $table = $db->RelevanceText;
-        $db->query("DELETE FROM $table WHERE item_id = $item->id");
+            // Remove the item's text from the relevance text table.
+            $db = get_db();
+            $table = $db->RelevanceText;
+            $db->query("DELETE FROM $table WHERE item_id = $item->id");
+        }
     }
     public function hookAfterSaveItem($args)
     {
@@ -66,9 +69,11 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
         $searchPdf = new SearchPdf($item);
         $searchPdf->afterSaveItem($item);
 
-        // Call stored procedure to refresh the search index row for this item.
-        $db = get_db();
-        $db->query("CALL update_relevance_texts_table($item->id)");
+        if (AvantSearch::useRelevanceSearch()) {
+            // Call stored procedure to refresh the search index row for this item.
+            $db = get_db();
+            $db->query("CALL update_relevance_texts_table($item->id)");
+        }
     }
 
     public function hookBeforeSaveItem($args)
