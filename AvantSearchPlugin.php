@@ -55,8 +55,10 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
     {
         $item = $args['record'];
 
+        // Remove the item's text from the relevance text table.
         $db = get_db();
-        $db->query("DELETE FROM omek_item_search_index WHERE item_id = $item->id");
+        $table = $db->RelevanceText;
+        $db->query("DELETE FROM $table WHERE item_id = $item->id");
     }
     public function hookAfterSaveItem($args)
     {
@@ -66,7 +68,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
         // Call stored procedure to refresh the search index row for this item.
         $db = get_db();
-        $db->query("CALL populate_item_search_index($item->id)");
+        $db->query("CALL update_relevance_texts_table($item->id)");
     }
 
     public function hookBeforeSaveItem($args)

@@ -113,6 +113,7 @@ class SearchQueryBuilder
         $itemsTable = $this->db->Items;
         $filesTable = $this->db->Files;
         $elementTextTable = $this->db->ElementText;
+        $relevanceTextTable = $this->db->RelevanceText;
 
         $isRelevanceQuery = strlen($relevanceQuery) > 0;
 
@@ -148,7 +149,7 @@ class SearchQueryBuilder
                 "_primary_column.record_id = items.id AND _primary_column.record_type = 'item' AND _primary_column.element_id = $primaryField");
         }
 
-        $this->select->joinLeft(array('i' => 'omek_item_search_index'), "i.item_id = items.id");
+        $this->select->joinLeft(array('relevance' => $relevanceTextTable), "relevance.item_id = items.id");
 
         // Everything is in place. Reconstruct the advanced joins, if any, for field queries.
         foreach ($from as $alias => $table)
@@ -418,10 +419,10 @@ class SearchQueryBuilder
         $this->select->columns([
             'custom_relevance' => new Zend_Db_Expr(
                 "
-                LEAST(MATCH(i.title) AGAINST ('$query' IN BOOLEAN MODE), 1.0) * $boostTitle +
-                LEAST(MATCH(i.description) AGAINST ('$query' IN BOOLEAN MODE), 1.0) * $boostDescription +
-                IF(i.is_reference = 1, $boostReference, 0) +
-                IF(i.is_reference = 1 AND MATCH(i.title) AGAINST ('$query' IN BOOLEAN MODE), $boostTitleAndReference, 0)"
+                LEAST(MATCH(relevance.title) AGAINST ('$query' IN BOOLEAN MODE), 1.0) * $boostTitle +
+                LEAST(MATCH(relevance.description) AGAINST ('$query' IN BOOLEAN MODE), 1.0) * $boostDescription +
+                IF(relevance.is_reference = 1, $boostReference, 0) +
+                IF(relevance.is_reference = 1 AND MATCH(relevance.title) AGAINST ('$query' IN BOOLEAN MODE), $boostTitleAndReference, 0)"
             )
         ]);
     }
