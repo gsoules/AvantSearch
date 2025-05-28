@@ -14,7 +14,7 @@ class SearchQueryBuilder
         $this->db = get_db();
     }
 
-    public function buildAdvancedSearchQuery($args, $isSimpleSearch)
+    public function buildAdvancedSearchQuery($args)
     {
         $this->select = $args['select'];
         $this->smartSortingEnabled = get_option(SearchConfig::OPTION_ADDRESS_SORTING) == true;
@@ -41,11 +41,29 @@ class SearchQueryBuilder
             $primaryField = $searchResults->getSortFieldElementId();
         }
 
-        $isRelevanceQuery = AvantSearch::useRelevanceSearch() && $isSimpleSearch && $primaryField == 0 && strlen($keywords) > 0;
+        // Determine if this is an advanced query based on the number of joins in the FROM clause.
+        $from = $this->select->getPart(Zend_Db_Select::FROM);
+        $isAdvancedQuery =  count($from) > 1;
+
+        // Determine if the query contains a year range.
+        $isYearQuery = !empty($_GET['year_start']) || !empty($_GET['year_end']);
+
+        // A relevance query is a keyword search on all field with the 'All words' or 'Boolean' condition.
+        // Not supported: Titles-only, 'Contains' condition, advanced search options (includes tags), years.
+        $isRelevanceQuery =
+            !$isAdvancedQuery &&
+            $isKeywordQuery &&
+            !$titleOnly &&
+            $condition != SearchResultsView::KEYWORD_CONDITION_CONTAINS &&
+            $primaryField == 0 &&
+            !$isYearQuery &&
+            AvantSearch::useRelevanceSearch();
 
         // Construct the query.
-        $this->buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery, $isRelevanceQuery ? $keywords : "");
-        $this->buildWhereDateRange();
+        $this->buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery, $isRelevanceQuery, $keywords, $condition);
+
+        if ($isYearQuery)
+            $this->buildWhereDateRange();
 
         if ($isKeywordQuery)
             $this->buildKeywordWhere($keywords, $condition, $titleOnly);
@@ -103,9 +121,9 @@ class SearchQueryBuilder
         return $count >= 1;
     }
 
-    protected function buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery, $relevanceQuery)
+    protected function buildQuery($primaryField, $isKeywordQuery, $isFilesOnlyQuery, $isRelevanceQuery, $keywords, $condition)
     {
-        // This method join the search_texts table which is used for keyword searches
+        // This method joins the search_texts table which is used for keyword searches
         // with the items and elements tables which are used for field searches.
 
         // Get the names of the tables we'll be working with.
@@ -114,8 +132,6 @@ class SearchQueryBuilder
         $filesTable = $this->db->Files;
         $elementTextTable = $this->db->ElementText;
         $relevanceTextTable = AvantSearch::useRelevanceSearch() ? $this->db->RelevanceText : "";
-
-        $isRelevanceQuery = strlen($relevanceQuery) > 0;
 
         // To make this work we first have to delete the From and Column parts of the query and then put the
         // query back together the way we need it. First save the From part so that we can  use it later to
@@ -167,7 +183,7 @@ class SearchQueryBuilder
         $this->select->columns('items.public');
 
         if ($isRelevanceQuery)
-            $this->createRelevanceColumn($relevanceQuery);
+            $this->createRelevanceColumn($keywords, $condition);
     }
 
     protected function buildKeywordQuery($query, $queryType, $titleOnly)
@@ -409,14 +425,14 @@ class SearchQueryBuilder
         }
     }
 
-    public function createRelevanceColumn($relevanceQuery): void
+    public function createRelevanceColumn($relevanceQuery, $condition): void
     {
         $boostTitle = 4;
         $boostDescription = 1;
         $boostReference = 2;
         $boostTitleAndReference = 3;
 
-        $args = $this->buildKeywordQuery($relevanceQuery, SearchResultsView::KEYWORD_CONDITION_ALL_WORDS, false);
+        $args = $this->buildKeywordQuery($relevanceQuery, $condition, false);
         $query = $args['query'];
         $this->select->columns([
             'custom_relevance' => new Zend_Db_Expr(
