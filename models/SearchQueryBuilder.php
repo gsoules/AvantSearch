@@ -48,7 +48,7 @@ class SearchQueryBuilder
         // Determine if the query contains a year range.
         $isYearQuery = !empty($_GET['year_start']) || !empty($_GET['year_end']);
 
-        // A relevance query is a keyword search on all field with the 'All words' or 'Boolean' condition.
+        // A relevance query is a keyword search on all fields with the 'All words' or 'Boolean' condition.
         // Not supported: Titles-only, 'Contains' condition, advanced search options (includes tags), years.
         $isRelevanceQuery =
             !$isAdvancedQuery &&

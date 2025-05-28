@@ -12,6 +12,17 @@
         <li><span>"some words"</span> finds items that contain the exact phrase “some words” (for example, “some words of wisdom” but not “some choice words”).</li>
         <li><span>+apple +(pie juice)</span> finds items that contain “apple” and “pie”, or “apple” and “juice”.</li>
     </ul>
+    <li><b>Notes on relevancy searches</b><br>Search results will be returned in order from most to least relevant,
+    but only for keyword searches on 'All fields' with the 'All words' or 'Boolean' condition. Relevancy searching is
+    not supported for 'Titles only', the 'Contains' condition, or when searching by fields, year range, or tags.
+    <br><br>The ranking of results is based on the following from highest to lowest:</li>
+    <ul>
+        <li>The keywords appear in the Title field <i>and</i> the item's type is 'Reference'</li>
+        <li>The keywords appear in the Title field.</li>
+        <li>The item's type is 'Reference'</li>
+        <li>The keywords appear in the Description field</li>
+        <li>The keywords appear in other fields, but not in the Title or Description</li>
+    </ul>
 </ul>
 <div style="font-weight:bold;margin-top:12px;">Fields Search</div>
 <ul style="margin-top:-6px;">
