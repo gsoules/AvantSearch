@@ -4,7 +4,6 @@ $view = get_view();
 $storageEngine = AvantSearch::getStorageEngineForSearchTextsTable();
 $titlesOnlySupported = SearchConfig::getOptionsSupportedTitlesOnly();
 $addressSortingSupported = SearchConfig::getOptionSupportedAddressSorting();
-$elasticsearchSupported = SearchConfig::getOptionSupportedElasticsearch();
 
 $columnsOption = SearchConfig::getOptionTextForColumns();
 $columnsOptionRows = max(2, count(explode(PHP_EOL, $columnsOption)));
@@ -127,20 +126,6 @@ if (AvantSearch::usePdfSearch())
     <div class="inputs five columns omega">
         <p class="explanation"><?php echo __("Enable searching by relevance (table `relevance_texts` must exist and be populated. Stored procedure `update_relevance_texts_table` must exist)."); ?></p>
         <?php echo $view->formCheckbox(SearchConfig::OPTION_RELEVANCE_SEARCH, true, array('checked' => (boolean)get_option(SearchConfig::OPTION_RELEVANCE_SEARCH))); ?>
-    </div>
-</div>
-
-<div class="field">
-    <div class="two columns alpha">
-        <label><?php echo CONFIG_LABEL_ELASTICSEARCH; ?></label>
-    </div>
-    <div class="inputs five columns omega">
-        <?php if ($elasticsearchSupported): ?>
-            <p class="explanation"><?php echo __('Use Elasticsearch.'); ?></p>
-            <?php echo $view->formCheckbox(SearchConfig::OPTION_ELASTICSEARCH, true, $elasticsearchOptionAttributes); ?>
-        <?php else: ?>
-            <?php SearchConfig::emitOptionNotSupported('AvantSearch', 'elasticsearch'); ?>
-        <?php endif; ?>
     </div>
 </div>
 
