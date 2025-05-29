@@ -35,6 +35,12 @@ class SearchQueryBuilder
         if ($isIndexQuery)
         {
             $primaryField =  $searchResults->getIndexFieldElementId();
+
+            if ($primaryField == 0)
+            {
+                // The value will be zero if no Index By value is set, in which case it defaults to Title.
+                $primaryField = ItemMetadata::getTitleElementId();
+            }
         }
         else
         {
@@ -52,6 +58,7 @@ class SearchQueryBuilder
         // Not supported: Titles-only, 'Contains' condition, advanced search options (includes tags), years.
         $isRelevanceQuery =
             !$isAdvancedQuery &&
+            !$isIndexQuery &&
             $isKeywordQuery &&
             !$titleOnly &&
             $condition != SearchResultsView::KEYWORD_CONDITION_CONTAINS &&
