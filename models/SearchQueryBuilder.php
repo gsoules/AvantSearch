@@ -269,11 +269,11 @@ class SearchQueryBuilder
         $addressFieldElementId = ItemMetadata::getElementIdForElementName('Address');
         $titleFieldElementId = ItemMetadata::getTitleElementId();
 
-        $sortByAddress = $sortField == $addressFieldElementId;
+        $sortByAddress = $addressFieldElementId != 0 && $sortField == $addressFieldElementId;
 
         $sortByTitle = $sortField == $titleFieldElementId;
 
-        $performSecondarySort = !$isIndexQuery && !$sortByTitle;
+        $performSecondarySort = !$isIndexQuery && !$sortByTitle && !$isRelevanceQuery;
 
         if ($isIndexQuery && !$sortByTitle)
         {
@@ -380,7 +380,7 @@ class SearchQueryBuilder
             //   ([^a-zA-Z]+) matche a group of one or more characters that are not a-z or A-Z.
             //   ? at the end of group 1 means match zero or one of the group (the street number).
             // Group 2: (.*)
-            //   (.*) matche a group of zero or more of any character (the street name).
+            //   (.*) match a group of zero or more of any character (the street name).
             // Substitution:
             //    \2 means replace the original string with the match on group 2 (the street name)
             //    In SQL, the regular expression syntax for \2 must be written with the backslash escaped as \\2

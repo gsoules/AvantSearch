@@ -90,7 +90,7 @@ if (AvantSearch::usePdfSearch())
         <label><?php echo CONFIG_LABEL_INTEGER_SORTING; ?></label>
     </div>
     <div class="inputs five columns omega">
-        <p class="explanation"><?php echo __("Columns that should be sorted as integers. Can be used with mixed values (integer and text). Requires Elasticsearch reindex."); ?></p>
+        <p class="explanation"><?php echo __("Columns that should be sorted as integers. Can be used with mixed values (integer and text)."); ?></p>
         <?php echo $view->formTextarea(SearchConfig::OPTION_INTEGER_SORTING, $integerSortingOption, array('rows' => $integerSortingOptionRows)); ?>
     </div>
 </div>
