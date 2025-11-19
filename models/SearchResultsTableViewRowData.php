@@ -14,11 +14,12 @@ class SearchResultsTableViewRowData
     protected $identifierAliasName;
     protected $itemFieldTextsHtml = array();
     public $itemThumbnailHtml;
+    protected $pageId;
     protected $searchResults;
     protected $sharedSearchingEnabled;
     protected $useElasticsearch;
 
-    public function __construct($item, SearchResultsTableView $searchResults, $identifierAliasName, $allowSortByRelevance, $checkboxFieldData)
+    public function __construct($item, SearchResultsTableView $searchResults, $identifierAliasName, $allowSortByRelevance, $checkboxFieldData, $pageId)
     {
         $this->searchResults = $searchResults;
         $this->columnsData = $searchResults->getColumnsData();
@@ -27,6 +28,7 @@ class SearchResultsTableViewRowData
         $this->identifierAliasName = $identifierAliasName;
         $this->allowSortByRelevance = $allowSortByRelevance;
         $this->checkboxFieldData = $checkboxFieldData;
+        $this->pageId = $pageId;
 
         $this->initializeData($item);
     }
@@ -229,6 +231,11 @@ class SearchResultsTableViewRowData
         else
         {
             $titleLink = link_to_item(ItemMetadata::getItemTitle($item));
+
+            // Insert the page ID into the link as a query string argument. It's used only for detecting bot activity in Apache logs.
+            // $pageIdArg = "?id=" . $this->pageId;
+            // $titleLink = str_replace('">', $pageIdArg . '">', $titleLink);
+
             $this->elementValue['Title']['text'] = $titleLink;
             $titles = ItemMetadata::getAllElementTextsForElementName($item, 'Title');
         }

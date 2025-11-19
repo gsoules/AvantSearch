@@ -85,6 +85,7 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml, $totalResults > 0);
         </thead>
         <tbody>
         <?php
+        $pageId = AvantCommon::generatePageId();
         foreach ($results as $result)
         {
             if (!$useElasticsearch)
@@ -100,7 +101,8 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml, $totalResults > 0);
                     'identifierAliasName' => $identifierAliasName,
                     'allowSortByRelevance' => $allowSortByRelevance,
                     'checkboxFieldData' => $checkboxFieldData,
-                    'userCanEdit' => $userCanEdit)
+                    'userCanEdit' => $userCanEdit,
+                    'pageId' => $pageId)
             );
         }
         ?>

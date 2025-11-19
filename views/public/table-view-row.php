@@ -3,7 +3,7 @@
 
 /* @var $searchResults SearchResultsTableView */
 
-$data = new SearchResultsTableViewRowData($item, $searchResults, $identifierAliasName, $allowSortByRelevance, $checkboxFieldData);
+$data = new SearchResultsTableViewRowData($item, $searchResults, $identifierAliasName, $allowSortByRelevance, $checkboxFieldData, $pageId);
 $columnsData = $searchResults->getColumnsData();
 
 $description = isset($data->elementValue['Description']['detail']) ? $data->elementValue['Description']['detail'] : '';

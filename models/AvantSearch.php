@@ -354,6 +354,8 @@ class AvantSearch
         // the item on the admin show page, otherwise display it on the public show page.
         $referrer = $_SERVER['HTTP_REFERER'];
         $onAdminPage = strpos($referrer, '/admin');
+        $pageId = AvantCommon::generatePageId();
+        // $url = "/items/show/$id?id=$pageId";
         $url = "/items/show/$id";
         if ($onAdminPage)
         {

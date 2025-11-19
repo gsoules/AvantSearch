@@ -27,41 +27,17 @@ echo $searchResults->emitSearchFilters($optionSelectorsHtml, $totalResults > 0);
 ?>
 
 <?php if ($totalResults): ?>
-    <?php if ($useElasticsearch): ?>
-        <?php
-        $query = $searchResults->getQuery();
-        $facets = $searchResults->getFacets();
-        echo $this->partial('/elasticsearch-facets.php', array(
-                'query' => $query,
-                'aggregations' => $facets,
-                'totalResults' => $totalResults
-            )
-        );
-        ?>
-        <section id="elasticsearch-results">
-    <?php endif; ?>
     <div class="grid-view">
         <?php
+        $pageId = AvantCommon::generatePageId();
         foreach ($results as $item)
         {
-            if ($useElasticsearch)
-            {
-                $sharedSearchingEnabled = $searchResults->sharedSearchingEnabled();
-                $itemPreview = new ItemPreview($item, true, $sharedSearchingEnabled);
-                echo $itemPreview->emitItemPreviewForGrid($sharedSearchingEnabled);
-            }
-            else
-            {
-                set_current_record('Item', $item);
-                $itemPreview = new ItemPreview($item);
-                echo $itemPreview->emitItemPreviewForGrid(false);
-            }
+            set_current_record('Item', $item);
+            $itemPreview = new ItemPreview($item);
+            echo $itemPreview->emitItemPreviewForGrid($pageId);
         }
         ?>
     </div>
-    <?php if ($useElasticsearch): ?>
-        </section>
-    <?php endif; ?>
     <?php
     echo "<div id='search-pagination-bottom'>$paginationLinks</div>";
     echo '</div>';

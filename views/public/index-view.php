@@ -126,6 +126,8 @@ function emitEntries($entries, $indexFieldElementId, $indexElementName, $searchR
         echo "<h3>$noEntriesMessage</h3>";
     }
 
+    $pageId = AvantCommon::generatePageId();
+
     foreach ($entries as $entryText => $entry)
     {
         if (empty($entryText))
@@ -169,6 +171,11 @@ function emitEntries($entries, $indexFieldElementId, $indexElementName, $searchR
                 $item = get_record_by_id('Item', $entry['id']);
                 $link = link_to($item, null, $entryText);
             }
+
+            // Insert the page ID into the link as a query string argument. It's used only for detecting bot activity in Apache logs.
+            // $pageIdArg = "?id=" . $pageId;
+            // $link = str_replace('">', $pageIdArg . '">', $link);
+
             echo $link;
         }
         else
