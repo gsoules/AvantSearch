@@ -464,6 +464,22 @@ class SearchResultsView
             'ends with' => __('ends with')
         );
 
+        if (plugin_is_active('MDIBL'))
+        {
+            // Don't show the 'is exactly' and 'ends with' options because they will always fail with
+            // authors, institutions, species, and common names that include reference numbers enclosed
+            // in square brackets at the end of the string.
+            $conditions = array(
+                'contains' => __('contains'),
+                'does not contain' => __('does not contain'),
+                'is empty' => __('is empty'),
+                'is not empty' => __('is not empty'),
+                'matches' => __('matches'),
+                'does not match' => __('does not match'),
+                'starts with' => __('starts with')
+            );
+        }
+
         if ($useElasticsearch)
         {
             // There are not very useful and can mostly be achieved by prefixing a term with '-' to mean does not contain.
