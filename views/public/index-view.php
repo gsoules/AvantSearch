@@ -102,6 +102,10 @@ function createEntriesFromSqlResults($results)
     foreach ($results as $result)
     {
         $fieldText = $result['text'];
+
+        if (plugin_is_active("MDIBL"))
+            $fieldText = MDIBL::removeReferenceNumbers($fieldText);
+
         $count = $result['count'];
 
         if (isset($entries[$fieldText]))
@@ -191,6 +195,10 @@ function emitEntries($entries, $indexFieldElementId, $indexElementName, $searchR
                 if (empty($indexElementName) || !$searchResults->useElasticsearch())
                     $indexElementName = $indexFieldElementId;
                 $searchCondition = 'is exactly';
+
+                if (plugin_is_active("MDIBL"))
+                    $searchCondition = "starts with";
+
                 $url = $searchResults->emitIndexEntryUrl($entryText, $indexElementName, $searchCondition);
                 echo "<a href='$url' target='_blank'>$entryText</a>";
             }

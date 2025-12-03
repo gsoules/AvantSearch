@@ -478,6 +478,10 @@ class SearchResultsTableViewRowData
                             $filteredText = $this->appendSymbolToListItem($flag, $filteredText);
                         }
                     }
+                    if (plugin_is_active('MDIBL') && MDIBL::elementUsesReferenceNumbers($elementName))
+                    {
+                        $filteredText = MDIBL::removeReferenceNumbers($filteredText);
+                    }
                     $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetailRow($column['name'], $filteredText, $column['alias']);
                 }
             }
