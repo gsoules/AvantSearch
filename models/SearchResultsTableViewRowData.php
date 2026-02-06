@@ -480,15 +480,28 @@ class SearchResultsTableViewRowData
                     }
                     if (plugin_is_active('MDIBL') && MDIBL::elementUsesReferenceNumbers($elementName))
                     {
-                        // For now, show reference numbers because the current logic shows author and institution names in
-                        // the order in which they occur in the database. If the author order is say [3] [1] [2] but the
-                        // institution order is [1] [2] [3] it will appear that the third author is associated with the
-                        // first institution. Either continue to show the reference numbers, or add logic like what is used
-                        // in MDIBL::filterAuthor to combine authors and institutions into pairs within the Author element
-                        // and don't show the Institution element. This would mean not being able to sort by Institution,
-                        // but sorting is really not useful since it only sorts by the first author or institution in a list.
-
-                        /////$filteredText = MDIBL::removeReferenceNumbers($filteredText);
+                        if ($elementName === "Author")
+                        {
+                            $filteredText = "<ul>";
+                            $authorElementId = ItemMetadata::getElementIdForElementName("Author");
+                            foreach ($elementTexts as $index => $text)
+                            {
+                                [$author, $school] = MDIBL::combineAuthorAndInstitution($item, $authorElementId, $elementTexts[$index], false);
+                                $filteredText .= "<li>" . MDIBL::formatAuthorSchool($author, $school) . "</li>";
+                            }
+                            $filteredText .= "</ul>";
+                        }
+                        else if ($elementName === "Species")
+                        {
+                            $filteredText = "<ul class='search-results-pair-metadata-text'>";
+                            $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
+                            foreach ($elementTexts as $index => $text)
+                            {
+                                [$species, $common] = MDIBL::combineSpeciesAndCommon($item, $speciesElementId, $elementTexts[$index], false);
+                                $filteredText .= "<li>" . MDIBL::formatSpeciesCommon($species, $common) . "</li>";
+                            }
+                            $filteredText .= "</ul>";
+                        }
                     }
                     $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetailRow($column['name'], $filteredText, $column['alias']);
                 }
