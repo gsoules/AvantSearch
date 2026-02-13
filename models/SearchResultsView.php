@@ -524,29 +524,17 @@ class SearchResultsView
 
         $allFields = self::getAllFields();
         $publicFields = array_diff($allFields, $privateFields);
-        if ($sharedSearchingEnabled)
+
+        if (plugin_is_active("MDIBL"))
         {
-            // Filter public fields to only those that are common among all contributors.
-            $avantElasticsearch = new AvantElasticsearch();
-            $commonSearchFields = $avantElasticsearch->getFieldNamesOfCoreElements();
-            foreach ($publicFields as $elementId => $elementName)
-            {
-                $elasticsearchFieldName = $avantElasticsearch->convertElementNameToElasticsearchFieldName($elementName);
-                if (!in_array($elasticsearchFieldName, $commonSearchFields))
-                {
-                    unset($publicFields[$elementId]);
-                }
-            }
-        }
-
-        if ($this->useElasticsearch)
-        {
-            $publicFields['<tags>'] = 'Tags';
-
-            if (AvantElasticsearch::useSharedIndexForQueries())
-                $publicFields['<contributor>'] = 'Contributor';
-
-            asort($publicFields);
+            // Don't allow user to search by the Species or Common Name fields because
+            // a) most modern species names are not in the database (they come from the species
+            // lookup table) and b) common names are not in the database at all. Users can find
+            // species and common names on the Species and Common Names pages.
+            $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
+            $commonElementId = ItemMetadata::getElementIdForElementName("Common Name");
+            unset($publicFields[$speciesElementId]);
+            unset($publicFields[$commonElementId]);
         }
 
         $fields = array();
