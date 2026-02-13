@@ -531,10 +531,15 @@ class SearchResultsView
             // a) most modern species names are not in the database (they come from the species
             // lookup table) and b) common names are not in the database at all. Users can find
             // species and common names on the Species and Common Names pages.
-            $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
             $commonElementId = ItemMetadata::getElementIdForElementName("Common Name");
-            unset($publicFields[$speciesElementId]);
             unset($publicFields[$commonElementId]);
+
+            // Allow species search for logged in user.
+            if (!current_user())
+            {
+                $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
+                unset($publicFields[$speciesElementId]);
+            }
         }
 
         $fields = array();
