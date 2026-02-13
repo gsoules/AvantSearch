@@ -482,7 +482,7 @@ class SearchResultsTableViewRowData
                     {
                         if ($elementName === "Author")
                         {
-                            $filteredText = "<ul>";
+                            $filteredText = "<ul class='search-results-pair-metadata-text'>";
                             $authorElementId = ItemMetadata::getElementIdForElementName("Author");
                             foreach ($elementTexts as $index => $text)
                             {

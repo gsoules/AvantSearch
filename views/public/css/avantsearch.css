@@ -757,11 +757,8 @@ td.search-result ul {
 	padding: 0;
 }
 
-.search-results-pair-metadata-text ul,
-td.search-result ul {
-	list-style-type: circle;
-	margin: 0;
-	padding: 0;
+.search-results-pair-metadata-text {
+	list-style-type: circle !important;
 }
 
 .search-results-metadata-text li,
