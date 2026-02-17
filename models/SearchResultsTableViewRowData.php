@@ -478,10 +478,12 @@ class SearchResultsTableViewRowData
                             $filteredText = $this->appendSymbolToListItem($flag, $filteredText);
                         }
                     }
-                    if (plugin_is_active('MDIBL') && MDIBL::elementUsesReferenceNumbers($elementName))
+
+                    if (plugin_is_active('MDIBL'))
                     {
                         if ($elementName === "Author")
                         {
+                            // Combine the author and institution names into an HTML list.
                             $filteredText = "<ul class='search-results-pair-metadata-text'>";
                             $authorElementId = ItemMetadata::getElementIdForElementName("Author");
                             foreach ($elementTexts as $index => $text)
@@ -493,6 +495,7 @@ class SearchResultsTableViewRowData
                         }
                         else if ($elementName === "Species")
                         {
+                            // Combine the species and common names into an HTML list.
                             $filteredText = "<ul class='search-results-pair-metadata-text'>";
                             $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
                             foreach ($elementTexts as $index => $text)
@@ -503,6 +506,7 @@ class SearchResultsTableViewRowData
                             $filteredText .= "</ul>";
                         }
                     }
+
                     $this->elementValue[$elementName]['detail'] = $this->searchResults->emitFieldDetailRow($column['name'], $filteredText, $column['alias']);
                 }
             }
