@@ -533,13 +533,13 @@ class SearchResultsView
             // species and common names on the Species and Common Names pages.
             $commonElementId = ItemMetadata::getElementIdForElementName("Common Name");
             unset($publicFields[$commonElementId]);
-
-            // Allow species search for logged in user.
-            if (!current_user())
-            {
-                $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
-                unset($publicFields[$speciesElementId]);
-            }
+//
+//            // Allow species search for loggedin user.
+//            if (!current_user())
+//            {
+//                $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
+//                unset($publicFields[$speciesElementId]);
+//            }
         }
 
         $fields = array();
