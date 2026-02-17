@@ -71,6 +71,7 @@ class AvantSearchPlugin extends Omeka_Plugin_AbstractPlugin
 
         if (AvantSearch::useRelevanceSearch()) {
             // Call stored procedure to refresh the search index row for this item.
+            // Note that on the local server, the Security Type for this SP should be INVOKER not DEFINER
             $db = get_db();
             $db->query("CALL update_relevance_texts_table($item->id)");
         }
