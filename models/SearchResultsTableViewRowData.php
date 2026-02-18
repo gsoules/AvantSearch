@@ -488,7 +488,7 @@ class SearchResultsTableViewRowData
                             $authorElementId = ItemMetadata::getElementIdForElementName("Author");
                             foreach ($elementTexts as $index => $text)
                             {
-                                [$author, $school] = MDIBL::combineAuthorAndInstitution($item, $authorElementId, $elementTexts[$index], false);
+                                [$author, $school] = MDIBL::combineAuthorAndInstitution($item, $authorElementId, $elementTexts[$index], true);
                                 $filteredText .= "<li>" . MDIBL::formatAuthorSchool($author, $school) . "</li>";
                             }
                             $filteredText .= "</ul>";
@@ -500,7 +500,7 @@ class SearchResultsTableViewRowData
                             $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
                             foreach ($elementTexts as $index => $text)
                             {
-                                [$species, $common] = MDIBL::combineSpeciesAndCommon($item, $speciesElementId, $elementTexts[$index], false);
+                                [$species, $common] = MDIBL::combineSpeciesAndCommon($item, $speciesElementId, $elementTexts[$index]);
                                 $filteredText .= "<li>" . MDIBL::formatSpeciesCommon($species, $common) . "</li>";
                             }
                             $filteredText .= "</ul>";
