@@ -495,13 +495,17 @@ class SearchResultsTableViewRowData
                         }
                         else if ($elementName === "Species")
                         {
-                            // Combine the species and common names into an HTML list.
+                            // Emit the combined species and common names into an HTML list.
                             $filteredText = "<ul class='search-results-pair-metadata-text'>";
-                            $speciesElementId = ItemMetadata::getElementIdForElementName("Species");
-                            foreach ($elementTexts as $index => $text)
+                            foreach ($elementTexts as $index => $speciesElementValue)
                             {
-                                [$species, $common] = MDIBL::combineSpeciesAndCommon($item, $speciesElementId, $elementTexts[$index]);
-                                $filteredText .= "<li>" . MDIBL::formatSpeciesCommon($species, $common) . "</li>";
+                                $speciesData = MDIBL::getSpeciesDataFromLookupTable($speciesElementValue);
+                                if ($speciesData)
+                                    $html = $speciesData['html'];
+                                else
+                                    $html = "SPECIES '$speciesElementValue' NOT FOUND";
+
+                                $filteredText .= "<li>" . $html . "</li>";
                             }
                             $filteredText .= "</ul>";
                         }
